@@ -11,6 +11,16 @@ describe('canMove', () => {
     expect(canMove(maze, entry, 'W')).toBe(false); // border West wall
   });
 
+  it('returns false when move would go out of bounds (entry/exit visual gaps)', () => {
+    const maze = generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 1 });
+    // The generator removes the North wall of the entry cell for the visual entry gap.
+    // canMove must still return false because {0, -1} is outside the grid.
+    expect(canMove(maze, maze.entry, 'N')).toBe(false);
+    // Similarly, the South wall of the exit cell is removed for the visual exit gap.
+    // canMove must still return false because {4, 5} is outside the grid.
+    expect(canMove(maze, maze.exit, 'S')).toBe(false);
+  });
+
   it('returns true when passage exists', () => {
     const maze = generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 1 });
     // Follow the solution path — each step should be a valid move

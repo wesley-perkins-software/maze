@@ -18,9 +18,20 @@ const DIR_DELTA: Record<Direction, { dx: number; dy: number }> = {
 };
 
 /**
- * Returns true if there is no wall between `from` and the neighbor in `direction`.
+ * Returns true if there is no wall between `from` and the neighbor in `direction`,
+ * and the destination is within the grid bounds.
+ *
+ * Bounds check is necessary because the generator removes the North wall of the
+ * entry cell and the South wall of the exit cell for visual entry/exit gaps —
+ * those bits read as "open passage" even though the destination is outside the grid.
  */
 export function canMove(maze: MazeData, from: Point, direction: Direction): boolean {
+  const { dx, dy } = DIR_DELTA[direction];
+  const destX = from.x + dx;
+  const destY = from.y + dy;
+  if (destX < 0 || destY < 0 || destX >= maze.width || destY >= maze.height) {
+    return false;
+  }
   const idx = pointToIndex(from, maze.width);
   const cell = maze.grid[idx];
   return !(cell & DIR_WALL[direction]);

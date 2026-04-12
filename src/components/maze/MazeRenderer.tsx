@@ -96,6 +96,8 @@ export function MazeRenderer({
   return (
     <svg
       ref={svgRef}
+      width={totalW}
+      height={totalH}
       viewBox={`0 0 ${totalW} ${totalH}`}
       xmlns="http://www.w3.org/2000/svg"
       className={className}
