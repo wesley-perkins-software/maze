@@ -1,0 +1,42 @@
+@media print {
+  /* Hide everything except the maze content */
+  header,
+  footer,
+  nav,
+  .no-print,
+  .maze-controls,
+  .maze-player-ui {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .maze-print-container {
+    width: 100%;
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  @page {
+    margin: 15mm;
+    size: letter portrait;
+  }
+}
+
+.print-only {
+  display: none;
+}

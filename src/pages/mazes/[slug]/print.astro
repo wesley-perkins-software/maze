@@ -1,0 +1,32 @@
+---
+import PrintLayout from '../../../layouts/PrintLayout.astro';
+import { getAllMazes } from '../../../lib/catalog/index.js';
+import { generateMazeFromCatalog } from '../../../lib/maze/index.js';
+import { renderPrint } from '../../../lib/svg/renderToString.js';
+import { generateMazeTitle } from '../../../lib/catalog/seo.js';
+
+export async function getStaticPaths() {
+  const catalog = getAllMazes();
+  return catalog.map((entry) => {
+    const maze = generateMazeFromCatalog(entry);
+    const svgString = renderPrint(maze);
+    return {
+      params: { slug: entry.slug },
+      props: { entry, svgString },
+    };
+  });
+}
+
+const { entry, svgString } = Astro.props;
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const title = generateMazeTitle(entry);
+const canonical = `/mazes/${entry.slug}`;
+---
+
+<PrintLayout title={`Print: ${title}`} canonical={canonical}>
+  <h1>{title}</h1>
+  <Fragment set:html={svgString} />
+  <p class="no-print" style="margin-top:12px;font-size:0.8rem;color:#94a3b8;text-align:center;">
+    Free printable maze from <a href={siteUrl} style="color:#2563eb;">{siteUrl.replace('https://','')}</a>
+  </p>
+</PrintLayout>

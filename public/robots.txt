@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Disallow: /mazes/*/print
+
+Sitemap: https://mazethis.com/sitemap-index.xml

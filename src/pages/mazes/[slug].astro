@@ -1,0 +1,104 @@
+---
+import MazePageLayout from '../../layouts/MazePageLayout.astro';
+import DifficultyBadge from '../../components/ui/DifficultyBadge.astro';
+import PrintButton from '../../components/ui/PrintButton.astro';
+import RelatedMazes from '../../components/ui/RelatedMazes.astro';
+import { MazePlayer } from '../../components/maze/MazePlayer';
+import { getAllMazes, getRelatedMazes, getNextMaze, getPrevMaze } from '../../lib/catalog/index.js';
+import { generateMazeFromCatalog } from '../../lib/maze/index.js';
+import { generateMazeSeoMeta, generateMazeSchemaLD, generateBreadcrumbLD, generateMazeTitle } from '../../lib/catalog/seo.js';
+import { getCategoryByDifficulty } from '../../types/maze.js';
+
+export async function getStaticPaths() {
+  const catalog = getAllMazes();
+  return catalog.map((entry) => {
+    // Compute maze at build time — deterministic, ~0.5ms each
+    const maze = generateMazeFromCatalog(entry);
+    const related = getRelatedMazes(entry, 6);
+    const next = getNextMaze(entry);
+    const prev = getPrevMaze(entry);
+    return {
+      params: { slug: entry.slug },
+      props: { maze, entry, related, next, prev },
+    };
+  });
+}
+
+const { maze, entry, related, next, prev } = Astro.props;
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const category = getCategoryByDifficulty(entry.difficulty);
+const seoMeta = generateMazeSeoMeta(entry);
+const mazeTitle = generateMazeTitle(entry);
+
+const schemaLD = [
+  generateMazeSchemaLD(entry, siteUrl),
+  generateBreadcrumbLD([
+    { name: 'Home', url: '/' },
+    { name: category.label, url: `/${category.slug}` },
+    { name: mazeTitle },
+  ], siteUrl),
+];
+---
+
+<MazePageLayout
+  title={seoMeta.title}
+  description={seoMeta.description}
+  slug={entry.slug}
+  category={category}
+  mazeTitle={mazeTitle}
+  schemaLD={schemaLD}
+>
+  <!-- Page header -->
+  <div class="mt-4 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <h1 class="text-2xl font-bold text-slate-900">{mazeTitle}</h1>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <DifficultyBadge difficulty={entry.difficulty} />
+        <span class="text-sm text-slate-500">{entry.width}×{entry.height} grid</span>
+        <span class="text-slate-300">·</span>
+        <span class="text-sm text-slate-500">{maze.solution.length} steps to solve</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <PrintButton slug={entry.slug} />
+      <a href="/maze-generator" class="btn-ghost text-sm">
+        Make Custom
+      </a>
+    </div>
+  </div>
+
+  <!-- Maze Player (interactive island) -->
+  <div class="mb-10">
+    <MazePlayer maze={maze} client:load />
+  </div>
+
+  <!-- Navigation row -->
+  <div class="flex items-center justify-between gap-4 mb-10 border-t border-slate-200 pt-6">
+    {prev ? (
+      <a href={`/mazes/${prev.slug}`} class="btn-secondary text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Previous
+      </a>
+    ) : <span />}
+
+    <a href={`/${category.slug}`} class="text-sm text-slate-500 hover:text-blue-600 transition-colors">
+      ← All {category.label}
+    </a>
+
+    {next ? (
+      <a href={`/mazes/${next.slug}`} class="btn-secondary text-sm">
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+    ) : <span />}
+  </div>
+
+  <!-- Related mazes -->
+  <RelatedMazes mazes={related} heading={`More ${category.label}`} />
+</MazePageLayout>

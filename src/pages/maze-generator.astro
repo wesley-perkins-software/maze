@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { MazeGenerator } from '../components/maze/MazeGenerator';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const schema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Free Maze Generator',
+  url: `${siteUrl}/maze-generator`,
+  description: 'Free online maze generator. Create custom mazes with any size and difficulty. Download as SVG or print.',
+  applicationCategory: 'UtilityApplication',
+  isAccessibleForFree: true,
+  operatingSystem: 'Web Browser',
+});
+---
+
+<BaseLayout
+  title="Free Maze Generator — Create Custom Mazes Online | MazeThis"
+  description="Generate custom mazes online for free. Choose difficulty (easy, medium, hard), set any size, and download as SVG or print instantly. No account required."
+  schemaLD={schema}
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-8">
+      <nav aria-label="Breadcrumb" class="text-sm text-slate-500 mb-4">
+        <ol class="flex items-center gap-1">
+          <li><a href="/" class="hover:text-blue-600">Home</a></li>
+          <li>
+            <svg class="w-3 h-3 mx-1 text-slate-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </li>
+          <li><span class="text-slate-700 font-medium" aria-current="page">Maze Generator</span></li>
+        </ol>
+      </nav>
+
+      <h1 class="text-3xl font-bold text-slate-900 mb-2">Free Maze Generator</h1>
+      <p class="text-slate-500 text-lg">
+        Create a custom maze in any size and difficulty. Download as SVG or print for free.
+      </p>
+    </div>
+
+    <!-- Generator Island -->
+    <MazeGenerator client:load />
+
+    <!-- Info section -->
+    <div class="mt-16 border-t border-slate-200 pt-10">
+      <h2 class="text-xl font-bold text-slate-800 mb-4">About the Maze Generator</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-600 text-sm">
+        <div>
+          <h3 class="font-semibold text-slate-700 mb-2">How mazes are generated</h3>
+          <p>
+            We use a <strong>Recursive Backtracker</strong> algorithm — a depth-first search that
+            carves paths through a grid. It produces mazes with long, winding corridors that are
+            satisfying to solve. Each maze is guaranteed to have a solution from start to finish.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-slate-700 mb-2">Difficulty explained</h3>
+          <p>
+            Difficulty affects how many extra passages are added after generation.
+            Easy and Kids mazes have extra openings that create shorter paths.
+            Hard mazes have maximum dead ends. Adults mazes are large with minimal extra passages.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

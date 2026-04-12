@@ -1,0 +1,37 @@
+---
+import type { MazeCatalogEntry } from '../../types/maze.js';
+import { generateMazeTitle } from '../../lib/catalog/seo.js';
+import { generateMazeFromCatalog } from '../../lib/maze/index.js';
+import { renderThumbnail } from '../../lib/svg/renderToString.js';
+import DifficultyBadge from './DifficultyBadge.astro';
+
+export interface Props {
+  entry: MazeCatalogEntry;
+}
+
+const { entry } = Astro.props;
+const maze = generateMazeFromCatalog(entry);
+const svg = renderThumbnail(maze);
+const title = generateMazeTitle(entry);
+---
+
+<a
+  href={`/mazes/${entry.slug}`}
+  class="card hover:shadow-md transition-all hover:-translate-y-0.5 group block"
+  aria-label={`Play or print: ${title}`}
+>
+  <!-- SVG Thumbnail — rendered at build time, zero JS -->
+  <div
+    class="bg-slate-50 flex items-center justify-center p-3 aspect-square"
+    set:html={svg}
+  />
+  <div class="p-3 space-y-1.5">
+    <p class="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition-colors leading-tight">
+      {title}
+    </p>
+    <div class="flex items-center justify-between gap-2">
+      <DifficultyBadge difficulty={entry.difficulty} size="sm" />
+      <span class="text-xs text-slate-400">{entry.width}×{entry.height}</span>
+    </div>
+  </div>
+</a>

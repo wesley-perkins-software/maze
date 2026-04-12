@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CategoryNav from '../components/nav/CategoryNav.astro';
+---
+
+<BaseLayout
+  title="About MazeThis — Free Maze Generator & Printable Mazes"
+  description="MazeThis provides free printable mazes and an online maze generator for kids, adults, teachers, and parents. Learn about our maze generation algorithm."
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
+    <nav aria-label="Breadcrumb" class="text-sm text-slate-500 mb-6">
+      <ol class="flex items-center gap-1">
+        <li><a href="/" class="hover:text-blue-600">Home</a></li>
+        <li><svg class="w-3 h-3 mx-1 inline text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></li>
+        <li><span class="text-slate-700 font-medium" aria-current="page">About</span></li>
+      </ol>
+    </nav>
+
+    <h1 class="mb-4">About MazeThis</h1>
+
+    <div class="prose prose-slate max-w-none">
+      <p class="text-lg text-slate-600 mb-6">
+        MazeThis is a free maze platform built for teachers, parents, kids, and anyone who loves puzzles.
+        We believe great mazes should be easy to find, print, and solve — no sign-up required.
+      </p>
+
+      <h2 class="text-xl font-bold text-slate-800 mt-8 mb-3">What We Offer</h2>
+      <ul class="space-y-2 text-slate-600">
+        <li>✓ <strong>420+ free printable mazes</strong> across 5 difficulty levels</li>
+        <li>✓ <strong>Online maze generator</strong> — custom size and difficulty</li>
+        <li>✓ <strong>Playable mazes</strong> — solve with arrow keys or touch</li>
+        <li>✓ <strong>Print-friendly layouts</strong> — clean, no clutter</li>
+        <li>✓ <strong>No account required</strong> — everything is free</li>
+      </ul>
+
+      <h2 class="text-xl font-bold text-slate-800 mt-8 mb-3">How Our Mazes Are Generated</h2>
+      <p class="text-slate-600">
+        All mazes are generated using a <strong>Recursive Backtracker</strong> algorithm — a depth-first
+        search that carves passages through a grid. This produces mazes with satisfying winding corridors
+        and is guaranteed to have exactly one solution path.
+      </p>
+      <p class="text-slate-600 mt-3">
+        Difficulty levels are controlled by post-processing: easier mazes have additional passages added
+        to open up the grid, while hard mazes preserve maximum dead ends.
+      </p>
+
+      <h2 class="text-xl font-bold text-slate-800 mt-8 mb-3">For Teachers & Parents</h2>
+      <p class="text-slate-600">
+        Our mazes are designed to be clean and printer-friendly. Simply click "Print Maze" on any maze
+        page to get a clean version optimized for paper. All mazes are free to use for educational purposes.
+      </p>
+    </div>
+
+    <div class="mt-10">
+      <h2 class="text-xl font-bold text-slate-800 mb-4">Browse Mazes</h2>
+      <CategoryNav />
+    </div>
+  </div>
+</BaseLayout>
