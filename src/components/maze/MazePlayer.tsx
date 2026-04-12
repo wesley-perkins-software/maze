@@ -11,6 +11,7 @@ import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
+import { DPad } from './DPad';
 
 export interface MazePlayerProps {
   maze: MazeData;
@@ -70,7 +71,7 @@ export function MazePlayer({ maze }: MazePlayerProps) {
         <div className="flex items-center gap-3">
           {/* Status */}
           {state.status === 'idle' && (
-            <span className="text-sm text-slate-500">Use arrow keys or swipe to start</span>
+            <span className="text-sm text-slate-500">Use arrow keys, swipe, or tap controls to start</span>
           )}
           {state.status === 'playing' && (
             <div className="flex items-center gap-2 text-slate-600 text-sm">
@@ -149,9 +150,12 @@ export function MazePlayer({ maze }: MazePlayerProps) {
         )}
       </div>
 
+      {/* D-pad (mobile only) */}
+      <DPad dispatch={dispatch} isActive={isActive} />
+
       {/* Mobile hint */}
       <p className="text-xs text-slate-400 text-center md:hidden" aria-hidden="true">
-        Swipe to move • Tap buttons above for help
+        Tap controls or swipe to move
       </p>
       <p className="text-xs text-slate-400 text-center hidden md:block" aria-hidden="true">
         Arrow keys or WASD to move
