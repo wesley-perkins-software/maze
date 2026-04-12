@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import FeatureMazes from '../components/home/FeatureMazes.astro';
+import HowToPlay from '../components/home/HowToPlay.astro';
+import CategoryNav from '../components/nav/CategoryNav.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const websiteSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'MazeThis',
+  url: siteUrl,
+  description: 'Free maze generator and printable maze library. Hundreds of mazes for kids and adults.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${siteUrl}/maze-generator`,
+    'query-input': 'required name=search_term_string',
+  },
+});
+---
+
+<BaseLayout
+  title="Free Maze Generator & Printable Mazes | MazeThis"
+  description="Generate custom mazes online free. Print easy, medium, and hard mazes for kids and adults. Play mazes in your browser with arrow keys. 420+ free printable mazes."
+  schemaLD={websiteSchema}
+>
+  <Hero />
+
+  <!-- Category grid -->
+  <section class="py-12" aria-labelledby="categories-heading">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 id="categories-heading" class="text-2xl font-bold text-slate-800 mb-6 text-center">
+        Browse by Difficulty
+      </h2>
+      <CategoryNav />
+    </div>
+  </section>
+
+  <FeatureMazes />
+  <HowToPlay />
+
+  <!-- Generator CTA banner -->
+  <section class="py-12 bg-blue-600">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">
+        Create Your Own Maze
+      </h2>
+      <p class="text-blue-100 mb-6">
+        Customize size, difficulty, and generate an unlimited number of unique mazes.
+        Download as SVG or print directly from your browser.
+      </p>
+      <a href="/maze-generator" class="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-blue-700 shadow hover:bg-blue-50 transition-colors">
+        Open Maze Generator
+      </a>
+    </div>
+  </section>
+</BaseLayout>

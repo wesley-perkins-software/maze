@@ -1,0 +1,53 @@
+/**
+ * Maze Solver — BFS shortest path from entry to exit.
+ * Pure function, no side effects.
+ * Returns an array of flat cell indices representing the solution path.
+ */
+import type { MazeData } from '../../types/maze';
+import { pointToIndex, getPassages } from './utils';
+
+export function solveMaze(maze: MazeData): number[] {
+  const { width, height, grid, entry, exit } = maze;
+  const total = width * height;
+
+  const startIdx = pointToIndex(entry, width);
+  const exitIdx  = pointToIndex(exit,  width);
+
+  if (startIdx === exitIdx) return [startIdx];
+
+  const prev = new Int32Array(total).fill(-1);
+  const visited = new Uint8Array(total);
+  const queue: number[] = [startIdx];
+  visited[startIdx] = 1;
+
+  while (queue.length > 0) {
+    const idx = queue.shift()!;
+    if (idx === exitIdx) break;
+
+    const { x, y } = { x: idx % width, y: Math.floor(idx / width) };
+    const passages = getPassages(grid, { x, y }, width, height);
+
+    for (const neighbor of passages) {
+      const ni = pointToIndex(neighbor, width);
+      if (visited[ni]) continue;
+      visited[ni] = 1;
+      prev[ni] = idx;
+      queue.push(ni);
+    }
+  }
+
+  // Reconstruct path
+  if (prev[exitIdx] === -1 && startIdx !== exitIdx) {
+    // No solution found (should never happen for a perfect maze)
+    return [];
+  }
+
+  const path: number[] = [];
+  let cur = exitIdx;
+  while (cur !== -1) {
+    path.unshift(cur);
+    cur = prev[cur];
+  }
+
+  return path;
+}

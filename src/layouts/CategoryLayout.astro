@@ -1,0 +1,55 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../components/nav/Breadcrumb.astro';
+import CategoryNav from '../components/nav/CategoryNav.astro';
+import type { CategoryInfo } from '../types/maze.js';
+
+export interface Props {
+  category: CategoryInfo;
+  schemaLD?: string;
+  totalCount: number;
+}
+
+const { category, schemaLD, totalCount } = Astro.props;
+---
+
+<BaseLayout
+  title={category.title}
+  description={category.description}
+  schemaLD={schemaLD}
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: category.label },
+    ]} />
+
+    <!-- Page header -->
+    <div class="mt-4 mb-8">
+      <h1 class="mb-2">{category.h1}</h1>
+      <p class="text-slate-500 text-lg">
+        {totalCount} free printable mazes — solve online or print for free.
+      </p>
+    </div>
+
+    <!-- Category nav -->
+    <div class="mb-8">
+      <CategoryNav activeDifficulty={category.difficulty} compact />
+    </div>
+
+    <!-- Maze grid -->
+    <slot />
+
+    <!-- Bottom CTA -->
+    <div class="mt-12 rounded-2xl bg-blue-50 border border-blue-100 p-8 text-center">
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Want a custom maze?</h2>
+      <p class="text-slate-600 mb-4">
+        Use our free maze generator to create mazes in any size and difficulty.
+      </p>
+      <a href="/maze-generator" class="btn-primary">
+        Open Maze Generator
+      </a>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,63 @@
+---
+import { CATEGORIES } from '../../types/maze.js';
+---
+
+<footer class="mt-16 border-t border-slate-200 bg-slate-50">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
+      <!-- Brand -->
+      <div class="col-span-2 md:col-span-1">
+        <a href="/" class="flex items-center gap-2 font-bold text-blue-600">
+          <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="28" height="28" rx="6" fill="#2563eb"/>
+            <path d="M4 4h7v4H4zM17 4h7v7h-4V8h-3zM4 12h3v4H4zM11 8h3v8h-3zM4 20h7v4H4zM14 16h7v4h-4v4h-3z" fill="white"/>
+          </svg>
+          MazeThis
+        </a>
+        <p class="mt-2 text-sm text-slate-500">
+          Free printable mazes and interactive maze games for all ages.
+        </p>
+      </div>
+
+      <!-- Maze Library -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700 mb-3">Maze Library</h3>
+        <ul class="space-y-2">
+          {CATEGORIES.map((cat) => (
+            <li>
+              <a href={`/${cat.slug}`} class="text-sm text-slate-500 hover:text-blue-600 transition-colors">
+                {cat.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Tools -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700 mb-3">Tools</h3>
+        <ul class="space-y-2">
+          <li><a href="/maze-generator" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">Maze Generator</a></li>
+          <li><a href="/easy-mazes" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">Printable Mazes</a></li>
+        </ul>
+      </div>
+
+      <!-- About -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-700 mb-3">Info</h3>
+        <ul class="space-y-2">
+          <li><a href="/about" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">About</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-8 border-t border-slate-200 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <p class="text-xs text-slate-400">
+        &copy; {new Date().getFullYear()} MazeThis. All mazes are free to print and use.
+      </p>
+      <p class="text-xs text-slate-400">
+        Made with ♥ for maze enthusiasts everywhere.
+      </p>
+    </div>
+  </div>
+</footer>
