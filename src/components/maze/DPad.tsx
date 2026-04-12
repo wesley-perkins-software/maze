@@ -1,4 +1,3 @@
-import { useRef, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { GameAction, Direction } from '../../lib/gameplay/types';
 
@@ -6,9 +5,6 @@ interface DPadProps {
   dispatch: (action: GameAction) => void;
   isActive: boolean;
 }
-
-const INITIAL_DELAY_MS = 400;
-const REPEAT_INTERVAL_MS = 120;
 
 function ChevronUp() {
   return (
@@ -40,28 +36,6 @@ function ChevronRight() {
 }
 
 export function DPad({ dispatch, isActive }: DPadProps) {
-  const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const holdIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  // Tracks whether the hold interval has fired at least once this press
-  const holdDidFireRef = useRef(false);
-  // Tracks whether onPointerDown ran (so onClick can skip if it did)
-  const pointerDownFiredRef = useRef(false);
-
-  const clearHold = useCallback(() => {
-    if (holdTimeoutRef.current !== null) {
-      clearTimeout(holdTimeoutRef.current);
-      holdTimeoutRef.current = null;
-    }
-    if (holdIntervalRef.current !== null) {
-      clearInterval(holdIntervalRef.current);
-      holdIntervalRef.current = null;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isActive) clearHold();
-  }, [isActive, clearHold]);
-
   if (!isActive) return null;
 
   const btnClass =
@@ -76,33 +50,7 @@ export function DPad({ dispatch, isActive }: DPadProps) {
       <button
         aria-label={label}
         className={btnClass}
-        onPointerDown={() => {
-          // Mark that pointer down fired so onClick knows not to double-dispatch
-          pointerDownFiredRef.current = true;
-          holdDidFireRef.current = false;
-          // Dispatch immediately for snappy feel
-          dispatch({ type: 'MOVE', direction: dir });
-          // Start hold-to-repeat after initial delay
-          holdTimeoutRef.current = setTimeout(() => {
-            holdIntervalRef.current = setInterval(() => {
-              holdDidFireRef.current = true;
-              dispatch({ type: 'MOVE', direction: dir });
-            }, REPEAT_INTERVAL_MS);
-          }, INITIAL_DELAY_MS);
-        }}
-        onPointerUp={clearHold}
-        onPointerLeave={clearHold}
-        onPointerCancel={clearHold}
-        onClick={() => {
-          // Fallback for browsers where onPointerDown doesn't fire reliably.
-          // Also guards against double-dispatch when both events fire normally.
-          const wasPointerDown = pointerDownFiredRef.current;
-          pointerDownFiredRef.current = false;
-          if (!wasPointerDown && !holdDidFireRef.current) {
-            dispatch({ type: 'MOVE', direction: dir });
-          }
-          holdDidFireRef.current = false;
-        }}
+        onPointerDown={() => dispatch({ type: 'RUN', direction: dir })}
       >
         {icon}
       </button>

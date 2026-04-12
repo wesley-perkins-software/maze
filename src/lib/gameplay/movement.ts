@@ -45,3 +45,36 @@ export function applyMove(from: Point, direction: Direction): Point {
   const { dx, dy } = DIR_DELTA[direction];
   return { x: from.x + dx, y: from.y + dy };
 }
+
+const REVERSE_DIR: Record<Direction, Direction> = { N: 'S', S: 'N', E: 'W', W: 'E' };
+const ALL_DIRS: Direction[] = ['N', 'E', 'S', 'W'];
+
+/**
+ * Walks from `startPos` in `direction` until hitting a wall or a junction
+ * (a cell where any perpendicular direction is open, giving the player a
+ * choice). The exit cell always terminates the run.
+ *
+ * Returns the ordered list of cells entered (not including startPos).
+ * An empty array means the path is immediately blocked.
+ */
+export function computeRun(maze: MazeData, startPos: Point, direction: Direction): Point[] {
+  const back = REVERSE_DIR[direction];
+  const path: Point[] = [];
+  let pos = startPos;
+
+  while (canMove(maze, pos, direction)) {
+    pos = applyMove(pos, direction);
+    path.push({ ...pos });
+
+    // Always stop at the exit
+    if (pos.x === maze.exit.x && pos.y === maze.exit.y) break;
+
+    // Stop at a junction: any direction other than forward and back is open
+    const isJunction = ALL_DIRS
+      .filter(d => d !== direction && d !== back)
+      .some(d => canMove(maze, pos, d));
+    if (isJunction) break;
+  }
+
+  return path;
+}

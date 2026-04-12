@@ -76,7 +76,7 @@ export function useTouchInput(
         dir = dy > 0 ? 'S' : 'N';
       }
 
-      dispatch({ type: 'MOVE', direction: dir });
+      dispatch({ type: 'RUN', direction: dir });
     }
 
     el.addEventListener('touchstart', onTouchStart, { passive: true });

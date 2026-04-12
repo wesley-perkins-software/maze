@@ -1,6 +1,6 @@
 import type { MazeData } from '../../types/maze';
 import { pointToIndex } from '../maze/utils';
-import { canMove, applyMove } from './movement';
+import { canMove, applyMove, computeRun } from './movement';
 import type { GameState, GameAction } from './types';
 
 export function createInitialState(maze: MazeData): GameState {
@@ -35,6 +35,27 @@ export function gameReducer(
         status: isSolved ? 'solved' : 'playing',
         playerPosition: newPos,
         trail: [...state.trail, newIdx],
+        startTime: state.startTime ?? now,
+        elapsedMs: state.startTime ? now - state.startTime : 0,
+      };
+    }
+
+    case 'RUN': {
+      if (state.status === 'solved') return state;
+
+      const path = computeRun(maze, state.playerPosition, action.direction);
+      if (path.length === 0) return state;
+
+      const finalPos = path[path.length - 1];
+      const newIndices = path.map(p => pointToIndex(p, maze.width));
+      const isSolved = finalPos.x === maze.exit.x && finalPos.y === maze.exit.y;
+      const now = Date.now();
+
+      return {
+        ...state,
+        status: isSolved ? 'solved' : 'playing',
+        playerPosition: finalPos,
+        trail: [...state.trail, ...newIndices],
         startTime: state.startTime ?? now,
         elapsedMs: state.startTime ? now - state.startTime : 0,
       };
