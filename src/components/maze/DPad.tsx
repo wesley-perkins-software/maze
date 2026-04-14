@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type TouchEvent } from 'react';
 import type { GameAction, Direction } from '../../lib/gameplay/types';
 
 interface DPadProps {
@@ -36,21 +36,95 @@ function ChevronRight() {
 }
 
 export function DPad({ dispatch, isActive }: DPadProps) {
+  const [activeDirection, setActiveDirection] = useState<Direction | null>(null);
+  const lastDirectionRef = useRef<Direction | null>(null);
+  const touchActiveRef = useRef(false);
+
   if (!isActive) return null;
 
-  const btnClass =
+  const baseBtnClass =
     'flex items-center justify-center w-16 h-16 rounded-2xl ' +
-    'bg-white border border-slate-200 text-slate-500 shadow-sm ' +
-    'select-none touch-manipulation ' +
-    'active:bg-blue-50 active:border-blue-300 active:text-blue-600 active:scale-95 active:shadow-none ' +
+    'bg-white border border-slate-300 text-slate-500 shadow-sm ' +
+    'select-none touch-none ' +
     'transition-all duration-75 cursor-pointer';
 
+  function dispatchDirection(direction: Direction | null) {
+    if (!direction || direction === lastDirectionRef.current) return;
+
+    lastDirectionRef.current = direction;
+    setActiveDirection(direction);
+    dispatch({ type: 'RUN', direction });
+  }
+
+  function clearInteraction() {
+    touchActiveRef.current = false;
+    lastDirectionRef.current = null;
+    setActiveDirection(null);
+  }
+
+  function getDirectionAtPoint(clientX: number, clientY: number): Direction | null {
+    const target = document.elementFromPoint(clientX, clientY);
+    if (!(target instanceof HTMLElement)) return null;
+
+    const button = target.closest<HTMLButtonElement>('button[data-dir]');
+    const direction = button?.dataset.dir as Direction | undefined;
+
+    if (!direction || !['N', 'E', 'S', 'W'].includes(direction)) return null;
+    return direction;
+  }
+
+  function handleTouchStart(e: TouchEvent<HTMLButtonElement>, direction: Direction) {
+    e.preventDefault();
+    touchActiveRef.current = true;
+    dispatchDirection(direction);
+  }
+
+  useEffect(() => {
+    function onTouchMove(e: TouchEvent) {
+      if (!touchActiveRef.current) return;
+      e.preventDefault();
+
+      const touch = e.touches[0];
+      if (!touch) return;
+
+      dispatchDirection(getDirectionAtPoint(touch.clientX, touch.clientY));
+    }
+
+    function onTouchEnd() {
+      if (!touchActiveRef.current) return;
+      clearInteraction();
+    }
+
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
+    };
+  });
+
+  function handleMouseDown(direction: Direction) {
+    dispatchDirection(direction);
+  }
+
   function makeButton(dir: Direction, icon: ReactNode, label: string) {
+    const isPressed = activeDirection === dir;
+
     return (
       <button
+        type="button"
         aria-label={label}
-        className={btnClass}
-        onPointerDown={() => dispatch({ type: 'RUN', direction: dir })}
+        data-dir={dir}
+        className={`${baseBtnClass} ${
+          isPressed
+            ? 'bg-blue-100 border-blue-500 text-blue-700 shadow-md scale-95'
+            : 'active:bg-blue-50 active:border-blue-300 active:text-blue-600 active:scale-95 active:shadow-none'
+        }`}
+        onMouseDown={() => handleMouseDown(dir)}
+        onTouchStart={(e) => handleTouchStart(e, dir)}
       >
         {icon}
       </button>
@@ -59,14 +133,14 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   return (
     <div
-      className="md:hidden flex flex-col items-center gap-2"
+      className="md:hidden flex flex-col items-center gap-2 touch-none"
       role="group"
       aria-label="Directional controls"
     >
       <div>{makeButton('N', <ChevronUp />, 'Move up')}</div>
       <div className="flex gap-2">
         {makeButton('W', <ChevronLeft />, 'Move left')}
-        <div className="w-16 h-16" />
+        <div className="w-16 h-16" aria-hidden="true" />
         {makeButton('E', <ChevronRight />, 'Move right')}
       </div>
       <div>{makeButton('S', <ChevronDown />, 'Move down')}</div>
