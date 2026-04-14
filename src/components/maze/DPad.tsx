@@ -69,27 +69,20 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   function onButtonPointerDown(e: PointerEvent<HTMLButtonElement>) {
     e.preventDefault();
-    e.currentTarget.setPointerCapture(e.pointerId);
     activePointerIdRef.current = e.pointerId;
 
     const direction = e.currentTarget.dataset.dir as Direction | undefined;
-    if (direction) {
-      dispatchDirection(direction);
-    }
+    if (direction) dispatchDirection(direction);
   }
 
-  function onButtonPointerMove(e: PointerEvent<HTMLButtonElement>) {
+  function onContainerPointerMove(e: PointerEvent<HTMLDivElement>) {
     if (activePointerIdRef.current !== e.pointerId) return;
     e.preventDefault();
     dispatchDirection(getDirectionAtPoint(e.clientX, e.clientY));
   }
 
-  function onButtonPointerEnd(e: PointerEvent<HTMLButtonElement>) {
+  function onContainerPointerEnd(e: PointerEvent<HTMLDivElement>) {
     if (activePointerIdRef.current !== e.pointerId) return;
-
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
 
     activePointerIdRef.current = null;
     lastDirectionRef.current = null;
@@ -101,6 +94,7 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
     return (
       <button
+        type="button"
         aria-label={label}
         data-dir={dir}
         className={`${baseBtnClass} ${
@@ -109,9 +103,6 @@ export function DPad({ dispatch, isActive }: DPadProps) {
             : 'active:bg-blue-50 active:border-blue-300 active:text-blue-600'
         }`}
         onPointerDown={onButtonPointerDown}
-        onPointerMove={onButtonPointerMove}
-        onPointerUp={onButtonPointerEnd}
-        onPointerCancel={onButtonPointerEnd}
       >
         {icon}
       </button>
@@ -123,6 +114,10 @@ export function DPad({ dispatch, isActive }: DPadProps) {
       className="md:hidden flex flex-col items-center gap-2 touch-none"
       role="group"
       aria-label="Directional controls"
+      onPointerMove={onContainerPointerMove}
+      onPointerUp={onContainerPointerEnd}
+      onPointerCancel={onContainerPointerEnd}
+      onPointerLeave={onContainerPointerEnd}
     >
       <div>{makeButton('N', <ChevronUp />, 'Move up')}</div>
       <div className="flex gap-2">
