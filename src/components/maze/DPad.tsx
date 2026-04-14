@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useRef, useState, type PointerEvent, type ReactNode } from 'react';
 import type { GameAction, Direction } from '../../lib/gameplay/types';
 
 interface DPadProps {
@@ -36,21 +36,82 @@ function ChevronRight() {
 }
 
 export function DPad({ dispatch, isActive }: DPadProps) {
+  const activePointerIdRef = useRef<number | null>(null);
+  const lastDirectionRef = useRef<Direction | null>(null);
+  const [activeDirection, setActiveDirection] = useState<Direction | null>(null);
+
   if (!isActive) return null;
 
-  const btnClass =
+  const baseBtnClass =
     'flex items-center justify-center w-16 h-16 rounded-2xl ' +
     'bg-white border border-slate-200 text-slate-500 shadow-sm ' +
-    'select-none touch-manipulation ' +
-    'active:bg-blue-50 active:border-blue-300 active:text-blue-600 active:scale-95 active:shadow-none ' +
+    'select-none touch-none ' +
+    'active:scale-95 active:shadow-none ' +
     'transition-all duration-75 cursor-pointer';
 
+  function dispatchDirection(direction: Direction | null) {
+    if (!direction || direction === lastDirectionRef.current) return;
+    lastDirectionRef.current = direction;
+    setActiveDirection(direction);
+    dispatch({ type: 'RUN', direction });
+  }
+
+  function getDirectionAtPoint(clientX: number, clientY: number): Direction | null {
+    const target = document.elementFromPoint(clientX, clientY);
+    if (!(target instanceof HTMLElement)) return null;
+
+    const button = target.closest<HTMLButtonElement>('button[data-dir]');
+    const direction = button?.dataset.dir as Direction | undefined;
+
+    if (!direction || !['N', 'E', 'S', 'W'].includes(direction)) return null;
+    return direction;
+  }
+
+  function onButtonPointerDown(e: PointerEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    activePointerIdRef.current = e.pointerId;
+
+    const direction = e.currentTarget.dataset.dir as Direction | undefined;
+    if (direction) {
+      dispatchDirection(direction);
+    }
+  }
+
+  function onButtonPointerMove(e: PointerEvent<HTMLButtonElement>) {
+    if (activePointerIdRef.current !== e.pointerId) return;
+    e.preventDefault();
+    dispatchDirection(getDirectionAtPoint(e.clientX, e.clientY));
+  }
+
+  function onButtonPointerEnd(e: PointerEvent<HTMLButtonElement>) {
+    if (activePointerIdRef.current !== e.pointerId) return;
+
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+
+    activePointerIdRef.current = null;
+    lastDirectionRef.current = null;
+    setActiveDirection(null);
+  }
+
   function makeButton(dir: Direction, icon: ReactNode, label: string) {
+    const isPressed = activeDirection === dir;
+
     return (
       <button
         aria-label={label}
-        className={btnClass}
-        onPointerDown={() => dispatch({ type: 'RUN', direction: dir })}
+        data-dir={dir}
+        className={`${baseBtnClass} ${
+          isPressed
+            ? 'bg-blue-50 border-blue-300 text-blue-600'
+            : 'active:bg-blue-50 active:border-blue-300 active:text-blue-600'
+        }`}
+        onPointerDown={onButtonPointerDown}
+        onPointerMove={onButtonPointerMove}
+        onPointerUp={onButtonPointerEnd}
+        onPointerCancel={onButtonPointerEnd}
       >
         {icon}
       </button>
@@ -59,14 +120,14 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   return (
     <div
-      className="md:hidden flex flex-col items-center gap-2"
+      className="md:hidden flex flex-col items-center gap-2 touch-none"
       role="group"
       aria-label="Directional controls"
     >
       <div>{makeButton('N', <ChevronUp />, 'Move up')}</div>
       <div className="flex gap-2">
         {makeButton('W', <ChevronLeft />, 'Move left')}
-        <div className="w-16 h-16" />
+        <div className="w-16 h-16" aria-hidden="true" />
         {makeButton('E', <ChevronRight />, 'Move right')}
       </div>
       <div>{makeButton('S', <ChevronDown />, 'Move down')}</div>
