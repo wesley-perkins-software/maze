@@ -1,9 +1,7 @@
 /**
  * MazePlayer — Interactive gameplay island.
- * Wraps MazeRenderer with full game state, keyboard/touch input,
- * timer, solution toggle, and solved modal.
- *
- * Maze data is passed as props from Astro at build time — no runtime fetch.
+ * Features: keyboard/touch/D-pad input, timer with pause, hint system,
+ * personal best tracking (localStorage), solution toggle, solved modal.
  */
 import { useReducer, useEffect, useRef, useCallback } from 'react';
 import type { MazeData } from '../../types/maze';
@@ -12,23 +10,53 @@ import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
+import { indexToPoint } from '../../lib/maze/utils';
 
 export interface MazePlayerProps {
   maze: MazeData;
 }
 
+const HINT_LOOKAHEAD = 6;
+const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
+
+function getPersonalBest(slug: string): number | null {
+  try {
+    const raw = localStorage.getItem(PERSONAL_BEST_KEY(slug));
+    return raw ? parseInt(raw, 10) : null;
+  } catch {
+    return null;
+  }
+}
+
+function savePersonalBest(slug: string, ms: number) {
+  try {
+    const prev = getPersonalBest(slug);
+    if (prev === null || ms < prev) {
+      localStorage.setItem(PERSONAL_BEST_KEY(slug), String(ms));
+      return true;
+    }
+  } catch {/* ignore */}
+  return false;
+}
+
+function formatTime(ms: number) {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return m > 0 ? `${m}m ${rem}s` : `${s}s`;
+}
+
 export function MazePlayer({ maze }: MazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
+  const isNewBestRef = useRef(false);
 
-  const [state, rawDispatch] = useReducer(
+  const [state, dispatch] = useReducer(
     (s: ReturnType<typeof createInitialState>, a: Parameters<typeof gameReducer>[1]) =>
       gameReducer(s, a, maze),
     maze,
     createInitialState,
   );
-
-  const dispatch = rawDispatch;
 
   // ── Timer tick ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -39,6 +67,13 @@ export function MazePlayer({ maze }: MazePlayerProps) {
     return () => clearInterval(interval);
   }, [state.status, state.startTime]);
 
+  // ── Personal best on solve ────────────────────────────────────────────────────
+  useEffect(() => {
+    if (state.status === 'solved' && maze.slug) {
+      isNewBestRef.current = savePersonalBest(maze.slug, state.elapsedMs);
+    }
+  }, [state.status]);
+
   // ── Announce completion ──────────────────────────────────────────────────────
   useEffect(() => {
     if (state.status === 'solved' && announcerRef.current) {
@@ -48,12 +83,38 @@ export function MazePlayer({ maze }: MazePlayerProps) {
   }, [state.status]);
 
   // ── Input handlers ───────────────────────────────────────────────────────────
-  const isActive = state.status !== 'solved';
+  const isActive = state.status === 'playing' || state.status === 'idle';
   useKeyboardInput(dispatch, isActive);
   useTouchInput(svgRef, dispatch, isActive);
 
-  // Determine cell size based on maze dimensions
+  // ── Hint computation ─────────────────────────────────────────────────────────
+  const handleHint = useCallback(() => {
+    const { solution } = maze;
+    if (!solution.length) return;
+
+    const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
+    const posInSolution = solution.indexOf(currentIdx);
+
+    let startIdx: number;
+    if (posInSolution !== -1) {
+      startIdx = posInSolution + 1;
+    } else {
+      startIdx = 0;
+    }
+
+    const hintSlice = solution.slice(startIdx, startIdx + HINT_LOOKAHEAD);
+    if (hintSlice.length === 0) return;
+
+    dispatch({ type: 'USE_HINT', cells: hintSlice });
+
+    // Auto-clear hint after 3 seconds
+    setTimeout(() => {
+      dispatch({ type: 'USE_HINT', cells: [] });
+    }, 3000);
+  }, [maze, state.playerPosition]);
+
   const cellSize = Math.max(16, Math.min(32, Math.floor(480 / Math.max(maze.width, maze.height))));
+  const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -67,9 +128,8 @@ export function MazePlayer({ maze }: MazePlayerProps) {
       />
 
       {/* Controls bar */}
-      <div className="flex items-center justify-between w-full max-w-lg gap-3 px-1">
+      <div className="flex items-center justify-between w-full max-w-lg gap-3 px-1 flex-wrap">
         <div className="flex items-center gap-3">
-          {/* Status */}
           {state.status === 'idle' && (
             <span className="text-sm text-slate-500">Use arrow keys, swipe, or tap controls to start</span>
           )}
@@ -82,14 +142,39 @@ export function MazePlayer({ maze }: MazePlayerProps) {
               <Timer elapsedMs={state.elapsedMs} />
             </div>
           )}
+          {state.status === 'paused' && (
+            <span className="text-sm font-medium text-amber-600">⏸ Paused</span>
+          )}
           {state.status === 'solved' && (
             <span className="text-sm font-semibold text-green-600">
-              ✓ Solved in {Math.floor(state.elapsedMs / 1000)}s!
+              ✓ Solved in {formatTime(state.elapsedMs)}!
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {/* Hint button */}
+          {state.status !== 'solved' && (
+            <button
+              onClick={handleHint}
+              className="text-xs px-3 py-1.5 rounded-md border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 font-medium transition-colors"
+              title="Reveal the next few steps of the solution for 3 seconds"
+            >
+              {state.hintsUsed > 0 ? `Hint (${state.hintsUsed})` : 'Hint'}
+            </button>
+          )}
+
+          {/* Pause/Resume */}
+          {(state.status === 'playing' || state.status === 'paused') && (
+            <button
+              onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
+              className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
+              aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
+            >
+              {state.status === 'playing' ? '⏸' : '▶'}
+            </button>
+          )}
+
           {/* Solution toggle */}
           <button
             onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
@@ -114,6 +199,13 @@ export function MazePlayer({ maze }: MazePlayerProps) {
         </div>
       </div>
 
+      {/* Personal best display */}
+      {personalBest !== null && state.status !== 'solved' && (
+        <div className="text-xs text-slate-400 w-full max-w-lg px-1">
+          Personal best: <span className="font-medium text-slate-500">{formatTime(personalBest)}</span>
+        </div>
+      )}
+
       {/* Maze SVG */}
       <div
         className="relative rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden touch-none"
@@ -122,25 +214,52 @@ export function MazePlayer({ maze }: MazePlayerProps) {
         <MazeRenderer
           maze={maze}
           cellSize={cellSize}
-          playerPosition={state.playerPosition}
+          playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
           trail={state.trail}
           solution={maze.solution}
           showSolution={state.solutionVisible}
+          hintCells={state.hintCells}
           interactive={isActive}
           svgRef={svgRef}
         />
 
+        {/* Paused overlay */}
+        {state.status === 'paused' && (
+          <div className="absolute inset-0 bg-white/85 flex flex-col items-center justify-center gap-3 rounded-xl">
+            <div className="text-4xl" aria-hidden="true">⏸</div>
+            <p className="text-slate-700 font-semibold">Paused</p>
+            <button
+              onClick={() => dispatch({ type: 'RESUME' })}
+              className="mt-1 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+              autoFocus
+            >
+              Resume
+            </button>
+          </div>
+        )}
+
         {/* Solved overlay */}
         {state.status === 'solved' && (
-          <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-3 rounded-xl">
+          <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-3 rounded-xl p-4">
             <div className="text-4xl" aria-hidden="true">🎉</div>
             <h3 className="text-xl font-bold text-slate-800">Maze Solved!</h3>
-            <p className="text-slate-600 text-sm">
-              Time: {Math.floor(state.elapsedMs / 1000)} seconds
+            <p className="text-slate-600 text-sm text-center">
+              Time: <strong>{formatTime(state.elapsedMs)}</strong>
               {state.trail.length > 0 && ` · ${state.trail.length} steps`}
+              {state.hintsUsed > 0 && ` · ${state.hintsUsed} hint${state.hintsUsed > 1 ? 's' : ''}`}
             </p>
+            {isNewBestRef.current && (
+              <p className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-1">
+                ★ New personal best!
+              </p>
+            )}
+            {personalBest !== null && !isNewBestRef.current && (
+              <p className="text-xs text-slate-400">
+                Personal best: {formatTime(personalBest)}
+              </p>
+            )}
             <button
-              onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}
+              onClick={() => { isNewBestRef.current = false; dispatch({ type: 'RESET', startPosition: maze.entry }); }}
               className="mt-2 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
               autoFocus
             >
@@ -153,7 +272,6 @@ export function MazePlayer({ maze }: MazePlayerProps) {
       {/* D-pad (mobile only) */}
       <DPad dispatch={dispatch} isActive={isActive} />
 
-      {/* Mobile hint */}
       <p className="text-xs text-slate-400 text-center md:hidden" aria-hidden="true">
         Tap controls or swipe to move
       </p>

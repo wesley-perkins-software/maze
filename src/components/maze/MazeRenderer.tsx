@@ -16,6 +16,7 @@ export interface MazeRendererProps {
   trail?: number[];           // flat indices of visited cells
   solution?: number[];        // flat indices of solution path
   showSolution?: boolean;
+  hintCells?: number[];       // flat indices of hint-highlighted cells
   className?: string;
   interactive?: boolean;      // adds keyboard/touch affordances
   svgRef?: React.RefObject<SVGSVGElement>;
@@ -31,6 +32,7 @@ export function MazeRenderer({
   trail = [],
   solution = [],
   showSolution = false,
+  hintCells = [],
   className,
   interactive = false,
   svgRef,
@@ -111,6 +113,21 @@ export function MazeRenderer({
 
       {/* Background */}
       <rect width={totalW} height={totalH} fill="white" />
+
+      {/* Hint highlight circles */}
+      {hintCells.map((idx) => {
+        const { x, y } = indexToPoint(idx, width);
+        return (
+          <circle
+            key={`hint-${idx}`}
+            cx={padding + x * cellSize + cellSize / 2}
+            cy={padding + y * cellSize + cellSize / 2}
+            r={cellSize * 0.28}
+            fill="#f59e0b"
+            opacity={0.45}
+          />
+        );
+      })}
 
       {/* Solution overlay */}
       {solutionPoints && (

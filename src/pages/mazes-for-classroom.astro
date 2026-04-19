@@ -1,0 +1,171 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/nav/Breadcrumb.astro';
+import MazeCard from '../components/ui/MazeCard.astro';
+import { getMazesByDifficulty } from '../lib/catalog/index.js';
+
+const kidsMazes = getMazesByDifficulty('kids').slice(0, 10);
+const easyMazes = getMazesByDifficulty('easy').slice(0, 10);
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const schemaLD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Free Classroom Mazes for Teachers',
+  description: 'Free printable maze worksheets for teachers and homeschool parents. Age-appropriate mazes for K–8, fine motor practice, math enrichment, and more.',
+  url: `${siteUrl}/mazes-for-classroom`,
+  audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' },
+  publisher: { '@type': 'Organization', name: 'MazeThis', url: siteUrl },
+});
+---
+
+<BaseLayout
+  title="Free Classroom Maze Worksheets for Teachers | MazeThis"
+  description="Free printable maze worksheets for K–8 classrooms and homeschool. Use for warm-ups, fine motor practice, math enrichment, and end-of-week activities. No account needed."
+  schemaLD={schemaLD}
+>
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10">
+    <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Mazes for Classrooms' }]} />
+
+    <div class="mt-4 mb-8">
+      <h1 class="mb-3">Free Classroom Mazes for Teachers</h1>
+      <p class="text-slate-500 text-lg max-w-3xl">
+        Printable maze worksheets for K–8 teachers and homeschool parents.
+        Every maze prints cleanly on a single page — no ads, no account, no limits.
+      </p>
+    </div>
+
+    <!-- Value props for teachers -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
+      {[
+        {
+          icon: '✅',
+          title: 'No prep required',
+          body: 'Print and distribute. No instructions needed — students understand mazes immediately.',
+        },
+        {
+          icon: '🎓',
+          title: 'Educationally defensible',
+          body: 'Builds spatial reasoning, fine motor skills, problem-solving, and sustained attention.',
+        },
+        {
+          icon: '🔄',
+          title: 'Differentiation built in',
+          body: 'Five difficulty levels let you give each student a challenge calibrated to their ability.',
+        },
+      ].map(({ icon, title, body }) => (
+        <div class="rounded-xl border border-slate-200 bg-white p-5">
+          <div class="text-2xl mb-2" aria-hidden="true">{icon}</div>
+          <h3 class="font-semibold text-slate-800 mb-1">{title}</h3>
+          <p class="text-sm text-slate-500">{body}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- How to use section -->
+    <section class="mb-12 rounded-xl bg-slate-50 border border-slate-200 p-6">
+      <h2 class="text-xl font-bold text-slate-800 mb-4">How Teachers Use MazeThis</h2>
+      <div class="grid sm:grid-cols-2 gap-6">
+        {[
+          {
+            title: 'Morning warm-ups',
+            desc: 'Place a maze face-down on each desk before students arrive. When they enter, they flip it over and start. By the time the last student is seated, the class is already focused.',
+          },
+          {
+            title: 'Fine motor practice (K–2)',
+            desc: 'Tracing maze corridors with pencil or crayon builds the controlled movements needed for handwriting. Use large-corridor kids mazes for ages 4–6.',
+          },
+          {
+            title: 'Math enrichment',
+            desc: 'Ask students to count dead ends, estimate solution length, or describe cell positions using coordinate pairs. Mazes are rich mathematical objects.',
+          },
+          {
+            title: 'End-of-week reward',
+            desc: 'Keep a folder of mazes at different difficulties. Let students self-select their challenge level. This builds metacognitive awareness and gives students a genuine choice.',
+          },
+        ].map(({ title, desc }) => (
+          <div class="flex gap-3">
+            <div class="mt-1 w-2 h-2 rounded-full bg-blue-500 shrink-0"></div>
+            <div>
+              <p class="font-semibold text-slate-700 text-sm">{title}</p>
+              <p class="text-sm text-slate-500 mt-0.5">{desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="mt-5 pt-5 border-t border-slate-200">
+        <a href="/blog/how-to-use-mazes-in-the-classroom" class="text-sm font-medium text-blue-600 hover:underline">
+          Read the full teacher's guide →
+        </a>
+      </div>
+    </section>
+
+    <!-- Grade-level recommendations -->
+    <section class="mb-12">
+      <h2 class="text-xl font-bold text-slate-800 mb-4">Recommended by Grade Level</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-slate-50">
+              <th class="text-left px-4 py-3 text-slate-700 font-semibold border border-slate-200">Grade</th>
+              <th class="text-left px-4 py-3 text-slate-700 font-semibold border border-slate-200">Maze Size</th>
+              <th class="text-left px-4 py-3 text-slate-700 font-semibold border border-slate-200">Difficulty</th>
+              <th class="text-left px-4 py-3 text-slate-700 font-semibold border border-slate-200">Best Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['Pre-K / K', '5×5', 'Kids', 'Fine motor, early problem-solving'],
+              ['Grade 1', '6×6–8×8', 'Kids / Easy', 'Transitions, focus practice'],
+              ['Grade 2–3', '8×8–10×10', 'Easy', 'Warm-ups, math enrichment'],
+              ['Grade 4–5', '10×10–12×12', 'Easy / Medium', 'Strategy discussions, challenge'],
+              ['Grade 6–8', '15×15+', 'Medium / Hard', 'Problem-solving, algorithm thinking'],
+            ].map(([grade, size, diff, use], i) => (
+              <tr class={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                <td class="px-4 py-3 text-slate-700 border border-slate-200 font-medium">{grade}</td>
+                <td class="px-4 py-3 text-slate-600 border border-slate-200">{size}</td>
+                <td class="px-4 py-3 text-slate-600 border border-slate-200">{diff}</td>
+                <td class="px-4 py-3 text-slate-500 border border-slate-200">{use}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Kids mazes -->
+    <section class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-slate-800">Kids Mazes (Pre-K–Grade 2)</h2>
+        <a href="/mazes-for-kids" class="text-sm font-medium text-blue-600 hover:underline">All 90 →</a>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        {kidsMazes.map((entry) => <MazeCard entry={entry} />)}
+      </div>
+    </section>
+
+    <!-- Easy mazes -->
+    <section class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-slate-800">Easy Mazes (Grades 2–5)</h2>
+        <a href="/easy-mazes" class="text-sm font-medium text-blue-600 hover:underline">All 90 →</a>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        {easyMazes.map((entry) => <MazeCard entry={entry} />)}
+      </div>
+    </section>
+
+    <!-- Generator CTA -->
+    <div class="mt-10 rounded-2xl bg-blue-600 p-8 text-center">
+      <h2 class="text-xl font-bold text-white mb-2">Need a Specific Size or Difficulty?</h2>
+      <p class="text-blue-100 mb-5 text-sm">
+        Use the maze generator to create exactly the maze you need — any size, any difficulty.
+        Generate and print in seconds.
+      </p>
+      <a href="/maze-generator" class="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition-colors">
+        Open Maze Generator
+      </a>
+    </div>
+  </div>
+</BaseLayout>

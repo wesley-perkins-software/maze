@@ -11,6 +11,8 @@ export function createInitialState(maze: MazeData): GameState {
     startTime: null,
     elapsedMs: 0,
     solutionVisible: false,
+    hintsUsed: 0,
+    hintCells: [],
   };
 }
 
@@ -21,7 +23,7 @@ export function gameReducer(
 ): GameState {
   switch (action.type) {
     case 'MOVE': {
-      if (state.status === 'solved') return state;
+      if (state.status === 'solved' || state.status === 'paused') return state;
 
       if (!canMove(maze, state.playerPosition, action.direction)) return state;
 
@@ -41,7 +43,7 @@ export function gameReducer(
     }
 
     case 'RUN': {
-      if (state.status === 'solved') return state;
+      if (state.status === 'solved' || state.status === 'paused') return state;
 
       const path = computeRun(maze, state.playerPosition, action.direction);
       if (path.length === 0) return state;
@@ -65,6 +67,21 @@ export function gameReducer(
       if (state.status !== 'playing' || state.startTime === null) return state;
       return { ...state, elapsedMs: action.elapsedMs };
     }
+
+    case 'PAUSE': {
+      if (state.status !== 'playing') return state;
+      return { ...state, status: 'paused' };
+    }
+
+    case 'RESUME': {
+      if (state.status !== 'paused') return state;
+      // Shift startTime so elapsed time doesn't jump when resuming
+      const newStart = Date.now() - state.elapsedMs;
+      return { ...state, status: 'playing', startTime: newStart };
+    }
+
+    case 'USE_HINT':
+      return { ...state, hintsUsed: state.hintsUsed + 1, hintCells: action.cells };
 
     case 'SHOW_SOLUTION':
       return { ...state, solutionVisible: true };
