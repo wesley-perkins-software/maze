@@ -4,6 +4,7 @@ import Hero from '../components/home/Hero.astro';
 import FeatureMazes from '../components/home/FeatureMazes.astro';
 import HowToPlay from '../components/home/HowToPlay.astro';
 import CategoryNav from '../components/nav/CategoryNav.astro';
+import DailyMaze from '../components/home/DailyMaze.astro';
 
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
 
@@ -19,12 +20,23 @@ const websiteSchema = JSON.stringify({
     'query-input': 'required name=search_term_string',
   },
 });
+
+const organizationSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'MazeThis',
+  url: siteUrl,
+  logo: `${siteUrl}/favicon.svg`,
+  description: 'Free printable mazes and interactive maze games for kids and adults. Generate custom mazes, print worksheets, or play online.',
+  foundingDate: '2024',
+  knowsAbout: ['maze puzzles', 'printable mazes', 'maze generation algorithms', 'brain games', 'educational puzzles'],
+});
 ---
 
 <BaseLayout
   title="Free Maze Generator & Printable Mazes | MazeThis"
   description="Generate custom mazes online free. Print easy, medium, and hard mazes for kids and adults. Play mazes in your browser with arrow keys. 420+ free printable mazes."
-  schemaLD={websiteSchema}
+  schemaLD={[websiteSchema, organizationSchema]}
 >
   <Hero />
 
@@ -38,8 +50,63 @@ const websiteSchema = JSON.stringify({
     </div>
   </section>
 
+  <!-- Daily maze challenge -->
+  <DailyMaze />
+
   <FeatureMazes />
   <HowToPlay />
+
+  <!-- Why MazeThis section -->
+  <section class="py-16" aria-labelledby="why-heading">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 id="why-heading" class="text-2xl font-bold text-slate-800 mb-2 text-center">Why MazeThis?</h2>
+      <p class="text-slate-500 text-center mb-10 max-w-2xl mx-auto">
+        Not all maze sites are equal. Here's what sets MazeThis apart from the rest.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          {
+            icon: '🎯',
+            title: '5 Difficulty Levels',
+            body: 'From tiny 5×5 kids mazes to sprawling 25×25 adult challenges — every level is thoughtfully tuned, not just randomly bigger.',
+          },
+          {
+            icon: '🖨️',
+            title: 'Print-Perfect Output',
+            body: 'Every maze prints cleanly with proper margins and answer keys. Ideal for teachers, homeschoolers, and activity books.',
+          },
+          {
+            icon: '♾️',
+            title: 'Infinite Unique Mazes',
+            body: 'Our generator produces a different maze every time. You\'ll never run out of fresh puzzles to solve or print.',
+          },
+          {
+            icon: '📱',
+            title: 'Play on Any Device',
+            body: 'Arrow keys on desktop, swipe gestures on mobile, or tap the on-screen D-pad. Mazes that work wherever you are.',
+          },
+          {
+            icon: '🆓',
+            title: 'Completely Free',
+            body: 'No account, no subscription, no watermarks. All 420+ mazes and the full generator are free forever.',
+          },
+          {
+            icon: '🧠',
+            title: 'Good for Your Brain',
+            body: 'Mazes build spatial reasoning, focus, and problem-solving. Great for kids developing motor skills and adults staying sharp.',
+          },
+        ].map(({ icon, title, body }) => (
+          <div class="flex gap-4 rounded-xl border border-slate-200 bg-white p-5">
+            <span class="text-2xl shrink-0 leading-none mt-0.5" aria-hidden="true">{icon}</span>
+            <div>
+              <h3 class="font-semibold text-slate-800 mb-1">{title}</h3>
+              <p class="text-sm text-slate-500 leading-relaxed">{body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
 
   <!-- Generator CTA banner -->
   <section class="py-12 bg-blue-600">

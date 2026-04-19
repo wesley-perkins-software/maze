@@ -70,6 +70,22 @@ export function getPrevMaze(source: MazeCatalogEntry): MazeCatalogEntry | undefi
 }
 
 /**
+ * Returns a maze for a given date — deterministic, changes daily.
+ * Prefers medium/adults difficulty for an interesting daily challenge.
+ */
+export function getDailyMaze(date: Date = new Date()): MazeCatalogEntry {
+  const y = date.getUTCFullYear();
+  const m = date.getUTCMonth() + 1;
+  const d = date.getUTCDate();
+  // Simple integer hash from date
+  const hash = ((y * 366 + m * 31 + d) * 2654435761) >>> 0;
+  const pool = catalog.mazes.filter(
+    (e) => e.difficulty === 'medium' || e.difficulty === 'adults',
+  );
+  return pool[hash % pool.length];
+}
+
+/**
  * Returns a small set of featured mazes for the homepage.
  * One per difficulty tier, chosen to be representative sizes.
  */

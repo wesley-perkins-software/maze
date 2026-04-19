@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "generate:catalog": "tsx scripts/generate-catalog.ts",
     "validate:catalog": "tsx scripts/validate-catalog.ts",
+    "generate:og": "node scripts/generate-og.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

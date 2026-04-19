@@ -1,6 +1,6 @@
 import type { Point } from '../../types/maze.js';
 
-export type GameStatus = 'idle' | 'playing' | 'solved';
+export type GameStatus = 'idle' | 'playing' | 'paused' | 'solved';
 
 export type GameState = {
   status: GameStatus;
@@ -9,6 +9,8 @@ export type GameState = {
   startTime: number | null; // Date.now() when first move made
   elapsedMs: number;        // total elapsed milliseconds
   solutionVisible: boolean;
+  hintsUsed: number;        // number of hints revealed
+  hintCells: number[];      // flat cell indices currently highlighted as hint
 };
 
 export type Direction = 'N' | 'E' | 'S' | 'W';
@@ -20,4 +22,7 @@ export type GameAction =
   | { type: 'HIDE_SOLUTION' }
   | { type: 'TOGGLE_SOLUTION' }
   | { type: 'RESET'; startPosition: Point }
-  | { type: 'TICK'; elapsedMs: number };
+  | { type: 'TICK'; elapsedMs: number }
+  | { type: 'PAUSE' }
+  | { type: 'RESUME' }
+  | { type: 'USE_HINT'; cells: number[] };
