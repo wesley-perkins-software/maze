@@ -14,6 +14,7 @@ import { indexToPoint } from '../../lib/maze/utils';
 
 export interface MazePlayerProps {
   maze: MazeData;
+  onSolve?: () => void;
 }
 
 const HINT_LOOKAHEAD = 6;
@@ -46,7 +47,7 @@ function formatTime(ms: number) {
   return m > 0 ? `${m}m ${rem}s` : `${s}s`;
 }
 
-export function MazePlayer({ maze }: MazePlayerProps) {
+export function MazePlayer({ maze, onSolve }: MazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
   const isNewBestRef = useRef(false);
@@ -69,8 +70,9 @@ export function MazePlayer({ maze }: MazePlayerProps) {
 
   // ── Personal best on solve ────────────────────────────────────────────────────
   useEffect(() => {
-    if (state.status === 'solved' && maze.slug) {
-      isNewBestRef.current = savePersonalBest(maze.slug, state.elapsedMs);
+    if (state.status === 'solved') {
+      if (maze.slug) isNewBestRef.current = savePersonalBest(maze.slug, state.elapsedMs);
+      onSolve?.();
     }
   }, [state.status]);
 
