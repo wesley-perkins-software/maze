@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import type { Difficulty } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
 import { MazeRenderer } from './MazeRenderer';
-import { MazePlayer } from './MazePlayer';
+import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 
 type CoreDifficulty = 'easy' | 'medium' | 'hard';
 type SizePreset = 'small' | 'medium' | 'large';
@@ -14,21 +14,21 @@ const DIFFICULTY_OPTIONS: { value: CoreDifficulty; label: string; description: s
 ];
 
 const SIZE_OPTIONS: { value: SizePreset; label: string; detail: string }[] = [
-  { value: 'small',  label: 'Small',  detail: '8 × 8' },
-  { value: 'medium', label: 'Medium', detail: '12 × 12' },
-  { value: 'large',  label: 'Large',  detail: '20 × 20' },
+  { value: 'small',  label: 'Small',  detail: '20 × 20' },
+  { value: 'medium', label: 'Medium', detail: '40 × 40' },
+  { value: 'large',  label: 'Large',  detail: '60 × 60' },
 ];
 
 const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
-  small:  { w: 8,  h: 8  },
-  medium: { w: 12, h: 12 },
-  large:  { w: 20, h: 20 },
+  small:  { w: 20, h: 20 },
+  medium: { w: 40, h: 40 },
+  large:  { w: 60, h: 60 },
 };
 
 const CUSTOM_RANGES: Record<CoreDifficulty, { min: number; max: number }> = {
-  easy:   { min: 4,  max: 20 },
-  medium: { min: 6,  max: 25 },
-  hard:   { min: 8,  max: 35 },
+  easy:   { min: 4,  max: 40 },
+  medium: { min: 6,  max: 50 },
+  hard:   { min: 8,  max: 60 },
 };
 
 function newSeed() {
@@ -84,7 +84,6 @@ export function MazeGenerator() {
   }, []);
 
   const handleSolve = useCallback(() => {
-    setPlaying(false);
     setSolved(true);
   }, []);
 
@@ -121,7 +120,7 @@ export function MazeGenerator() {
   }, [sizePreset]);
 
   const { w: width, h: height } = getDimensions();
-  const cellSize = Math.max(14, Math.min(28, Math.floor(400 / Math.max(width, height))));
+  const cellSize = Math.max(8, Math.min(28, Math.floor(480 / Math.max(width, height))));
 
   const buttonBase = 'rounded-lg border py-2.5 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500';
   const activeBtn  = 'border-blue-500 bg-blue-50 text-blue-700';
@@ -133,15 +132,18 @@ export function MazeGenerator() {
       {/* ── Maze panel — top on mobile, right on desktop ── */}
       <div className="flex-1 min-w-0 w-full">
         <div className="maze-generator-svg rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-          {playing
-            ? <MazePlayer maze={maze} onSolve={handleSolve} />
-            : (
-              <div className="flex justify-center p-4">
-                <MazeRenderer maze={maze} cellSize={cellSize} />
-              </div>
-            )
-          }
+          <div className="flex justify-center p-4">
+            <MazeRenderer maze={maze} cellSize={cellSize} />
+          </div>
         </div>
+
+        {playing && (
+          <FullscreenMazePlayer
+            maze={maze}
+            onSolve={handleSolve}
+            onClose={() => setPlaying(false)}
+          />
+        )}
 
         {/* Post-solve CTA */}
         {solved && (
