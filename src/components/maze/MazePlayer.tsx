@@ -115,7 +115,7 @@ export function MazePlayer({ maze, onSolve }: MazePlayerProps) {
     }, 3000);
   }, [maze, state.playerPosition]);
 
-  const cellSize = Math.max(16, Math.min(32, Math.floor(480 / Math.max(maze.width, maze.height))));
+  const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
 
   return (
