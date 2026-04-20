@@ -8,28 +8,28 @@ interface DPadProps {
 
 function ChevronUp() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="18 15 12 9 6 15" />
     </svg>
   );
 }
 function ChevronDown() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }
 function ChevronLeft() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="15 18 9 12 15 6" />
     </svg>
   );
 }
 function ChevronRight() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="9 6 15 12 9 18" />
     </svg>
   );
@@ -43,8 +43,8 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   if (!isActive) return null;
 
   const baseBtnClass =
-    'flex items-center justify-center w-16 h-16 rounded-2xl ' +
-    'bg-white border border-slate-300 text-slate-500 shadow-sm ' +
+    'flex items-center justify-center w-12 h-12 rounded-xl ' +
+    'bg-slate-800 border border-slate-600 text-slate-300 shadow ' +
     'select-none touch-none ' +
     'transition-all duration-75 cursor-pointer';
 
@@ -120,8 +120,8 @@ export function DPad({ dispatch, isActive }: DPadProps) {
         data-dir={dir}
         className={`${baseBtnClass} ${
           isPressed
-            ? 'bg-blue-100 border-blue-500 text-blue-700 shadow-md scale-95'
-            : 'active:bg-blue-50 active:border-blue-300 active:text-blue-600 active:scale-95 active:shadow-none'
+            ? 'bg-blue-600 border-blue-400 text-white shadow-inner scale-95'
+            : 'active:bg-blue-700 active:border-blue-500 active:text-white active:scale-95 active:shadow-inner'
         }`}
         onMouseDown={() => handleMouseDown(dir)}
         onTouchStart={(e) => handleTouchStart(e, dir)}
@@ -133,14 +133,14 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   return (
     <div
-      className="md:hidden flex flex-col items-center gap-2 touch-none"
+      className="md:hidden flex flex-col items-center gap-1.5 touch-none"
       role="group"
       aria-label="Directional controls"
     >
       <div>{makeButton('N', <ChevronUp />, 'Move up')}</div>
-      <div className="flex gap-2">
+      <div className="flex gap-1.5">
         {makeButton('W', <ChevronLeft />, 'Move left')}
-        <div className="w-16 h-16" aria-hidden="true" />
+        <div className="w-12 h-12" aria-hidden="true" />
         {makeButton('E', <ChevronRight />, 'Move right')}
       </div>
       <div>{makeButton('S', <ChevronDown />, 'Move down')}</div>

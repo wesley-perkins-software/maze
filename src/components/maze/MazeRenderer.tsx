@@ -146,12 +146,12 @@ export function MazeRenderer({
       {trailPoints && (
         <polyline
           points={trailPoints}
-          stroke="#bfdbfe"
+          stroke="#93c5fd"
           strokeWidth={cellSize * 0.25}
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity={0.8}
+          opacity={1.0}
         />
       )}
 
@@ -188,14 +188,23 @@ export function MazeRenderer({
 
       {/* Player */}
       {playerCx !== null && playerCy !== null && (
-        <circle
-          cx={playerCx}
-          cy={playerCy}
-          r={cellSize * 0.3}
-          fill="#2563eb"
-          stroke="white"
-          strokeWidth={1.5}
-        />
+        <>
+          <circle
+            cx={playerCx}
+            cy={playerCy}
+            r={cellSize * 0.45}
+            fill="#2563eb"
+            opacity={0.18}
+          />
+          <circle
+            cx={playerCx}
+            cy={playerCy}
+            r={cellSize * 0.32}
+            fill="#2563eb"
+            stroke="white"
+            strokeWidth={2}
+          />
+        </>
       )}
     </svg>
   );
