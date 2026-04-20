@@ -46,6 +46,11 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   const svgRef = useRef<SVGSVGElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
   const isNewBestRef = useRef(false);
+  const camXRef = useRef<number | null>(null);
+  const camYRef = useRef<number | null>(null);
+  const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
+  const dpadContainerRef = useRef<HTMLDivElement>(null);
+  const [dpadH, setDpadH] = useState(170);
 
   const [vpSize, setVpSize] = useState(() => ({
     w: typeof window !== 'undefined' ? window.innerWidth : 390,
@@ -90,6 +95,18 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
     return () => window.removeEventListener('resize', update);
   }, []);
 
+  // Measure actual D-pad container height for accurate camera math
+  useEffect(() => {
+    const el = dpadContainerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      const h = entries[0]?.contentRect.height;
+      if (h) setDpadH(Math.round(h));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   // Lock body scroll while fullscreen
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -118,28 +135,46 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   const playerPx = PADDING + state.playerPosition.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
   const playerPy = PADDING + state.playerPosition.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
 
-  // D-pad is ~200px tall on mobile, hidden on md+
-  const dpadArea = vpSize.w < 768 ? 200 : 0;
+  // Use measured D-pad height for accurate viewport calculation
+  const dpadArea = vpSize.w < 768 ? dpadH : 0;
   const viewW = vpSize.w;
   const viewH = vpSize.h - TOP_BAR_H - dpadArea;
 
-  let tx: number;
-  let ty: number;
-
-  if (mazeW <= viewW) {
-    tx = (viewW - mazeW) / 2;
-  } else {
-    tx = Math.min(0, Math.max(viewW - mazeW, viewW / 2 - playerPx));
+  // Reset camera when game resets (status returns to idle)
+  if (prevStatusRef.current !== 'idle' && state.status === 'idle') {
+    camXRef.current = null;
+    camYRef.current = null;
   }
+  prevStatusRef.current = state.status;
 
-  if (mazeH <= viewH) {
-    ty = (viewH - mazeH) / 2;
-  } else {
-    ty = Math.min(0, Math.max(viewH - mazeH, viewH / 2 - playerPy));
-  }
+  // Dead-zone camera: only scroll when player exits 30% margin from camera center
+  const DEAD_ZONE_W = viewW * 0.3;
+  const DEAD_ZONE_H = viewH * 0.3;
+
+  let camX = camXRef.current ?? playerPx;
+  let camY = camYRef.current ?? playerPy;
+
+  if (playerPx > camX + DEAD_ZONE_W) camX = playerPx - DEAD_ZONE_W;
+  else if (playerPx < camX - DEAD_ZONE_W) camX = playerPx + DEAD_ZONE_W;
+
+  if (playerPy > camY + DEAD_ZONE_H) camY = playerPy - DEAD_ZONE_H;
+  else if (playerPy < camY - DEAD_ZONE_H) camY = playerPy + DEAD_ZONE_H;
+
+  camXRef.current = camX;
+  camYRef.current = camY;
+
+  let tx = viewW / 2 - camX;
+  let ty = viewH / 2 - camY;
+
+  // Clamp to maze boundaries; center if maze fits entirely in viewport
+  if (mazeW <= viewW) { tx = (viewW - mazeW) / 2; }
+  else { tx = Math.min(0, Math.max(viewW - mazeW, tx)); }
+
+  if (mazeH <= viewH) { ty = (viewH - mazeH) / 2; }
+  else { ty = Math.min(0, Math.max(viewH - mazeH, ty)); }
 
   // ── Minimap ──────────────────────────────────────────────────────────────────
-  const MINIMAP_PX = 96;
+  const MINIMAP_PX = 104;
   // Use ceil so SVG intrinsic width > container → CSS scales it down cleanly
   const minimapCell = Math.max(1, Math.ceil((MINIMAP_PX + 4) / Math.max(maze.width, maze.height)));
 
@@ -154,7 +189,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
       {/* Top bar */}
       <div
-        className="flex items-center justify-between gap-3 px-3 shrink-0 bg-slate-800 text-white"
+        className="flex items-center justify-between gap-3 px-3 shrink-0 bg-slate-800 text-white border-b border-slate-700/50"
         style={{ height: TOP_BAR_H }}
       >
         <button
@@ -223,7 +258,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
       </div>
 
       {/* Maze viewport — clips the larger-than-screen SVG */}
-      <div className="relative flex-1 overflow-hidden bg-slate-100">
+      <div className="relative flex-1 overflow-hidden bg-slate-50">
 
         {/* Follow-camera pan container */}
         <div
@@ -252,7 +287,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
         {/* Minimap */}
         <div
-          className="absolute top-2 right-2 rounded-lg border border-slate-300 bg-white/90 shadow overflow-hidden"
+          className="absolute top-2 right-2 rounded-lg border border-slate-200 bg-white shadow-lg overflow-hidden"
           style={{ width: MINIMAP_PX + 4, height: MINIMAP_PX + 4, padding: 2 }}
           aria-hidden="true"
         >
@@ -318,10 +353,10 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
       </div>
 
       {/* D-pad — mobile only */}
-      <div className="bg-slate-900 shrink-0">
+      <div ref={dpadContainerRef} className="bg-slate-900 shrink-0 py-3 flex flex-col items-center gap-2">
         <DPad dispatch={dispatch} isActive={isActive} />
-        <p className="text-xs text-slate-500 text-center pb-2 md:hidden" aria-hidden="true">
-          Tap controls or swipe to move
+        <p className="text-xs text-slate-500 text-center md:hidden" aria-hidden="true">
+          Tap or swipe to move
         </p>
       </div>
     </div>
