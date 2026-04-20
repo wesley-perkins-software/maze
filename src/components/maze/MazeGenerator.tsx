@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import type { Difficulty } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
 import { MazeRenderer } from './MazeRenderer';
-import { MazePlayer } from './MazePlayer';
+import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 
 type CoreDifficulty = 'easy' | 'medium' | 'hard';
 type SizePreset = 'small' | 'medium' | 'large';
@@ -84,7 +84,6 @@ export function MazeGenerator() {
   }, []);
 
   const handleSolve = useCallback(() => {
-    setPlaying(false);
     setSolved(true);
   }, []);
 
@@ -133,15 +132,18 @@ export function MazeGenerator() {
       {/* ── Maze panel — top on mobile, right on desktop ── */}
       <div className="flex-1 min-w-0 w-full">
         <div className="maze-generator-svg rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-          {playing
-            ? <MazePlayer maze={maze} onSolve={handleSolve} />
-            : (
-              <div className="flex justify-center p-4">
-                <MazeRenderer maze={maze} cellSize={cellSize} />
-              </div>
-            )
-          }
+          <div className="flex justify-center p-4">
+            <MazeRenderer maze={maze} cellSize={cellSize} />
+          </div>
         </div>
+
+        {playing && (
+          <FullscreenMazePlayer
+            maze={maze}
+            onSolve={handleSolve}
+            onClose={() => setPlaying(false)}
+          />
+        )}
 
         {/* Post-solve CTA */}
         {solved && (
