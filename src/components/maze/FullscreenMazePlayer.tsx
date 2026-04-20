@@ -3,12 +3,16 @@ import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
-import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
+import { useKeyboardInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
+import { SwipePad } from './SwipePad';
 
 const PLAY_CELL_SIZE = 20;
-const PADDING = 8;
-const TOP_BAR_H = 56;
+const MAZE_PADDING = 32;   // must be >= SAFE_PAD to guarantee player visibility at maze edges
+const TOP_BAR_H = 44;
+const AD_SLOT_H = 0;       // reserved for future banner ad — set to ~50 when monetizing
+const SAFE_PAD = 32;       // minimum px from viewport edge for player position
+const MINIMAP_SIZE = 80;
 const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 
@@ -50,7 +54,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   const camYRef = useRef<number | null>(null);
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
   const dpadContainerRef = useRef<HTMLDivElement>(null);
-  const [dpadH, setDpadH] = useState(170);
+  const [dpadH, setDpadH] = useState(128);
 
   const [vpSize, setVpSize] = useState(() => ({
     w: typeof window !== 'undefined' ? window.innerWidth : 390,
@@ -95,7 +99,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
     return () => window.removeEventListener('resize', update);
   }, []);
 
-  // Measure actual D-pad container height for accurate camera math
+  // Measure control strip height for accurate camera math
   useEffect(() => {
     const el = dpadContainerRef.current;
     if (!el) return;
@@ -115,7 +119,6 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
   const isActive = state.status === 'playing' || state.status === 'idle';
   useKeyboardInput(dispatch, isActive);
-  useTouchInput(svgRef, dispatch, isActive);
 
   const handleHint = useCallback(() => {
     const { solution } = maze;
@@ -129,72 +132,76 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   }, [maze, state.playerPosition]);
 
   // ── Follow-camera math ───────────────────────────────────────────────────────
-  const mazeW = maze.width * PLAY_CELL_SIZE + PADDING * 2;
-  const mazeH = maze.height * PLAY_CELL_SIZE + PADDING * 2;
+  const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
+  const mazeH = maze.height * PLAY_CELL_SIZE + MAZE_PADDING * 2;
 
-  const playerPx = PADDING + state.playerPosition.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
-  const playerPy = PADDING + state.playerPosition.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
+  const playerPx = MAZE_PADDING + state.playerPosition.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
+  const playerPy = MAZE_PADDING + state.playerPosition.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
 
-  // Use measured D-pad height for accurate viewport calculation
-  const dpadArea = vpSize.w < 768 ? dpadH : 0;
+  const controlStripH = vpSize.w < 768 ? dpadH : 0;
   const viewW = vpSize.w;
-  const viewH = vpSize.h - TOP_BAR_H - dpadArea;
+  const viewH = vpSize.h - TOP_BAR_H - AD_SLOT_H - controlStripH;
 
-  // Reset camera when game resets (status returns to idle)
+  // Reset camera when game resets
   if (prevStatusRef.current !== 'idle' && state.status === 'idle') {
     camXRef.current = null;
     camYRef.current = null;
   }
   prevStatusRef.current = state.status;
 
-  // Dead-zone camera: only scroll when player exits 30% margin from camera center
-  const DEAD_ZONE_W = viewW * 0.3;
-  const DEAD_ZONE_H = viewH * 0.3;
+  // ── Safe-zone camera ─────────────────────────────────────────────────────────
+  // Player must always stay within SAFE_PAD of the viewport edge.
+  // Setting MAZE_PADDING = SAFE_PAD guarantees this holds even at maze edges.
+  const safeW = viewW / 2 - SAFE_PAD;
+  const safeH = viewH / 2 - SAFE_PAD;
 
   let camX = camXRef.current ?? playerPx;
   let camY = camYRef.current ?? playerPy;
 
-  if (playerPx > camX + DEAD_ZONE_W) camX = playerPx - DEAD_ZONE_W;
-  else if (playerPx < camX - DEAD_ZONE_W) camX = playerPx + DEAD_ZONE_W;
+  if (playerPx > camX + safeW) camX = playerPx - safeW;
+  else if (playerPx < camX - safeW) camX = playerPx + safeW;
 
-  if (playerPy > camY + DEAD_ZONE_H) camY = playerPy - DEAD_ZONE_H;
-  else if (playerPy < camY - DEAD_ZONE_H) camY = playerPy + DEAD_ZONE_H;
+  if (playerPy > camY + safeH) camY = playerPy - safeH;
+  else if (playerPy < camY - safeH) camY = playerPy + safeH;
+
+  // Clamp camera center to maze bounds
+  if (mazeW > viewW) {
+    camX = Math.max(viewW / 2, Math.min(mazeW - viewW / 2, camX));
+  } else {
+    camX = mazeW / 2;
+  }
+  if (mazeH > viewH) {
+    camY = Math.max(viewH / 2, Math.min(mazeH - viewH / 2, camY));
+  } else {
+    camY = mazeH / 2;
+  }
 
   camXRef.current = camX;
   camYRef.current = camY;
 
-  let tx = viewW / 2 - camX;
-  let ty = viewH / 2 - camY;
-
-  // Clamp to maze boundaries; center if maze fits entirely in viewport
-  if (mazeW <= viewW) { tx = (viewW - mazeW) / 2; }
-  else { tx = Math.min(0, Math.max(viewW - mazeW, tx)); }
-
-  if (mazeH <= viewH) { ty = (viewH - mazeH) / 2; }
-  else { ty = Math.min(0, Math.max(viewH - mazeH, ty)); }
+  const tx = viewW / 2 - camX;
+  const ty = viewH / 2 - camY;
 
   // ── Minimap ──────────────────────────────────────────────────────────────────
-  const MINIMAP_PX = 104;
-  // Use ceil so SVG intrinsic width > container → CSS scales it down cleanly
-  const minimapCell = Math.max(1, Math.ceil((MINIMAP_PX + 4) / Math.max(maze.width, maze.height)));
+  const minimapCell = Math.max(1, Math.ceil(MINIMAP_SIZE / Math.max(maze.width, maze.height)));
 
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col bg-slate-900"
+      className="fixed inset-0 z-50 flex flex-col bg-white"
       style={{ touchAction: 'none' }}
     >
       <div ref={announcerRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />
 
       {/* Top bar */}
       <div
-        className="flex items-center justify-between gap-3 px-3 shrink-0 bg-slate-800 text-white border-b border-slate-700/50"
+        className="flex items-center justify-between gap-2 px-3 shrink-0 bg-white text-slate-900 border-b border-slate-200 shadow-sm"
         style={{ height: TOP_BAR_H }}
       >
         <button
           onClick={onClose}
-          className="flex items-center gap-1.5 text-sm font-medium text-slate-300 hover:text-white transition-colors shrink-0"
+          className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors shrink-0"
           aria-label="Exit play mode"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -203,26 +210,26 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
           Exit
         </button>
 
-        <div className="text-sm text-slate-300 min-w-0">
+        <div className="text-sm text-slate-600 min-w-0 flex-1 flex justify-center">
           {state.status === 'playing' && (
-            <span className="flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <span className="flex items-center gap-1.5 font-mono font-medium text-slate-700">
+              <svg className="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <circle cx="12" cy="12" r="10" strokeWidth="2"/>
                 <polyline points="12 6 12 12 16 14" strokeWidth="2"/>
               </svg>
               <Timer elapsedMs={state.elapsedMs} />
             </span>
           )}
-          {state.status === 'paused'  && <span className="text-amber-400 font-medium">⏸ Paused</span>}
-          {state.status === 'idle'    && <span className="text-slate-400 text-xs">Arrow keys, WASD, or D-pad</span>}
-          {state.status === 'solved'  && <span className="text-green-400 font-semibold">✓ {formatTime(state.elapsedMs)}</span>}
+          {state.status === 'paused'  && <span className="text-amber-500 font-medium text-xs">Paused</span>}
+          {state.status === 'idle'    && <span className="text-slate-400 text-xs">Arrow keys, WASD, or controls below</span>}
+          {state.status === 'solved'  && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
           {state.status !== 'solved' && (
             <button
               onClick={handleHint}
-              className="text-xs px-2 py-1 rounded border border-amber-500/60 text-amber-300 hover:bg-amber-900/40 transition-colors"
+              className="text-xs px-2 py-1 rounded-lg border border-amber-200 text-amber-600 bg-amber-50 hover:bg-amber-100 transition-colors font-medium"
             >
               {state.hintsUsed > 0 ? `Hint (${state.hintsUsed})` : 'Hint'}
             </button>
@@ -230,7 +237,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
           {(state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
-              className="text-xs px-2 py-1 rounded border border-slate-600 text-slate-300 hover:bg-slate-700 transition-colors"
+              className="text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors"
               aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
             >
               {state.status === 'playing' ? '⏸' : '▶'}
@@ -238,10 +245,10 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
           )}
           <button
             onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
-            className={`text-xs px-2 py-1 rounded border transition-colors ${
+            className={`text-xs px-2 py-1 rounded-lg border transition-colors font-medium ${
               state.solutionVisible
-                ? 'border-green-500/60 text-green-400 bg-green-900/30'
-                : 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                ? 'border-emerald-200 text-emerald-700 bg-emerald-50'
+                : 'border-slate-200 text-slate-600 bg-white hover:bg-slate-50'
             }`}
             aria-pressed={state.solutionVisible}
           >
@@ -249,7 +256,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
           </button>
           <button
             onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}
-            className="text-xs px-2 py-1 rounded border border-slate-600 text-slate-300 hover:bg-slate-700 transition-colors"
+            className="text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors"
             aria-label="Reset maze"
           >
             Reset
@@ -257,8 +264,14 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
         </div>
       </div>
 
-      {/* Maze viewport — clips the larger-than-screen SVG */}
-      <div className="relative flex-1 overflow-hidden bg-slate-50">
+      {/* AD_SLOT: Reserved for future banner ad between top bar and maze.
+          To enable: set AD_SLOT_H = 50 and uncomment the div below. */}
+      {AD_SLOT_H > 0 && (
+        <div style={{ height: AD_SLOT_H }} className="bg-slate-50 border-b border-slate-100 shrink-0" />
+      )}
+
+      {/* Maze viewport */}
+      <div className="relative flex-1 overflow-hidden bg-slate-100">
 
         {/* Follow-camera pan container */}
         <div
@@ -274,7 +287,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
           <MazeRenderer
             maze={maze}
             cellSize={PLAY_CELL_SIZE}
-            padding={PADDING}
+            padding={MAZE_PADDING}
             playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
             trail={state.trail}
             solution={maze.solution}
@@ -285,29 +298,14 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
           />
         </div>
 
-        {/* Minimap */}
-        <div
-          className="absolute top-2 right-2 rounded-lg border border-slate-200 bg-white shadow-lg overflow-hidden"
-          style={{ width: MINIMAP_PX + 4, height: MINIMAP_PX + 4, padding: 2 }}
-          aria-hidden="true"
-        >
-          <MazeRenderer
-            maze={maze}
-            cellSize={minimapCell}
-            wallThickness={1}
-            padding={2}
-            playerPosition={state.playerPosition}
-          />
-        </div>
-
         {/* Paused overlay */}
         {state.status === 'paused' && (
-          <div className="absolute inset-0 bg-white/85 flex flex-col items-center justify-center gap-3">
-            <div className="text-4xl" aria-hidden="true">⏸</div>
+          <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-3">
+            <div className="text-3xl" aria-hidden="true">⏸</div>
             <p className="text-slate-700 font-semibold">Paused</p>
             <button
               onClick={() => dispatch({ type: 'RESUME' })}
-              className="mt-1 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+              className="mt-1 inline-flex items-center gap-2 rounded-xl bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-600 transition-colors shadow-sm"
               autoFocus
             >
               Resume
@@ -317,11 +315,11 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
         {/* Solved overlay */}
         {state.status === 'solved' && (
-          <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-3 p-4">
-            <div className="text-4xl" aria-hidden="true">🎉</div>
+          <div className="absolute inset-0 bg-white/95 flex flex-col items-center justify-center gap-3 p-4">
+            <div className="text-3xl" aria-hidden="true">🎉</div>
             <h3 className="text-xl font-bold text-slate-800">Maze Solved!</h3>
-            <p className="text-slate-600 text-sm text-center">
-              Time: <strong>{formatTime(state.elapsedMs)}</strong>
+            <p className="text-slate-500 text-sm text-center">
+              Time: <strong className="text-slate-700">{formatTime(state.elapsedMs)}</strong>
               {state.trail.length > 0 && ` · ${state.trail.length} steps`}
               {state.hintsUsed > 0 && ` · ${state.hintsUsed} hint${state.hintsUsed > 1 ? 's' : ''}`}
             </p>
@@ -336,14 +334,14 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
             <div className="flex gap-3 mt-2">
               <button
                 onClick={() => { isNewBestRef.current = false; dispatch({ type: 'RESET', startPosition: maze.entry }); }}
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-600 transition-colors shadow-sm"
                 autoFocus
               >
                 Play Again
               </button>
               <button
                 onClick={onClose}
-                className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
               >
                 Exit
               </button>
@@ -352,12 +350,34 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
         )}
       </div>
 
-      {/* D-pad — mobile only */}
-      <div ref={dpadContainerRef} className="bg-slate-900 shrink-0 py-3 flex flex-col items-center gap-2">
-        <DPad dispatch={dispatch} isActive={isActive} />
-        <p className="text-xs text-slate-500 text-center md:hidden" aria-hidden="true">
-          Tap or swipe to move
-        </p>
+      {/* Mobile control strip — minimap + D-pad + swipe area */}
+      <div
+        ref={dpadContainerRef}
+        className="md:hidden bg-slate-50 border-t border-slate-200 shrink-0 flex items-center gap-2 px-3 py-2.5"
+      >
+        {/* Minimap */}
+        <div
+          className="shrink-0 rounded-lg overflow-hidden border border-slate-200 shadow-sm bg-white"
+          style={{ width: MINIMAP_SIZE, height: MINIMAP_SIZE }}
+          aria-hidden="true"
+        >
+          <MazeRenderer
+            maze={maze}
+            cellSize={minimapCell}
+            wallThickness={1}
+            padding={2}
+            playerPosition={state.playerPosition}
+            playerMarkerRadius={5}
+          />
+        </div>
+
+        {/* D-pad */}
+        <div className="shrink-0">
+          <DPad dispatch={dispatch} isActive={isActive} />
+        </div>
+
+        {/* Swipe area */}
+        <SwipePad dispatch={dispatch} isActive={isActive} />
       </div>
     </div>
   );

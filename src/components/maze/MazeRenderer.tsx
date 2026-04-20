@@ -21,6 +21,7 @@ export interface MazeRendererProps {
   interactive?: boolean;      // adds keyboard/touch affordances
   svgRef?: React.RefObject<SVGSVGElement>;
   onKeyDown?: (e: React.KeyboardEvent) => void;
+  playerMarkerRadius?: number; // override default radius for minimap high-contrast dot
 }
 
 export function MazeRenderer({
@@ -37,6 +38,7 @@ export function MazeRenderer({
   interactive = false,
   svgRef,
   onKeyDown,
+  playerMarkerRadius,
 }: MazeRendererProps) {
   const { width, height, grid, entry, exit } = maze;
 
@@ -192,17 +194,17 @@ export function MazeRenderer({
           <circle
             cx={playerCx}
             cy={playerCy}
-            r={cellSize * 0.45}
+            r={playerMarkerRadius ? playerMarkerRadius * 1.6 : cellSize * 0.45}
             fill="#2563eb"
-            opacity={0.18}
+            opacity={0.2}
           />
           <circle
             cx={playerCx}
             cy={playerCy}
-            r={cellSize * 0.32}
+            r={playerMarkerRadius ?? cellSize * 0.32}
             fill="#2563eb"
             stroke="white"
-            strokeWidth={2}
+            strokeWidth={playerMarkerRadius ? Math.max(1.5, playerMarkerRadius * 0.35) : 2}
           />
         </>
       )}
