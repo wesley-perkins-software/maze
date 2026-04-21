@@ -132,7 +132,7 @@ export function PostSolveOverlay({
 
   return (
     <div
-      className="post-solve-overlay-in absolute inset-0 z-20 flex items-center justify-center bg-white/90 backdrop-blur-[2px] p-4"
+      className="absolute inset-0 z-20 flex items-center justify-center bg-white/90 p-4"
       role="dialog"
       aria-modal="true"
       aria-label="Maze complete"
