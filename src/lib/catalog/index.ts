@@ -70,6 +70,34 @@ export function getPrevMaze(source: MazeCatalogEntry): MazeCatalogEntry | undefi
 }
 
 /**
+ * Returns the smallest maze of the same difficulty whose area exceeds the source,
+ * or undefined if the source is already the largest available size.
+ */
+export function getLargerMaze(source: MazeCatalogEntry): MazeCatalogEntry | undefined {
+  const currentArea = source.width * source.height;
+  const candidates = getMazesByDifficulty(source.difficulty)
+    .filter((m) => m.width * m.height > currentArea);
+  if (!candidates.length) return undefined;
+  candidates.sort((a, b) => a.width * a.height - b.width * b.height);
+  return candidates[0];
+}
+
+/**
+ * Returns a deterministic "random" maze from the same difficulty, excluding
+ * the provided slugs. Uses the source seed for reproducibility so the same
+ * maze always suggests the same random pick.
+ */
+export function getRandomMazePick(
+  source: MazeCatalogEntry,
+  exclude: string[],
+): MazeCatalogEntry {
+  const pool = getMazesByDifficulty(source.difficulty).filter(
+    (m) => !exclude.includes(m.slug),
+  );
+  return pool[source.seed % pool.length] ?? pool[0];
+}
+
+/**
  * Returns a maze for a given date — deterministic, changes daily.
  * Prefers medium/adults difficulty for an interesting daily challenge.
  */

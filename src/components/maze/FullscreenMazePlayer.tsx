@@ -5,6 +5,8 @@ import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
+import { PostSolveOverlay } from './PostSolveOverlay';
+import type { PostSolveNav } from './PostSolveOverlay';
 
 const PLAY_CELL_SIZE = 32;
 const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
@@ -48,9 +50,10 @@ export interface FullscreenMazePlayerProps {
   maze: MazeData;
   onSolve?: () => void;
   onClose: () => void;
+  postSolveNav?: PostSolveNav;
 }
 
-export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazePlayerProps) {
+export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: FullscreenMazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
@@ -405,38 +408,19 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
         {/* Solved overlay */}
         {state.status === 'solved' && (
-          <div className="absolute inset-0 bg-white/95 flex flex-col items-center justify-center gap-3 p-4">
-            <div className="text-3xl" aria-hidden="true">🎉</div>
-            <h3 className="text-xl font-bold text-slate-800">Maze Solved!</h3>
-            <p className="text-slate-500 text-sm text-center">
-              Time: <strong className="text-slate-700">{formatTime(state.elapsedMs)}</strong>
-              {state.trail.length > 0 && ` · ${state.trail.length} steps`}
-              {state.hintsUsed > 0 && ` · ${state.hintsUsed} hint${state.hintsUsed > 1 ? 's' : ''}`}
-            </p>
-            {isNewBestRef.current && (
-              <p className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-1">
-                ★ New personal best!
-              </p>
-            )}
-            {personalBest !== null && !isNewBestRef.current && (
-              <p className="text-xs text-slate-400">Personal best: {formatTime(personalBest)}</p>
-            )}
-            <div className="flex gap-3 mt-2">
-              <button
-                onClick={() => { isNewBestRef.current = false; dispatch({ type: 'RESET', startPosition: maze.entry }); }}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-600 transition-colors shadow-sm"
-                autoFocus
-              >
-                Play Again
-              </button>
-              <button
-                onClick={onClose}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
-              >
-                Exit
-              </button>
-            </div>
-          </div>
+          <PostSolveOverlay
+            elapsedMs={state.elapsedMs}
+            stepCount={state.trail.length}
+            hintsUsed={state.hintsUsed}
+            isNewBest={isNewBestRef.current}
+            personalBest={personalBest}
+            nav={postSolveNav}
+            mazeSlug={maze.slug}
+            onPlayAgain={() => {
+              isNewBestRef.current = false;
+              dispatch({ type: 'RESET', startPosition: maze.entry });
+            }}
+          />
         )}
       </div>
 
