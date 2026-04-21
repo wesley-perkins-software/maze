@@ -43,6 +43,7 @@ export function MazeGenerator() {
   const [customHeight, setCustomHeight] = useState(12);
   const [playing, setPlaying] = useState(false);
   const [solved, setSolved]   = useState(false);
+  const [showSolveModal, setShowSolveModal] = useState(false);
   const hasPlayedRef = useRef(false);
 
   const getDimensions = useCallback(
@@ -60,6 +61,7 @@ export function MazeGenerator() {
     setMaze(m);
     setPlaying(false);
     setSolved(false);
+    setShowSolveModal(false);
   }, []);
 
   const handleDifficultyChange = useCallback((d: CoreDifficulty) => {
@@ -81,10 +83,13 @@ export function MazeGenerator() {
     hasPlayedRef.current = true;
     setPlaying(true);
     setSolved(false);
+    setShowSolveModal(false);
   }, []);
 
   const handleSolve = useCallback(() => {
+    setPlaying(false);
     setSolved(true);
+    setShowSolveModal(true);
   }, []);
 
   const handleTryHarder = useCallback(() => {
@@ -107,6 +112,10 @@ export function MazeGenerator() {
   }, [difficulty, getDimensions]);
 
   const handlePrint = useCallback(() => window.print(), []);
+
+  const handleCloseSolveModal = useCallback(() => {
+    setShowSolveModal(false);
+  }, []);
 
   const toggleCustom = useCallback(() => {
     setShowCustom((prev) => {
@@ -131,6 +140,56 @@ export function MazeGenerator() {
 
       {/* ── Maze panel — top on mobile, right on desktop ── */}
       <div className="flex-1 min-w-0 w-full">
+        {showSolveModal && (
+          <div className="fixed inset-0 z-50 bg-slate-900/45 backdrop-blur-[1px] flex items-center justify-center p-4">
+            <div className="w-full max-w-sm rounded-2xl border border-emerald-100 bg-white shadow-2xl p-6">
+              <h3 className="text-xl font-bold text-slate-800 text-center">Maze Complete!</h3>
+              <p className="mt-2 text-sm text-slate-500 text-center">
+                Great run. Want to keep going?
+              </p>
+
+              <div className="mt-5 grid gap-2">
+                <button
+                  onClick={() => {
+                    setShowSolveModal(false);
+                    handlePlay();
+                  }}
+                  className="btn-primary w-full justify-center"
+                >
+                  Play Again
+                </button>
+                {difficulty !== 'hard' && (
+                  <button
+                    onClick={() => {
+                      setShowSolveModal(false);
+                      handleTryHarder();
+                    }}
+                    className="btn-secondary w-full justify-center"
+                  >
+                    Try Harder
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setShowSolveModal(false);
+                    handleGenerate();
+                  }}
+                  className="btn-ghost w-full justify-center"
+                >
+                  New Maze
+                </button>
+              </div>
+
+              <button
+                onClick={handleCloseSolveModal}
+                className="mt-3 w-full text-xs text-slate-400 hover:text-slate-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="maze-generator-svg rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
           <div className="flex justify-center p-4">
             <MazeRenderer maze={maze} cellSize={cellSize} />
