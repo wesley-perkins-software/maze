@@ -36,6 +36,15 @@
   h3 { @apply text-xl font-semibold; }
 }
 
+/* ── Maze game animations ─────────────────────────────────────────────────── */
+@keyframes maze-player-pulse {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.45; }
+}
+.maze-player-glow {
+  animation: maze-player-pulse 1.8s ease-in-out infinite;
+}
+
 /* Respect reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
