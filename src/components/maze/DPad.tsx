@@ -8,28 +8,28 @@ interface DPadProps {
 
 function ChevronUp() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="18 15 12 9 6 15" />
     </svg>
   );
 }
 function ChevronDown() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }
 function ChevronLeft() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="15 18 9 12 15 6" />
     </svg>
   );
 }
 function ChevronRight() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="9 6 15 12 9 18" />
     </svg>
   );
@@ -43,14 +43,13 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   if (!isActive) return null;
 
   const baseBtnClass =
-    'flex items-center justify-center w-12 h-12 rounded-xl ' +
-    'bg-slate-800 border border-slate-600 text-slate-300 shadow ' +
+    'flex items-center justify-center w-10 h-10 rounded-full ' +
+    'bg-white border border-slate-200 text-slate-500 shadow-sm ' +
     'select-none touch-none ' +
     'transition-all duration-75 cursor-pointer';
 
   function dispatchDirection(direction: Direction | null) {
     if (!direction || direction === lastDirectionRef.current) return;
-
     lastDirectionRef.current = direction;
     setActiveDirection(direction);
     dispatch({ type: 'RUN', direction });
@@ -65,10 +64,8 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   function getDirectionAtPoint(clientX: number, clientY: number): Direction | null {
     const target = document.elementFromPoint(clientX, clientY);
     if (!(target instanceof HTMLElement)) return null;
-
     const button = target.closest<HTMLButtonElement>('button[data-dir]');
     const direction = button?.dataset.dir as Direction | undefined;
-
     if (!direction || !['N', 'E', 'S', 'W'].includes(direction)) return null;
     return direction;
   }
@@ -83,10 +80,8 @@ export function DPad({ dispatch, isActive }: DPadProps) {
     function onTouchMove(e: TouchEvent) {
       if (!touchActiveRef.current) return;
       e.preventDefault();
-
       const touch = e.touches[0];
       if (!touch) return;
-
       dispatchDirection(getDirectionAtPoint(touch.clientX, touch.clientY));
     }
 
@@ -112,7 +107,6 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   function makeButton(dir: Direction, icon: ReactNode, label: string) {
     const isPressed = activeDirection === dir;
-
     return (
       <button
         type="button"
@@ -120,8 +114,8 @@ export function DPad({ dispatch, isActive }: DPadProps) {
         data-dir={dir}
         className={`${baseBtnClass} ${
           isPressed
-            ? 'bg-blue-600 border-blue-400 text-white shadow-inner scale-95'
-            : 'active:bg-blue-700 active:border-blue-500 active:text-white active:scale-95 active:shadow-inner'
+            ? 'bg-blue-500 border-blue-400 text-white shadow-inner scale-95'
+            : 'active:bg-blue-500 active:border-blue-400 active:text-white active:scale-95 active:shadow-inner'
         }`}
         onMouseDown={() => handleMouseDown(dir)}
         onTouchStart={(e) => handleTouchStart(e, dir)}
@@ -133,14 +127,14 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   return (
     <div
-      className="md:hidden flex flex-col items-center gap-1.5 touch-none"
+      className="flex flex-col items-center gap-1 touch-none"
       role="group"
       aria-label="Directional controls"
     >
       <div>{makeButton('N', <ChevronUp />, 'Move up')}</div>
-      <div className="flex gap-1.5">
+      <div className="flex gap-1">
         {makeButton('W', <ChevronLeft />, 'Move left')}
-        <div className="w-12 h-12" aria-hidden="true" />
+        <div className="w-10 h-10" aria-hidden="true" />
         {makeButton('E', <ChevronRight />, 'Move right')}
       </div>
       <div>{makeButton('S', <ChevronDown />, 'Move down')}</div>

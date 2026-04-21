@@ -21,6 +21,7 @@ export interface MazeRendererProps {
   interactive?: boolean;      // adds keyboard/touch affordances
   svgRef?: React.RefObject<SVGSVGElement>;
   onKeyDown?: (e: React.KeyboardEvent) => void;
+  playerMarkerRadius?: number; // override default radius for minimap high-contrast dot
 }
 
 export function MazeRenderer({
@@ -37,6 +38,7 @@ export function MazeRenderer({
   interactive = false,
   svgRef,
   onKeyDown,
+  playerMarkerRadius,
 }: MazeRendererProps) {
   const { width, height, grid, entry, exit } = maze;
 
@@ -65,9 +67,12 @@ export function MazeRenderer({
     }
   }
 
-  // ── Entry / exit markers ─────────────────────────────────────────────────────
-  const ms = cellSize * 0.4;
-  const mOff = (cellSize - ms) / 2;
+  // ── Entry / exit centers ─────────────────────────────────────────────────────
+  const entryCx = padding + entry.x * cellSize + cellSize / 2;
+  const entryCy = padding + entry.y * cellSize + cellSize / 2;
+  const exitCx  = padding + exit.x  * cellSize + cellSize / 2;
+  const exitCy  = padding + exit.y  * cellSize + cellSize / 2;
+  const markerR = cellSize * 0.38;
 
   // ── Solution polyline ────────────────────────────────────────────────────────
   const solutionPoints = showSolution && solution.length > 0
@@ -77,13 +82,22 @@ export function MazeRenderer({
       }).join(' ')
     : null;
 
-  // ── Trail polyline ───────────────────────────────────────────────────────────
-  const trailPoints = trail.length > 1
-    ? trail.map((idx) => {
-        const { x, y } = indexToPoint(idx, width);
-        return `${padding + x * cellSize + cellSize / 2},${padding + y * cellSize + cellSize / 2}`;
-      }).join(' ')
-    : null;
+  // ── Fading trail — 4 opacity segments, oldest→newest ────────────────────────
+  const trailSegments = trail.length > 1 ? (() => {
+    const n = trail.length;
+    const toPoint = (idx: number) => {
+      const { x, y } = indexToPoint(idx, width);
+      return `${padding + x * cellSize + cellSize / 2},${padding + y * cellSize + cellSize / 2}`;
+    };
+    const breaks = [0, Math.floor(n * 0.25), Math.floor(n * 0.5), Math.floor(n * 0.75), n];
+    const opacities = [0.12, 0.3, 0.55, 0.85];
+    const widths    = [0.16, 0.18, 0.21, 0.25];
+    return breaks.slice(0, -1).map((start, i) => {
+      const seg = trail.slice(Math.max(0, start - 1), breaks[i + 1] + 1);
+      if (seg.length < 2) return null;
+      return { pts: seg.map(toPoint).join(' '), opacity: opacities[i], width: widths[i] };
+    }).filter(Boolean) as { pts: string; opacity: number; width: number }[];
+  })() : [];
 
   // ── Player circle ────────────────────────────────────────────────────────────
   const playerCx = playerPosition
@@ -92,6 +106,9 @@ export function MazeRenderer({
   const playerCy = playerPosition
     ? padding + playerPosition.y * cellSize + cellSize / 2
     : null;
+
+  const pr    = playerMarkerRadius ?? cellSize * 0.32;
+  const glowR = playerMarkerRadius ? playerMarkerRadius * 1.6 : cellSize * 0.5;
 
   const label = `${maze.difficulty} ${width}×${height} maze`;
 
@@ -142,18 +159,19 @@ export function MazeRenderer({
         />
       )}
 
-      {/* Trail */}
-      {trailPoints && (
+      {/* Fading trail — rendered oldest to newest so recent segment is on top */}
+      {trailSegments.map((seg, i) => (
         <polyline
-          points={trailPoints}
-          stroke="#93c5fd"
-          strokeWidth={cellSize * 0.25}
+          key={`trail-${i}`}
+          points={seg.pts}
+          stroke="#3b82f6"
+          strokeWidth={cellSize * seg.width}
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity={1.0}
+          opacity={seg.opacity}
         />
-      )}
+      ))}
 
       {/* Walls */}
       <path
@@ -164,45 +182,49 @@ export function MazeRenderer({
         fill="none"
       />
 
-      {/* Entry marker */}
-      <rect
-        x={padding + entry.x * cellSize + mOff}
-        y={padding + entry.y * cellSize + mOff}
-        width={ms}
-        height={ms}
-        rx={ms * 0.2}
-        fill="#3b82f6"
-        opacity={0.8}
-      />
+      {/* Entry marker — green play triangle */}
+      <circle cx={entryCx} cy={entryCy} r={markerR} fill="#22c55e" opacity={0.9} />
+      {cellSize >= 14 && (
+        <polygon
+          points={`${entryCx - markerR * 0.35},${entryCy - markerR * 0.6} ${entryCx + markerR * 0.55},${entryCy} ${entryCx - markerR * 0.35},${entryCy + markerR * 0.6}`}
+          fill="white"
+          opacity={0.95}
+        />
+      )}
 
-      {/* Exit marker */}
-      <rect
-        x={padding + exit.x * cellSize + mOff}
-        y={padding + exit.y * cellSize + mOff}
-        width={ms}
-        height={ms}
-        rx={ms * 0.2}
-        fill="#ef4444"
-        opacity={0.8}
-      />
+      {/* Exit marker — amber star / flag */}
+      <circle cx={exitCx} cy={exitCy} r={markerR} fill="#f59e0b" opacity={0.9} />
+      {cellSize >= 14 && (
+        <text
+          x={exitCx}
+          y={exitCy}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fill="white"
+          fontSize={markerR * 1.1}
+          aria-hidden="true"
+        >★</text>
+      )}
 
       {/* Player */}
       {playerCx !== null && playerCy !== null && (
         <>
+          {/* Animated glow ring */}
           <circle
             cx={playerCx}
             cy={playerCy}
-            r={cellSize * 0.45}
+            r={glowR}
             fill="#2563eb"
-            opacity={0.18}
+            className="maze-player-glow"
           />
+          {/* Solid player dot */}
           <circle
             cx={playerCx}
             cy={playerCy}
-            r={cellSize * 0.32}
+            r={pr}
             fill="#2563eb"
             stroke="white"
-            strokeWidth={2}
+            strokeWidth={playerMarkerRadius ? Math.max(1.5, playerMarkerRadius * 0.35) : 2}
           />
         </>
       )}
