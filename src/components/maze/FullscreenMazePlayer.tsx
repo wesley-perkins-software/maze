@@ -3,16 +3,15 @@ import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
-import { useKeyboardInput } from '../../lib/gameplay/input';
+import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
-import { SwipePad } from './SwipePad';
 
-const PLAY_CELL_SIZE = 20;
-const MAZE_PADDING = 32;   // must be >= SAFE_PAD to guarantee player visibility at maze edges
+const PLAY_CELL_SIZE = 32;   // larger cells for a game-like exploration feel
+const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
 const TOP_BAR_H = 44;
-const AD_SLOT_H = 0;       // reserved for future banner ad — set to ~50 when monetizing
-const SAFE_PAD = 32;       // minimum px from viewport edge for player position
-const MINIMAP_SIZE = 80;
+const AD_SLOT_H = 0;         // reserved for future banner ad — set to ~50 when monetizing
+const SAFE_PAD = 32;         // minimum px from viewport edge for player position
+const MINIMAP_SIZE = 96;
 const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 
@@ -48,13 +47,27 @@ export interface FullscreenMazePlayerProps {
 
 export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
   const isNewBestRef = useRef(false);
   const camXRef = useRef<number | null>(null);
   const camYRef = useRef<number | null>(null);
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
-  const dpadContainerRef = useRef<HTMLDivElement>(null);
-  const [dpadH, setDpadH] = useState(128);
+  const controlStripRef = useRef<HTMLDivElement>(null);
+  const [controlStripH, setControlStripH] = useState(128);
+
+  // Left-handed mode: D-pad on left, minimap on right (persisted)
+  const [leftHanded, setLeftHanded] = useState(() => {
+    try { return localStorage.getItem('maze:lh') === '1'; } catch { return false; }
+  });
+
+  const toggleLeftHanded = () => {
+    setLeftHanded(v => {
+      const next = !v;
+      try { localStorage.setItem('maze:lh', next ? '1' : '0'); } catch {}
+      return next;
+    });
+  };
 
   const [vpSize, setVpSize] = useState(() => ({
     w: typeof window !== 'undefined' ? window.innerWidth : 390,
@@ -101,11 +114,11 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
   // Measure control strip height for accurate camera math
   useEffect(() => {
-    const el = dpadContainerRef.current;
+    const el = controlStripRef.current;
     if (!el) return;
     const ro = new ResizeObserver(entries => {
       const h = entries[0]?.contentRect.height;
-      if (h) setDpadH(Math.round(h));
+      if (h) setControlStripH(Math.round(h));
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -119,6 +132,8 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
   const isActive = state.status === 'playing' || state.status === 'idle';
   useKeyboardInput(dispatch, isActive);
+  // Swipe anywhere in the maze viewport to move
+  useTouchInput(mazeViewportRef, dispatch, isActive);
 
   const handleHint = useCallback(() => {
     const { solution } = maze;
@@ -138,9 +153,9 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   const playerPx = MAZE_PADDING + state.playerPosition.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
   const playerPy = MAZE_PADDING + state.playerPosition.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
 
-  const controlStripH = vpSize.w < 768 ? dpadH : 0;
+  const stripH = vpSize.w < 768 ? controlStripH : 0;
   const viewW = vpSize.w;
-  const viewH = vpSize.h - TOP_BAR_H - AD_SLOT_H - controlStripH;
+  const viewH = vpSize.h - TOP_BAR_H - AD_SLOT_H - stripH;
 
   // Reset camera when game resets
   if (prevStatusRef.current !== 'idle' && state.status === 'idle') {
@@ -150,8 +165,8 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   prevStatusRef.current = state.status;
 
   // ── Safe-zone camera ─────────────────────────────────────────────────────────
-  // Player must always stay within SAFE_PAD of the viewport edge.
-  // Setting MAZE_PADDING = SAFE_PAD guarantees this holds even at maze edges.
+  // MAZE_PADDING = SAFE_PAD ensures player is never within SAFE_PAD of viewport edge,
+  // even when the camera is clamped to maze bounds at corners.
   const safeW = viewW / 2 - SAFE_PAD;
   const safeH = viewH / 2 - SAFE_PAD;
 
@@ -187,6 +202,32 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
 
+  // Minimap and D-pad panels — order swaps for left-handed mode
+  const minimapPanel = (
+    <div className="flex flex-1 items-center justify-center py-3">
+      <div
+        className="rounded-lg overflow-hidden border border-slate-200 shadow-sm bg-white"
+        style={{ width: MINIMAP_SIZE, height: MINIMAP_SIZE }}
+        aria-hidden="true"
+      >
+        <MazeRenderer
+          maze={maze}
+          cellSize={minimapCell}
+          wallThickness={1}
+          padding={2}
+          playerPosition={state.playerPosition}
+          playerMarkerRadius={5}
+        />
+      </div>
+    </div>
+  );
+
+  const dpadPanel = (
+    <div className="flex flex-1 items-center justify-center py-3">
+      <DPad dispatch={dispatch} isActive={isActive} />
+    </div>
+  );
+
   return (
     <div
       className="fixed inset-0 z-50 flex flex-col bg-white"
@@ -221,7 +262,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
             </span>
           )}
           {state.status === 'paused'  && <span className="text-amber-500 font-medium text-xs">Paused</span>}
-          {state.status === 'idle'    && <span className="text-slate-400 text-xs">Arrow keys, WASD, or controls below</span>}
+          {state.status === 'idle'    && <span className="text-slate-400 text-xs">Swipe or use the D-pad to move</span>}
           {state.status === 'solved'  && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
         </div>
 
@@ -270,8 +311,8 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
         <div style={{ height: AD_SLOT_H }} className="bg-slate-50 border-b border-slate-100 shrink-0" />
       )}
 
-      {/* Maze viewport */}
-      <div className="relative flex-1 overflow-hidden bg-slate-100">
+      {/* Maze viewport — swipe anywhere here to move */}
+      <div ref={mazeViewportRef} className="relative flex-1 overflow-hidden bg-slate-100">
 
         {/* Follow-camera pan container */}
         <div
@@ -350,34 +391,30 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
         )}
       </div>
 
-      {/* Mobile control strip — minimap + D-pad + swipe area */}
+      {/* Mobile control strip — equal halves: minimap + D-pad with left-handed swap */}
       <div
-        ref={dpadContainerRef}
-        className="md:hidden bg-slate-50 border-t border-slate-200 shrink-0 flex items-center gap-2 px-3 py-2.5"
+        ref={controlStripRef}
+        className="md:hidden bg-slate-50 border-t border-slate-200 shrink-0 flex items-stretch"
       >
-        {/* Minimap */}
-        <div
-          className="shrink-0 rounded-lg overflow-hidden border border-slate-200 shadow-sm bg-white"
-          style={{ width: MINIMAP_SIZE, height: MINIMAP_SIZE }}
-          aria-hidden="true"
-        >
-          <MazeRenderer
-            maze={maze}
-            cellSize={minimapCell}
-            wallThickness={1}
-            padding={2}
-            playerPosition={state.playerPosition}
-            playerMarkerRadius={5}
-          />
+        {leftHanded ? dpadPanel : minimapPanel}
+
+        {/* Center divider with swap toggle */}
+        <div className="flex flex-col items-center justify-center px-1 gap-1">
+          <div className="w-px flex-1 bg-slate-200" />
+          <button
+            onClick={toggleLeftHanded}
+            className="w-7 h-7 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-colors shrink-0 shadow-sm"
+            aria-label={leftHanded ? 'Switch to right-handed layout' : 'Switch to left-handed layout'}
+            title={leftHanded ? 'Right-handed layout' : 'Left-handed layout'}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/>
+            </svg>
+          </button>
+          <div className="w-px flex-1 bg-slate-200" />
         </div>
 
-        {/* D-pad */}
-        <div className="shrink-0">
-          <DPad dispatch={dispatch} isActive={isActive} />
-        </div>
-
-        {/* Swipe area */}
-        <SwipePad dispatch={dispatch} isActive={isActive} />
+        {leftHanded ? minimapPanel : dpadPanel}
       </div>
     </div>
   );

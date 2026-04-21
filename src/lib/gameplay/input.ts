@@ -37,11 +37,11 @@ export function useKeyboardInput(dispatch: Dispatch, enabled: boolean): void {
 }
 
 /**
- * Attaches touch handlers to the SVG element for swipe-based movement.
- * Min swipe distance: 20px. Prevents scroll while swiping over maze.
+ * Attaches touch handlers to any element for swipe-based movement.
+ * Min swipe distance: 20px. Prevents scroll while swiping.
  */
 export function useTouchInput(
-  ref: RefObject<SVGSVGElement | null>,
+  ref: RefObject<HTMLElement | SVGSVGElement | null>,
   dispatch: Dispatch,
   enabled: boolean,
 ): void {
