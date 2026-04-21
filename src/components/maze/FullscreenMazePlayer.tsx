@@ -102,11 +102,16 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: F
 
   // Personal best on solve
   useEffect(() => {
-    if (state.status === 'solved') {
-      if (maze.slug) isNewBestRef.current = savePersonalBest(maze.slug, state.elapsedMs);
+    if (state.status !== 'solved') return;
+    if (maze.slug) isNewBestRef.current = savePersonalBest(maze.slug, state.elapsedMs);
+
+    // Ensure the post-solve overlay paints before external solve callbacks run.
+    const id = window.setTimeout(() => {
       onSolve?.();
-    }
-  }, [state.status]);
+    }, 250);
+
+    return () => window.clearTimeout(id);
+  }, [state.status, maze.slug, state.elapsedMs, onSolve]);
 
   // Screen reader announcement
   useEffect(() => {
