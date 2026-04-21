@@ -299,10 +299,23 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: F
                 <polyline points="12 6 12 12 16 14" strokeWidth="2"/>
               </svg>
               <Timer elapsedMs={state.elapsedMs} />
+              <span className="hidden md:inline text-slate-300 font-normal">·</span>
+              <span className="hidden md:inline text-slate-400 text-xs font-sans font-normal capitalize">
+                {maze.difficulty} {maze.width}×{maze.height}
+              </span>
             </span>
           )}
           {state.status === 'paused'  && <span className="text-amber-500 font-medium text-xs">Paused</span>}
-          {state.status === 'idle'    && <span className="text-slate-400 text-xs">Swipe or use D-pad to move</span>}
+          {state.status === 'idle' && (
+            <>
+              <span className="text-slate-400 text-xs md:hidden">Swipe or use D-pad to move</span>
+              <span className="text-slate-400 text-xs hidden md:inline">
+                <span className="capitalize">{maze.difficulty}</span>
+                {' · '}
+                {maze.width}×{maze.height}
+              </span>
+            </>
+          )}
           {state.status === 'solved'  && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
         </div>
 
@@ -389,6 +402,43 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: F
             interactive={isActive}
             svgRef={svgRef}
           />
+        </div>
+
+        {/* Desktop keyboard hint — bottom-left, idle only */}
+        {state.status === 'idle' && (
+          <div className="hidden md:flex absolute bottom-4 left-4 z-10 items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/85 backdrop-blur-sm border border-slate-200 shadow-sm pointer-events-none" aria-hidden="true">
+            {(['↑','↓','←','→'] as const).map(k => (
+              <kbd key={k} className="inline-flex items-center justify-center w-6 h-6 rounded border border-slate-300 bg-white text-xs font-mono text-slate-600 shadow-sm">{k}</kbd>
+            ))}
+            <span className="text-slate-400 text-xs mx-1">or</span>
+            {(['W','A','S','D'] as const).map(k => (
+              <kbd key={k} className="inline-flex items-center justify-center w-6 h-6 rounded border border-slate-300 bg-white text-xs font-mono text-slate-600 shadow-sm">{k}</kbd>
+            ))}
+          </div>
+        )}
+
+        {/* Desktop minimap — bottom-right corner overlay */}
+        <div
+          className="hidden md:block absolute bottom-4 right-4 z-10 pointer-events-none"
+          aria-hidden="true"
+        >
+          <div
+            className="relative rounded-lg overflow-hidden border border-slate-200 shadow-lg bg-white/85 backdrop-blur-sm"
+            style={{ width: MINIMAP_SIZE, height: MINIMAP_SIZE }}
+          >
+            <MazeRenderer
+              maze={maze}
+              cellSize={minimapCell}
+              wallThickness={1}
+              padding={2}
+              playerPosition={state.playerPosition}
+              playerMarkerRadius={5}
+            />
+            <div
+              className="absolute border-2 border-blue-500 rounded pointer-events-none"
+              style={{ left: mmFrameX, top: mmFrameY, width: mmFrameW, height: mmFrameH, opacity: 0.65 }}
+            />
+          </div>
         </div>
 
         {/* Paused overlay */}
