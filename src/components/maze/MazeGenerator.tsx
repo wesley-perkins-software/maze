@@ -46,6 +46,7 @@ export function MazeGenerator() {
   const [playing, setPlaying] = useState(false);
   const [solved, setSolved]   = useState(false);
   const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
+  const [playerKey, setPlayerKey] = useState(0);
   const hasPlayedRef = useRef(false);
 
   const getDimensions = useCallback(
@@ -144,14 +145,18 @@ export function MazeGenerator() {
 
         {playing && (
           <FullscreenMazePlayer
+            key={playerKey}
             maze={maze}
             onSolve={handleSolve}
             onClose={() => setPlaying(false)}
           />
         )}
 
+        {/* Rendered at z-[60] so it covers the still-mounted player (z-50).
+            useLayoutEffect in the player guarantees this mounts before any
+            ghost-click events can fire, so the backdrop absorbs stray touches. */}
         {solveStats && (
-          <div className="fixed inset-0 z-50">
+          <div className="fixed inset-0 z-[60]">
             <PostSolveOverlay
               elapsedMs={solveStats.elapsedMs}
               stepCount={solveStats.stepCount}
@@ -161,9 +166,12 @@ export function MazeGenerator() {
               onPlayAgain={() => {
                 setSolveStats(null);
                 setSolved(false);
-                setPlaying(true);
+                setPlayerKey(k => k + 1);
               }}
-              onClose={() => setSolveStats(null)}
+              onClose={() => {
+                setSolveStats(null);
+                setPlaying(false);
+              }}
             />
           </div>
         )}

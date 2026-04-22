@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useRef, useCallback, useState } from 'react';
+import { useReducer, useEffect, useLayoutEffect, useRef, useCallback, useState } from 'react';
 import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
@@ -104,13 +104,14 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
     return () => clearInterval(id);
   }, [state.status, state.startTime]);
 
-  // Personal best on solve — pass stats up and close the player
-  useEffect(() => {
+  // Synchronously notify parent on solve — useLayoutEffect guarantees this runs before
+  // the browser paints and before any ghost-click events can fire, so the parent's
+  // PostSolveOverlay is in the DOM before any touch events can reach the Exit button.
+  useLayoutEffect(() => {
     if (state.status === 'solved') {
       const isNewBest = maze.slug ? savePersonalBest(maze.slug, state.elapsedMs) : false;
       isNewBestRef.current = isNewBest;
       onSolve?.({ elapsedMs: state.elapsedMs, stepCount: state.trail.length, hintsUsed: state.hintsUsed, isNewBest });
-      onClose();
     }
   }, [state.status]);
 

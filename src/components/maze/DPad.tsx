@@ -40,14 +40,7 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   const lastDirectionRef = useRef<Direction | null>(null);
   const touchActiveRef = useRef(false);
 
-  if (!isActive) return null;
-
-  const baseBtnClass =
-    'flex items-center justify-center w-10 h-10 rounded-full ' +
-    'bg-white border border-slate-200 text-slate-500 shadow-sm ' +
-    'select-none touch-none ' +
-    'transition-all duration-75 cursor-pointer';
-
+  // Defined as function declarations so they're hoisted and accessible inside useEffect.
   function dispatchDirection(direction: Direction | null) {
     if (!direction || direction === lastDirectionRef.current) return;
     lastDirectionRef.current = direction;
@@ -76,7 +69,11 @@ export function DPad({ dispatch, isActive }: DPadProps) {
     dispatchDirection(direction);
   }
 
+  // useEffect must be called unconditionally (hooks rules). When inactive the guard
+  // skips listener registration, and the cleanup is a no-op.
   useEffect(() => {
+    if (!isActive) return;
+
     function onTouchMove(e: TouchEvent) {
       if (!touchActiveRef.current) return;
       e.preventDefault();
@@ -100,6 +97,15 @@ export function DPad({ dispatch, isActive }: DPadProps) {
       window.removeEventListener('touchcancel', onTouchEnd);
     };
   });
+
+  // Early return after all hooks — safe per React rules.
+  if (!isActive) return null;
+
+  const baseBtnClass =
+    'flex items-center justify-center w-10 h-10 rounded-full ' +
+    'bg-white border border-slate-200 text-slate-500 shadow-sm ' +
+    'select-none touch-none ' +
+    'transition-all duration-75 cursor-pointer';
 
   function handleMouseDown(direction: Direction) {
     dispatchDirection(direction);
