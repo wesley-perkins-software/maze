@@ -3,6 +3,8 @@ import type { Difficulty } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
 import { MazeRenderer } from './MazeRenderer';
 import { FullscreenMazePlayer } from './FullscreenMazePlayer';
+import type { SolveStats } from './FullscreenMazePlayer';
+import { PostSolveOverlay } from './PostSolveOverlay';
 
 type CoreDifficulty = 'easy' | 'medium' | 'hard';
 type SizePreset = 'small' | 'medium' | 'large';
@@ -43,6 +45,7 @@ export function MazeGenerator() {
   const [customHeight, setCustomHeight] = useState(12);
   const [playing, setPlaying] = useState(false);
   const [solved, setSolved]   = useState(false);
+  const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
   const hasPlayedRef = useRef(false);
 
   const getDimensions = useCallback(
@@ -60,6 +63,7 @@ export function MazeGenerator() {
     setMaze(m);
     setPlaying(false);
     setSolved(false);
+    setSolveStats(null);
   }, []);
 
   const handleDifficultyChange = useCallback((d: CoreDifficulty) => {
@@ -83,7 +87,8 @@ export function MazeGenerator() {
     setSolved(false);
   }, []);
 
-  const handleSolve = useCallback(() => {
+  const handleSolve = useCallback((stats: SolveStats) => {
+    setSolveStats(stats);
     setSolved(true);
   }, []);
 
@@ -143,6 +148,24 @@ export function MazeGenerator() {
             onSolve={handleSolve}
             onClose={() => setPlaying(false)}
           />
+        )}
+
+        {solveStats && (
+          <div className="fixed inset-0 z-50">
+            <PostSolveOverlay
+              elapsedMs={solveStats.elapsedMs}
+              stepCount={solveStats.stepCount}
+              hintsUsed={solveStats.hintsUsed}
+              isNewBest={solveStats.isNewBest}
+              personalBest={null}
+              onPlayAgain={() => {
+                setSolveStats(null);
+                setSolved(false);
+                setPlaying(true);
+              }}
+              onClose={() => setSolveStats(null)}
+            />
+          </div>
         )}
 
         {/* Post-solve CTA */}

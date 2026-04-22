@@ -5,8 +5,13 @@ import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
-import { PostSolveOverlay } from './PostSolveOverlay';
-import type { PostSolveNav } from './PostSolveOverlay';
+
+export interface SolveStats {
+  elapsedMs: number;
+  stepCount: number;
+  hintsUsed: number;
+  isNewBest: boolean;
+}
 
 const PLAY_CELL_SIZE = 32;
 const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
@@ -48,12 +53,11 @@ function formatTime(ms: number) {
 
 export interface FullscreenMazePlayerProps {
   maze: MazeData;
-  onSolve?: () => void;
+  onSolve?: (stats: SolveStats) => void;
   onClose: () => void;
-  postSolveNav?: PostSolveNav;
 }
 
-export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: FullscreenMazePlayerProps) {
+export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
@@ -100,11 +104,13 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: F
     return () => clearInterval(id);
   }, [state.status, state.startTime]);
 
-  // Personal best on solve
+  // Personal best on solve — pass stats up and close the player
   useEffect(() => {
     if (state.status === 'solved') {
-      if (maze.slug) isNewBestRef.current = savePersonalBest(maze.slug, state.elapsedMs);
-      onSolve?.();
+      const isNewBest = maze.slug ? savePersonalBest(maze.slug, state.elapsedMs) : false;
+      isNewBestRef.current = isNewBest;
+      onSolve?.({ elapsedMs: state.elapsedMs, stepCount: state.trail.length, hintsUsed: state.hintsUsed, isNewBest });
+      onClose();
     }
   }, [state.status]);
 
@@ -227,8 +233,6 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: F
   const mmFrameH = Math.min(MINIMAP_SIZE, (viewH / mazeH) * MINIMAP_SIZE);
   const mmFrameX = Math.max(0, Math.min(MINIMAP_SIZE - mmFrameW, (-tx / mazeW) * MINIMAP_SIZE));
   const mmFrameY = Math.max(0, Math.min(MINIMAP_SIZE - mmFrameH, (-ty / mazeH) * MINIMAP_SIZE));
-
-  const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
 
   const minimapPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
@@ -406,22 +410,6 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: F
           </div>
         )}
 
-        {/* Solved overlay */}
-        {state.status === 'solved' && (
-          <PostSolveOverlay
-            elapsedMs={state.elapsedMs}
-            stepCount={state.trail.length}
-            hintsUsed={state.hintsUsed}
-            isNewBest={isNewBestRef.current}
-            personalBest={personalBest}
-            nav={postSolveNav}
-            mazeSlug={maze.slug}
-            onPlayAgain={() => {
-              isNewBestRef.current = false;
-              dispatch({ type: 'RESET', startPosition: maze.entry });
-            }}
-          />
-        )}
       </div>
 
       {/* AD_SLOT: Banner ad goes here — between maze and controls.

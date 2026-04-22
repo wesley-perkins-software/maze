@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Set to 50 to activate a 320×50 banner ad slot above the tertiary actions.
 const POST_SOLVE_AD_SLOT_H = 0;
@@ -19,6 +19,7 @@ export interface PostSolveOverlayProps {
   personalBest: number | null;
   nav?: PostSolveNav;
   onPlayAgain: () => void;
+  onClose?: () => void;
   mazeSlug?: string;
 }
 
@@ -116,14 +117,23 @@ export function PostSolveOverlay({
   personalBest,
   nav,
   onPlayAgain,
+  onClose,
   mazeSlug,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+  // On mobile, the browser fires a synthetic click event at the touch position
+  // after touchend (ghost click). If the overlay renders before that event fires,
+  // the click lands on whatever button is at the touch position and dismisses the
+  // overlay before the user sees it. Disabling pointer-events for 400ms (longer
+  // than the ~300ms ghost-click window) prevents this.
+  const [interactive, setInteractive] = useState(false);
 
   useEffect(() => {
-    // Focus the primary action on mount for keyboard/screen-reader users
-    const el = primaryBtnRef.current;
-    if (el) el.focus();
+    const id = setTimeout(() => {
+      setInteractive(true);
+      primaryBtnRef.current?.focus();
+    }, 400);
+    return () => clearTimeout(id);
   }, []);
 
   const statsItems: string[] = [`⏱ ${formatTime(elapsedMs)}`];
@@ -139,7 +149,10 @@ export function PostSolveOverlay({
     >
       <ConfettiParticles />
 
-      <div className="post-solve-card-in relative w-full max-w-xs bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4">
+      <div
+        className="post-solve-card-in relative w-full max-w-xs bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4"
+        style={!interactive ? { pointerEvents: 'none' } : undefined}
+      >
 
         {/* Success icon */}
         <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
@@ -231,6 +244,11 @@ export function PostSolveOverlay({
             <a href={`/mazes/${nav.randomSlug}`} className="btn-ghost text-sm">
               Random
             </a>
+          )}
+          {!nav && onClose && (
+            <button onClick={onClose} className="btn-ghost text-sm">
+              Done
+            </button>
           )}
           <ShareButton mazeSlug={mazeSlug} />
         </div>
