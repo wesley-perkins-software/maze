@@ -5,6 +5,7 @@ import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
+import { PostSolveOverlay } from './PostSolveOverlay';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -69,6 +70,8 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   const controlStripRef = useRef<HTMLDivElement>(null);
   const [controlStripH, setControlStripH] = useState(128);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showSolvedOverlay, setShowSolvedOverlay] = useState(false);
+  const [personalBestAtSolve, setPersonalBestAtSolve] = useState<number | null>(null);
 
   // Left-handed mode: D-pad on left, minimap on right (persisted)
   const [leftHanded, setLeftHanded] = useState(() => {
@@ -107,10 +110,12 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   // Personal best on solve — pass stats up and close the player
   useEffect(() => {
     if (state.status === 'solved') {
+      const prevBest = maze.slug ? getPersonalBest(maze.slug) : null;
       const isNewBest = maze.slug ? savePersonalBest(maze.slug, state.elapsedMs) : false;
       isNewBestRef.current = isNewBest;
+      setPersonalBestAtSolve(prevBest);
+      setShowSolvedOverlay(true);
       onSolve?.({ elapsedMs: state.elapsedMs, stepCount: state.trail.length, hintsUsed: state.hintsUsed, isNewBest });
-      onClose();
     }
   }, [state.status]);
 
@@ -408,6 +413,24 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
               Resume
             </button>
           </div>
+        )}
+
+        {showSolvedOverlay && (
+          <PostSolveOverlay
+            elapsedMs={state.elapsedMs}
+            stepCount={state.trail.length}
+            hintsUsed={state.hintsUsed}
+            isNewBest={isNewBestRef.current}
+            personalBest={personalBestAtSolve}
+            mazeSlug={maze.slug}
+            onPlayAgain={() => {
+              isNewBestRef.current = false;
+              setPersonalBestAtSolve(null);
+              setShowSolvedOverlay(false);
+              dispatch({ type: 'RESET', startPosition: maze.entry });
+            }}
+            onClose={onClose}
+          />
         )}
 
       </div>
