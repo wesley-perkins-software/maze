@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateMaze } from '../../src/lib/maze/generator';
 import { gameReducer, createInitialState } from '../../src/lib/gameplay/reducer';
+import type { MazeData } from '../../src/types/maze';
 
 function makeMaze() {
   return generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 42 });
@@ -74,5 +75,29 @@ describe('gameReducer', () => {
     state = gameReducer(state, { type: 'RESET', startPosition: maze.entry }, maze);
     expect(state.status).toBe('idle');
     expect(state.elapsedMs).toBe(0);
+  });
+
+  it('marks solved when RUN path passes through exit before stopping', () => {
+    const maze: MazeData = {
+      id: 'test-run-pass-through-exit',
+      slug: 'test-run-pass-through-exit',
+      difficulty: 'easy',
+      width: 3,
+      height: 1,
+      seed: 1,
+      entry: { x: 0, y: 0 },
+      exit: { x: 1, y: 0 },
+      // Straight corridor 0 -> 1 -> 2
+      grid: [13, 5, 7],
+      solution: [0, 1],
+      generatedAt: new Date(0).toISOString(),
+    };
+
+    const state = createInitialState(maze);
+    const next = gameReducer(state, { type: 'RUN', direction: 'E' }, maze);
+
+    expect(next.status).toBe('solved');
+    expect(next.playerPosition).toEqual(maze.exit);
+    expect(next.trail[next.trail.length - 1]).toBe(1);
   });
 });

@@ -48,9 +48,11 @@ export function gameReducer(
       const path = computeRun(maze, state.playerPosition, action.direction);
       if (path.length === 0) return state;
 
-      const finalPos = path[path.length - 1];
-      const newIndices = path.map(p => pointToIndex(p, maze.width));
-      const isSolved = finalPos.x === maze.exit.x && finalPos.y === maze.exit.y;
+      const exitIndexInPath = path.findIndex((p) => p.x === maze.exit.x && p.y === maze.exit.y);
+      const solvedPath = exitIndexInPath === -1 ? path : path.slice(0, exitIndexInPath + 1);
+      const finalPos = solvedPath[solvedPath.length - 1];
+      const newIndices = solvedPath.map(p => pointToIndex(p, maze.width));
+      const isSolved = exitIndexInPath !== -1;
       const now = Date.now();
 
       return {
