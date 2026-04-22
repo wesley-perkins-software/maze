@@ -406,22 +406,6 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: F
           </div>
         )}
 
-        {/* Solved overlay */}
-        {state.status === 'solved' && (
-          <PostSolveOverlay
-            elapsedMs={state.elapsedMs}
-            stepCount={state.trail.length}
-            hintsUsed={state.hintsUsed}
-            isNewBest={isNewBestRef.current}
-            personalBest={personalBest}
-            nav={postSolveNav}
-            mazeSlug={maze.slug}
-            onPlayAgain={() => {
-              isNewBestRef.current = false;
-              dispatch({ type: 'RESET', startPosition: maze.entry });
-            }}
-          />
-        )}
       </div>
 
       {/* AD_SLOT: Banner ad goes here — between maze and controls.
@@ -435,6 +419,24 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose, postSolveNav }: F
         >
           {/* Ad unit renders here */}
         </div>
+      )}
+
+      {/* Solved overlay — direct child of the fixed container so it covers the full player */}
+      {state.status === 'solved' && (
+        <PostSolveOverlay
+          elapsedMs={state.elapsedMs}
+          stepCount={state.trail.length}
+          hintsUsed={state.hintsUsed}
+          isNewBest={isNewBestRef.current}
+          personalBest={personalBest}
+          nav={postSolveNav}
+          mazeSlug={maze.slug}
+          onClose={onClose}
+          onPlayAgain={() => {
+            isNewBestRef.current = false;
+            dispatch({ type: 'RESET', startPosition: maze.entry });
+          }}
+        />
       )}
 
       {/* Mobile control strip — equal halves: minimap + D-pad with left-handed swap */}

@@ -19,6 +19,7 @@ export interface PostSolveOverlayProps {
   personalBest: number | null;
   nav?: PostSolveNav;
   onPlayAgain: () => void;
+  onClose?: () => void;
   mazeSlug?: string;
 }
 
@@ -116,14 +117,18 @@ export function PostSolveOverlay({
   personalBest,
   nav,
   onPlayAgain,
+  onClose,
   mazeSlug,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
 
   useEffect(() => {
-    // Focus the primary action on mount for keyboard/screen-reader users
-    const el = primaryBtnRef.current;
-    if (el) el.focus();
+    // Delay focus to outlast the ~300ms ghost-click window on mobile, preventing
+    // touch events from the solving gesture from immediately triggering the button.
+    const id = setTimeout(() => {
+      primaryBtnRef.current?.focus();
+    }, 350);
+    return () => clearTimeout(id);
   }, []);
 
   const statsItems: string[] = [`⏱ ${formatTime(elapsedMs)}`];
@@ -231,6 +236,11 @@ export function PostSolveOverlay({
             <a href={`/mazes/${nav.randomSlug}`} className="btn-ghost text-sm">
               Random
             </a>
+          )}
+          {!nav && onClose && (
+            <button onClick={onClose} className="btn-ghost text-sm">
+              Done
+            </button>
           )}
           <ShareButton mazeSlug={mazeSlug} />
         </div>
