@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Set to 50 to activate a 320×50 banner ad slot above the tertiary actions.
 const POST_SOLVE_AD_SLOT_H = 0;
@@ -121,13 +121,18 @@ export function PostSolveOverlay({
   mazeSlug,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+  // On mobile, the browser fires a synthetic click event at the touch position
+  // after touchend (ghost click). If the overlay renders before that event fires,
+  // the click lands on whatever button is at the touch position and dismisses the
+  // overlay before the user sees it. Disabling pointer-events for 400ms (longer
+  // than the ~300ms ghost-click window) prevents this.
+  const [interactive, setInteractive] = useState(false);
 
   useEffect(() => {
-    // Delay focus to outlast the ~300ms ghost-click window on mobile, preventing
-    // touch events from the solving gesture from immediately triggering the button.
     const id = setTimeout(() => {
+      setInteractive(true);
       primaryBtnRef.current?.focus();
-    }, 350);
+    }, 400);
     return () => clearTimeout(id);
   }, []);
 
@@ -138,6 +143,7 @@ export function PostSolveOverlay({
   return (
     <div
       className="absolute inset-0 z-20 flex items-center justify-center bg-white/90 p-4"
+      style={!interactive ? { pointerEvents: 'none' } : undefined}
       role="dialog"
       aria-modal="true"
       aria-label="Maze complete"
