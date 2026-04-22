@@ -64,6 +64,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   const announcerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const isNewBestRef = useRef(false);
+  const solvedOnceRef = useRef(false);
   const camXRef = useRef<number | null>(null);
   const camYRef = useRef<number | null>(null);
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
@@ -109,15 +110,20 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
   // Personal best on solve — pass stats up and close the player
   useEffect(() => {
-    if (state.status === 'solved') {
-      const prevBest = maze.slug ? getPersonalBest(maze.slug) : null;
-      const isNewBest = maze.slug ? savePersonalBest(maze.slug, state.elapsedMs) : false;
-      isNewBestRef.current = isNewBest;
-      setPersonalBestAtSolve(prevBest);
-      setShowSolvedOverlay(true);
-      onSolve?.({ elapsedMs: state.elapsedMs, stepCount: state.trail.length, hintsUsed: state.hintsUsed, isNewBest });
-    }
-  }, [state.status]);
+    const reachedExit =
+      state.playerPosition.x === maze.exit.x &&
+      state.playerPosition.y === maze.exit.y;
+
+    if (solvedOnceRef.current || (!reachedExit && state.status !== 'solved')) return;
+
+    solvedOnceRef.current = true;
+    const prevBest = maze.slug ? getPersonalBest(maze.slug) : null;
+    const isNewBest = maze.slug ? savePersonalBest(maze.slug, state.elapsedMs) : false;
+    isNewBestRef.current = isNewBest;
+    setPersonalBestAtSolve(prevBest);
+    setShowSolvedOverlay(true);
+    onSolve?.({ elapsedMs: state.elapsedMs, stepCount: state.trail.length, hintsUsed: state.hintsUsed, isNewBest });
+  }, [state.status, state.playerPosition, maze.exit.x, maze.exit.y, maze.slug, state.elapsedMs, state.trail.length, state.hintsUsed, onSolve]);
 
   // Screen reader announcement
   useEffect(() => {
@@ -424,6 +430,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
             personalBest={personalBestAtSolve}
             mazeSlug={maze.slug}
             onPlayAgain={() => {
+              solvedOnceRef.current = false;
               isNewBestRef.current = false;
               setPersonalBestAtSolve(null);
               setShowSolvedOverlay(false);
