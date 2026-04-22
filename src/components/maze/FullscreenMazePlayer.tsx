@@ -110,11 +110,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
   // Personal best on solve — pass stats up and close the player
   useEffect(() => {
-    const reachedExit =
-      state.playerPosition.x === maze.exit.x &&
-      state.playerPosition.y === maze.exit.y;
-
-    if (solvedOnceRef.current || (!reachedExit && state.status !== 'solved')) return;
+    if (solvedOnceRef.current || state.status !== 'solved') return;
 
     solvedOnceRef.current = true;
     const prevBest = maze.slug ? getPersonalBest(maze.slug) : null;
@@ -123,7 +119,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
     setPersonalBestAtSolve(prevBest);
     setShowSolvedOverlay(true);
     onSolve?.({ elapsedMs: state.elapsedMs, stepCount: state.trail.length, hintsUsed: state.hintsUsed, isNewBest });
-  }, [state.status, state.playerPosition, maze.exit.x, maze.exit.y, maze.slug, state.elapsedMs, state.trail.length, state.hintsUsed, onSolve]);
+  }, [state.status, maze.slug, state.elapsedMs, state.trail.length, state.hintsUsed, onSolve]);
 
   // Screen reader announcement
   useEffect(() => {
