@@ -70,8 +70,16 @@ export function MazeRenderer({
   // ── Entry / exit centers ─────────────────────────────────────────────────────
   const entryCx = padding + entry.x * cellSize + cellSize / 2;
   const entryCy = padding + entry.y * cellSize + cellSize / 2;
-  const exitCx  = padding + exit.x  * cellSize + cellSize / 2;
-  const exitCy  = padding + exit.y  * cellSize + cellSize / 2;
+  let exitCx  = padding + exit.x  * cellSize + cellSize / 2;
+  let exitCy  = padding + exit.y  * cellSize + cellSize / 2;
+  const exitCell = grid[exit.y * width + exit.x];
+  const exitOutsideOffset = cellSize * 0.62;
+
+  // Draw exit marker outside the maze boundary opening when possible.
+  if (exit.y === 0 && !(exitCell & WALL_N)) exitCy -= exitOutsideOffset;
+  else if (exit.y === height - 1 && !(exitCell & WALL_S)) exitCy += exitOutsideOffset;
+  else if (exit.x === 0 && !(exitCell & WALL_W)) exitCx -= exitOutsideOffset;
+  else if (exit.x === width - 1 && !(exitCell & WALL_E)) exitCx += exitOutsideOffset;
   const markerR = cellSize * 0.38;
 
   // ── Solution polyline ────────────────────────────────────────────────────────

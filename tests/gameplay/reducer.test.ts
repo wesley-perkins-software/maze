@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateMaze } from '../../src/lib/maze/generator';
 import { gameReducer, createInitialState } from '../../src/lib/gameplay/reducer';
+import type { MazeData } from '../../src/types/maze';
 
 function makeMaze() {
   return generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 42 });
@@ -53,6 +54,9 @@ describe('gameReducer', () => {
       state = gameReducer(state, { type: 'MOVE', direction: dir as any }, maze);
     }
 
+    // Solve by exiting through the open boundary from the exit cell.
+    state = gameReducer(state, { type: 'MOVE', direction: 'S' }, maze);
+
     expect(state.status).toBe('solved');
     expect(state.playerPosition).toEqual(maze.exit);
   });
@@ -74,5 +78,29 @@ describe('gameReducer', () => {
     state = gameReducer(state, { type: 'RESET', startPosition: maze.entry }, maze);
     expect(state.status).toBe('idle');
     expect(state.elapsedMs).toBe(0);
+  });
+
+  it('marks solved when moving out of bounds through the open exit', () => {
+    const maze: MazeData = {
+      id: 'test-run-pass-through-exit',
+      slug: 'test-run-pass-through-exit',
+      difficulty: 'easy',
+      width: 1,
+      height: 1,
+      seed: 1,
+      entry: { x: 0, y: 0 },
+      exit: { x: 0, y: 0 },
+      // N/E/W walls closed, south open
+      grid: [11],
+      solution: [0],
+      generatedAt: new Date(0).toISOString(),
+    };
+
+    const state = createInitialState(maze);
+    const next = gameReducer(state, { type: 'RUN', direction: 'S' }, maze);
+
+    expect(next.status).toBe('solved');
+    expect(next.playerPosition).toEqual(maze.exit);
+    expect(next.trail[next.trail.length - 1]).toBe(0);
   });
 });
