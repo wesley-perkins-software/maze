@@ -143,14 +143,16 @@ export function PostSolveOverlay({
   return (
     <div
       className="absolute inset-0 z-20 flex items-center justify-center bg-white/90 p-4"
-      style={!interactive ? { pointerEvents: 'none' } : undefined}
       role="dialog"
       aria-modal="true"
       aria-label="Maze complete"
     >
       <ConfettiParticles />
 
-      <div className="post-solve-card-in relative w-full max-w-xs bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4">
+      <div
+        className="post-solve-card-in relative w-full max-w-xs bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4"
+        style={!interactive ? { pointerEvents: 'none' } : undefined}
+      >
 
         {/* Success icon */}
         <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
