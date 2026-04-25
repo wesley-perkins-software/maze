@@ -9,15 +9,13 @@ export interface Props {
 const { difficulty, size = 'md' } = Astro.props;
 
 const colorMap: Record<Difficulty, string> = {
-  kids:   'bg-purple-50 border-purple-200 text-purple-700',
-  easy:   'bg-green-50 border-green-200 text-green-700',
+  small:  'bg-green-50 border-green-200 text-green-700',
   medium: 'bg-yellow-50 border-yellow-200 text-yellow-700',
-  hard:   'bg-red-50 border-red-200 text-red-700',
-  adults: 'bg-orange-50 border-orange-200 text-orange-700',
+  large:  'bg-red-50 border-red-200 text-red-700',
 };
 
 const labelMap: Record<Difficulty, string> = {
-  kids: 'Kids', easy: 'Easy', medium: 'Medium', hard: 'Hard', adults: 'Adults',
+  small: 'Small', medium: 'Medium', large: 'Large',
 };
 ---
 

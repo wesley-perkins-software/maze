@@ -3,7 +3,7 @@ import { generateMaze } from '../../src/lib/maze/generator';
 import { gameReducer, createInitialState } from '../../src/lib/gameplay/reducer';
 
 function makeMaze() {
-  return generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 42 });
+  return generateMaze({ width: 5, height: 5, difficulty: 'large', seed: 42 });
 }
 
 describe('gameReducer', () => {

@@ -1,2945 +1,1055 @@
 {
-  "version": 1,
+  "version": 2,
   "mazes": [
     {
-      "slug": "easy-5x5-001",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15001
-    },
-    {
-      "slug": "easy-5x5-002",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15002
-    },
-    {
-      "slug": "easy-5x5-003",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15003
-    },
-    {
-      "slug": "easy-5x5-004",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15004
-    },
-    {
-      "slug": "easy-5x5-005",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15005
-    },
-    {
-      "slug": "easy-5x5-006",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15006
-    },
-    {
-      "slug": "easy-5x5-007",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15007
-    },
-    {
-      "slug": "easy-5x5-008",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15008
-    },
-    {
-      "slug": "easy-5x5-009",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15009
-    },
-    {
-      "slug": "easy-5x5-010",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15010
-    },
-    {
-      "slug": "easy-5x5-011",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15011
-    },
-    {
-      "slug": "easy-5x5-012",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15012
-    },
-    {
-      "slug": "easy-5x5-013",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15013
-    },
-    {
-      "slug": "easy-5x5-014",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15014
-    },
-    {
-      "slug": "easy-5x5-015",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15015
-    },
-    {
-      "slug": "easy-5x5-016",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15016
-    },
-    {
-      "slug": "easy-5x5-017",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15017
-    },
-    {
-      "slug": "easy-5x5-018",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15018
-    },
-    {
-      "slug": "easy-5x5-019",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15019
-    },
-    {
-      "slug": "easy-5x5-020",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15020
-    },
-    {
-      "slug": "easy-5x5-021",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15021
-    },
-    {
-      "slug": "easy-5x5-022",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15022
-    },
-    {
-      "slug": "easy-5x5-023",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15023
-    },
-    {
-      "slug": "easy-5x5-024",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15024
-    },
-    {
-      "slug": "easy-5x5-025",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15025
-    },
-    {
-      "slug": "easy-5x5-026",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15026
-    },
-    {
-      "slug": "easy-5x5-027",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15027
-    },
-    {
-      "slug": "easy-5x5-028",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15028
-    },
-    {
-      "slug": "easy-5x5-029",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15029
-    },
-    {
-      "slug": "easy-5x5-030",
-      "difficulty": "easy",
-      "width": 5,
-      "height": 5,
-      "seed": 15030
-    },
-    {
-      "slug": "easy-8x8-001",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18001
-    },
-    {
-      "slug": "easy-8x8-002",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18002
-    },
-    {
-      "slug": "easy-8x8-003",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18003
-    },
-    {
-      "slug": "easy-8x8-004",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18004
-    },
-    {
-      "slug": "easy-8x8-005",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18005
-    },
-    {
-      "slug": "easy-8x8-006",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18006
-    },
-    {
-      "slug": "easy-8x8-007",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18007
-    },
-    {
-      "slug": "easy-8x8-008",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18008
-    },
-    {
-      "slug": "easy-8x8-009",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18009
-    },
-    {
-      "slug": "easy-8x8-010",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18010
-    },
-    {
-      "slug": "easy-8x8-011",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18011
-    },
-    {
-      "slug": "easy-8x8-012",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18012
-    },
-    {
-      "slug": "easy-8x8-013",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18013
-    },
-    {
-      "slug": "easy-8x8-014",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18014
-    },
-    {
-      "slug": "easy-8x8-015",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18015
-    },
-    {
-      "slug": "easy-8x8-016",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18016
-    },
-    {
-      "slug": "easy-8x8-017",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18017
-    },
-    {
-      "slug": "easy-8x8-018",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18018
-    },
-    {
-      "slug": "easy-8x8-019",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18019
-    },
-    {
-      "slug": "easy-8x8-020",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18020
-    },
-    {
-      "slug": "easy-8x8-021",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18021
-    },
-    {
-      "slug": "easy-8x8-022",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18022
-    },
-    {
-      "slug": "easy-8x8-023",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18023
-    },
-    {
-      "slug": "easy-8x8-024",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18024
-    },
-    {
-      "slug": "easy-8x8-025",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18025
-    },
-    {
-      "slug": "easy-8x8-026",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18026
-    },
-    {
-      "slug": "easy-8x8-027",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18027
-    },
-    {
-      "slug": "easy-8x8-028",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18028
-    },
-    {
-      "slug": "easy-8x8-029",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18029
-    },
-    {
-      "slug": "easy-8x8-030",
-      "difficulty": "easy",
-      "width": 8,
-      "height": 8,
-      "seed": 18030
-    },
-    {
-      "slug": "easy-10x10-001",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20001
-    },
-    {
-      "slug": "easy-10x10-002",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20002
-    },
-    {
-      "slug": "easy-10x10-003",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20003
-    },
-    {
-      "slug": "easy-10x10-004",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20004
-    },
-    {
-      "slug": "easy-10x10-005",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20005
-    },
-    {
-      "slug": "easy-10x10-006",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20006
-    },
-    {
-      "slug": "easy-10x10-007",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20007
-    },
-    {
-      "slug": "easy-10x10-008",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20008
-    },
-    {
-      "slug": "easy-10x10-009",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20009
-    },
-    {
-      "slug": "easy-10x10-010",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20010
-    },
-    {
-      "slug": "easy-10x10-011",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20011
-    },
-    {
-      "slug": "easy-10x10-012",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20012
-    },
-    {
-      "slug": "easy-10x10-013",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20013
-    },
-    {
-      "slug": "easy-10x10-014",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20014
-    },
-    {
-      "slug": "easy-10x10-015",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20015
-    },
-    {
-      "slug": "easy-10x10-016",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20016
-    },
-    {
-      "slug": "easy-10x10-017",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20017
-    },
-    {
-      "slug": "easy-10x10-018",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20018
-    },
-    {
-      "slug": "easy-10x10-019",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20019
-    },
-    {
-      "slug": "easy-10x10-020",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20020
-    },
-    {
-      "slug": "easy-10x10-021",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20021
-    },
-    {
-      "slug": "easy-10x10-022",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20022
-    },
-    {
-      "slug": "easy-10x10-023",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20023
-    },
-    {
-      "slug": "easy-10x10-024",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20024
-    },
-    {
-      "slug": "easy-10x10-025",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20025
-    },
-    {
-      "slug": "easy-10x10-026",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20026
-    },
-    {
-      "slug": "easy-10x10-027",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20027
-    },
-    {
-      "slug": "easy-10x10-028",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20028
-    },
-    {
-      "slug": "easy-10x10-029",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20029
-    },
-    {
-      "slug": "easy-10x10-030",
-      "difficulty": "easy",
-      "width": 10,
-      "height": 10,
-      "seed": 20030
-    },
-    {
-      "slug": "medium-10x10-001",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-001",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30001
     },
     {
-      "slug": "medium-10x10-002",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-002",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30002
     },
     {
-      "slug": "medium-10x10-003",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-003",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30003
     },
     {
-      "slug": "medium-10x10-004",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-004",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30004
     },
     {
-      "slug": "medium-10x10-005",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-005",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30005
     },
     {
-      "slug": "medium-10x10-006",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-006",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30006
     },
     {
-      "slug": "medium-10x10-007",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-007",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30007
     },
     {
-      "slug": "medium-10x10-008",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-008",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30008
     },
     {
-      "slug": "medium-10x10-009",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-009",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30009
     },
     {
-      "slug": "medium-10x10-010",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-010",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30010
     },
     {
-      "slug": "medium-10x10-011",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-011",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30011
     },
     {
-      "slug": "medium-10x10-012",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-012",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30012
     },
     {
-      "slug": "medium-10x10-013",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-013",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30013
     },
     {
-      "slug": "medium-10x10-014",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-014",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30014
     },
     {
-      "slug": "medium-10x10-015",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-015",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30015
     },
     {
-      "slug": "medium-10x10-016",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-016",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30016
     },
     {
-      "slug": "medium-10x10-017",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-017",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30017
     },
     {
-      "slug": "medium-10x10-018",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-018",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30018
     },
     {
-      "slug": "medium-10x10-019",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-019",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30019
     },
     {
-      "slug": "medium-10x10-020",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-020",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30020
     },
     {
-      "slug": "medium-10x10-021",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-021",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30021
     },
     {
-      "slug": "medium-10x10-022",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-022",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30022
     },
     {
-      "slug": "medium-10x10-023",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-023",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30023
     },
     {
-      "slug": "medium-10x10-024",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-024",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30024
     },
     {
-      "slug": "medium-10x10-025",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-025",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30025
     },
     {
-      "slug": "medium-10x10-026",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-026",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30026
     },
     {
-      "slug": "medium-10x10-027",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-027",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30027
     },
     {
-      "slug": "medium-10x10-028",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-028",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30028
     },
     {
-      "slug": "medium-10x10-029",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-029",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30029
     },
     {
-      "slug": "medium-10x10-030",
-      "difficulty": "medium",
-      "width": 10,
-      "height": 10,
+      "slug": "small-20x20-030",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
       "seed": 30030
     },
     {
-      "slug": "medium-12x12-001",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32001
-    },
-    {
-      "slug": "medium-12x12-002",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32002
-    },
-    {
-      "slug": "medium-12x12-003",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32003
-    },
-    {
-      "slug": "medium-12x12-004",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32004
-    },
-    {
-      "slug": "medium-12x12-005",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32005
-    },
-    {
-      "slug": "medium-12x12-006",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32006
-    },
-    {
-      "slug": "medium-12x12-007",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32007
-    },
-    {
-      "slug": "medium-12x12-008",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32008
-    },
-    {
-      "slug": "medium-12x12-009",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32009
-    },
-    {
-      "slug": "medium-12x12-010",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32010
-    },
-    {
-      "slug": "medium-12x12-011",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32011
-    },
-    {
-      "slug": "medium-12x12-012",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32012
-    },
-    {
-      "slug": "medium-12x12-013",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32013
-    },
-    {
-      "slug": "medium-12x12-014",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32014
-    },
-    {
-      "slug": "medium-12x12-015",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32015
-    },
-    {
-      "slug": "medium-12x12-016",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32016
-    },
-    {
-      "slug": "medium-12x12-017",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32017
-    },
-    {
-      "slug": "medium-12x12-018",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32018
-    },
-    {
-      "slug": "medium-12x12-019",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32019
-    },
-    {
-      "slug": "medium-12x12-020",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32020
-    },
-    {
-      "slug": "medium-12x12-021",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32021
-    },
-    {
-      "slug": "medium-12x12-022",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32022
-    },
-    {
-      "slug": "medium-12x12-023",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32023
-    },
-    {
-      "slug": "medium-12x12-024",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32024
-    },
-    {
-      "slug": "medium-12x12-025",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32025
-    },
-    {
-      "slug": "medium-12x12-026",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32026
-    },
-    {
-      "slug": "medium-12x12-027",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32027
-    },
-    {
-      "slug": "medium-12x12-028",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32028
-    },
-    {
-      "slug": "medium-12x12-029",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32029
-    },
-    {
-      "slug": "medium-12x12-030",
-      "difficulty": "medium",
-      "width": 12,
-      "height": 12,
-      "seed": 32030
-    },
-    {
-      "slug": "medium-15x15-001",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35001
-    },
-    {
-      "slug": "medium-15x15-002",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35002
-    },
-    {
-      "slug": "medium-15x15-003",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35003
-    },
-    {
-      "slug": "medium-15x15-004",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35004
-    },
-    {
-      "slug": "medium-15x15-005",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35005
-    },
-    {
-      "slug": "medium-15x15-006",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35006
-    },
-    {
-      "slug": "medium-15x15-007",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35007
-    },
-    {
-      "slug": "medium-15x15-008",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35008
-    },
-    {
-      "slug": "medium-15x15-009",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35009
-    },
-    {
-      "slug": "medium-15x15-010",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35010
-    },
-    {
-      "slug": "medium-15x15-011",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35011
-    },
-    {
-      "slug": "medium-15x15-012",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35012
-    },
-    {
-      "slug": "medium-15x15-013",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35013
-    },
-    {
-      "slug": "medium-15x15-014",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35014
-    },
-    {
-      "slug": "medium-15x15-015",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35015
-    },
-    {
-      "slug": "medium-15x15-016",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35016
-    },
-    {
-      "slug": "medium-15x15-017",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35017
-    },
-    {
-      "slug": "medium-15x15-018",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35018
-    },
-    {
-      "slug": "medium-15x15-019",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35019
-    },
-    {
-      "slug": "medium-15x15-020",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35020
-    },
-    {
-      "slug": "medium-15x15-021",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35021
-    },
-    {
-      "slug": "medium-15x15-022",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35022
-    },
-    {
-      "slug": "medium-15x15-023",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35023
-    },
-    {
-      "slug": "medium-15x15-024",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35024
-    },
-    {
-      "slug": "medium-15x15-025",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35025
-    },
-    {
-      "slug": "medium-15x15-026",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35026
-    },
-    {
-      "slug": "medium-15x15-027",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35027
-    },
-    {
-      "slug": "medium-15x15-028",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35028
-    },
-    {
-      "slug": "medium-15x15-029",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35029
-    },
-    {
-      "slug": "medium-15x15-030",
-      "difficulty": "medium",
-      "width": 15,
-      "height": 15,
-      "seed": 35030
-    },
-    {
-      "slug": "hard-15x15-001",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45001
-    },
-    {
-      "slug": "hard-15x15-002",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45002
-    },
-    {
-      "slug": "hard-15x15-003",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45003
-    },
-    {
-      "slug": "hard-15x15-004",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45004
-    },
-    {
-      "slug": "hard-15x15-005",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45005
-    },
-    {
-      "slug": "hard-15x15-006",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45006
-    },
-    {
-      "slug": "hard-15x15-007",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45007
-    },
-    {
-      "slug": "hard-15x15-008",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45008
-    },
-    {
-      "slug": "hard-15x15-009",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45009
-    },
-    {
-      "slug": "hard-15x15-010",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45010
-    },
-    {
-      "slug": "hard-15x15-011",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45011
-    },
-    {
-      "slug": "hard-15x15-012",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45012
-    },
-    {
-      "slug": "hard-15x15-013",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45013
-    },
-    {
-      "slug": "hard-15x15-014",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45014
-    },
-    {
-      "slug": "hard-15x15-015",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45015
-    },
-    {
-      "slug": "hard-15x15-016",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45016
-    },
-    {
-      "slug": "hard-15x15-017",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45017
-    },
-    {
-      "slug": "hard-15x15-018",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45018
-    },
-    {
-      "slug": "hard-15x15-019",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45019
-    },
-    {
-      "slug": "hard-15x15-020",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45020
-    },
-    {
-      "slug": "hard-15x15-021",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45021
-    },
-    {
-      "slug": "hard-15x15-022",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45022
-    },
-    {
-      "slug": "hard-15x15-023",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45023
-    },
-    {
-      "slug": "hard-15x15-024",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45024
-    },
-    {
-      "slug": "hard-15x15-025",
-      "difficulty": "hard",
-      "width": 15,
-      "height": 15,
-      "seed": 45025
-    },
-    {
-      "slug": "hard-20x20-001",
-      "difficulty": "hard",
+      "slug": "small-20x20-031",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50001
+      "seed": 30031
     },
     {
-      "slug": "hard-20x20-002",
-      "difficulty": "hard",
+      "slug": "small-20x20-032",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50002
+      "seed": 30032
     },
     {
-      "slug": "hard-20x20-003",
-      "difficulty": "hard",
+      "slug": "small-20x20-033",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50003
+      "seed": 30033
     },
     {
-      "slug": "hard-20x20-004",
-      "difficulty": "hard",
+      "slug": "small-20x20-034",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50004
+      "seed": 30034
     },
     {
-      "slug": "hard-20x20-005",
-      "difficulty": "hard",
+      "slug": "small-20x20-035",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50005
+      "seed": 30035
     },
     {
-      "slug": "hard-20x20-006",
-      "difficulty": "hard",
+      "slug": "small-20x20-036",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50006
+      "seed": 30036
     },
     {
-      "slug": "hard-20x20-007",
-      "difficulty": "hard",
+      "slug": "small-20x20-037",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50007
+      "seed": 30037
     },
     {
-      "slug": "hard-20x20-008",
-      "difficulty": "hard",
+      "slug": "small-20x20-038",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50008
+      "seed": 30038
     },
     {
-      "slug": "hard-20x20-009",
-      "difficulty": "hard",
+      "slug": "small-20x20-039",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50009
+      "seed": 30039
     },
     {
-      "slug": "hard-20x20-010",
-      "difficulty": "hard",
+      "slug": "small-20x20-040",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50010
+      "seed": 30040
     },
     {
-      "slug": "hard-20x20-011",
-      "difficulty": "hard",
+      "slug": "small-20x20-041",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50011
+      "seed": 30041
     },
     {
-      "slug": "hard-20x20-012",
-      "difficulty": "hard",
+      "slug": "small-20x20-042",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50012
+      "seed": 30042
     },
     {
-      "slug": "hard-20x20-013",
-      "difficulty": "hard",
+      "slug": "small-20x20-043",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50013
+      "seed": 30043
     },
     {
-      "slug": "hard-20x20-014",
-      "difficulty": "hard",
+      "slug": "small-20x20-044",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50014
+      "seed": 30044
     },
     {
-      "slug": "hard-20x20-015",
-      "difficulty": "hard",
+      "slug": "small-20x20-045",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50015
+      "seed": 30045
     },
     {
-      "slug": "hard-20x20-016",
-      "difficulty": "hard",
+      "slug": "small-20x20-046",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50016
+      "seed": 30046
     },
     {
-      "slug": "hard-20x20-017",
-      "difficulty": "hard",
+      "slug": "small-20x20-047",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50017
+      "seed": 30047
     },
     {
-      "slug": "hard-20x20-018",
-      "difficulty": "hard",
+      "slug": "small-20x20-048",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50018
+      "seed": 30048
     },
     {
-      "slug": "hard-20x20-019",
-      "difficulty": "hard",
+      "slug": "small-20x20-049",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50019
+      "seed": 30049
     },
     {
-      "slug": "hard-20x20-020",
-      "difficulty": "hard",
+      "slug": "small-20x20-050",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50020
+      "seed": 30050
     },
     {
-      "slug": "hard-20x20-021",
-      "difficulty": "hard",
+      "slug": "small-20x20-051",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50021
+      "seed": 30051
     },
     {
-      "slug": "hard-20x20-022",
-      "difficulty": "hard",
+      "slug": "small-20x20-052",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50022
+      "seed": 30052
     },
     {
-      "slug": "hard-20x20-023",
-      "difficulty": "hard",
+      "slug": "small-20x20-053",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50023
+      "seed": 30053
     },
     {
-      "slug": "hard-20x20-024",
-      "difficulty": "hard",
+      "slug": "small-20x20-054",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50024
+      "seed": 30054
     },
     {
-      "slug": "hard-20x20-025",
-      "difficulty": "hard",
+      "slug": "small-20x20-055",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 50025
+      "seed": 30055
     },
     {
-      "slug": "hard-25x25-001",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55001
-    },
-    {
-      "slug": "hard-25x25-002",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55002
-    },
-    {
-      "slug": "hard-25x25-003",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55003
-    },
-    {
-      "slug": "hard-25x25-004",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55004
-    },
-    {
-      "slug": "hard-25x25-005",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55005
-    },
-    {
-      "slug": "hard-25x25-006",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55006
-    },
-    {
-      "slug": "hard-25x25-007",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55007
-    },
-    {
-      "slug": "hard-25x25-008",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55008
-    },
-    {
-      "slug": "hard-25x25-009",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55009
-    },
-    {
-      "slug": "hard-25x25-010",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55010
-    },
-    {
-      "slug": "hard-25x25-011",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55011
-    },
-    {
-      "slug": "hard-25x25-012",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55012
-    },
-    {
-      "slug": "hard-25x25-013",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55013
-    },
-    {
-      "slug": "hard-25x25-014",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55014
-    },
-    {
-      "slug": "hard-25x25-015",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55015
-    },
-    {
-      "slug": "hard-25x25-016",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55016
-    },
-    {
-      "slug": "hard-25x25-017",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55017
-    },
-    {
-      "slug": "hard-25x25-018",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55018
-    },
-    {
-      "slug": "hard-25x25-019",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55019
-    },
-    {
-      "slug": "hard-25x25-020",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55020
-    },
-    {
-      "slug": "hard-25x25-021",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55021
-    },
-    {
-      "slug": "hard-25x25-022",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55022
-    },
-    {
-      "slug": "hard-25x25-023",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55023
-    },
-    {
-      "slug": "hard-25x25-024",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55024
-    },
-    {
-      "slug": "hard-25x25-025",
-      "difficulty": "hard",
-      "width": 25,
-      "height": 25,
-      "seed": 55025
-    },
-    {
-      "slug": "kids-5x5-001",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45001
-    },
-    {
-      "slug": "kids-5x5-002",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45002
-    },
-    {
-      "slug": "kids-5x5-003",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45003
-    },
-    {
-      "slug": "kids-5x5-004",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45004
-    },
-    {
-      "slug": "kids-5x5-005",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45005
-    },
-    {
-      "slug": "kids-5x5-006",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45006
-    },
-    {
-      "slug": "kids-5x5-007",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45007
-    },
-    {
-      "slug": "kids-5x5-008",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45008
-    },
-    {
-      "slug": "kids-5x5-009",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45009
-    },
-    {
-      "slug": "kids-5x5-010",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45010
-    },
-    {
-      "slug": "kids-5x5-011",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45011
-    },
-    {
-      "slug": "kids-5x5-012",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45012
-    },
-    {
-      "slug": "kids-5x5-013",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45013
-    },
-    {
-      "slug": "kids-5x5-014",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45014
-    },
-    {
-      "slug": "kids-5x5-015",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45015
-    },
-    {
-      "slug": "kids-5x5-016",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45016
-    },
-    {
-      "slug": "kids-5x5-017",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45017
-    },
-    {
-      "slug": "kids-5x5-018",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45018
-    },
-    {
-      "slug": "kids-5x5-019",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45019
-    },
-    {
-      "slug": "kids-5x5-020",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45020
-    },
-    {
-      "slug": "kids-5x5-021",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45021
-    },
-    {
-      "slug": "kids-5x5-022",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45022
-    },
-    {
-      "slug": "kids-5x5-023",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45023
-    },
-    {
-      "slug": "kids-5x5-024",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45024
-    },
-    {
-      "slug": "kids-5x5-025",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45025
-    },
-    {
-      "slug": "kids-5x5-026",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45026
-    },
-    {
-      "slug": "kids-5x5-027",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45027
-    },
-    {
-      "slug": "kids-5x5-028",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45028
-    },
-    {
-      "slug": "kids-5x5-029",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45029
-    },
-    {
-      "slug": "kids-5x5-030",
-      "difficulty": "kids",
-      "width": 5,
-      "height": 5,
-      "seed": 45030
-    },
-    {
-      "slug": "kids-6x6-001",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46001
-    },
-    {
-      "slug": "kids-6x6-002",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46002
-    },
-    {
-      "slug": "kids-6x6-003",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46003
-    },
-    {
-      "slug": "kids-6x6-004",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46004
-    },
-    {
-      "slug": "kids-6x6-005",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46005
-    },
-    {
-      "slug": "kids-6x6-006",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46006
-    },
-    {
-      "slug": "kids-6x6-007",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46007
-    },
-    {
-      "slug": "kids-6x6-008",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46008
-    },
-    {
-      "slug": "kids-6x6-009",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46009
-    },
-    {
-      "slug": "kids-6x6-010",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46010
-    },
-    {
-      "slug": "kids-6x6-011",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46011
-    },
-    {
-      "slug": "kids-6x6-012",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46012
-    },
-    {
-      "slug": "kids-6x6-013",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46013
-    },
-    {
-      "slug": "kids-6x6-014",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46014
-    },
-    {
-      "slug": "kids-6x6-015",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46015
-    },
-    {
-      "slug": "kids-6x6-016",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46016
-    },
-    {
-      "slug": "kids-6x6-017",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46017
-    },
-    {
-      "slug": "kids-6x6-018",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46018
-    },
-    {
-      "slug": "kids-6x6-019",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46019
-    },
-    {
-      "slug": "kids-6x6-020",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46020
-    },
-    {
-      "slug": "kids-6x6-021",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46021
-    },
-    {
-      "slug": "kids-6x6-022",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46022
-    },
-    {
-      "slug": "kids-6x6-023",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46023
-    },
-    {
-      "slug": "kids-6x6-024",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46024
-    },
-    {
-      "slug": "kids-6x6-025",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46025
-    },
-    {
-      "slug": "kids-6x6-026",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46026
-    },
-    {
-      "slug": "kids-6x6-027",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46027
-    },
-    {
-      "slug": "kids-6x6-028",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46028
-    },
-    {
-      "slug": "kids-6x6-029",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46029
-    },
-    {
-      "slug": "kids-6x6-030",
-      "difficulty": "kids",
-      "width": 6,
-      "height": 6,
-      "seed": 46030
-    },
-    {
-      "slug": "kids-8x8-001",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48001
-    },
-    {
-      "slug": "kids-8x8-002",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48002
-    },
-    {
-      "slug": "kids-8x8-003",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48003
-    },
-    {
-      "slug": "kids-8x8-004",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48004
-    },
-    {
-      "slug": "kids-8x8-005",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48005
-    },
-    {
-      "slug": "kids-8x8-006",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48006
-    },
-    {
-      "slug": "kids-8x8-007",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48007
-    },
-    {
-      "slug": "kids-8x8-008",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48008
-    },
-    {
-      "slug": "kids-8x8-009",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48009
-    },
-    {
-      "slug": "kids-8x8-010",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48010
-    },
-    {
-      "slug": "kids-8x8-011",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48011
-    },
-    {
-      "slug": "kids-8x8-012",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48012
-    },
-    {
-      "slug": "kids-8x8-013",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48013
-    },
-    {
-      "slug": "kids-8x8-014",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48014
-    },
-    {
-      "slug": "kids-8x8-015",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48015
-    },
-    {
-      "slug": "kids-8x8-016",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48016
-    },
-    {
-      "slug": "kids-8x8-017",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48017
-    },
-    {
-      "slug": "kids-8x8-018",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48018
-    },
-    {
-      "slug": "kids-8x8-019",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48019
-    },
-    {
-      "slug": "kids-8x8-020",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48020
-    },
-    {
-      "slug": "kids-8x8-021",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48021
-    },
-    {
-      "slug": "kids-8x8-022",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48022
-    },
-    {
-      "slug": "kids-8x8-023",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48023
-    },
-    {
-      "slug": "kids-8x8-024",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48024
-    },
-    {
-      "slug": "kids-8x8-025",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48025
-    },
-    {
-      "slug": "kids-8x8-026",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48026
-    },
-    {
-      "slug": "kids-8x8-027",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48027
-    },
-    {
-      "slug": "kids-8x8-028",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48028
-    },
-    {
-      "slug": "kids-8x8-029",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48029
-    },
-    {
-      "slug": "kids-8x8-030",
-      "difficulty": "kids",
-      "width": 8,
-      "height": 8,
-      "seed": 48030
-    },
-    {
-      "slug": "adults-15x15-001",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65001
-    },
-    {
-      "slug": "adults-15x15-002",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65002
-    },
-    {
-      "slug": "adults-15x15-003",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65003
-    },
-    {
-      "slug": "adults-15x15-004",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65004
-    },
-    {
-      "slug": "adults-15x15-005",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65005
-    },
-    {
-      "slug": "adults-15x15-006",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65006
-    },
-    {
-      "slug": "adults-15x15-007",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65007
-    },
-    {
-      "slug": "adults-15x15-008",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65008
-    },
-    {
-      "slug": "adults-15x15-009",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65009
-    },
-    {
-      "slug": "adults-15x15-010",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65010
-    },
-    {
-      "slug": "adults-15x15-011",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65011
-    },
-    {
-      "slug": "adults-15x15-012",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65012
-    },
-    {
-      "slug": "adults-15x15-013",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65013
-    },
-    {
-      "slug": "adults-15x15-014",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65014
-    },
-    {
-      "slug": "adults-15x15-015",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65015
-    },
-    {
-      "slug": "adults-15x15-016",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65016
-    },
-    {
-      "slug": "adults-15x15-017",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65017
-    },
-    {
-      "slug": "adults-15x15-018",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65018
-    },
-    {
-      "slug": "adults-15x15-019",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65019
-    },
-    {
-      "slug": "adults-15x15-020",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65020
-    },
-    {
-      "slug": "adults-15x15-021",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65021
-    },
-    {
-      "slug": "adults-15x15-022",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65022
-    },
-    {
-      "slug": "adults-15x15-023",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65023
-    },
-    {
-      "slug": "adults-15x15-024",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65024
-    },
-    {
-      "slug": "adults-15x15-025",
-      "difficulty": "adults",
-      "width": 15,
-      "height": 15,
-      "seed": 65025
-    },
-    {
-      "slug": "adults-20x20-001",
-      "difficulty": "adults",
+      "slug": "small-20x20-056",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 70001
+      "seed": 30056
     },
     {
-      "slug": "adults-20x20-002",
-      "difficulty": "adults",
+      "slug": "small-20x20-057",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 70002
+      "seed": 30057
     },
     {
-      "slug": "adults-20x20-003",
-      "difficulty": "adults",
+      "slug": "small-20x20-058",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 70003
+      "seed": 30058
     },
     {
-      "slug": "adults-20x20-004",
-      "difficulty": "adults",
+      "slug": "small-20x20-059",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 70004
+      "seed": 30059
     },
     {
-      "slug": "adults-20x20-005",
-      "difficulty": "adults",
+      "slug": "small-20x20-060",
+      "difficulty": "small",
       "width": 20,
       "height": 20,
-      "seed": 70005
+      "seed": 30060
     },
     {
-      "slug": "adults-20x20-006",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70006
+      "slug": "medium-40x40-001",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60001
     },
     {
-      "slug": "adults-20x20-007",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70007
+      "slug": "medium-40x40-002",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60002
     },
     {
-      "slug": "adults-20x20-008",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70008
+      "slug": "medium-40x40-003",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60003
     },
     {
-      "slug": "adults-20x20-009",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70009
+      "slug": "medium-40x40-004",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60004
     },
     {
-      "slug": "adults-20x20-010",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70010
+      "slug": "medium-40x40-005",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60005
     },
     {
-      "slug": "adults-20x20-011",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70011
+      "slug": "medium-40x40-006",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60006
     },
     {
-      "slug": "adults-20x20-012",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70012
+      "slug": "medium-40x40-007",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60007
     },
     {
-      "slug": "adults-20x20-013",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70013
+      "slug": "medium-40x40-008",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60008
     },
     {
-      "slug": "adults-20x20-014",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70014
+      "slug": "medium-40x40-009",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60009
     },
     {
-      "slug": "adults-20x20-015",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70015
+      "slug": "medium-40x40-010",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60010
     },
     {
-      "slug": "adults-20x20-016",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70016
+      "slug": "medium-40x40-011",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60011
     },
     {
-      "slug": "adults-20x20-017",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70017
+      "slug": "medium-40x40-012",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60012
     },
     {
-      "slug": "adults-20x20-018",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70018
+      "slug": "medium-40x40-013",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60013
     },
     {
-      "slug": "adults-20x20-019",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70019
+      "slug": "medium-40x40-014",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60014
     },
     {
-      "slug": "adults-20x20-020",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70020
+      "slug": "medium-40x40-015",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60015
     },
     {
-      "slug": "adults-20x20-021",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70021
+      "slug": "medium-40x40-016",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60016
     },
     {
-      "slug": "adults-20x20-022",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70022
+      "slug": "medium-40x40-017",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60017
     },
     {
-      "slug": "adults-20x20-023",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70023
+      "slug": "medium-40x40-018",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60018
     },
     {
-      "slug": "adults-20x20-024",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70024
+      "slug": "medium-40x40-019",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60019
     },
     {
-      "slug": "adults-20x20-025",
-      "difficulty": "adults",
-      "width": 20,
-      "height": 20,
-      "seed": 70025
+      "slug": "medium-40x40-020",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60020
     },
     {
-      "slug": "adults-25x25-001",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75001
+      "slug": "medium-40x40-021",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60021
     },
     {
-      "slug": "adults-25x25-002",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75002
+      "slug": "medium-40x40-022",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60022
     },
     {
-      "slug": "adults-25x25-003",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75003
+      "slug": "medium-40x40-023",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60023
     },
     {
-      "slug": "adults-25x25-004",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75004
+      "slug": "medium-40x40-024",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60024
     },
     {
-      "slug": "adults-25x25-005",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75005
+      "slug": "medium-40x40-025",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60025
     },
     {
-      "slug": "adults-25x25-006",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75006
+      "slug": "medium-40x40-026",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60026
     },
     {
-      "slug": "adults-25x25-007",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75007
+      "slug": "medium-40x40-027",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60027
     },
     {
-      "slug": "adults-25x25-008",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75008
+      "slug": "medium-40x40-028",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60028
     },
     {
-      "slug": "adults-25x25-009",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75009
+      "slug": "medium-40x40-029",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60029
     },
     {
-      "slug": "adults-25x25-010",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75010
+      "slug": "medium-40x40-030",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60030
     },
     {
-      "slug": "adults-25x25-011",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75011
+      "slug": "medium-40x40-031",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60031
     },
     {
-      "slug": "adults-25x25-012",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75012
+      "slug": "medium-40x40-032",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60032
     },
     {
-      "slug": "adults-25x25-013",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75013
+      "slug": "medium-40x40-033",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60033
     },
     {
-      "slug": "adults-25x25-014",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75014
+      "slug": "medium-40x40-034",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60034
     },
     {
-      "slug": "adults-25x25-015",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75015
+      "slug": "medium-40x40-035",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60035
     },
     {
-      "slug": "adults-25x25-016",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75016
+      "slug": "medium-40x40-036",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60036
     },
     {
-      "slug": "adults-25x25-017",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75017
+      "slug": "medium-40x40-037",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60037
     },
     {
-      "slug": "adults-25x25-018",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75018
+      "slug": "medium-40x40-038",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60038
     },
     {
-      "slug": "adults-25x25-019",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75019
+      "slug": "medium-40x40-039",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60039
     },
     {
-      "slug": "adults-25x25-020",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75020
+      "slug": "medium-40x40-040",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60040
     },
     {
-      "slug": "adults-25x25-021",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75021
+      "slug": "medium-40x40-041",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60041
     },
     {
-      "slug": "adults-25x25-022",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75022
+      "slug": "medium-40x40-042",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60042
     },
     {
-      "slug": "adults-25x25-023",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75023
+      "slug": "medium-40x40-043",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60043
     },
     {
-      "slug": "adults-25x25-024",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75024
+      "slug": "medium-40x40-044",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60044
     },
     {
-      "slug": "adults-25x25-025",
-      "difficulty": "adults",
-      "width": 25,
-      "height": 25,
-      "seed": 75025
+      "slug": "medium-40x40-045",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60045
+    },
+    {
+      "slug": "medium-40x40-046",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60046
+    },
+    {
+      "slug": "medium-40x40-047",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60047
+    },
+    {
+      "slug": "medium-40x40-048",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60048
+    },
+    {
+      "slug": "medium-40x40-049",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60049
+    },
+    {
+      "slug": "medium-40x40-050",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 60050
+    },
+    {
+      "slug": "large-60x60-001",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90001
+    },
+    {
+      "slug": "large-60x60-002",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90002
+    },
+    {
+      "slug": "large-60x60-003",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90003
+    },
+    {
+      "slug": "large-60x60-004",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90004
+    },
+    {
+      "slug": "large-60x60-005",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90005
+    },
+    {
+      "slug": "large-60x60-006",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90006
+    },
+    {
+      "slug": "large-60x60-007",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90007
+    },
+    {
+      "slug": "large-60x60-008",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90008
+    },
+    {
+      "slug": "large-60x60-009",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90009
+    },
+    {
+      "slug": "large-60x60-010",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90010
+    },
+    {
+      "slug": "large-60x60-011",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90011
+    },
+    {
+      "slug": "large-60x60-012",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90012
+    },
+    {
+      "slug": "large-60x60-013",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90013
+    },
+    {
+      "slug": "large-60x60-014",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90014
+    },
+    {
+      "slug": "large-60x60-015",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90015
+    },
+    {
+      "slug": "large-60x60-016",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90016
+    },
+    {
+      "slug": "large-60x60-017",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90017
+    },
+    {
+      "slug": "large-60x60-018",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90018
+    },
+    {
+      "slug": "large-60x60-019",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90019
+    },
+    {
+      "slug": "large-60x60-020",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90020
+    },
+    {
+      "slug": "large-60x60-021",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90021
+    },
+    {
+      "slug": "large-60x60-022",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90022
+    },
+    {
+      "slug": "large-60x60-023",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90023
+    },
+    {
+      "slug": "large-60x60-024",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90024
+    },
+    {
+      "slug": "large-60x60-025",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90025
+    },
+    {
+      "slug": "large-60x60-026",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90026
+    },
+    {
+      "slug": "large-60x60-027",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90027
+    },
+    {
+      "slug": "large-60x60-028",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90028
+    },
+    {
+      "slug": "large-60x60-029",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90029
+    },
+    {
+      "slug": "large-60x60-030",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90030
+    },
+    {
+      "slug": "large-60x60-031",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90031
+    },
+    {
+      "slug": "large-60x60-032",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90032
+    },
+    {
+      "slug": "large-60x60-033",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90033
+    },
+    {
+      "slug": "large-60x60-034",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90034
+    },
+    {
+      "slug": "large-60x60-035",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90035
+    },
+    {
+      "slug": "large-60x60-036",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90036
+    },
+    {
+      "slug": "large-60x60-037",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90037
+    },
+    {
+      "slug": "large-60x60-038",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90038
+    },
+    {
+      "slug": "large-60x60-039",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90039
+    },
+    {
+      "slug": "large-60x60-040",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 90040
     }
   ]
 }

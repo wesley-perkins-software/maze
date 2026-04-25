@@ -1,6 +1,11 @@
 /**
- * Generates src/data/catalog.json — the seed manifest for all 420 mazes.
+ * Generates src/data/catalog.json — the seed manifest for all pre-made mazes.
  * Run: npm run generate:catalog
+ *
+ * Three tiers × fixed grid sizes:
+ *   small:  20×20  — 60 mazes
+ *   medium: 40×40  — 50 mazes
+ *   large:  60×60  — 40 mazes
  *
  * Each entry stores only the slug + seed; the actual maze grid is
  * computed deterministically at build time via generateMaze({ seed }).
@@ -13,54 +18,10 @@ import type { MazeCatalogEntry, Difficulty } from '../src/types/maze.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '../src/data/catalog.json');
 
-type SizeGroup = { w: number; h: number; count: number };
-
-const GROUPS: Array<{ difficulty: Difficulty; sizes: SizeGroup[]; seedBase: number }> = [
-  {
-    difficulty: 'easy',
-    seedBase: 10000,
-    sizes: [
-      { w: 5,  h: 5,  count: 30 },
-      { w: 8,  h: 8,  count: 30 },
-      { w: 10, h: 10, count: 30 },
-    ],
-  },
-  {
-    difficulty: 'medium',
-    seedBase: 20000,
-    sizes: [
-      { w: 10, h: 10, count: 30 },
-      { w: 12, h: 12, count: 30 },
-      { w: 15, h: 15, count: 30 },
-    ],
-  },
-  {
-    difficulty: 'hard',
-    seedBase: 30000,
-    sizes: [
-      { w: 15, h: 15, count: 25 },
-      { w: 20, h: 20, count: 25 },
-      { w: 25, h: 25, count: 25 },
-    ],
-  },
-  {
-    difficulty: 'kids',
-    seedBase: 40000,
-    sizes: [
-      { w: 5, h: 5, count: 30 },
-      { w: 6, h: 6, count: 30 },
-      { w: 8, h: 8, count: 30 },
-    ],
-  },
-  {
-    difficulty: 'adults',
-    seedBase: 50000,
-    sizes: [
-      { w: 15, h: 15, count: 25 },
-      { w: 20, h: 20, count: 25 },
-      { w: 25, h: 25, count: 25 },
-    ],
-  },
+const GROUPS: Array<{ difficulty: Difficulty; w: number; h: number; count: number; seedBase: number }> = [
+  { difficulty: 'small',  w: 20, h: 20, count: 60, seedBase: 10000 },
+  { difficulty: 'medium', w: 40, h: 40, count: 50, seedBase: 20000 },
+  { difficulty: 'large',  w: 60, h: 60, count: 40, seedBase: 30000 },
 ];
 
 function pad(n: number, digits = 3): string {
@@ -69,25 +30,15 @@ function pad(n: number, digits = 3): string {
 
 const mazes: MazeCatalogEntry[] = [];
 
-for (const group of GROUPS) {
-  let globalIndex = 1;
-  for (const { w, h, count } of group.sizes) {
-    for (let i = 1; i <= count; i++) {
-      const slug = `${group.difficulty}-${w}x${h}-${pad(i)}`;
-      const seed = group.seedBase + (w * 1000) + i;
-      mazes.push({
-        slug,
-        difficulty: group.difficulty,
-        width: w,
-        height: h,
-        seed,
-      });
-      globalIndex++;
-    }
+for (const { difficulty, w, h, count, seedBase } of GROUPS) {
+  for (let i = 1; i <= count; i++) {
+    const slug = `${difficulty}-${w}x${h}-${pad(i)}`;
+    const seed = seedBase + (w * 1000) + i;
+    mazes.push({ slug, difficulty, width: w, height: h, seed });
   }
 }
 
-const catalog = { version: 1, mazes };
+const catalog = { version: 2, mazes };
 
 writeFileSync(OUT, JSON.stringify(catalog, null, 2) + '\n');
 console.log(`✓ Generated ${mazes.length} maze entries → ${OUT}`);

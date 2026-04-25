@@ -5,7 +5,7 @@ import { pointToIndex, getPassages } from '../../src/lib/maze/utils';
 
 describe('solveMaze', () => {
   it('returns a path from entry to exit', () => {
-    const maze = generateMaze({ width: 8, height: 8, difficulty: 'hard', seed: 42 });
+    const maze = generateMaze({ width: 8, height: 8, difficulty: 'large', seed: 42 });
     const path = solveMaze(maze);
     expect(path[0]).toBe(pointToIndex(maze.entry, maze.width));
     expect(path[path.length - 1]).toBe(pointToIndex(maze.exit, maze.width));
@@ -26,13 +26,13 @@ describe('solveMaze', () => {
   });
 
   it('is consistent with the maze solution stored in MazeData', () => {
-    const maze = generateMaze({ width: 6, height: 6, difficulty: 'easy', seed: 7 });
+    const maze = generateMaze({ width: 6, height: 6, difficulty: 'small', seed: 7 });
     const fresh = solveMaze(maze);
     expect(fresh).toEqual(maze.solution);
   });
 
   it('works for a 1x1 maze', () => {
-    const maze = generateMaze({ width: 1, height: 1, difficulty: 'easy', seed: 1 });
+    const maze = generateMaze({ width: 1, height: 1, difficulty: 'small', seed: 1 });
     const path = solveMaze(maze);
     expect(path).toHaveLength(1);
     expect(path[0]).toBe(0);

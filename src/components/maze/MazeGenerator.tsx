@@ -6,19 +6,12 @@ import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 
-type CoreDifficulty = 'easy' | 'medium' | 'hard';
 type SizePreset = 'small' | 'medium' | 'large';
 
-const DIFFICULTY_OPTIONS: { value: CoreDifficulty; label: string; description: string }[] = [
-  { value: 'easy',   label: 'Easy',   description: 'Open paths, few dead ends' },
-  { value: 'medium', label: 'Medium', description: 'Balanced challenge' },
-  { value: 'hard',   label: 'Hard',   description: 'Maximum dead ends' },
-];
-
-const SIZE_OPTIONS: { value: SizePreset; label: string; detail: string }[] = [
-  { value: 'small',  label: 'Small',  detail: '20 × 20' },
-  { value: 'medium', label: 'Medium', detail: '40 × 40' },
-  { value: 'large',  label: 'Large',  detail: '60 × 60' },
+const SIZE_OPTIONS: { value: SizePreset; label: string; detail: string; description: string }[] = [
+  { value: 'small',  label: 'Small',  detail: '20 × 20', description: 'Quick and approachable' },
+  { value: 'medium', label: 'Medium', detail: '40 × 40', description: 'Focused challenge' },
+  { value: 'large',  label: 'Large',  detail: '60 × 60', description: 'Dense labyrinth' },
 ];
 
 const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
@@ -27,22 +20,35 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
   large:  { w: 60, h: 60 },
 };
 
-const CUSTOM_RANGES: Record<CoreDifficulty, { min: number; max: number }> = {
-  easy:   { min: 4,  max: 40 },
-  medium: { min: 6,  max: 50 },
-  hard:   { min: 8,  max: 60 },
-};
+const CUSTOM_RANGE = { min: 5, max: 80 };
 
 function newSeed() {
   return Math.floor(Math.random() * 999999);
 }
 
+// Derive a newestBias from grid size so custom-sized mazes scale naturally:
+// small grids lean DFS-like (0.5), large grids lean Prim's-like (0.15).
+function newestBiasForSize(w: number, h: number): number {
+  const area = w * h;
+  const minArea = 20 * 20;  // small
+  const maxArea = 60 * 60;  // large
+  const t = Math.min(1, Math.max(0, (area - minArea) / (maxArea - minArea)));
+  return 0.50 - t * 0.35; // 0.50 → 0.15
+}
+
+function braidFactorForSize(w: number, h: number): number {
+  const area = w * h;
+  const minArea = 20 * 20;
+  const maxArea = 60 * 60;
+  const t = Math.min(1, Math.max(0, (area - minArea) / (maxArea - minArea)));
+  return 0.10 + t * 0.22; // 0.10 → 0.32
+}
+
 export function MazeGenerator() {
-  const [difficulty, setDifficulty] = useState<CoreDifficulty>('medium');
   const [sizePreset, setSizePreset] = useState<SizePreset>('medium');
   const [showCustom, setShowCustom] = useState(false);
-  const [customWidth, setCustomWidth]   = useState(12);
-  const [customHeight, setCustomHeight] = useState(12);
+  const [customWidth, setCustomWidth]   = useState(40);
+  const [customHeight, setCustomHeight] = useState(40);
   const [playing, setPlaying] = useState(false);
   const [solved, setSolved]   = useState(false);
   const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
@@ -59,28 +65,37 @@ export function MazeGenerator() {
     return generateMaze({ width: w, height: h, difficulty: 'medium', seed: newSeed() });
   });
 
-  const generate = useCallback((diff: CoreDifficulty, dims: { w: number; h: number }) => {
-    const m = generateMaze({ width: dims.w, height: dims.h, difficulty: diff as Difficulty, seed: newSeed() });
+  const generate = useCallback((preset: SizePreset | null, dims: { w: number; h: number }) => {
+    const difficulty: Difficulty = preset ?? 'medium';
+    const nb = preset ? undefined : newestBiasForSize(dims.w, dims.h);
+    const bf = preset ? undefined : braidFactorForSize(dims.w, dims.h);
+    const m = generateMaze({
+      width: dims.w,
+      height: dims.h,
+      difficulty,
+      seed: newSeed(),
+      newestBias: nb,
+      braidFactor: bf,
+    });
     setMaze(m);
     setPlaying(false);
     setSolved(false);
     setSolveStats(null);
   }, []);
 
-  const handleDifficultyChange = useCallback((d: CoreDifficulty) => {
-    setDifficulty(d);
-    generate(d, getDimensions());
-  }, [getDimensions, generate]);
-
   const handleSizeChange = useCallback((s: SizePreset) => {
     setSizePreset(s);
     setShowCustom(false);
-    generate(difficulty, SIZE_MAP[s]);
-  }, [difficulty, generate]);
+    generate(s, SIZE_MAP[s]);
+  }, [generate]);
 
   const handleGenerate = useCallback(() => {
-    generate(difficulty, getDimensions());
-  }, [difficulty, getDimensions, generate]);
+    if (showCustom) {
+      generate(null, { w: customWidth, h: customHeight });
+    } else {
+      generate(sizePreset, SIZE_MAP[sizePreset]);
+    }
+  }, [showCustom, customWidth, customHeight, sizePreset, generate]);
 
   const handlePlay = useCallback(() => {
     hasPlayedRef.current = true;
@@ -93,11 +108,11 @@ export function MazeGenerator() {
     setSolved(true);
   }, []);
 
-  const handleTryHarder = useCallback(() => {
-    const next: CoreDifficulty = difficulty === 'easy' ? 'medium' : 'hard';
-    setDifficulty(next);
-    generate(next, getDimensions());
-  }, [difficulty, getDimensions, generate]);
+  const handleTryLarger = useCallback(() => {
+    const next: SizePreset = sizePreset === 'small' ? 'medium' : 'large';
+    setSizePreset(next);
+    generate(next, SIZE_MAP[next]);
+  }, [sizePreset, generate]);
 
   const handleDownloadSVG = useCallback(() => {
     const svgEl = document.querySelector('.maze-generator-svg svg');
@@ -107,10 +122,10 @@ export function MazeGenerator() {
     const a = document.createElement('a');
     const { w, h } = getDimensions();
     a.href = url;
-    a.download = `maze-${difficulty}-${w}x${h}.svg`;
+    a.download = `maze-${w}x${h}.svg`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [difficulty, getDimensions]);
+  }, [getDimensions]);
 
   const handlePrint = useCallback(() => window.print(), []);
 
@@ -152,9 +167,6 @@ export function MazeGenerator() {
           />
         )}
 
-        {/* Rendered at z-[60] so it covers the still-mounted player (z-50).
-            useLayoutEffect in the player guarantees this mounts before any
-            ghost-click events can fire, so the backdrop absorbs stray touches. */}
         {solveStats && (
           <div className="fixed inset-0 z-[60]">
             <PostSolveOverlay
@@ -181,12 +193,12 @@ export function MazeGenerator() {
           <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-sm font-medium text-green-800">Nice work! Ready for another?</p>
             <div className="flex gap-2 shrink-0">
-              {difficulty !== 'hard' && (
+              {sizePreset !== 'large' && !showCustom && (
                 <button
-                  onClick={handleTryHarder}
+                  onClick={handleTryLarger}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
                 >
-                  Try Harder →
+                  Try Larger →
                 </button>
               )}
               <button
@@ -208,7 +220,7 @@ export function MazeGenerator() {
 
         <div className="mt-4 text-center text-sm text-slate-500">
           Looking for pre-made mazes?{' '}
-          <a href="/easy-mazes" className="text-blue-600 font-medium hover:underline">
+          <a href="/small-mazes" className="text-blue-600 font-medium hover:underline">
             Browse the maze library →
           </a>
         </div>
@@ -216,26 +228,6 @@ export function MazeGenerator() {
 
       {/* ── Controls panel — bottom on mobile, left on desktop ── */}
       <div className="w-full lg:w-72 shrink-0 space-y-5">
-
-        {/* Difficulty */}
-        <fieldset>
-          <legend className="block text-sm font-semibold text-slate-700 mb-2">Difficulty</legend>
-          <div className="grid grid-cols-3 gap-2">
-            {DIFFICULTY_OPTIONS.map(({ value, label }) => (
-              <button
-                key={value}
-                onClick={() => handleDifficultyChange(value)}
-                className={`${buttonBase} ${difficulty === value ? activeBtn : inactiveBtn}`}
-                aria-pressed={difficulty === value}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <p className="mt-1.5 text-xs text-slate-400">
-            {DIFFICULTY_OPTIONS.find(d => d.value === difficulty)?.description}
-          </p>
-        </fieldset>
 
         {/* Size */}
         <fieldset>
@@ -255,6 +247,11 @@ export function MazeGenerator() {
               </button>
             ))}
           </div>
+          <p className="mt-1.5 text-xs text-slate-400">
+            {!showCustom
+              ? SIZE_OPTIONS.find(o => o.value === sizePreset)?.description
+              : `Custom: ${customWidth} × ${customHeight} cells`}
+          </p>
 
           <button
             onClick={toggleCustom}
@@ -273,8 +270,8 @@ export function MazeGenerator() {
                 <input
                   id="maze-width"
                   type="range"
-                  min={CUSTOM_RANGES[difficulty].min}
-                  max={CUSTOM_RANGES[difficulty].max}
+                  min={CUSTOM_RANGE.min}
+                  max={CUSTOM_RANGE.max}
                   value={customWidth}
                   onChange={(e) => setCustomWidth(Number(e.target.value))}
                   className="w-full accent-blue-600"
@@ -288,8 +285,8 @@ export function MazeGenerator() {
                 <input
                   id="maze-height"
                   type="range"
-                  min={CUSTOM_RANGES[difficulty].min}
-                  max={CUSTOM_RANGES[difficulty].max}
+                  min={CUSTOM_RANGE.min}
+                  max={CUSTOM_RANGE.max}
                   value={customHeight}
                   onChange={(e) => setCustomHeight(Number(e.target.value))}
                   className="w-full accent-blue-600"

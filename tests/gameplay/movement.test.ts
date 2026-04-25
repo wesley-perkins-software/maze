@@ -5,14 +5,14 @@ import { canMove, applyMove } from '../../src/lib/gameplay/movement';
 describe('canMove', () => {
   it('returns false when wall is present', () => {
     // A hard maze with no extra walls — entry is top-left
-    const maze = generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 1 });
+    const maze = generateMaze({ width: 5, height: 5, difficulty: 'large', seed: 1 });
     // The top-left corner always has North and West walls (border)
     const entry = maze.entry; // {x:0, y:0}
     expect(canMove(maze, entry, 'W')).toBe(false); // border West wall
   });
 
   it('returns false when move would go out of bounds (entry/exit visual gaps)', () => {
-    const maze = generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 1 });
+    const maze = generateMaze({ width: 5, height: 5, difficulty: 'large', seed: 1 });
     // The generator removes the North wall of the entry cell for the visual entry gap.
     // canMove must still return false because {0, -1} is outside the grid.
     expect(canMove(maze, maze.entry, 'N')).toBe(false);
@@ -22,7 +22,7 @@ describe('canMove', () => {
   });
 
   it('returns true when passage exists', () => {
-    const maze = generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 1 });
+    const maze = generateMaze({ width: 5, height: 5, difficulty: 'large', seed: 1 });
     // Follow the solution path — each step should be a valid move
     const solution = maze.solution;
     for (let i = 0; i < solution.length - 1; i++) {
