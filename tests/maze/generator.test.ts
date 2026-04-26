@@ -112,6 +112,66 @@ describe('generateMaze', () => {
     expect(largeLoops).toBeGreaterThan(smallLoops);
   });
 
+  it('entry and exit are on opposite perimeter sides', () => {
+    // Run multiple seeds to cover both orientations (left/right and top/bottom)
+    for (let s = 1; s <= 20; s++) {
+      const { entry, exit, width, height } = generateMaze({
+        width: 20, height: 20, difficulty: 'medium', seed: s,
+      });
+      const entryOnLeft  = entry.x === 0;
+      const entryOnRight = entry.x === width  - 1;
+      const entryOnTop   = entry.y === 0;
+      const entryOnBot   = entry.y === height - 1;
+      const exitOnLeft   = exit.x  === 0;
+      const exitOnRight  = exit.x  === width  - 1;
+      const exitOnTop    = exit.y  === 0;
+      const exitOnBot    = exit.y  === height - 1;
+
+      const onOppositeSides =
+        (entryOnLeft  && exitOnRight) ||
+        (entryOnRight && exitOnLeft)  ||
+        (entryOnTop   && exitOnBot)   ||
+        (entryOnBot   && exitOnTop);
+
+      expect(onOppositeSides, `seed ${s}: entry=(${entry.x},${entry.y}) exit=(${exit.x},${exit.y})`).toBe(true);
+    }
+  });
+
+  it('entry and exit are not at corners', () => {
+    for (let s = 1; s <= 20; s++) {
+      const { entry, exit, width, height } = generateMaze({
+        width: 20, height: 20, difficulty: 'medium', seed: s,
+      });
+      const isCorner = (p: { x: number; y: number }) =>
+        (p.x === 0 || p.x === width - 1) && (p.y === 0 || p.y === height - 1);
+      expect(isCorner(entry), `seed ${s}: entry at corner`).toBe(false);
+      expect(isCorner(exit),  `seed ${s}: exit at corner`).toBe(false);
+    }
+  });
+
+  it('entry and exit are within the 20–80% margin of their side', () => {
+    for (let s = 1; s <= 20; s++) {
+      const { entry, exit, width, height } = generateMaze({
+        width: 20, height: 20, difficulty: 'medium', seed: s,
+      });
+      // For left/right orientation: check Y is in [20%,80%] of height
+      // For top/bottom orientation: check X is in [20%,80%] of width
+      if (entry.x === 0 || entry.x === width - 1) {
+        // Left/right orientation — check Y margin
+        expect(entry.y).toBeGreaterThanOrEqual(Math.floor(height * 0.2));
+        expect(entry.y).toBeLessThanOrEqual(Math.ceil(height * 0.8));
+        expect(exit.y).toBeGreaterThanOrEqual(Math.floor(height * 0.2));
+        expect(exit.y).toBeLessThanOrEqual(Math.ceil(height * 0.8));
+      } else {
+        // Top/bottom orientation — check X margin
+        expect(entry.x).toBeGreaterThanOrEqual(Math.floor(width * 0.2));
+        expect(entry.x).toBeLessThanOrEqual(Math.ceil(width * 0.8));
+        expect(exit.x).toBeGreaterThanOrEqual(Math.floor(width * 0.2));
+        expect(exit.x).toBeLessThanOrEqual(Math.ceil(width * 0.8));
+      }
+    }
+  });
+
   it('accepts custom newestBias and braidFactor overrides', () => {
     // Full DFS (no braiding) — should produce a tree (0 loops)
     const m = generateMaze({ width: 10, height: 10, difficulty: 'small', seed: 1, braidFactor: 0 });
