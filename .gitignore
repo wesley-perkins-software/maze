@@ -21,3 +21,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Generated preview images (local dev tool output)
+scripts/previews/
