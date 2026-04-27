@@ -48,9 +48,9 @@ const out = '/home/user/maze/scripts/previews';
 mkdirSync(out, { recursive: true });
 
 const testSets = [
-  { label: 'A', newestBias: 0.75, directionalPersistence: 0.00, braidFactor: 0.01 },
-  { label: 'B', newestBias: 0.85, directionalPersistence: 0.00, braidFactor: 0.01 },
-  { label: 'C', newestBias: 0.80, directionalPersistence: 0.10, braidFactor: 0.01 },
+  { label: 'A', newestBias: 0.75, braidFactor: 0.01 },
+  { label: 'B', newestBias: 0.85, braidFactor: 0.01 },
+  { label: 'C', newestBias: 0.80, braidFactor: 0.01 },
 ];
 
 const seeds = [1, 42];
@@ -61,7 +61,6 @@ for (const ts of testSets) {
     const maze = generateMaze({
       difficulty: 'large', width, height, seed,
       newestBias: ts.newestBias,
-      directionalPersistence: ts.directionalPersistence,
       braidFactor: ts.braidFactor,
     });
     const svg = renderSVG(maze, cellSize);
