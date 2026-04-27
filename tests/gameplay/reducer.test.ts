@@ -1,9 +1,18 @@
 import { describe, it, expect } from 'vitest';
 import { generateMaze } from '../../src/lib/maze/generator';
 import { gameReducer, createInitialState } from '../../src/lib/gameplay/reducer';
+import type { Point } from '../../src/types/maze';
+import type { Direction } from '../../src/lib/gameplay/types';
 
 function makeMaze() {
-  return generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 42 });
+  return generateMaze({ width: 8, height: 8, difficulty: 'large', seed: 42 });
+}
+
+function perimeterDir(pt: Point, width: number, height: number): Direction {
+  if (pt.y === 0)          return 'N';
+  if (pt.y === height - 1) return 'S';
+  if (pt.x === 0)          return 'W';
+  return 'E';
 }
 
 describe('gameReducer', () => {
@@ -31,12 +40,13 @@ describe('gameReducer', () => {
     expect(state.startTime).not.toBeNull();
   });
 
-  it('ignores moves into walls', () => {
+  it('ignores moves that exit the grid through the perimeter gap', () => {
     const maze = makeMaze();
     const state = createInitialState(maze);
-    // West wall always present at entry (0,0) border
-    const newState = gameReducer(state, { type: 'MOVE', direction: 'W' }, maze);
-    expect(newState).toBe(state); // same reference (no change)
+    // Moving in the perimeter-exit direction from entry leads out of bounds — always blocked.
+    const dir = perimeterDir(maze.entry, maze.width, maze.height);
+    const newState = gameReducer(state, { type: 'MOVE', direction: dir }, maze);
+    expect(newState).toBe(state); // same reference — no state change
   });
 
   it('solves the maze by following the solution path', () => {

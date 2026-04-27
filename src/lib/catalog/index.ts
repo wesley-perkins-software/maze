@@ -18,7 +18,7 @@ export function getMazesByDifficulty(difficulty: Difficulty): MazeCatalogEntry[]
 /**
  * Returns up to `limit` mazes related to a given maze:
  *  1. Same difficulty + same size (different slugs)
- *  2. Same difficulty + adjacent size
+ *  2. Same difficulty (any size)
  * Excludes the source maze itself.
  */
 export function getRelatedMazes(source: MazeCatalogEntry, limit = 6): MazeCatalogEntry[] {
@@ -36,7 +36,6 @@ export function getRelatedMazes(source: MazeCatalogEntry, limit = 6): MazeCatalo
     const otherSizes = all.filter(
       (m) => m.width !== source.width || m.height !== source.height,
     );
-    // Sort by size similarity
     otherSizes.sort((a, b) => {
       const aDist = Math.abs(a.width - source.width) + Math.abs(a.height - source.height);
       const bDist = Math.abs(b.width - source.width) + Math.abs(b.height - source.height);
@@ -70,22 +69,23 @@ export function getPrevMaze(source: MazeCatalogEntry): MazeCatalogEntry | undefi
 }
 
 /**
- * Returns the smallest maze of the same difficulty whose area exceeds the source,
- * or undefined if the source is already the largest available size.
+ * Returns the next tier up from the given maze, or undefined if already large.
  */
 export function getLargerMaze(source: MazeCatalogEntry): MazeCatalogEntry | undefined {
-  const currentArea = source.width * source.height;
-  const candidates = getMazesByDifficulty(source.difficulty)
-    .filter((m) => m.width * m.height > currentArea);
-  if (!candidates.length) return undefined;
-  candidates.sort((a, b) => a.width * a.height - b.width * b.height);
-  return candidates[0];
+  const nextTier: Record<Difficulty, Difficulty | null> = {
+    small: 'medium',
+    medium: 'large',
+    large: null,
+  };
+  const next = nextTier[source.difficulty];
+  if (!next) return undefined;
+  const group = getMazesByDifficulty(next);
+  return group[0];
 }
 
 /**
  * Returns a deterministic "random" maze from the same difficulty, excluding
- * the provided slugs. Uses the source seed for reproducibility so the same
- * maze always suggests the same random pick.
+ * the provided slugs. Uses the source seed for reproducibility.
  */
 export function getRandomMazePick(
   source: MazeCatalogEntry,
@@ -99,38 +99,24 @@ export function getRandomMazePick(
 
 /**
  * Returns a maze for a given date — deterministic, changes daily.
- * Prefers medium/adults difficulty for an interesting daily challenge.
+ * Uses medium mazes for a balanced daily challenge.
  */
 export function getDailyMaze(date: Date = new Date()): MazeCatalogEntry {
   const y = date.getUTCFullYear();
   const m = date.getUTCMonth() + 1;
   const d = date.getUTCDate();
-  // Simple integer hash from date
   const hash = ((y * 366 + m * 31 + d) * 2654435761) >>> 0;
-  const pool = catalog.mazes.filter(
-    (e) => e.difficulty === 'medium' || e.difficulty === 'adults',
-  );
+  const pool = getMazesByDifficulty('medium');
   return pool[hash % pool.length];
 }
 
 /**
- * Returns a small set of featured mazes for the homepage.
- * One per difficulty tier, chosen to be representative sizes.
+ * Returns a small set of featured mazes for the homepage — one per tier.
  */
 export function getFeaturedMazes(): MazeCatalogEntry[] {
-  const picks: Array<{ difficulty: Difficulty; preferredSize: string }> = [
-    { difficulty: 'kids',   preferredSize: '6x6'  },
-    { difficulty: 'easy',   preferredSize: '8x8'  },
-    { difficulty: 'medium', preferredSize: '10x10' },
-    { difficulty: 'hard',   preferredSize: '15x15' },
-    { difficulty: 'adults', preferredSize: '20x20' },
-  ];
-
-  return picks.map(({ difficulty, preferredSize }) => {
-    const [pw, ph] = preferredSize.split('x').map(Number);
-    const group = getMazesByDifficulty(difficulty);
-    return (
-      group.find((m) => m.width === pw && m.height === ph) ?? group[0]
-    );
+  const tiers: Difficulty[] = ['small', 'medium', 'large'];
+  return tiers.map((tier) => {
+    const group = getMazesByDifficulty(tier);
+    return group[0];
   }).filter(Boolean) as MazeCatalogEntry[];
 }

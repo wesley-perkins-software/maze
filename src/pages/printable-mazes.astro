@@ -5,10 +5,9 @@ import CategoryNav from '../components/nav/CategoryNav.astro';
 import MazeCard from '../components/ui/MazeCard.astro';
 import { getMazesByDifficulty } from '../lib/catalog/index.js';
 
-const easyMazes = getMazesByDifficulty('easy').slice(0, 5);
-const kidsMazes = getMazesByDifficulty('kids').slice(0, 5);
+const smallMazes  = getMazesByDifficulty('small').slice(0, 5);
 const mediumMazes = getMazesByDifficulty('medium').slice(0, 5);
-const hardMazes = getMazesByDifficulty('hard').slice(0, 5);
+const largeMazes  = getMazesByDifficulty('large').slice(0, 5);
 
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
 
@@ -16,15 +15,15 @@ const schemaLD = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: 'Free Printable Mazes',
-  description: 'Download and print 420+ free maze puzzles for kids and adults. Easy, medium, and hard difficulty levels. Clean print layouts — no ads.',
+  description: 'Download and print 150+ free maze puzzles in small, medium, and large sizes. Clean print layouts — no ads.',
   url: `${siteUrl}/printable-mazes`,
   publisher: { '@type': 'Organization', name: 'MazeThis', url: siteUrl },
 });
 ---
 
 <BaseLayout
-  title="Free Printable Mazes — 420+ to Download & Print | MazeThis"
-  description="Download and print 420+ free maze puzzles. Easy mazes for kids, medium mazes for families, and hard mazes for adults. Clean print layouts — no ads, no sign-up required."
+  title="Free Printable Mazes — 150+ to Download & Print | MazeThis"
+  description="Download and print 150+ free maze puzzles. Small mazes for quick fun, medium mazes for a real challenge, and large mazes for serious solvers. Clean print layouts — no ads, no sign-up required."
   schemaLD={schemaLD}
 >
   <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
@@ -33,7 +32,7 @@ const schemaLD = JSON.stringify({
     <div class="mt-4 mb-8">
       <h1 class="mb-3">Free Printable Mazes</h1>
       <p class="text-slate-500 text-lg max-w-3xl">
-        Over 420 free printable maze puzzles for every age and skill level. Click any maze, then
+        150+ free printable maze puzzles in three sizes. Click any maze, then
         hit "Print Maze" for a clean, ad-free printout — ready in seconds, no account needed.
       </p>
     </div>
@@ -49,7 +48,7 @@ const schemaLD = JSON.stringify({
       <ol class="space-y-2 text-sm text-slate-600">
         <li class="flex gap-3">
           <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
-          <span>Click any maze below (or browse by difficulty above)</span>
+          <span>Click any maze below (or browse by size above)</span>
         </li>
         <li class="flex gap-3">
           <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
@@ -66,35 +65,19 @@ const schemaLD = JSON.stringify({
       </ol>
     </div>
 
-    <!-- Kids mazes preview -->
+    <!-- Small mazes preview -->
     <section class="mb-12">
       <div class="flex items-center justify-between mb-5">
         <div>
-          <h2 class="text-xl font-bold text-slate-800">Printable Mazes for Kids</h2>
-          <p class="text-slate-500 text-sm mt-1">Simple 5×5–8×8 mazes with wide corridors — perfect for ages 4–8</p>
+          <h2 class="text-xl font-bold text-slate-800">Small Printable Mazes</h2>
+          <p class="text-slate-500 text-sm mt-1">20×20 grid — quick and approachable for all ages</p>
         </div>
-        <a href="/mazes-for-kids" class="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap">
-          All 90 kids mazes →
+        <a href="/small-mazes" class="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap">
+          All 60 small mazes →
         </a>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-        {kidsMazes.map((entry) => <MazeCard entry={entry} />)}
-      </div>
-    </section>
-
-    <!-- Easy mazes preview -->
-    <section class="mb-12">
-      <div class="flex items-center justify-between mb-5">
-        <div>
-          <h2 class="text-xl font-bold text-slate-800">Easy Printable Mazes</h2>
-          <p class="text-slate-500 text-sm mt-1">Beginner-friendly 5×5–10×10 mazes — great for all ages</p>
-        </div>
-        <a href="/easy-mazes" class="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap">
-          All 90 easy mazes →
-        </a>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-        {easyMazes.map((entry) => <MazeCard entry={entry} />)}
+        {smallMazes.map((entry) => <MazeCard entry={entry} />)}
       </div>
     </section>
 
@@ -103,10 +86,10 @@ const schemaLD = JSON.stringify({
       <div class="flex items-center justify-between mb-5">
         <div>
           <h2 class="text-xl font-bold text-slate-800">Medium Printable Mazes</h2>
-          <p class="text-slate-500 text-sm mt-1">Moderate challenge — 10×10 to 15×15 grids for families and older kids</p>
+          <p class="text-slate-500 text-sm mt-1">40×40 grid — a focused challenge with real decision points</p>
         </div>
         <a href="/medium-mazes" class="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap">
-          All 90 medium mazes →
+          All 50 medium mazes →
         </a>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
@@ -114,19 +97,19 @@ const schemaLD = JSON.stringify({
       </div>
     </section>
 
-    <!-- Hard mazes preview -->
+    <!-- Large mazes preview -->
     <section class="mb-12">
       <div class="flex items-center justify-between mb-5">
         <div>
-          <h2 class="text-xl font-bold text-slate-800">Hard Printable Mazes</h2>
-          <p class="text-slate-500 text-sm mt-1">Large 15×15–25×25 mazes with maximum dead ends — a real challenge</p>
+          <h2 class="text-xl font-bold text-slate-800">Large Printable Mazes</h2>
+          <p class="text-slate-500 text-sm mt-1">60×60 grid — dense labyrinth, easy to get lost</p>
         </div>
-        <a href="/hard-mazes" class="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap">
-          All 75 hard mazes →
+        <a href="/large-mazes" class="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap">
+          All 40 large mazes →
         </a>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-        {hardMazes.map((entry) => <MazeCard entry={entry} />)}
+        {largeMazes.map((entry) => <MazeCard entry={entry} />)}
       </div>
     </section>
 
@@ -151,8 +134,8 @@ const schemaLD = JSON.stringify({
         <li><strong>Multiple copies:</strong> Each maze page can be printed unlimited times — great for classroom sets</li>
       </ul>
       <p>
-        Need a maze that's not in our library? Use the <a href="/maze-generator">free maze generator</a> to create
-        a custom maze in any size and difficulty — then print or download it.
+        Need something specific? Use the <a href="/maze-generator">free maze generator</a> to create
+        a custom maze in any size — then print or download it.
       </p>
     </section>
   </div>

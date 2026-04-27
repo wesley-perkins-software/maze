@@ -8,16 +8,16 @@ function ordinal(n: number): string {
   return ORDINALS[String(n)] ?? `${n}th`;
 }
 
-/** Extract the sequential number from a slug like "easy-5x5-001" → 1 */
+/** Extract the sequential number from a slug like "small-20x20-001" → 1 */
 function slugIndex(slug: string): number {
   const match = slug.match(/-(\d+)$/);
   return match ? parseInt(match[1], 10) : 1;
 }
 
 export function generateMazeTitle(entry: MazeCatalogEntry): string {
-  const diff = DIFFICULTY_LABELS[entry.difficulty];
+  const tier = DIFFICULTY_LABELS[entry.difficulty];
   const n = slugIndex(entry.slug);
-  return `${diff} ${entry.width}×${entry.height} Maze #${n}`;
+  return `${tier} ${entry.width}×${entry.height} Maze #${n}`;
 }
 
 export function generateMazeMetaTitle(entry: MazeCatalogEntry): string {
@@ -25,21 +25,19 @@ export function generateMazeMetaTitle(entry: MazeCatalogEntry): string {
 }
 
 export function generateMazeDescription(entry: MazeCatalogEntry): string {
-  const diff = DIFFICULTY_LABELS[entry.difficulty].toLowerCase();
+  const tier = DIFFICULTY_LABELS[entry.difficulty].toLowerCase();
   const { width, height } = entry;
   const n = slugIndex(entry.slug);
 
   const audienceMap: Record<Difficulty, string> = {
-    easy:   'great for beginners and young children',
-    medium: 'perfect for all ages',
-    hard:   'ideal for experienced solvers',
-    kids:   'designed for children ages 4–8',
-    adults: 'perfect for adults who love a challenge',
+    small:  'quick and approachable for all ages',
+    medium: 'a focused challenge with real decision points',
+    large:  'a dense labyrinth — easy to get lost',
   };
 
   return (
-    `Print or play ${diff} ${width}×${height} Maze #${n} online for free. ` +
-    `This printable maze is ${audienceMap[entry.difficulty]}. ` +
+    `Print or play this ${tier} ${width}×${height} maze (#${n}) online for free. ` +
+    `It's ${audienceMap[entry.difficulty]}. ` +
     `Solve with arrow keys or download to print.`
   );
 }
@@ -59,7 +57,7 @@ export function generateMazeSchemaLD(entry: MazeCatalogEntry, siteUrl: string): 
   const title = generateMazeTitle(entry);
   const description = generateMazeDescription(entry);
   const url = `${siteUrl}/mazes/${entry.slug}`;
-  const diff = DIFFICULTY_LABELS[entry.difficulty];
+  const tier = DIFFICULTY_LABELS[entry.difficulty];
 
   return JSON.stringify({
     '@context': 'https://schema.org',
@@ -68,7 +66,7 @@ export function generateMazeSchemaLD(entry: MazeCatalogEntry, siteUrl: string): 
     description,
     url,
     learningResourceType: 'Puzzle',
-    educationalLevel: diff,
+    educationalLevel: tier,
     isAccessibleForFree: true,
     license: 'https://creativecommons.org/licenses/by/4.0/',
     creator: {

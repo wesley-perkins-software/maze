@@ -1,21 +1,20 @@
-// ─── Difficulty ────────────────────────────────────────────────────────────────
+// ─── Difficulty (tier) ─────────────────────────────────────────────────────────
+//
+//  "Difficulty" is now synonymous with size tier. The three values map directly
+//  to the Small / Medium / Large options shown in the UI.
 
-export type Difficulty = 'easy' | 'medium' | 'hard' | 'kids' | 'adults';
+export type Difficulty = 'small' | 'medium' | 'large';
 
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
-  easy: 'Easy',
+  small:  'Small',
   medium: 'Medium',
-  hard: 'Hard',
-  kids: 'Kids',
-  adults: 'Adults',
+  large:  'Large',
 };
 
 export const DIFFICULTY_DESCRIPTIONS: Record<Difficulty, string> = {
-  easy: 'Wide open paths, perfect for beginners and young children.',
-  medium: 'Balanced challenge with moderate dead ends.',
-  hard: 'Maximum dead ends and long winding paths — a real challenge.',
-  kids: 'Small, friendly mazes designed for young children.',
-  adults: 'Large, complex mazes for experienced solvers.',
+  small:  'Quick, approachable mazes — 20×20 grid.',
+  medium: 'Focused challenge with real decision points — 40×40 grid.',
+  large:  'A genuine labyrinth. Easy to get lost — 60×60 grid.',
 };
 
 // ─── Coordinate ────────────────────────────────────────────────────────────────
@@ -53,7 +52,7 @@ export type MazeGrid = CellWalls[];
 
 export type MazeData = {
   id: string;           // same as slug
-  slug: string;         // e.g. "easy-5x5-001"
+  slug: string;         // e.g. "small-20x20-001"
   difficulty: Difficulty;
   width: number;        // number of columns (cells)
   height: number;       // number of rows (cells)
@@ -95,8 +94,8 @@ export type MazeSeoMeta = {
 
 export type CategoryInfo = {
   difficulty: Difficulty;
-  slug: string;         // e.g. "easy-mazes"
-  label: string;        // e.g. "Easy Mazes"
+  slug: string;         // e.g. "small-mazes"
+  label: string;        // e.g. "Small Mazes"
   title: string;        // page <title>
   description: string;  // meta description
   h1: string;
@@ -104,13 +103,13 @@ export type CategoryInfo = {
 
 export const CATEGORIES: CategoryInfo[] = [
   {
-    difficulty: 'easy',
-    slug: 'easy-mazes',
-    label: 'Easy Mazes',
-    title: 'Free Easy Mazes to Print & Play | MazeThis',
+    difficulty: 'small',
+    slug: 'small-mazes',
+    label: 'Small Mazes',
+    title: 'Free Small Mazes to Print & Play | MazeThis',
     description:
-      'Browse 90 free printable easy mazes. Download and print or play online. Perfect for beginners and young kids. No account needed.',
-    h1: 'Free Printable Easy Mazes',
+      'Browse 60 free printable small mazes on a 20×20 grid. Quick and approachable — perfect for all ages. Play online or download to print.',
+    h1: 'Free Printable Small Mazes',
   },
   {
     difficulty: 'medium',
@@ -118,35 +117,17 @@ export const CATEGORIES: CategoryInfo[] = [
     label: 'Medium Mazes',
     title: 'Free Medium Mazes to Print & Play | MazeThis',
     description:
-      'Browse 90 free printable medium difficulty mazes. Balanced challenge for all ages. Print or solve online with arrow keys.',
+      'Browse 50 free printable medium mazes on a 40×40 grid. Real branching and decision points — a focused challenge for any solver.',
     h1: 'Free Printable Medium Mazes',
   },
   {
-    difficulty: 'hard',
-    slug: 'hard-mazes',
-    label: 'Hard Mazes',
-    title: 'Free Hard Mazes to Print & Play | MazeThis',
+    difficulty: 'large',
+    slug: 'large-mazes',
+    label: 'Large Mazes',
+    title: 'Free Large Mazes to Print & Play | MazeThis',
     description:
-      'Browse 75 free printable hard mazes. Maximum dead ends for experienced solvers. Download and print or play online.',
-    h1: 'Free Printable Hard Mazes',
-  },
-  {
-    difficulty: 'kids',
-    slug: 'mazes-for-kids',
-    label: 'Mazes for Kids',
-    title: 'Free Printable Mazes for Kids | MazeThis',
-    description:
-      'Browse 90 free printable mazes for kids. Simple, fun mazes perfect for children ages 4–8. Print for free or solve online.',
-    h1: 'Free Printable Mazes for Kids',
-  },
-  {
-    difficulty: 'adults',
-    slug: 'mazes-for-adults',
-    label: 'Mazes for Adults',
-    title: 'Free Printable Mazes for Adults | MazeThis',
-    description:
-      'Browse 75 free large printable mazes for adults. Challenging puzzles to print or solve online. No account needed.',
-    h1: 'Free Printable Mazes for Adults',
+      'Browse 40 free printable large mazes on a 60×60 grid. Dense, looping labyrinths that are easy to get lost in. A genuine challenge.',
+    h1: 'Free Printable Large Mazes',
   },
 ];
 

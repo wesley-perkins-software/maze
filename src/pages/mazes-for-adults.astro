@@ -1,17 +1,4 @@
 ---
-import CategoryLayout from '../layouts/CategoryLayout.astro';
-import MazeCard from '../components/ui/MazeCard.astro';
-import { getCategoryBySlug } from '../types/maze.js';
-import { getMazesByDifficulty } from '../lib/catalog/index.js';
-
-const category = getCategoryBySlug('mazes-for-adults')!;
-const mazes = getMazesByDifficulty('adults');
+// Redirects legacy /mazes-for-adults to /large-mazes
+return Astro.redirect('/large-mazes', 301);
 ---
-
-<CategoryLayout category={category} totalCount={mazes.length}>
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-    {mazes.map((entry) => (
-      <MazeCard entry={entry} />
-    ))}
-  </div>
-</CategoryLayout>

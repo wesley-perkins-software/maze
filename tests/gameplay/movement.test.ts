@@ -1,37 +1,46 @@
 import { describe, it, expect } from 'vitest';
 import { generateMaze } from '../../src/lib/maze/generator';
 import { canMove, applyMove } from '../../src/lib/gameplay/movement';
+import type { Point } from '../../src/types/maze';
+import type { Direction } from '../../src/lib/gameplay/types';
+
+/**
+ * Returns the direction that faces outward from a perimeter cell.
+ * Used to test that the player cannot exit through the entry/exit gap.
+ */
+function perimeterDir(pt: Point, width: number, height: number): Direction {
+  if (pt.y === 0)          return 'N';
+  if (pt.y === height - 1) return 'S';
+  if (pt.x === 0)          return 'W';
+  return 'E';
+}
 
 describe('canMove', () => {
-  it('returns false when wall is present', () => {
-    // A hard maze with no extra walls — entry is top-left
-    const maze = generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 1 });
-    // The top-left corner always has North and West walls (border)
-    const entry = maze.entry; // {x:0, y:0}
-    expect(canMove(maze, entry, 'W')).toBe(false); // border West wall
+  it('cannot move out through the entry gap', () => {
+    // The generator opens the perimeter wall at entry for the visual gap.
+    // canMove must still return false — the destination is outside the grid.
+    const maze = generateMaze({ width: 8, height: 8, difficulty: 'large', seed: 1 });
+    const dir = perimeterDir(maze.entry, maze.width, maze.height);
+    expect(canMove(maze, maze.entry, dir)).toBe(false);
   });
 
-  it('returns false when move would go out of bounds (entry/exit visual gaps)', () => {
-    const maze = generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 1 });
-    // The generator removes the North wall of the entry cell for the visual entry gap.
-    // canMove must still return false because {0, -1} is outside the grid.
-    expect(canMove(maze, maze.entry, 'N')).toBe(false);
-    // Similarly, the South wall of the exit cell is removed for the visual exit gap.
-    // canMove must still return false because {4, 5} is outside the grid.
-    expect(canMove(maze, maze.exit, 'S')).toBe(false);
+  it('cannot move out through the exit gap', () => {
+    // Same invariant at the exit cell.
+    const maze = generateMaze({ width: 8, height: 8, difficulty: 'large', seed: 1 });
+    const dir = perimeterDir(maze.exit, maze.width, maze.height);
+    expect(canMove(maze, maze.exit, dir)).toBe(false);
   });
 
-  it('returns true when passage exists', () => {
-    const maze = generateMaze({ width: 5, height: 5, difficulty: 'hard', seed: 1 });
-    // Follow the solution path — each step should be a valid move
+  it('returns true when passage exists — solution path is always traversable', () => {
+    const maze = generateMaze({ width: 8, height: 8, difficulty: 'large', seed: 1 });
     const solution = maze.solution;
     for (let i = 0; i < solution.length - 1; i++) {
       const from = { x: solution[i] % maze.width, y: Math.floor(solution[i] / maze.width) };
       const to   = { x: solution[i+1] % maze.width, y: Math.floor(solution[i+1] / maze.width) };
       const dx = to.x - from.x;
       const dy = to.y - from.y;
-      const dir = dx === 1 ? 'E' : dx === -1 ? 'W' : dy === 1 ? 'S' : 'N';
-      expect(canMove(maze, from, dir as any)).toBe(true);
+      const dir: Direction = dx === 1 ? 'E' : dx === -1 ? 'W' : dy === 1 ? 'S' : 'N';
+      expect(canMove(maze, from, dir)).toBe(true);
     }
   });
 });
