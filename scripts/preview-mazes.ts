@@ -47,19 +47,27 @@ function renderSVG(maze: MazeData, cellSize = 10): string {
 const out = '/home/user/maze/scripts/previews';
 mkdirSync(out, { recursive: true });
 
-const samples: Array<{ difficulty: 'small' | 'medium' | 'large'; width: number; height: number; seeds: number[] }> = [
-  { difficulty: 'small',  width: 20, height: 20, seeds: [1, 42, 99] },
-  { difficulty: 'medium', width: 40, height: 40, seeds: [1, 42, 99] },
-  { difficulty: 'large',  width: 60, height: 60, seeds: [1, 42, 99] },
+const testSets = [
+  { label: 'A', newestBias: 0.75, directionalPersistence: 0.00, braidFactor: 0.01 },
+  { label: 'B', newestBias: 0.85, directionalPersistence: 0.00, braidFactor: 0.01 },
+  { label: 'C', newestBias: 0.80, directionalPersistence: 0.10, braidFactor: 0.01 },
 ];
 
-for (const { difficulty, width, height, seeds } of samples) {
+const seeds = [1, 42];
+const width = 60, height = 60, cellSize = 8;
+
+for (const ts of testSets) {
   for (const seed of seeds) {
-    const maze = generateMaze({ difficulty, width, height, seed });
-    const cellSize = difficulty === 'small' ? 20 : difficulty === 'medium' ? 12 : 8;
+    const maze = generateMaze({
+      difficulty: 'large', width, height, seed,
+      newestBias: ts.newestBias,
+      directionalPersistence: ts.directionalPersistence,
+      braidFactor: ts.braidFactor,
+    });
     const svg = renderSVG(maze, cellSize);
-    const file = `${out}/${difficulty}-${seed}.svg`;
+    const file = `${out}/set${ts.label}-seed${seed}.svg`;
     writeFileSync(file, svg);
-    console.log(`wrote ${file}  (windiness ${(maze.solution.length / Math.max(1, Math.abs(maze.exit.x - maze.entry.x) + Math.abs(maze.exit.y - maze.entry.y))).toFixed(2)})`);
+    const manhattan = Math.abs(maze.exit.x - maze.entry.x) + Math.abs(maze.exit.y - maze.entry.y);
+    console.log(`set${ts.label} seed=${seed}  windiness=${(maze.solution.length / Math.max(1, manhattan)).toFixed(2)}`);
   }
 }
