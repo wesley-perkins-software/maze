@@ -258,6 +258,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
           padding={2}
           playerPosition={state.playerPosition}
           playerMarkerRadius={5}
+          markerRadius={8}
         />
         {/* Current viewport frame */}
         <div
@@ -410,6 +411,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
               hintCells={state.hintCells}
               interactive={isActive}
               svgRef={svgRef}
+              markersOutside
             />
           </div>
 
@@ -445,6 +447,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
                 padding={2}
                 playerPosition={state.playerPosition}
                 playerMarkerRadius={6}
+                markerRadius={12}
               />
               <div
                 className="absolute border-2 border-blue-500 rounded pointer-events-none"

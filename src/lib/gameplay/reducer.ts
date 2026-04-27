@@ -1,6 +1,6 @@
 import type { MazeData } from '../../types/maze';
 import { pointToIndex } from '../maze/utils';
-import { canMove, applyMove, computeRun } from './movement';
+import { canMove, applyMove, computeRun, isExitStep } from './movement';
 import type { GameState, GameAction } from './types';
 
 export function createInitialState(maze: MazeData): GameState {
@@ -25,16 +25,26 @@ export function gameReducer(
     case 'MOVE': {
       if (state.status === 'solved' || state.status === 'paused') return state;
 
+      const now = Date.now();
+
+      // Player steps through the exit gap onto the flag → solve
+      if (isExitStep(maze, state.playerPosition, action.direction)) {
+        return {
+          ...state,
+          status: 'solved',
+          startTime: state.startTime ?? now,
+          elapsedMs: state.startTime ? now - state.startTime : 0,
+        };
+      }
+
       if (!canMove(maze, state.playerPosition, action.direction)) return state;
 
       const newPos = applyMove(state.playerPosition, action.direction);
       const newIdx = pointToIndex(newPos, maze.width);
-      const isSolved = newPos.x === maze.exit.x && newPos.y === maze.exit.y;
-      const now = Date.now();
 
       return {
         ...state,
-        status: isSolved ? 'solved' : 'playing',
+        status: 'playing',
         playerPosition: newPos,
         trail: [...state.trail, newIdx],
         startTime: state.startTime ?? now,
@@ -45,17 +55,27 @@ export function gameReducer(
     case 'RUN': {
       if (state.status === 'solved' || state.status === 'paused') return state;
 
+      const now = Date.now();
+
+      // Player swipes/d-pads through the exit gap onto the flag → solve
+      if (isExitStep(maze, state.playerPosition, action.direction)) {
+        return {
+          ...state,
+          status: 'solved',
+          startTime: state.startTime ?? now,
+          elapsedMs: state.startTime ? now - state.startTime : 0,
+        };
+      }
+
       const path = computeRun(maze, state.playerPosition, action.direction);
       if (path.length === 0) return state;
 
       const finalPos = path[path.length - 1];
       const newIndices = path.map(p => pointToIndex(p, maze.width));
-      const isSolved = finalPos.x === maze.exit.x && finalPos.y === maze.exit.y;
-      const now = Date.now();
 
       return {
         ...state,
-        status: isSolved ? 'solved' : 'playing',
+        status: 'playing',
         playerPosition: finalPos,
         trail: [...state.trail, ...newIndices],
         startTime: state.startTime ?? now,

@@ -22,6 +22,8 @@ export interface MazeRendererProps {
   svgRef?: React.RefObject<SVGSVGElement>;
   onKeyDown?: (e: React.KeyboardEvent) => void;
   playerMarkerRadius?: number; // override default radius for minimap high-contrast dot
+  markerRadius?: number;       // override entry/exit marker radius
+  markersOutside?: boolean;    // place entry/exit icons outside the perimeter wall
 }
 
 export function MazeRenderer({
@@ -39,6 +41,8 @@ export function MazeRenderer({
   svgRef,
   onKeyDown,
   playerMarkerRadius,
+  markerRadius,
+  markersOutside = false,
 }: MazeRendererProps) {
   const { width, height, grid, entry, exit } = maze;
 
@@ -67,12 +71,62 @@ export function MazeRenderer({
     }
   }
 
-  // ── Entry / exit centers ─────────────────────────────────────────────────────
+  // ── Entry / exit centers (cell-interior positions) ───────────────────────────
   const entryCx = padding + entry.x * cellSize + cellSize / 2;
   const entryCy = padding + entry.y * cellSize + cellSize / 2;
   const exitCx  = padding + exit.x  * cellSize + cellSize / 2;
   const exitCy  = padding + exit.y  * cellSize + cellSize / 2;
-  const markerR = cellSize * 0.38;
+  const markerR = markerRadius ?? cellSize * 0.38;
+
+  // ── Shift markers outside the perimeter wall when requested ─────────────────
+  const outsideX = (pt: Point, defaultX: number) => {
+    if (!markersOutside) return defaultX;
+    if (pt.x === 0)         return padding / 2;
+    if (pt.x === width - 1) return totalW - padding / 2;
+    return defaultX;
+  };
+  const outsideY = (pt: Point, defaultY: number) => {
+    if (!markersOutside) return defaultY;
+    if (pt.y === 0)          return padding / 2;
+    if (pt.y === height - 1) return totalH - padding / 2;
+    return defaultY;
+  };
+
+  const entryMx = outsideX(entry, entryCx);
+  const entryMy = outsideY(entry, entryCy);
+  const exitMx  = outsideX(exit,  exitCx);
+  const exitMy  = outsideY(exit,  exitCy);
+
+  // ── Entry arrow — points INTO the maze from whichever perimeter wall ─────────
+  //
+  // When markersOutside is true the icon sits outside the wall, so the arrow
+  // must point inward. When false (thumbnails, print) we always point right —
+  // the classic "play" convention for a start marker.
+  const entryArrowPoints = (() => {
+    const cx = entryMx;
+    const cy = entryMy;
+    const r  = markerR;
+
+    if (!markersOutside) {
+      // Classic rightward play triangle
+      return `${cx - r*0.35},${cy - r*0.6} ${cx + r*0.55},${cy} ${cx - r*0.35},${cy + r*0.6}`;
+    }
+
+    if (entry.y === 0) {
+      // Top wall → arrow points DOWN
+      return `${cx - r*0.6},${cy - r*0.35} ${cx + r*0.6},${cy - r*0.35} ${cx},${cy + r*0.55}`;
+    }
+    if (entry.y === height - 1) {
+      // Bottom wall → arrow points UP
+      return `${cx - r*0.6},${cy + r*0.35} ${cx + r*0.6},${cy + r*0.35} ${cx},${cy - r*0.55}`;
+    }
+    if (entry.x === 0) {
+      // Left wall → arrow points RIGHT
+      return `${cx - r*0.35},${cy - r*0.6} ${cx + r*0.55},${cy} ${cx - r*0.35},${cy + r*0.6}`;
+    }
+    // Right wall → arrow points LEFT
+    return `${cx + r*0.35},${cy - r*0.6} ${cx - r*0.55},${cy} ${cx + r*0.35},${cy + r*0.6}`;
+  })();
 
   // ── Solution polyline ────────────────────────────────────────────────────────
   const solutionPoints = showSolution && solution.length > 0
@@ -120,7 +174,7 @@ export function MazeRenderer({
       viewBox={`0 0 ${totalW} ${totalH}`}
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ display: 'block', maxWidth: '100%', height: 'auto' }}
+      style={{ display: 'block', maxWidth: '100%', height: 'auto', overflow: 'visible' }}
       role={interactive ? 'application' : 'img'}
       aria-label={interactive ? `${label}. Use arrow keys to move.` : label}
       tabIndex={interactive ? 0 : undefined}
@@ -182,28 +236,37 @@ export function MazeRenderer({
         fill="none"
       />
 
-      {/* Entry marker — green play triangle */}
-      <circle cx={entryCx} cy={entryCy} r={markerR} fill="#22c55e" opacity={0.9} />
-      {cellSize >= 14 && (
+      {/* Entry marker — green circle with directional play arrow */}
+      <circle cx={entryMx} cy={entryMy} r={markerR} fill="#22c55e" opacity={0.9} />
+      {markerR >= 5 && (
         <polygon
-          points={`${entryCx - markerR * 0.35},${entryCy - markerR * 0.6} ${entryCx + markerR * 0.55},${entryCy} ${entryCx - markerR * 0.35},${entryCy + markerR * 0.6}`}
+          points={entryArrowPoints}
           fill="white"
           opacity={0.95}
         />
       )}
 
-      {/* Exit marker — amber star / flag */}
-      <circle cx={exitCx} cy={exitCy} r={markerR} fill="#f59e0b" opacity={0.9} />
-      {cellSize >= 14 && (
-        <text
-          x={exitCx}
-          y={exitCy}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fill="white"
-          fontSize={markerR * 1.1}
-          aria-hidden="true"
-        >★</text>
+      {/* Exit marker — amber circle with flag pennant */}
+      <circle cx={exitMx} cy={exitMy} r={markerR} fill="#f59e0b" opacity={0.9} />
+      {markerR >= 5 && (
+        <>
+          {/* Flag pole */}
+          <line
+            x1={exitMx - markerR * 0.08}
+            y1={exitMy + markerR * 0.52}
+            x2={exitMx - markerR * 0.08}
+            y2={exitMy - markerR * 0.62}
+            stroke="white"
+            strokeWidth={Math.max(1, markerR * 0.17)}
+            strokeLinecap="round"
+          />
+          {/* Flag pennant */}
+          <polygon
+            points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.62} ${exitMx + markerR * 0.58},${exitMy - markerR * 0.28} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.06}`}
+            fill="white"
+            opacity={0.95}
+          />
+        </>
       )}
 
       {/* Player */}
