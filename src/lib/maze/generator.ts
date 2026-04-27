@@ -15,14 +15,14 @@
  *      loops specifically where players would get stuck (vs. random wall removal
  *      which scatters loops without regard for player experience).
  *
- * Tier parameters (newestBias / braidFactor):
- *   small:  0.80 / 0.02  — DFS-style long corridors, near-perfect, approachable
- *   medium: 0.85 / 0.02  — deeper corridors, sparse junctions, minimal loops
- *   large:  0.90 / 0.01  — strongly DFS, winding passages, near-zero braiding
+ * Tier parameters (newestBias / braidFactor / directionalPersistence):
+ *   small:  0.80 / 0.02 / 0.70  — long corridors, occasional turns, near-perfect
+ *   medium: 0.85 / 0.01 / 0.75  — deeper corridors, sparse junctions, minimal loops
+ *   large:  0.92 / 0.00 / 0.80  — strongly DFS, long straight runs, perfect maze
  *
- * NOTE: These are experimental values aimed at mazegenerator.net visual style.
- * Expect longer corridors, fewer junctions, deeper dead ends vs. the prior
- * Prim's-leaning parameters.
+ * directionalPersistence: probability [0,1] that we try to continue in the same
+ * direction as the previous carve step before considering turns. High values
+ * produce longer straight corridor segments (mazegenerator.net aesthetic).
  *
  * Entry/exit placement:
  *   - Always on opposite perimeter sides (left↔right or top↔bottom)
@@ -37,14 +37,15 @@ import { pointToIndex, indexToPoint, inBounds, removeWall, DIRECTIONS } from './
 import { solveMaze } from './solver';
 
 type TierConfig = {
-  newestBias: number;  // 0 = Prim's-like, 1 = DFS-like
-  braidFactor: number; // fraction of dead ends to open (0–1)
+  newestBias: number;             // 0 = Prim's-like, 1 = DFS-like
+  braidFactor: number;            // fraction of dead ends to open (0–1)
+  directionalPersistence: number; // probability of continuing in the same direction (0–1)
 };
 
 const TIER_CONFIG: Record<Difficulty, TierConfig> = {
-  small:  { newestBias: 0.80, braidFactor: 0.02 },
-  medium: { newestBias: 0.85, braidFactor: 0.02 },
-  large:  { newestBias: 0.90, braidFactor: 0.01 },
+  small:  { newestBias: 0.80, braidFactor: 0.02, directionalPersistence: 0.70 },
+  medium: { newestBias: 0.85, braidFactor: 0.01, directionalPersistence: 0.75 },
+  large:  { newestBias: 0.92, braidFactor: 0.00, directionalPersistence: 0.80 },
 };
 
 export type GeneratorOptions = {
@@ -60,6 +61,8 @@ export type GeneratorOptions = {
   newestBias?: number;
   /** Override braidFactor directly (for the custom-size generator). */
   braidFactor?: number;
+  /** Override directionalPersistence directly (for the custom-size generator). */
+  directionalPersistence?: number;
 };
 
 export function generateMaze(options: GeneratorOptions): MazeData {
@@ -68,8 +71,9 @@ export function generateMaze(options: GeneratorOptions): MazeData {
   const rng = createPRNG(seed);
 
   const cfg = TIER_CONFIG[difficulty];
-  const newestBias  = options.newestBias  ?? cfg.newestBias;
-  const braidFactor = options.braidFactor ?? cfg.braidFactor;
+  const newestBias             = options.newestBias             ?? cfg.newestBias;
+  const braidFactor            = options.braidFactor            ?? cfg.braidFactor;
+  const directionalPersistence = options.directionalPersistence ?? cfg.directionalPersistence;
 
   // ── Phase 1: Determine entry and exit ────────────────────────────────────────
   //
@@ -88,7 +92,8 @@ export function generateMaze(options: GeneratorOptions): MazeData {
     WALL_N | WALL_E | WALL_S | WALL_W,
   );
 
-  const visited = new Uint8Array(width * height);
+  const visited    = new Uint8Array(width * height);
+  const carvedFrom = new Int8Array(width * height).fill(-1); // direction index used to enter each cell
   const active: number[] = [pointToIndex(placedEntry, width)];
   visited[active[0]] = 1;
 
@@ -102,7 +107,17 @@ export function generateMaze(options: GeneratorOptions): MazeData {
     const cx = ci % width;
     const cy = Math.floor(ci / width);
 
-    const dirs = shuffle([0, 1, 2, 3], rng);
+    // Directional persistence: strongly prefer continuing in the same direction
+    // as the previous carve step to produce longer straight corridor segments.
+    const prevDir = carvedFrom[ci];
+    let dirs: number[];
+    if (prevDir >= 0 && rng() < directionalPersistence) {
+      const others = shuffle([0, 1, 2, 3].filter(d => d !== prevDir), rng);
+      dirs = [prevDir, ...others];
+    } else {
+      dirs = shuffle([0, 1, 2, 3], rng);
+    }
+
     let carved = false;
 
     for (const di of dirs) {
@@ -115,6 +130,7 @@ export function generateMaze(options: GeneratorOptions): MazeData {
 
       removeWall(grid, { x: cx, y: cy }, { x: nx, y: ny }, width);
       visited[ni] = 1;
+      carvedFrom[ni] = di;
       active.push(ni);
       carved = true;
       break;
