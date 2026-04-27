@@ -24,6 +24,7 @@ const TOP_BAR_H = 44;
 const AD_SLOT_H = 0;
 const SAFE_PAD = 32;
 const MINIMAP_SIZE = 96;
+const DESKTOP_MINIMAP_SIZE = 140;
 const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 
@@ -235,6 +236,12 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   const mmFrameX = Math.max(0, Math.min(MINIMAP_SIZE - mmFrameW, (-tx / mazeW) * MINIMAP_SIZE));
   const mmFrameY = Math.max(0, Math.min(MINIMAP_SIZE - mmFrameH, (-ty / mazeH) * MINIMAP_SIZE));
 
+  const desktopMinimapCell = Math.max(1, Math.ceil(DESKTOP_MINIMAP_SIZE / Math.max(maze.width, maze.height)));
+  const dmFrameW = Math.min(DESKTOP_MINIMAP_SIZE, (viewW / mazeW) * DESKTOP_MINIMAP_SIZE);
+  const dmFrameH = Math.min(DESKTOP_MINIMAP_SIZE, (viewH / mazeH) * DESKTOP_MINIMAP_SIZE);
+  const dmFrameX = Math.max(0, Math.min(DESKTOP_MINIMAP_SIZE - dmFrameW, (-tx / mazeW) * DESKTOP_MINIMAP_SIZE));
+  const dmFrameY = Math.max(0, Math.min(DESKTOP_MINIMAP_SIZE - dmFrameH, (-ty / mazeH) * DESKTOP_MINIMAP_SIZE));
+
   const minimapPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
       <div
@@ -307,7 +314,12 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
             </span>
           )}
           {state.status === 'paused'  && <span className="text-amber-500 font-medium text-xs">Paused</span>}
-          {state.status === 'idle'    && <span className="text-slate-400 text-xs">Swipe or use D-pad to move</span>}
+          {state.status === 'idle' && (
+            <>
+              <span className="md:hidden text-slate-400 text-xs">Swipe or use D-pad to move</span>
+              <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to move</span>
+            </>
+          )}
           {state.status === 'solved'  && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
         </div>
 
@@ -323,8 +335,36 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
             </button>
           )}
 
-          {/* ⋯ overflow menu */}
-          <div ref={menuRef} className="relative">
+          {/* Desktop action buttons */}
+          {state.status !== 'solved' && (
+            <button
+              onClick={handleHint}
+              className="hidden md:flex w-8 h-8 items-center justify-center rounded-lg border border-slate-200 text-amber-500 bg-white hover:bg-amber-50 transition-colors text-sm"
+              aria-label={state.hintsUsed > 0 ? `Hint (${state.hintsUsed} used)` : 'Hint'}
+              title={state.hintsUsed > 0 ? `Hint (${state.hintsUsed} used)` : 'Hint'}
+            >
+              💡
+            </button>
+          )}
+          <button
+            onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
+            className="hidden md:flex w-8 h-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors text-sm"
+            aria-label={state.solutionVisible ? 'Hide solution' : 'Show solution'}
+            title={state.solutionVisible ? 'Hide solution' : 'Show solution'}
+          >
+            {state.solutionVisible ? '🙈' : '🗺️'}
+          </button>
+          <button
+            onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}
+            className="hidden md:flex w-8 h-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 bg-white hover:bg-slate-50 transition-colors text-sm"
+            aria-label="Reset maze"
+            title="Reset"
+          >
+            ↩️
+          </button>
+
+          {/* ⋯ overflow menu — mobile only */}
+          <div ref={menuRef} className="relative md:hidden">
             <button
               onClick={() => setMenuOpen(v => !v)}
               className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors"
@@ -373,6 +413,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
         {/* Follow-camera pan container */}
         <div
+          className="md:rounded-2xl md:shadow-md md:overflow-hidden"
           style={{
             position: 'absolute',
             width: mazeW,
@@ -410,6 +451,34 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
             </button>
           </div>
         )}
+
+        {/* Desktop minimap overlay — bottom-right corner */}
+        <div className="hidden md:block absolute bottom-4 right-4 z-10 pointer-events-none">
+          <div
+            className="relative rounded-xl overflow-hidden border border-slate-200 shadow-lg bg-white"
+            style={{ width: DESKTOP_MINIMAP_SIZE, height: DESKTOP_MINIMAP_SIZE }}
+            aria-hidden="true"
+          >
+            <MazeRenderer
+              maze={maze}
+              cellSize={desktopMinimapCell}
+              wallThickness={1}
+              padding={2}
+              playerPosition={state.playerPosition}
+              playerMarkerRadius={6}
+            />
+            <div
+              className="absolute border-2 border-blue-500 rounded pointer-events-none"
+              style={{
+                left: dmFrameX,
+                top: dmFrameY,
+                width: dmFrameW,
+                height: dmFrameH,
+                opacity: 0.65,
+              }}
+            />
+          </div>
+        </div>
 
       </div>
 
