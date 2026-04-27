@@ -16,9 +16,13 @@
  *      which scatters loops without regard for player experience).
  *
  * Tier parameters (newestBias / braidFactor):
- *   small:  0.55 / 0.08  — mostly DFS-leaning, few loops, approachable
- *   medium: 0.35 / 0.18  — balanced mix, enough loops to break wall-following
- *   large:  0.25 / 0.25  — Prim's-leaning with corridor structure, meaningful dead ends
+ *   small:  0.80 / 0.02  — DFS-style long corridors, near-perfect, approachable
+ *   medium: 0.85 / 0.02  — deeper corridors, sparse junctions, minimal loops
+ *   large:  0.90 / 0.01  — strongly DFS, winding passages, near-zero braiding
+ *
+ * NOTE: These are experimental values aimed at mazegenerator.net visual style.
+ * Expect longer corridors, fewer junctions, deeper dead ends vs. the prior
+ * Prim's-leaning parameters.
  *
  * Entry/exit placement:
  *   - Always on opposite perimeter sides (left↔right or top↔bottom)
@@ -38,9 +42,9 @@ type TierConfig = {
 };
 
 const TIER_CONFIG: Record<Difficulty, TierConfig> = {
-  small:  { newestBias: 0.55, braidFactor: 0.08 },
-  medium: { newestBias: 0.35, braidFactor: 0.18 },
-  large:  { newestBias: 0.25, braidFactor: 0.25 },
+  small:  { newestBias: 0.80, braidFactor: 0.02 },
+  medium: { newestBias: 0.85, braidFactor: 0.02 },
+  large:  { newestBias: 0.90, braidFactor: 0.01 },
 };
 
 export type GeneratorOptions = {

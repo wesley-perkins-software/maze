@@ -68,48 +68,52 @@ describe('generateMaze', () => {
     expect(maze.solution[maze.solution.length - 1]).toBe(exitIdx);
   });
 
-  it('larger tiers have more open passages than smaller tiers (braiding effect)', () => {
-    const countPassages = (m: ReturnType<typeof generateMaze>) =>
-      m.grid.reduce((sum, cell) => {
-        let c = 0;
-        if (!(cell & 1)) c++; // N open
-        if (!(cell & 2)) c++; // E open
-        if (!(cell & 4)) c++; // S open
-        if (!(cell & 8)) c++; // W open
-        return sum + c;
-      }, 0);
-
-    // Use same size grid but different tier configs to isolate braid effect
-    const small = generateMaze({ width: 15, height: 15, difficulty: 'small',  seed: 77 });
-    const large = generateMaze({ width: 15, height: 15, difficulty: 'large',  seed: 77 });
-    expect(countPassages(large)).toBeGreaterThan(countPassages(small));
-  });
-
-  it('large mazes have more loops than small (braid factor difference)', () => {
-    // Count cycles: a maze with W cells and exactly W-1 edges is a tree (0 loops).
-    // Each extra edge = 1 more loop. Count by: edges - (cells - 1).
+  it('all tiers are near-perfect mazes (very few loops)', () => {
+    // With DFS-style parameters, every tier should be close to a spanning tree.
+    // A perfect maze has exactly cells-1 edges; loops = edges - (cells - 1).
+    // With braidFactor ≤ 0.02 the loop count should be a tiny fraction of cells.
     function countLoops(m: ReturnType<typeof generateMaze>): number {
       const total = m.width * m.height;
-      // Count unique undirected edges by checking E and S walls
       let edges = 0;
       for (let y = 0; y < m.height; y++) {
         for (let x = 0; x < m.width; x++) {
           const cell = m.grid[y * m.width + x];
-          if (!(cell & 2) && x + 1 < m.width) edges++; // east passage
-          if (!(cell & 4) && y + 1 < m.height) edges++; // south passage
+          if (!(cell & 2) && x + 1 < m.width) edges++;
+          if (!(cell & 4) && y + 1 < m.height) edges++;
         }
       }
       return edges - (total - 1);
     }
 
-    // Run multiple seeds and check average — braiding is probabilistic
+    for (const tier of (['small', 'medium', 'large'] as const)) {
+      const loops = countLoops(generateMaze({ width: 20, height: 20, difficulty: tier, seed: 42 }));
+      const cells = 20 * 20;
+      expect(loops, `${tier}: too many loops (${loops})`).toBeLessThan(cells * 0.05);
+    }
+  });
+
+  it('small tier has at least as many loops as large tier (braidFactor ordering)', () => {
+    // small braidFactor (0.02) ≥ large braidFactor (0.01) — averaged over many seeds
+    function countLoops(m: ReturnType<typeof generateMaze>): number {
+      const total = m.width * m.height;
+      let edges = 0;
+      for (let y = 0; y < m.height; y++) {
+        for (let x = 0; x < m.width; x++) {
+          const cell = m.grid[y * m.width + x];
+          if (!(cell & 2) && x + 1 < m.width) edges++;
+          if (!(cell & 4) && y + 1 < m.height) edges++;
+        }
+      }
+      return edges - (total - 1);
+    }
+
     let smallLoops = 0;
     let largeLoops = 0;
     for (let s = 1; s <= 10; s++) {
       smallLoops += countLoops(generateMaze({ width: 20, height: 20, difficulty: 'small', seed: s }));
       largeLoops += countLoops(generateMaze({ width: 20, height: 20, difficulty: 'large', seed: s }));
     }
-    expect(largeLoops).toBeGreaterThan(smallLoops);
+    expect(smallLoops).toBeGreaterThanOrEqual(largeLoops);
   });
 
   it('entry and exit are on opposite perimeter sides', () => {
