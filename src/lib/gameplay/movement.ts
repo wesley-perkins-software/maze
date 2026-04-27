@@ -46,6 +46,22 @@ export function applyMove(from: Point, direction: Direction): Point {
   return { x: from.x + dx, y: from.y + dy };
 }
 
+/**
+ * Returns true when the player is standing at the exit cell and moving in the
+ * direction of the open perimeter gap — the deliberate final step onto the flag.
+ *
+ * canMove() blocks this move (destination is out of bounds), so callers must
+ * check isExitStep() before canMove() to allow the solve to trigger.
+ */
+export function isExitStep(maze: MazeData, from: Point, direction: Direction): boolean {
+  if (from.x !== maze.exit.x || from.y !== maze.exit.y) return false;
+  const { dx, dy } = DIR_DELTA[direction];
+  const destX = from.x + dx;
+  const destY = from.y + dy;
+  if (destX >= 0 && destY >= 0 && destX < maze.width && destY < maze.height) return false;
+  return !(maze.grid[pointToIndex(from, maze.width)] & DIR_WALL[direction]);
+}
+
 const REVERSE_DIR: Record<Direction, Direction> = { N: 'S', S: 'N', E: 'W', W: 'E' };
 const ALL_DIRS: Direction[] = ['N', 'E', 'S', 'W'];
 
