@@ -13,7 +13,7 @@ export interface SolveStats {
   isNewBest: boolean;
 }
 
-const CELL_SIZE_BY_DIFFICULTY = { small: 32, medium: 28, large: 24 } as const;
+const CELL_SIZE_BY_DIFFICULTY = { small: 32, medium: 30, large: 28 } as const;
 const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
 const TOP_BAR_H = 44;
 // AD_SLOT: Reserved for future monetization.
