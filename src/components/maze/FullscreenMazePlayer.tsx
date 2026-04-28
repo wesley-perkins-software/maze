@@ -13,7 +13,7 @@ export interface SolveStats {
   isNewBest: boolean;
 }
 
-const PLAY_CELL_SIZE = 32;
+const CELL_SIZE_BY_DIFFICULTY = { small: 32, medium: 28, large: 24 } as const;
 const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
 const TOP_BAR_H = 44;
 // AD_SLOT: Reserved for future monetization.
@@ -60,6 +60,8 @@ export interface FullscreenMazePlayerProps {
 }
 
 export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazePlayerProps) {
+  const PLAY_CELL_SIZE = CELL_SIZE_BY_DIFFICULTY[maze.difficulty] ?? 28;
+
   const svgRef = useRef<SVGSVGElement>(null);
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
