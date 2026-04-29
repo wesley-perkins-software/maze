@@ -14,6 +14,7 @@ export interface SolveStats {
 }
 
 const PLAY_CELL_SIZE = 32;
+const PAN_LOOKAHEAD = PLAY_CELL_SIZE * 1; // extra px revealed when the camera pans
 const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
 const TOP_BAR_H = 44;
 // AD_SLOT: Reserved for future monetization.
@@ -200,8 +201,11 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   prevStatusRef.current = state.status;
 
   // ── Safe-zone camera ─────────────────────────────────────────────────────────
-  const safeW = viewW / 2 - SAFE_PAD;
-  const safeH = viewH / 2 - SAFE_PAD;
+  // The safe zone is shrunk by PAN_LOOKAHEAD so the camera starts to pan
+  // earlier — giving the player a preview of what's ahead before they reach
+  // the viewport edge and have to commit to moving that way.
+  const safeW = Math.max(0, viewW / 2 - SAFE_PAD - PAN_LOOKAHEAD);
+  const safeH = Math.max(0, viewH / 2 - SAFE_PAD - PAN_LOOKAHEAD);
 
   let camX = camXRef.current ?? playerPx;
   let camY = camYRef.current ?? playerPy;
