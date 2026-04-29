@@ -201,20 +201,20 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   prevStatusRef.current = state.status;
 
   // ── Safe-zone camera ─────────────────────────────────────────────────────────
-  // Camera only moves when the player reaches the safe-zone boundary. When it
-  // does pan, it overshoots by PAN_LOOKAHEAD so the player can see slightly
-  // ahead rather than landing exactly at the edge.
-  const safeW = viewW / 2 - SAFE_PAD;
-  const safeH = viewH / 2 - SAFE_PAD;
+  // The safe zone is shrunk by PAN_LOOKAHEAD so the camera starts to pan
+  // earlier — giving the player a preview of what's ahead before they reach
+  // the viewport edge and have to commit to moving that way.
+  const safeW = Math.max(0, viewW / 2 - SAFE_PAD - PAN_LOOKAHEAD);
+  const safeH = Math.max(0, viewH / 2 - SAFE_PAD - PAN_LOOKAHEAD);
 
   let camX = camXRef.current ?? playerPx;
   let camY = camYRef.current ?? playerPy;
 
-  if (playerPx > camX + safeW) camX = playerPx - safeW + PAN_LOOKAHEAD;
-  else if (playerPx < camX - safeW) camX = playerPx + safeW - PAN_LOOKAHEAD;
+  if (playerPx > camX + safeW) camX = playerPx - safeW;
+  else if (playerPx < camX - safeW) camX = playerPx + safeW;
 
-  if (playerPy > camY + safeH) camY = playerPy - safeH + PAN_LOOKAHEAD;
-  else if (playerPy < camY - safeH) camY = playerPy + safeH - PAN_LOOKAHEAD;
+  if (playerPy > camY + safeH) camY = playerPy - safeH;
+  else if (playerPy < camY - safeH) camY = playerPy + safeH;
 
   if (mazeW > viewW) {
     camX = Math.max(viewW / 2, Math.min(mazeW - viewW / 2, camX));
