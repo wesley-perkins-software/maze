@@ -40,18 +40,21 @@ const organizationSchema = JSON.stringify({
 >
   <Hero />
 
-  <!-- Category grid -->
+  <!-- Daily maze challenge — featured above the fold -->
+  <DailyMaze />
+
+  <!-- Maze Library: browse by size -->
   <section class="py-12" aria-labelledby="categories-heading">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <h2 id="categories-heading" class="text-2xl font-bold text-slate-800 mb-6 text-center">
-        Browse by Size
+      <h2 id="categories-heading" class="text-2xl font-bold text-slate-800 mb-2 text-center">
+        Maze Library
       </h2>
+      <p class="text-slate-500 text-center mb-6 max-w-xl mx-auto text-sm">
+        150+ hand-seeded mazes in three sizes. Play online or print.
+      </p>
       <CategoryNav />
     </div>
   </section>
-
-  <!-- Daily maze challenge -->
-  <DailyMaze />
 
   <FeatureMazes />
   <HowToPlay />

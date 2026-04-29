@@ -5,6 +5,8 @@ const POST_SOLVE_AD_SLOT_H = 0;
 
 export interface PostSolveNav {
   nextSlug: string;
+  /** Override the label on the primary "Next" button. Defaults to "Next Maze". */
+  nextLabel?: string;
   largerSlug?: string;
   randomSlug: string;
   categorySlug: string;
@@ -84,7 +86,7 @@ function ShareButton({ mazeSlug }: { mazeSlug?: string }) {
   const handleShare = async () => {
     const btn = btnRef.current;
     if (!btn) return;
-    const url = mazeSlug ? `${window.location.origin}/mazes/${mazeSlug}` : window.location.href;
+    const url = window.location.href;
     const title = 'I just solved a maze!';
     try {
       if (navigator.share) {
@@ -188,7 +190,7 @@ export function PostSolveOverlay({
             className="btn-primary w-full justify-center text-base py-3"
             ref={primaryBtnRef as React.Ref<HTMLAnchorElement>}
           >
-            Next Maze
+            {nav.nextLabel ?? 'Next Maze'}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
             </svg>
