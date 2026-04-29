@@ -1,6 +1,5 @@
 import { useReducer, useEffect, useLayoutEffect, useRef, useCallback, useState } from 'react';
 import type { MazeData } from '../../types/maze';
-import type { Direction } from '../../lib/gameplay/types';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
@@ -15,7 +14,7 @@ export interface SolveStats {
 }
 
 const PLAY_CELL_SIZE = 32;
-const LEAD_CELLS = 2; // cells of lookahead in the direction of travel
+const PAN_LOOKAHEAD = PLAY_CELL_SIZE * 2; // extra px revealed when the camera pans
 const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
 const TOP_BAR_H = 44;
 // AD_SLOT: Reserved for future monetization.
@@ -69,7 +68,6 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   const isNewBestRef = useRef(false);
   const camXRef = useRef<number | null>(null);
   const camYRef = useRef<number | null>(null);
-  const lastDirRef = useRef<Direction | null>(null);
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
   const controlStripRef = useRef<HTMLDivElement>(null);
   const [controlStripH, setControlStripH] = useState(128);
@@ -99,13 +97,6 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
     maze,
     createInitialState,
   );
-
-  const trackedDispatch = useCallback<typeof dispatch>((action) => {
-    if (action.type === 'MOVE' || action.type === 'RUN') {
-      lastDirRef.current = action.direction;
-    }
-    dispatch(action);
-  }, [dispatch]);
 
   // Timer tick
   useEffect(() => {
@@ -176,8 +167,8 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   }, []);
 
   const isActive = state.status === 'playing' || state.status === 'idle';
-  useKeyboardInput(trackedDispatch, isActive);
-  useTouchInput(mazeViewportRef, trackedDispatch, isActive);
+  useKeyboardInput(dispatch, isActive);
+  useTouchInput(mazeViewportRef, dispatch, isActive);
 
   const handleHint = useCallback(() => {
     const { solution } = maze;
@@ -206,29 +197,24 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   if (prevStatusRef.current !== 'idle' && state.status === 'idle') {
     camXRef.current = null;
     camYRef.current = null;
-    lastDirRef.current = null;
   }
   prevStatusRef.current = state.status;
 
   // ── Safe-zone camera ─────────────────────────────────────────────────────────
+  // Camera only moves when the player reaches the safe-zone boundary. When it
+  // does pan, it overshoots by PAN_LOOKAHEAD so the player can see slightly
+  // ahead rather than landing exactly at the edge.
   const safeW = viewW / 2 - SAFE_PAD;
   const safeH = viewH / 2 - SAFE_PAD;
 
   let camX = camXRef.current ?? playerPx;
   let camY = camYRef.current ?? playerPy;
 
-  if (playerPx > camX + safeW) camX = playerPx - safeW;
-  else if (playerPx < camX - safeW) camX = playerPx + safeW;
+  if (playerPx > camX + safeW) camX = playerPx - safeW + PAN_LOOKAHEAD;
+  else if (playerPx < camX - safeW) camX = playerPx + safeW - PAN_LOOKAHEAD;
 
-  if (playerPy > camY + safeH) camY = playerPy - safeH;
-  else if (playerPy < camY - safeH) camY = playerPy + safeH;
-
-  // Shift camera ahead in the direction of travel so the player can see more of what's coming
-  const leadPx = LEAD_CELLS * PLAY_CELL_SIZE;
-  if (lastDirRef.current === 'N') camY -= leadPx;
-  else if (lastDirRef.current === 'S') camY += leadPx;
-  else if (lastDirRef.current === 'E') camX += leadPx;
-  else if (lastDirRef.current === 'W') camX -= leadPx;
+  if (playerPy > camY + safeH) camY = playerPy - safeH + PAN_LOOKAHEAD;
+  else if (playerPy < camY - safeH) camY = playerPy + safeH - PAN_LOOKAHEAD;
 
   if (mazeW > viewW) {
     camX = Math.max(viewW / 2, Math.min(mazeW - viewW / 2, camX));
@@ -295,7 +281,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
   const dpadPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
-      <DPad dispatch={trackedDispatch} isActive={isActive} />
+      <DPad dispatch={dispatch} isActive={isActive} />
     </div>
   );
 
