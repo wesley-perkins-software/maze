@@ -14,7 +14,7 @@ export interface SolveStats {
 }
 
 const PLAY_CELL_SIZE = 32;
-const PAN_LOOKAHEAD = PLAY_CELL_SIZE * 2; // extra px revealed when the camera pans
+const PAN_LOOKAHEAD = PLAY_CELL_SIZE * 1; // extra px revealed when the camera pans
 const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
 const TOP_BAR_H = 44;
 // AD_SLOT: Reserved for future monetization.
