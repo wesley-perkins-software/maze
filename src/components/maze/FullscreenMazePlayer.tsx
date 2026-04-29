@@ -1,5 +1,6 @@
 import { useReducer, useEffect, useLayoutEffect, useRef, useCallback, useState } from 'react';
 import type { MazeData } from '../../types/maze';
+import type { Direction } from '../../lib/gameplay/types';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
@@ -13,7 +14,8 @@ export interface SolveStats {
   isNewBest: boolean;
 }
 
-const CELL_SIZE_BY_DIFFICULTY = { small: 32, medium: 30, large: 28 } as const;
+const PLAY_CELL_SIZE = 32;
+const LEAD_CELLS = 2; // cells of lookahead in the direction of travel
 const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
 const TOP_BAR_H = 44;
 // AD_SLOT: Reserved for future monetization.
@@ -60,8 +62,6 @@ export interface FullscreenMazePlayerProps {
 }
 
 export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazePlayerProps) {
-  const PLAY_CELL_SIZE = CELL_SIZE_BY_DIFFICULTY[maze.difficulty] ?? 28;
-
   const svgRef = useRef<SVGSVGElement>(null);
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
@@ -69,6 +69,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   const isNewBestRef = useRef(false);
   const camXRef = useRef<number | null>(null);
   const camYRef = useRef<number | null>(null);
+  const lastDirRef = useRef<Direction | null>(null);
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
   const controlStripRef = useRef<HTMLDivElement>(null);
   const [controlStripH, setControlStripH] = useState(128);
@@ -98,6 +99,13 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
     maze,
     createInitialState,
   );
+
+  const trackedDispatch = useCallback<typeof dispatch>((action) => {
+    if (action.type === 'MOVE' || action.type === 'RUN') {
+      lastDirRef.current = action.direction;
+    }
+    dispatch(action);
+  }, [dispatch]);
 
   // Timer tick
   useEffect(() => {
@@ -168,8 +176,8 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   }, []);
 
   const isActive = state.status === 'playing' || state.status === 'idle';
-  useKeyboardInput(dispatch, isActive);
-  useTouchInput(mazeViewportRef, dispatch, isActive);
+  useKeyboardInput(trackedDispatch, isActive);
+  useTouchInput(mazeViewportRef, trackedDispatch, isActive);
 
   const handleHint = useCallback(() => {
     const { solution } = maze;
@@ -198,6 +206,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
   if (prevStatusRef.current !== 'idle' && state.status === 'idle') {
     camXRef.current = null;
     camYRef.current = null;
+    lastDirRef.current = null;
   }
   prevStatusRef.current = state.status;
 
@@ -213,6 +222,13 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
   if (playerPy > camY + safeH) camY = playerPy - safeH;
   else if (playerPy < camY - safeH) camY = playerPy + safeH;
+
+  // Shift camera ahead in the direction of travel so the player can see more of what's coming
+  const leadPx = LEAD_CELLS * PLAY_CELL_SIZE;
+  if (lastDirRef.current === 'N') camY -= leadPx;
+  else if (lastDirRef.current === 'S') camY += leadPx;
+  else if (lastDirRef.current === 'E') camX += leadPx;
+  else if (lastDirRef.current === 'W') camX -= leadPx;
 
   if (mazeW > viewW) {
     camX = Math.max(viewW / 2, Math.min(mazeW - viewW / 2, camX));
@@ -279,7 +295,7 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
 
   const dpadPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
-      <DPad dispatch={dispatch} isActive={isActive} />
+      <DPad dispatch={trackedDispatch} isActive={isActive} />
     </div>
   );
 
