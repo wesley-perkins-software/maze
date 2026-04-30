@@ -111,6 +111,16 @@ export function getDailyMaze(date: Date = new Date()): MazeCatalogEntry {
 }
 
 /**
+ * Derives a 32-bit PRNG seed from a UTC date string "YYYY-MM-DD".
+ * Used by the client-side Maze of the Day to generate the same maze for
+ * all users on the same calendar day regardless of timezone.
+ */
+export function dateToSeed(dateStr: string): number {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return ((y * 366 + m * 31 + d) * 2654435761) >>> 0;
+}
+
+/**
  * Returns a small set of featured mazes for the homepage — one per tier.
  */
 export function getFeaturedMazes(): MazeCatalogEntry[] {

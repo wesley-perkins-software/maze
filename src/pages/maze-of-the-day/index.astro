@@ -1,0 +1,150 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+import { DailyMazePlayer } from '../../components/daily/DailyMazePlayer';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const title = 'Maze of the Day | MazeThis';
+const description =
+  'A fresh large 60×60 maze challenge every day — same maze for everyone on the same date. Solve with arrow keys or swipe. Free to play, no account needed.';
+const canonical = `${siteUrl}/maze-of-the-day/`;
+
+const schemaLD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Maze of the Day',
+  description,
+  url: canonical,
+  isPartOf: { '@type': 'WebSite', name: 'MazeThis', url: siteUrl },
+  about: {
+    '@type': 'Game',
+    name: 'Maze of the Day',
+    description: 'A daily maze challenge. A new 60×60 large maze is generated every UTC day from a deterministic seed. Same maze for all players.',
+    url: canonical,
+    genre: 'Puzzle',
+    gamePlatform: 'Web Browser',
+  },
+});
+---
+
+<BaseLayout {title} {description} canonical={canonical} schemaLD={schemaLD}>
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze of the Day' },
+    ]} />
+
+    <!-- Page header -->
+    <div class="mt-4 mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+      <div>
+        <!-- Date badge — populated client-side so it always shows today -->
+        <div
+          id="motd-date-badge"
+          class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-medium text-blue-700 mb-3"
+          aria-live="polite"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span id="motd-date-label">Today's Challenge</span>
+        </div>
+
+        <h1 class="text-2xl font-bold text-slate-900">Maze of the Day</h1>
+        <p class="mt-1 text-sm text-slate-500">
+          Large 60×60 &nbsp;·&nbsp; Changes at midnight UTC &nbsp;·&nbsp; Same maze for everyone
+        </p>
+      </div>
+
+      <!-- Share button -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          id="motd-share-btn"
+          class="btn-ghost text-sm"
+          aria-label="Share today's maze"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+          </svg>
+          Share
+        </button>
+      </div>
+    </div>
+
+    <!-- Maze player — generated client-side from today's UTC date seed -->
+    <div class="mb-10">
+      <DailyMazePlayer client:only="react" />
+    </div>
+
+    <!-- Come back tomorrow note -->
+    <p class="text-center text-sm text-slate-400 mb-10">
+      A new maze unlocks every day at midnight UTC. Come back tomorrow for a fresh challenge.
+    </p>
+
+    <!-- Secondary nav -->
+    <div class="border-t border-slate-200 pt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <a
+        href="/large-mazes"
+        class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-5 text-center hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+      >
+        <span class="text-2xl" aria-hidden="true">🗺️</span>
+        <span class="font-semibold text-slate-800 group-hover:text-blue-700 text-sm">Browse Large Mazes</span>
+        <span class="text-xs text-slate-500">40 large mazes in the library</span>
+      </a>
+      <a
+        href="/maze-generator"
+        class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-5 text-center hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+      >
+        <span class="text-2xl" aria-hidden="true">⚙️</span>
+        <span class="font-semibold text-slate-800 group-hover:text-blue-700 text-sm">Make Your Own Maze</span>
+        <span class="text-xs text-slate-500">Custom size, instant play or print</span>
+      </a>
+      <a
+        href="/printable-mazes"
+        class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-5 text-center hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+      >
+        <span class="text-2xl" aria-hidden="true">🖨️</span>
+        <span class="font-semibold text-slate-800 group-hover:text-blue-700 text-sm">Printable Mazes</span>
+        <span class="text-xs text-slate-500">150+ mazes, print-ready PDFs</span>
+      </a>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script>
+  // Populate the date badge with today's human-readable UTC date.
+  // Runs on the client so it always reflects the user's current day
+  // rather than the build date.
+  (function () {
+    const label = document.getElementById('motd-date-label');
+    if (label) {
+      const d = new Date();
+      label.textContent = d.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'UTC',
+      });
+    }
+
+    const shareBtn = document.getElementById('motd-share-btn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', async () => {
+        const url = window.location.href;
+        const title = "Today's Maze of the Day — can you solve it?";
+        try {
+          if (navigator.share) {
+            await navigator.share({ title, url });
+          } else {
+            await navigator.clipboard.writeText(url);
+            const orig = shareBtn.textContent!.trim();
+            shareBtn.textContent = 'Link copied!';
+            setTimeout(() => { shareBtn.textContent = orig; }, 2000);
+          }
+        } catch { /* user cancelled */ }
+      });
+    }
+  })();
+</script>
