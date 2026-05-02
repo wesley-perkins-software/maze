@@ -5,6 +5,12 @@ import type { Difficulty } from '../../types/maze.js';
 
 const featured = getFeaturedMazes();
 
+const moodLabels: Record<Difficulty, string> = {
+  small:  'Small Maze — Quick',
+  medium: 'Medium Maze — Moderate',
+  large:  'Large Maze — Challenge',
+};
+
 const timeEstimates: Record<Difficulty, string> = {
   small:  '~1–2 min',
   medium: '~5–10 min',
@@ -38,14 +44,15 @@ const categoryLinks: Record<Difficulty, string> = {
           <MazeCard entry={entry} />
           <a
             href={categoryLinks[entry.difficulty]}
-            class="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs hover:border-blue-300 hover:text-blue-600 transition-colors group"
+            class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 hover:border-blue-300 hover:bg-blue-50 transition-colors group"
           >
-            <span class="text-slate-500 group-hover:text-blue-600 transition-colors">
-              {timeEstimates[entry.difficulty]}
-            </span>
-            <span class="font-medium text-blue-600">
-              Browse →
-            </span>
+            <p class="text-xs font-semibold text-slate-700 group-hover:text-blue-700 transition-colors leading-tight">
+              {moodLabels[entry.difficulty]}
+            </p>
+            <div class="flex items-center justify-between mt-0.5">
+              <span class="text-xs text-slate-400">{timeEstimates[entry.difficulty]}</span>
+              <span class="text-xs font-medium text-blue-600">Browse →</span>
+            </div>
           </a>
         </div>
       ))}
