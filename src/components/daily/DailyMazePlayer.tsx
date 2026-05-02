@@ -97,6 +97,7 @@ export function DailyMazePlayer() {
         <FullscreenMazePlayer
           key={playerKey}
           maze={maze}
+          label="Today's Maze"
           onSolve={handleSolve}
           onClose={() => setPlaying(false)}
         />
@@ -112,6 +113,8 @@ export function DailyMazePlayer() {
             isNewBest={solveStats.isNewBest}
             personalBest={null}
             nav={postSolveNav ?? undefined}
+            returnCopy="Come back tomorrow for a new daily maze"
+            showCountdown={true}
             onPlayAgain={() => {
               setSolveStats(null);
               setPlayerKey((k) => k + 1);

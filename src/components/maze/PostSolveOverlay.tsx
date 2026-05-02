@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { getMsUntilMidnightUTC, formatCountdown } from '../../lib/utils/countdown';
 
 // Set to 50 to activate a 320×50 banner ad slot above the tertiary actions.
 const POST_SOLVE_AD_SLOT_H = 0;
@@ -23,6 +24,10 @@ export interface PostSolveOverlayProps {
   onPlayAgain: () => void;
   onClose?: () => void;
   mazeSlug?: string;
+  /** e.g. "Come back tomorrow for a new daily maze" */
+  returnCopy?: string;
+  /** Show a live countdown to midnight UTC */
+  showCountdown?: boolean;
 }
 
 function formatTime(ms: number) {
@@ -80,6 +85,19 @@ function CheckIcon() {
   );
 }
 
+function CountdownLine() {
+  const [ms, setMs] = useState(() => getMsUntilMidnightUTC());
+  useEffect(() => {
+    const id = setInterval(() => setMs(getMsUntilMidnightUTC()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <p className="text-slate-400 text-xs mt-0.5">
+      Next maze in {formatCountdown(ms)} · Midnight UTC
+    </p>
+  );
+}
+
 function ShareButton({ mazeSlug }: { mazeSlug?: string }) {
   const btnRef = useRef<HTMLButtonElement>(null);
 
@@ -121,6 +139,8 @@ export function PostSolveOverlay({
   onPlayAgain,
   onClose,
   mazeSlug,
+  returnCopy,
+  showCountdown,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   // On mobile, the browser fires a synthetic click event at the touch position
@@ -183,6 +203,14 @@ export function PostSolveOverlay({
           </p>
         )}
 
+        {/* Daily return copy + countdown */}
+        {returnCopy && (
+          <div className="text-center -mt-1">
+            <p className="text-xs text-slate-500">{returnCopy}</p>
+            {showCountdown && <CountdownLine />}
+          </div>
+        )}
+
         {/* Primary CTA — Next Maze */}
         {nav ? (
           <a
@@ -242,9 +270,14 @@ export function PostSolveOverlay({
               Play Again
             </button>
           )}
-          {nav && (
+          {nav && !showCountdown && (
             <a href={`/mazes/${nav.randomSlug}`} className="btn-ghost text-sm">
               Random
+            </a>
+          )}
+          {showCountdown && (
+            <a href="/maze-generator" className="btn-ghost text-sm">
+              Make Your Own
             </a>
           )}
           {!nav && onClose && (

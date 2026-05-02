@@ -56,11 +56,13 @@ function formatTime(ms: number) {
 
 export interface FullscreenMazePlayerProps {
   maze: MazeData;
+  /** Optional label shown in the top bar, e.g. "Today's Maze" for the daily challenge. */
+  label?: string;
   onSolve?: (stats: SolveStats) => void;
   onClose: () => void;
 }
 
-export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazePlayerProps) {
+export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: FullscreenMazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
@@ -310,9 +312,14 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
         </button>
 
         {/* Center: status / timer */}
-        <div className="flex-1 flex justify-center text-sm">
+        <div className="flex-1 flex justify-center items-center gap-1.5 text-sm">
           {state.status === 'playing' && (
             <span className="flex items-center gap-1.5 font-mono font-medium text-slate-700">
+              {label && (
+                <span className="hidden sm:inline text-xs font-sans font-medium text-slate-400 mr-0.5">
+                  {label} ·
+                </span>
+              )}
               <svg className="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <circle cx="12" cy="12" r="10" strokeWidth="2"/>
                 <polyline points="12 6 12 12 16 14" strokeWidth="2"/>
@@ -320,14 +327,17 @@ export function FullscreenMazePlayer({ maze, onSolve, onClose }: FullscreenMazeP
               <Timer elapsedMs={state.elapsedMs} />
             </span>
           )}
-          {state.status === 'paused'  && <span className="text-amber-500 font-medium text-xs">Paused</span>}
-          {state.status === 'idle' && (
-            <>
-              <span className="md:hidden text-slate-400 text-xs">Swipe or use D-pad to move</span>
-              <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to move</span>
-            </>
+          {state.status === 'paused' && <span className="text-amber-500 font-medium text-xs">Paused</span>}
+          {state.status === 'idle' && (label
+            ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
+            : (
+              <>
+                <span className="md:hidden text-slate-400 text-xs">Swipe or use D-pad to move</span>
+                <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to move</span>
+              </>
+            )
           )}
-          {state.status === 'solved'  && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
+          {state.status === 'solved' && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
         </div>
 
         {/* Right: pause + overflow menu */}
