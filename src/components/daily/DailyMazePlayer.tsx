@@ -59,7 +59,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
 
     setPostSolveNav({
       nextSlug: nextMaze.slug,
-      nextLabel: 'Play Another Large Maze',
+      nextLabel: 'Try Another Maze',
       randomSlug: randomMaze.slug,
       categorySlug: 'large-mazes',
       categoryLabel: 'Large',
@@ -137,7 +137,8 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
             isNewBest={solveStats.isNewBest}
             personalBest={null}
             nav={postSolveNav ?? undefined}
-            returnCopy="Come back tomorrow for a new daily maze"
+            completionCopy="Nice work — you solved today's challenge."
+            returnCopy="Come back tomorrow for a fresh challenge."
             showCountdown={true}
             onPlayAgain={() => {
               setSolveStats(null);
