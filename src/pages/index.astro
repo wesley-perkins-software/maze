@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/home/Hero.astro';
 import FeatureMazes from '../components/home/FeatureMazes.astro';
 import HowToPlay from '../components/home/HowToPlay.astro';
-import DailyMaze from '../components/home/DailyMaze.astro';
+import HowItWorks from '../components/home/HowItWorks.astro';
 
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
 
@@ -12,7 +12,7 @@ const websiteSchema = JSON.stringify({
   '@type': 'WebSite',
   name: 'MazeThis',
   url: siteUrl,
-  description: 'Free printable maze puzzles and maze generator. 420+ mazes for kids and adults.',
+  description: 'Free printable maze puzzles and daily maze challenge. 420+ mazes for kids and adults.',
   potentialAction: {
     '@type': 'SearchAction',
     target: `${siteUrl}/maze-generator`,
@@ -26,23 +26,22 @@ const organizationSchema = JSON.stringify({
   name: 'MazeThis',
   url: siteUrl,
   logo: `${siteUrl}/favicon.svg`,
-  description: 'Free printable mazes and interactive maze puzzles for kids and adults. Generate custom mazes, print worksheets, or play online.',
+  description: 'Free printable mazes and interactive maze puzzles for kids and adults. Daily maze challenge, maze library, and custom maze generator.',
   foundingDate: '2024',
-  knowsAbout: ['maze puzzles', 'printable mazes', 'maze generation algorithms', 'brain games', 'educational puzzles'],
+  knowsAbout: ['maze puzzles', 'printable mazes', 'daily maze challenge', 'maze generation', 'brain games', 'educational puzzles'],
 });
 ---
 
 <BaseLayout
-  title="Free Printable Mazes & Maze Puzzles | MazeThis"
-  description="420+ free printable maze puzzles for kids and adults. Play the daily maze challenge online, browse mazes by size, or generate unlimited custom mazes. No account needed."
+  title="Free Maze Puzzles — Daily Challenge & Printable Mazes | MazeThis"
+  description="Play a new free maze puzzle every day. Browse 420+ printable mazes for kids and adults, or generate your own. No account needed — free forever."
   schemaLD={[websiteSchema, organizationSchema]}
 >
+
+  <!-- 1. Hero — merged with Maze of the Day -->
   <Hero />
 
-  <!-- Daily maze challenge -->
-  <DailyMaze />
-
-  <!-- Maze Library: browse by size + audience -->
+  <!-- 2. Maze Library — SEO section -->
   <section class="py-14" aria-labelledby="library-heading">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
       <h2 id="library-heading" class="text-2xl font-bold text-slate-800 mb-2 text-center">
@@ -58,17 +57,17 @@ const organizationSchema = JSON.stringify({
         <a href="/small-mazes" class="flex flex-col items-center gap-1.5 rounded-xl border border-slate-200 bg-white p-5 text-center transition-all hover:border-blue-300 hover:shadow-md">
           <span class="text-2xl" aria-hidden="true">🌱</span>
           <span class="text-sm font-semibold text-slate-800">Small Mazes</span>
-          <span class="text-xs text-slate-500">20×20 · Quick &amp; approachable</span>
+          <span class="text-xs text-slate-500">20×20 · ~1–2 min</span>
         </a>
         <a href="/medium-mazes" class="flex flex-col items-center gap-1.5 rounded-xl border border-slate-200 bg-white p-5 text-center transition-all hover:border-blue-300 hover:shadow-md">
           <span class="text-2xl" aria-hidden="true">⚡</span>
           <span class="text-sm font-semibold text-slate-800">Medium Mazes</span>
-          <span class="text-xs text-slate-500">40×40 · Real challenge</span>
+          <span class="text-xs text-slate-500">40×40 · ~5–10 min</span>
         </a>
         <a href="/large-mazes" class="flex flex-col items-center gap-1.5 rounded-xl border border-slate-200 bg-white p-5 text-center transition-all hover:border-blue-300 hover:shadow-md">
           <span class="text-2xl" aria-hidden="true">🔥</span>
           <span class="text-sm font-semibold text-slate-800">Large Mazes</span>
-          <span class="text-xs text-slate-500">60×60 · Genuine labyrinth</span>
+          <span class="text-xs text-slate-500">60×60 · ~10–20 min</span>
         </a>
       </div>
 
@@ -90,10 +89,16 @@ const organizationSchema = JSON.stringify({
     </div>
   </section>
 
+  <!-- 3. Pick Your Challenge — sample mazes with time estimates -->
   <FeatureMazes />
+
+  <!-- 4. How It Works — retention loop -->
+  <HowItWorks />
+
+  <!-- 5. Three Ways to Enjoy -->
   <HowToPlay />
 
-  <!-- Why MazeThis -->
+  <!-- 6. Why MazeThis -->
   <section class="py-16 bg-slate-50" aria-labelledby="why-heading">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
       <h2 id="why-heading" class="text-2xl font-bold text-slate-800 mb-2 text-center">Why MazeThis?</h2>
@@ -120,7 +125,7 @@ const organizationSchema = JSON.stringify({
           {
             icon: '📱',
             title: 'Play on Any Device',
-            body: 'Arrow keys on desktop, swipe gestures on mobile, or the on-screen D-pad. Maze puzzles that work wherever you are.',
+            body: 'Arrow keys on desktop, swipe on mobile, or the on-screen D-pad. Maze puzzles that work wherever you are.',
           },
           {
             icon: '🆓',
@@ -145,7 +150,43 @@ const organizationSchema = JSON.stringify({
     </div>
   </section>
 
-  <!-- Generator CTA banner -->
+  <!-- 7. SEO content block -->
+  <section class="py-14" aria-labelledby="about-mazes-heading">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 id="about-mazes-heading" class="text-2xl font-bold text-slate-800 mb-6 text-center">
+        Free Maze Puzzles for Everyone
+      </h2>
+      <div class="space-y-4 text-slate-600 leading-relaxed text-sm sm:text-base">
+        <p>
+          Maze puzzles are one of the most satisfying brain exercises around — and MazeThis
+          makes them free, instant, and always fresh. Whether you need printable mazes for a
+          classroom worksheet, a quick online puzzle during a break, or a daily habit to keep
+          your mind sharp, you'll find it here.
+        </p>
+        <p>
+          Our maze library includes over 420 hand-crafted puzzles across three sizes: small
+          20×20 mazes for quick solves (about 1–2 minutes), medium 40×40 mazes with real
+          decision points (~5–10 min), and large 60×60 mazes that are a genuine labyrinth
+          (~10–20 min). Every maze is free to play online or print at home — no sign-up,
+          no watermarks, no catch.
+        </p>
+        <p>
+          The Maze of the Day is a 60×60 puzzle that resets every 24 hours — the same maze
+          for everyone worldwide. It's a simple way to build a daily puzzle habit. Teachers
+          use our printable mazes for classroom activities and morning warm-ups. Parents use
+          them for screen-free puzzle time at home. Adults use the harder mazes to stay
+          mentally engaged. Whatever your goal, there's a maze here for you.
+        </p>
+      </div>
+      <div class="mt-6 flex flex-wrap gap-3 text-xs text-slate-500 justify-center">
+        {['Free printable mazes', 'Mazes for kids', 'Mazes for adults', 'Classroom maze worksheets', 'Online maze puzzles', 'Daily maze challenge'].map((tag) => (
+          <span class="rounded-full border border-slate-200 px-3 py-1 bg-slate-50">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Generator CTA -->
   <section class="py-14 bg-blue-600">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">
@@ -163,4 +204,52 @@ const organizationSchema = JSON.stringify({
       </a>
     </div>
   </section>
+
+  <!-- Sticky CTA — slides up when hero CTA scrolls out of view -->
+  <div
+    id="sticky-cta"
+    class="fixed bottom-0 left-0 right-0 z-50 translate-y-full transition-transform duration-300 ease-in-out"
+    aria-hidden="true"
+  >
+    <div class="bg-white border-t border-slate-200 shadow-lg px-4 py-3">
+      <div class="mx-auto max-w-xl flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <p class="text-sm font-semibold text-slate-800 truncate">Today's Maze Challenge</p>
+          <p class="text-xs text-slate-500">Same puzzle for everyone · Free to play</p>
+        </div>
+        <a
+          href="/maze-of-the-day/"
+          class="btn-primary text-sm px-4 py-2 shrink-0"
+          tabindex="-1"
+          aria-hidden="true"
+        >
+          Play Now
+        </a>
+      </div>
+    </div>
+  </div>
+
 </BaseLayout>
+
+<script>
+  const stickyEl = document.getElementById('sticky-cta');
+  const heroCta = document.getElementById('hero-play-cta');
+
+  if (stickyEl && heroCta) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const visible = entry.isIntersecting;
+        stickyEl.classList.toggle('translate-y-full', visible);
+        if (visible) {
+          stickyEl.setAttribute('aria-hidden', 'true');
+          stickyEl.querySelector('a')?.setAttribute('tabindex', '-1');
+        } else {
+          stickyEl.removeAttribute('aria-hidden');
+          stickyEl.querySelector('a')?.removeAttribute('tabindex');
+        }
+      },
+      { threshold: 0 },
+    );
+    observer.observe(heroCta);
+  }
+</script>

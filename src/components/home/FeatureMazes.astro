@@ -1,33 +1,59 @@
 ---
 import MazeCard from '../ui/MazeCard.astro';
 import { getFeaturedMazes } from '../../lib/catalog/index.js';
+import type { Difficulty } from '../../types/maze.js';
 
 const featured = getFeaturedMazes();
+
+const timeEstimates: Record<Difficulty, string> = {
+  small:  '~1–2 min',
+  medium: '~5–10 min',
+  large:  '~10–20 min',
+};
+
+const categoryLinks: Record<Difficulty, string> = {
+  small:  '/small-mazes',
+  medium: '/medium-mazes',
+  large:  '/large-mazes',
+};
 ---
 
-<section class="py-12 bg-slate-50" aria-labelledby="featured-heading">
+<section class="py-14 bg-slate-50" aria-labelledby="challenge-heading">
   <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 id="featured-heading" class="text-xl font-bold text-slate-800">
-          Sample Mazes
+        <h2 id="challenge-heading" class="text-2xl font-bold text-slate-800">
+          Pick Your Challenge
         </h2>
-        <p class="text-slate-500 text-sm mt-0.5">One from each size — try before you browse</p>
+        <p class="text-slate-500 text-sm mt-0.5">Choose a size and start solving — no sign-up needed</p>
       </div>
       <a href="/large-mazes" class="hidden sm:inline text-sm font-medium text-blue-600 hover:underline">
-        View all mazes →
+        View all 420+ mazes →
       </a>
     </div>
 
     <div class="grid grid-cols-3 gap-4 sm:gap-6">
       {featured.map((entry) => (
-        <MazeCard entry={entry} />
+        <div class="flex flex-col gap-2">
+          <MazeCard entry={entry} />
+          <a
+            href={categoryLinks[entry.difficulty]}
+            class="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs hover:border-blue-300 hover:text-blue-600 transition-colors group"
+          >
+            <span class="text-slate-500 group-hover:text-blue-600 transition-colors">
+              {timeEstimates[entry.difficulty]}
+            </span>
+            <span class="font-medium text-blue-600">
+              Browse →
+            </span>
+          </a>
+        </div>
       ))}
     </div>
 
-    <div class="mt-4 sm:hidden text-center">
+    <div class="mt-6 sm:hidden text-center">
       <a href="/large-mazes" class="text-sm font-medium text-blue-600 hover:underline">
-        View all mazes →
+        View all 420+ mazes →
       </a>
     </div>
   </div>
