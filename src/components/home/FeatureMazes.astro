@@ -1,34 +1,33 @@
 ---
 import MazeCard from '../ui/MazeCard.astro';
 import { getFeaturedMazes } from '../../lib/catalog/index.js';
-import { CATEGORIES } from '../../types/maze.js';
 
 const featured = getFeaturedMazes();
 ---
 
-<section class="py-16 bg-slate-50" aria-labelledby="featured-heading">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between mb-8">
+<section class="py-12 bg-slate-50" aria-labelledby="featured-heading">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 id="featured-heading" class="text-2xl font-bold text-slate-800">
-          Featured Mazes
+        <h2 id="featured-heading" class="text-xl font-bold text-slate-800">
+          Sample Mazes
         </h2>
-        <p class="text-slate-500 mt-1">One from every difficulty — pick your challenge</p>
+        <p class="text-slate-500 text-sm mt-0.5">One from each size — try before you browse</p>
       </div>
-      <a href="/easy-mazes" class="hidden sm:inline text-sm font-medium text-blue-600 hover:underline">
-        View all 420 mazes →
+      <a href="/large-mazes" class="hidden sm:inline text-sm font-medium text-blue-600 hover:underline">
+        View all mazes →
       </a>
     </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+    <div class="grid grid-cols-3 gap-4 sm:gap-6">
       {featured.map((entry) => (
         <MazeCard entry={entry} />
       ))}
     </div>
 
-    <div class="mt-6 sm:hidden text-center">
-      <a href="/easy-mazes" class="text-sm font-medium text-blue-600 hover:underline">
-        View all 420 mazes →
+    <div class="mt-4 sm:hidden text-center">
+      <a href="/large-mazes" class="text-sm font-medium text-blue-600 hover:underline">
+        View all mazes →
       </a>
     </div>
   </div>
