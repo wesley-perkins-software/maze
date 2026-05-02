@@ -18,13 +18,10 @@
         </h2>
         <div class="flex items-center gap-2 justify-center md:justify-start flex-wrap mb-2">
           <span class="inline-flex items-center rounded-full bg-white/20 border border-white/30 px-2.5 py-0.5 text-xs font-medium text-white">Large</span>
-          <span class="text-white/80 text-sm">60×60 · Same for everyone · Changes at midnight UTC</span>
+          <span class="text-white/80 text-sm">60×60 · A new maze every day — same puzzle for everyone</span>
         </div>
-        <p class="text-blue-100 text-sm max-w-sm">
-          Can you beat it before the clock runs out?
-        </p>
         <!-- Countdown -->
-        <p class="text-white/60 text-xs mt-1.5">
+        <p class="text-white/60 text-xs mt-1">
           Next maze in <span id="daily-home-countdown" class="font-mono text-white/80">…</span>
         </p>
       </div>
@@ -50,15 +47,13 @@
 </section>
 
 <script>
-  // Date label
   const dateEl = document.getElementById('daily-maze-date');
   if (dateEl) {
     dateEl.textContent = new Date().toLocaleDateString('en-US', {
-      weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC',
+      weekday: 'long', month: 'long', day: 'numeric',
     });
   }
 
-  // Countdown to midnight UTC
   function tickHomeCountdown() {
     const now = new Date();
     const midnight = new Date(Date.UTC(

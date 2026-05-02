@@ -1,34 +1,66 @@
 ---
 import MazeCard from '../ui/MazeCard.astro';
 import { getFeaturedMazes } from '../../lib/catalog/index.js';
-import { CATEGORIES } from '../../types/maze.js';
+import type { Difficulty } from '../../types/maze.js';
 
 const featured = getFeaturedMazes();
+
+const moodLabels: Record<Difficulty, string> = {
+  small:  'Small Maze — Quick',
+  medium: 'Medium Maze — Moderate',
+  large:  'Large Maze — Challenge',
+};
+
+const timeEstimates: Record<Difficulty, string> = {
+  small:  '~1–2 min',
+  medium: '~5–10 min',
+  large:  '~10–20 min',
+};
+
+const categoryLinks: Record<Difficulty, string> = {
+  small:  '/small-mazes',
+  medium: '/medium-mazes',
+  large:  '/large-mazes',
+};
 ---
 
-<section class="py-16 bg-slate-50" aria-labelledby="featured-heading">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between mb-8">
+<section class="py-14 bg-slate-50" aria-labelledby="challenge-heading">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 id="featured-heading" class="text-2xl font-bold text-slate-800">
-          Featured Mazes
+        <h2 id="challenge-heading" class="text-2xl font-bold text-slate-800">
+          Pick Your Challenge
         </h2>
-        <p class="text-slate-500 mt-1">One from every difficulty — pick your challenge</p>
+        <p class="text-slate-500 text-sm mt-0.5">Choose a size and start solving — no sign-up needed</p>
       </div>
-      <a href="/easy-mazes" class="hidden sm:inline text-sm font-medium text-blue-600 hover:underline">
-        View all 420 mazes →
+      <a href="/large-mazes" class="hidden sm:inline text-sm font-medium text-blue-600 hover:underline">
+        View all 420+ mazes →
       </a>
     </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+    <div class="grid grid-cols-3 gap-4 sm:gap-6">
       {featured.map((entry) => (
-        <MazeCard entry={entry} />
+        <div class="flex flex-col gap-2">
+          <MazeCard entry={entry} />
+          <a
+            href={categoryLinks[entry.difficulty]}
+            class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+          >
+            <p class="text-xs font-semibold text-slate-700 group-hover:text-blue-700 transition-colors leading-tight">
+              {moodLabels[entry.difficulty]}
+            </p>
+            <div class="flex items-center justify-between mt-0.5">
+              <span class="text-xs text-slate-400">{timeEstimates[entry.difficulty]}</span>
+              <span class="text-xs font-medium text-blue-600">Browse →</span>
+            </div>
+          </a>
+        </div>
       ))}
     </div>
 
     <div class="mt-6 sm:hidden text-center">
-      <a href="/easy-mazes" class="text-sm font-medium text-blue-600 hover:underline">
-        View all 420 mazes →
+      <a href="/large-mazes" class="text-sm font-medium text-blue-600 hover:underline">
+        View all 420+ mazes →
       </a>
     </div>
   </div>
