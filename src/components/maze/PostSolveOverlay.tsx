@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { getMsUntilMidnightUTC, formatCountdown } from '../../lib/utils/countdown';
+import { getMsUntilMidnightUTC } from '../../lib/utils/countdown';
 
 // Set to 50 to activate a 320×50 banner ad slot above the tertiary actions.
 const POST_SOLVE_AD_SLOT_H = 0;
@@ -24,9 +24,11 @@ export interface PostSolveOverlayProps {
   onPlayAgain: () => void;
   onClose?: () => void;
   mazeSlug?: string;
-  /** e.g. "Come back tomorrow for a new daily maze" */
+  /** Short positive line shown under "Maze Complete!", e.g. "Nice work — you solved today's challenge." */
+  completionCopy?: string;
+  /** e.g. "Come back tomorrow for a fresh challenge." */
   returnCopy?: string;
-  /** Show a live countdown to midnight UTC */
+  /** Show a live countdown to the next daily maze */
   showCountdown?: boolean;
 }
 
@@ -91,9 +93,16 @@ function CountdownLine() {
     const id = setInterval(() => setMs(getMsUntilMidnightUTC()), 1000);
     return () => clearInterval(id);
   }, []);
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const formatted = h > 0
+    ? `${h}h ${String(m).padStart(2, '0')}m`
+    : `${m}m ${String(sec).padStart(2, '0')}s`;
   return (
     <p className="text-slate-400 text-xs mt-0.5">
-      Next maze in {formatCountdown(ms)} · Midnight UTC
+      New maze unlocks in {formatted}
     </p>
   );
 }
@@ -133,12 +142,13 @@ export function PostSolveOverlay({
   elapsedMs,
   stepCount,
   hintsUsed,
-  isNewBest,
-  personalBest,
+  isNewBest: _isNewBest,
+  personalBest: _personalBest,
   nav,
   onPlayAgain,
   onClose,
   mazeSlug,
+  completionCopy,
   returnCopy,
   showCountdown,
 }: PostSolveOverlayProps) {
@@ -181,13 +191,11 @@ export function PostSolveOverlay({
           <CheckIcon />
         </div>
 
-        {/* Heading + personal best */}
+        {/* Heading + optional completion copy */}
         <div className="text-center leading-snug">
           <h3 className="text-xl font-bold text-slate-800">Maze Complete!</h3>
-          {isNewBest && (
-            <p className="mt-1.5 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-0.5 inline-block">
-              ★ New personal best
-            </p>
+          {completionCopy && (
+            <p className="mt-1.5 text-sm text-slate-500">{completionCopy}</p>
           )}
         </div>
 
@@ -196,19 +204,19 @@ export function PostSolveOverlay({
           {statsItems.join(' · ')}
         </p>
 
-        {/* Previous best (shown only when not a new record) */}
-        {personalBest !== null && !isNewBest && (
-          <p className="text-xs text-slate-400 -mt-2">
-            Best: {formatTime(personalBest)}
-          </p>
-        )}
-
-        {/* Daily return copy + countdown */}
+        {/* Daily habit messaging */}
         {returnCopy && (
           <div className="text-center -mt-1">
             <p className="text-xs text-slate-500">{returnCopy}</p>
             {showCountdown && <CountdownLine />}
           </div>
+        )}
+
+        {/* Bridge copy — connects daily experience to maze library */}
+        {showCountdown && nav && (
+          <p className="text-xs text-slate-400 text-center -mt-1">
+            Want more? Try another maze while you wait.
+          </p>
         )}
 
         {/* Primary CTA — Next Maze */}
@@ -233,24 +241,14 @@ export function PostSolveOverlay({
           </button>
         )}
 
-        {/* Secondary CTAs */}
+        {/* Secondary CTA */}
         {nav && (
-          <div className={`grid gap-2 w-full ${nav.largerSlug ? 'grid-cols-2' : 'grid-cols-1'}`}>
-            {nav.largerSlug && (
-              <a
-                href={`/mazes/${nav.largerSlug}`}
-                className="btn-secondary text-sm justify-center py-2"
-              >
-                Try Larger
-              </a>
-            )}
-            <a
-              href={`/${nav.categorySlug}`}
-              className="btn-secondary text-sm justify-center py-2"
-            >
-              Browse {nav.categoryLabel}
-            </a>
-          </div>
+          <a
+            href={`/${nav.categorySlug}`}
+            className="btn-secondary text-sm justify-center py-2 w-full"
+          >
+            Browse Mazes
+          </a>
         )}
 
         {/* Ad slot — reserved for future monetization */}

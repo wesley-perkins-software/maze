@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { DailyMazePlayer } from '../../../components/daily/DailyMazePlayer';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const canonical = `${siteUrl}/maze-of-the-day/`;
+---
+
+<BaseLayout
+  title="Play Today's Maze | MazeThis"
+  description="Jump straight into today's daily maze challenge — a fresh 60×60 puzzle, same for everyone, free to play."
+  canonical={canonical}
+  noindex={true}
+>
+  <DailyMazePlayer client:only="react" autoPlay={true} />
+</BaseLayout>
