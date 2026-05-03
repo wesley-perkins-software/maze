@@ -16,168 +16,71 @@ const heroSvg = renderThumbnail(heroMaze);
 >
   <div class="absolute inset-0 architect-dot-grid pointer-events-none" aria-hidden="true"></div>
 
-  <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-10 pb-14 sm:pt-16 sm:pb-20 lg:pb-24">
-
-    <!-- Rule + date -->
-    <div class="flex items-center gap-4 mb-8 sm:mb-10">
-      <div class="h-px flex-1" style="background-color: var(--color-border-strong);"></div>
-      <span
-        class="shrink-0 text-xs uppercase tracking-widest"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-        id="hero-date"
-      >Daily Maze Challenge</span>
-      <div class="h-px flex-1" style="background-color: var(--color-border-strong);"></div>
-    </div>
-
-    <!-- Two-column desktop / stacked mobile -->
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 lg:gap-16 items-start">
-
-      <!-- Left / top on mobile -->
+  <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16 lg:py-16">
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_410px] gap-7 lg:gap-14 items-start">
       <div>
-        <h1
-          id="hero-heading"
-          class="font-display uppercase leading-[0.92] mb-6 sm:mb-8"
-          style="font-size: clamp(3.75rem, 13vw, 9rem); color: var(--color-charcoal);"
-        >
+        <h1 id="hero-heading" class="font-display uppercase leading-[0.88] mb-4 sm:mb-6" style="font-size: clamp(3.4rem, 12.5vw, 8.5rem); color: var(--color-charcoal);">
           Can You<br />
           Solve<br />
           <span style="color: var(--color-accent);">Today's</span><br />
           Maze?
         </h1>
 
-        <p
-          class="text-base leading-relaxed mb-8 max-w-xs sm:max-w-sm"
-          style="color: var(--color-muted-strong);"
-        >
-          A new puzzle unlocks every day — same maze for everyone, no account needed.
-          Explore 420+ free printable mazes or build your own.
+        <div class="md:hidden mb-3">
+          <a href="/play/maze-of-the-day/" class="block max-w-[230px] overflow-hidden" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface);" aria-label="Play today's maze" tabindex="-1">
+            <div set:html={heroSvg} />
+          </a>
+        </div>
+
+        <p class="text-sm sm:text-base leading-relaxed mb-2.5 max-w-sm" style="color: var(--color-muted-strong);">
+          A new maze drops every day — same puzzle for everyone.
         </p>
 
-        <!-- CTAs — full-width on mobile, auto on sm+ -->
-        <div class="flex flex-col sm:flex-row gap-3 mb-8">
-          <a
-            id="hero-play-cta"
-            href="/play/maze-of-the-day/"
-            class="btn-primary justify-center sm:justify-start text-sm px-7 py-3.5 font-semibold w-full sm:w-auto"
-          >
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
+        <div class="md:hidden text-xs mb-3.5" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); letter-spacing: 0.01em;">
+          <span>60×60</span>
+          <span style="color: var(--color-border-strong);"> · </span>
+          <span>Large</span>
+          <span style="color: var(--color-border-strong);"> · </span>
+          <span>~10–15 min</span>
+          <span style="color: var(--color-border-strong);"> · </span>
+          <span>Free</span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2.5 mb-3 sm:mb-5">
+          <a id="hero-play-cta" href="/play/maze-of-the-day/" class="btn-primary justify-center sm:justify-start text-sm px-7 py-3.5 font-semibold w-full sm:w-auto">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
             Play Today's Maze
           </a>
-          <a
-            href="/printable-mazes"
-            class="btn-secondary justify-center sm:justify-start text-sm px-6 py-3.5 w-full sm:w-auto"
-          >
+          <a href="/printable-mazes" class="justify-center sm:justify-start text-sm px-5 py-2.5 w-full sm:w-auto inline-flex items-center" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);">
             Browse Free Mazes
           </a>
         </div>
 
-        <!-- Countdown/metadata — mono -->
-        <div
-          class="flex flex-wrap gap-x-5 gap-y-1 text-xs mb-10 lg:mb-0"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-        >
-          <span>~10–15 min</span>
-          <span aria-hidden="true" style="color: var(--color-border-strong);">·</span>
-          <span>Next maze in <span id="hero-countdown" style="color: var(--color-muted-strong);">…</span></span>
-          <span aria-hidden="true" style="color: var(--color-border-strong);">·</span>
-          <span>Free forever</span>
+        <div class="hidden md:flex items-center gap-x-4 gap-y-1 text-xs" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">
+          <span>⏱ 10–15 min</span>
+          <span>↻ New maze daily</span>
+          <span>✓ Free forever</span>
         </div>
       </div>
 
-      <!-- Right: maze frame (desktop) -->
-      <div class="hidden lg:block">
-        <!-- Blueprint annotation row -->
-        <div
-          class="flex items-center justify-between mb-2"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); font-size: 0.65rem;"
-        >
-          <span class="uppercase tracking-widest">Today's Maze</span>
+      <div class="hidden md:block pt-2">
+        <div class="flex items-center justify-between mb-2" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); font-size: 0.65rem;">
+          <span class="uppercase tracking-widest" id="hero-date">Daily Maze Challenge</span>
           <span>{heroEntry.width}×{heroEntry.height}</span>
         </div>
-
-        <!-- Frame -->
         <div class="relative">
-          <!-- Corner brackets — charcoal, not accent -->
           <div class="absolute -top-1.5 -left-1.5 w-5 h-5 border-t-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
           <div class="absolute -top-1.5 -right-1.5 w-5 h-5 border-t-2 border-r-2 z-10" style="border-color: var(--color-charcoal);"></div>
           <div class="absolute -bottom-1.5 -left-1.5 w-5 h-5 border-b-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
           <div class="absolute -bottom-1.5 -right-1.5 w-5 h-5 border-b-2 border-r-2 z-10" style="border-color: var(--color-charcoal);"></div>
-
-          <a
-            href="/play/maze-of-the-day/"
-            class="block w-full group overflow-hidden"
-            style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface); aspect-ratio: 1;"
-            aria-label="Play today's maze"
-            tabindex="-1"
-          >
-            <div
-              class="w-full h-full transition-transform duration-500 group-hover:scale-[1.02]"
-              set:html={heroSvg}
-            />
+          <a href="/play/maze-of-the-day/" class="block w-full group overflow-hidden" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface); aspect-ratio: 1;" aria-label="Play today's maze" tabindex="-1">
+            <div class="w-full h-full transition-transform duration-500 group-hover:scale-[1.02]" set:html={heroSvg} />
           </a>
         </div>
-
-        <!-- Spec strip beneath frame -->
-        <div
-          class="mt-2 flex items-center justify-between text-xs pt-2"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); border-top: 1px solid var(--color-border);"
-        >
-          <span>Large</span>
-          <span style="color: var(--color-border-strong);">—</span>
-          <span>10–20 min</span>
-          <span style="color: var(--color-border-strong);">—</span>
-          <span>60×60 grid</span>
+        <div class="mt-2 flex items-center justify-between text-xs pt-2" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border-top: 1px solid var(--color-border);">
+          <span>60×60</span><span>—</span><span>Large</span><span>—</span><span>~10–15 min</span><span>—</span><span>Free</span>
         </div>
       </div>
-    </div>
-
-    <!-- Mobile maze preview — shows on mobile/sm below CTAs -->
-    <div class="lg:hidden mb-8">
-      <!-- Annotation -->
-      <div
-        class="flex items-center justify-between mb-2"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); font-size: 0.65rem;"
-      >
-        <span class="uppercase tracking-widest">Today's Maze</span>
-        <span>{heroEntry.width}×{heroEntry.height} · Large</span>
-      </div>
-      <!-- Maze contained to reasonable size, centered -->
-      <a
-        href="/play/maze-of-the-day/"
-        class="block max-w-[320px] mx-auto overflow-hidden"
-        style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface);"
-        aria-label="Play today's maze"
-        tabindex="-1"
-      >
-        <div set:html={heroSvg} />
-      </a>
-      <!-- Spec strip -->
-      <div
-        class="mt-2 max-w-[320px] mx-auto text-xs pt-2"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); border-top: 1px solid var(--color-border);"
-      >
-        <span>10–20 min · Free · No account needed</span>
-      </div>
-    </div>
-
-    <!-- Trust strip — bottom of hero -->
-    <div
-      class="pt-6 flex flex-wrap gap-x-8 gap-y-2"
-      style="border-top: 1px solid var(--color-border);"
-    >
-      {[
-        'No Account Needed',
-        '420+ Free Mazes',
-        'Print-Friendly PDFs',
-        'Mobile-Ready',
-      ].map((label) => (
-        <span
-          class="text-xs uppercase tracking-widest"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-        >{label}</span>
-      ))}
     </div>
   </div>
 </section>
@@ -189,23 +92,4 @@ const heroSvg = renderThumbnail(heroMaze);
       weekday: 'long', month: 'long', day: 'numeric',
     });
   }
-
-  function tickCountdown() {
-    const now = new Date();
-    const midnight = new Date(Date.UTC(
-      now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1,
-    ));
-    const rem = Math.max(0, Math.floor((midnight.getTime() - now.getTime()) / 1000));
-    const h = Math.floor(rem / 3600);
-    const m = Math.floor((rem % 3600) / 60);
-    const s = rem % 60;
-    const el = document.getElementById('hero-countdown');
-    if (el) {
-      el.textContent = h > 0
-        ? `${h}h ${String(m).padStart(2, '0')}m`
-        : `${m}m ${String(s).padStart(2, '0')}s`;
-    }
-  }
-  tickCountdown();
-  setInterval(tickCountdown, 1000);
 </script>
