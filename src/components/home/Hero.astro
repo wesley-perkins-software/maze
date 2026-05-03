@@ -22,7 +22,7 @@ const heroSvg = renderThumbnail(heroMaze);
     flex-col lets the content area grow to fill remaining space, so the
     next section never awkwardly peeks above the fold.
   -->
-  <div class="hero-mobile-root md:hidden">
+  <div class="hero-mobile-root md:hidden flex flex-col">
 
     <!-- Full-width maze with headline overlaid -->
     <div class="hero-maze-poster">
@@ -160,11 +160,16 @@ const heroSvg = renderThumbnail(heroMaze);
   .maze-fill-square :global(svg) { width: 100%; height: 100%;  display: block; }
 
   /* ── Mobile root: fills viewport below the h-14 (3.5rem) sticky header ─── */
+  /*
+    display/flex-direction are set as Tailwind classes (flex flex-col) on the
+    element so they share the same specificity as md:hidden. If we set them
+    here, the attribute-scoped selector (.hero-mobile-root[data-astro-cid-*])
+    has higher specificity than md:hidden and the element stays visible on
+    desktop.
+  */
   .hero-mobile-root {
-    display: flex;
-    flex-direction: column;
     min-height: calc(100vh  - 3.5rem); /* legacy fallback */
-    min-height: calc(100svh - 3.5rem); /* small viewport height — excludes mobile browser chrome */
+    min-height: calc(100svh - 3.5rem); /* excludes mobile browser chrome */
   }
 
   /* ── Mobile maze poster ─────────────────────────────────────────────────── */
