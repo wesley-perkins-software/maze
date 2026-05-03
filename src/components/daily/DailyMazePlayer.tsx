@@ -76,6 +76,14 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   }, []);
 
   const handleSolve = useCallback((stats: SolveStats) => {
+    const today = getUTCDateString();
+    localStorage.setItem(`daily_completed_${today}`, 'true');
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: `daily_completed_${today}`,
+      newValue: 'true',
+      oldValue: null,
+      storageArea: localStorage,
+    }));
     setSolveStats(stats);
   }, []);
 
