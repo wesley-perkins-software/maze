@@ -53,8 +53,28 @@ const heroSvg = renderThumbnail(heroMaze);
           Explore 420+ free printable mazes or build your own.
         </p>
 
+        <!-- Mobile maze preview — appears before CTA to show product sooner -->
+        <div class="lg:hidden mb-6">
+          <div
+            class="flex items-center justify-between mb-2"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); font-size: 0.65rem;"
+          >
+            <span class="uppercase tracking-widest">Today's Maze</span>
+            <span>{heroEntry.width}×{heroEntry.height} · Large</span>
+          </div>
+          <a
+            href="/play/maze-of-the-day/"
+            class="block max-w-[280px] overflow-hidden"
+            style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface);"
+            aria-label="Play today's maze"
+            tabindex="-1"
+          >
+            <div set:html={heroSvg} />
+          </a>
+        </div>
+
         <!-- CTAs — full-width on mobile, auto on sm+ -->
-        <div class="flex flex-col sm:flex-row gap-3 mb-8">
+        <div class="flex flex-col sm:flex-row gap-2.5 mb-6">
           <a
             id="hero-play-cta"
             href="/play/maze-of-the-day/"
@@ -67,22 +87,21 @@ const heroSvg = renderThumbnail(heroMaze);
           </a>
           <a
             href="/printable-mazes"
-            class="btn-secondary justify-center sm:justify-start text-sm px-6 py-3.5 w-full sm:w-auto"
+            class="justify-center sm:justify-start text-sm px-5 py-2.5 w-full sm:w-auto inline-flex items-center uppercase tracking-wide"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);"
           >
             Browse Free Mazes
           </a>
         </div>
 
-        <!-- Countdown/metadata — mono -->
+        <!-- Info row -->
         <div
-          class="flex flex-wrap gap-x-5 gap-y-1 text-xs mb-10 lg:mb-0"
+          class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs mb-10 lg:mb-0"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
         >
-          <span>~10–15 min</span>
-          <span aria-hidden="true" style="color: var(--color-border-strong);">·</span>
-          <span>Next maze in <span id="hero-countdown" style="color: var(--color-muted-strong);">…</span></span>
-          <span aria-hidden="true" style="color: var(--color-border-strong);">·</span>
-          <span>Free forever</span>
+          <span>⏱ 10–15 min</span>
+          <span>↻ New maze daily</span>
+          <span>✓ Free forever</span>
         </div>
       </div>
 
@@ -133,35 +152,6 @@ const heroSvg = renderThumbnail(heroMaze);
       </div>
     </div>
 
-    <!-- Mobile maze preview — shows on mobile/sm below CTAs -->
-    <div class="lg:hidden mb-8">
-      <!-- Annotation -->
-      <div
-        class="flex items-center justify-between mb-2"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); font-size: 0.65rem;"
-      >
-        <span class="uppercase tracking-widest">Today's Maze</span>
-        <span>{heroEntry.width}×{heroEntry.height} · Large</span>
-      </div>
-      <!-- Maze contained to reasonable size, centered -->
-      <a
-        href="/play/maze-of-the-day/"
-        class="block max-w-[320px] mx-auto overflow-hidden"
-        style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface);"
-        aria-label="Play today's maze"
-        tabindex="-1"
-      >
-        <div set:html={heroSvg} />
-      </a>
-      <!-- Spec strip -->
-      <div
-        class="mt-2 max-w-[320px] mx-auto text-xs pt-2"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); border-top: 1px solid var(--color-border);"
-      >
-        <span>10–20 min · Free · No account needed</span>
-      </div>
-    </div>
-
     <!-- Trust strip — bottom of hero -->
     <div
       class="pt-6 flex flex-wrap gap-x-8 gap-y-2"
@@ -190,22 +180,4 @@ const heroSvg = renderThumbnail(heroMaze);
     });
   }
 
-  function tickCountdown() {
-    const now = new Date();
-    const midnight = new Date(Date.UTC(
-      now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1,
-    ));
-    const rem = Math.max(0, Math.floor((midnight.getTime() - now.getTime()) / 1000));
-    const h = Math.floor(rem / 3600);
-    const m = Math.floor((rem % 3600) / 60);
-    const s = rem % 60;
-    const el = document.getElementById('hero-countdown');
-    if (el) {
-      el.textContent = h > 0
-        ? `${h}h ${String(m).padStart(2, '0')}m`
-        : `${m}m ${String(s).padStart(2, '0')}s`;
-    }
-  }
-  tickCountdown();
-  setInterval(tickCountdown, 1000);
 </script>
