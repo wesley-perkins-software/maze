@@ -48,8 +48,6 @@ const organizationSchema = JSON.stringify({
     aria-labelledby="library-heading"
   >
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-
-      <!-- Header -->
       <div class="mb-10">
         <p
           class="text-xs uppercase tracking-widest mb-2"
@@ -69,34 +67,16 @@ const organizationSchema = JSON.stringify({
         </p>
       </div>
 
-      <!-- Size category grid — sharp bordered, no emojis -->
+      <!-- Size categories — bordered grid, no emojis -->
       <div class="grid grid-cols-3 gap-px mb-8" style="background-color: var(--color-border);">
         {[
-          {
-            href: '/small-mazes',
-            label: 'Small',
-            sub: '20×20 grid',
-            time: '~1–2 min',
-            num: '01',
-          },
-          {
-            href: '/medium-mazes',
-            label: 'Medium',
-            sub: '40×40 grid',
-            time: '~5–10 min',
-            num: '02',
-          },
-          {
-            href: '/large-mazes',
-            label: 'Large',
-            sub: '60×60 grid',
-            time: '~10–20 min',
-            num: '03',
-          },
+          { href: '/small-mazes',  label: 'Small',  sub: '20×20 grid', time: '~1–2 min',   num: '01' },
+          { href: '/medium-mazes', label: 'Medium', sub: '40×40 grid', time: '~5–10 min',  num: '02' },
+          { href: '/large-mazes',  label: 'Large',  sub: '60×60 grid', time: '~10–20 min', num: '03' },
         ].map(({ href, label, sub, time, num }) => (
           <a
             href={href}
-            class="group flex flex-col p-5 sm:p-7 transition-colors duration-150"
+            class="group flex flex-col p-4 sm:p-7 transition-colors duration-150"
             style="background-color: var(--color-surface);"
             onmouseover="this.style.backgroundColor='var(--color-bg)';"
             onmouseout="this.style.backgroundColor='var(--color-surface)';"
@@ -106,11 +86,11 @@ const organizationSchema = JSON.stringify({
               style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
             >{num}</span>
             <span
-              class="font-display text-4xl sm:text-5xl uppercase mb-2 transition-colors"
+              class="font-display text-3xl sm:text-5xl uppercase mb-2"
               style="color: var(--color-charcoal);"
             >{label}</span>
             <span
-              class="text-xs mb-1"
+              class="text-xs mb-1 hidden sm:block"
               style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
             >{sub}</span>
             <span
@@ -119,13 +99,13 @@ const organizationSchema = JSON.stringify({
             >{time}</span>
             <span
               class="mt-4 text-xs uppercase tracking-widest transition-colors"
-              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-accent);"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
             >Explore →</span>
           </a>
         ))}
       </div>
 
-      <!-- Audience filter links — mono pill style -->
+      <!-- Audience links -->
       <div class="flex flex-wrap gap-2 text-xs">
         {[
           { href: '/printable-mazes',     label: 'Printable Mazes' },
@@ -137,7 +117,7 @@ const organizationSchema = JSON.stringify({
             href={href}
             class="inline-flex items-center px-3.5 py-1.5 uppercase tracking-widest transition-colors duration-150"
             style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);"
-            onmouseover="this.style.color='var(--color-accent)'; this.style.borderColor='var(--color-accent)';"
+            onmouseover="this.style.color='var(--color-charcoal)'; this.style.borderColor='var(--color-border-strong)';"
             onmouseout="this.style.color='var(--color-muted-strong)'; this.style.borderColor='var(--color-border)';"
           >{label}</a>
         ))}
@@ -145,55 +125,51 @@ const organizationSchema = JSON.stringify({
     </div>
   </section>
 
-  <!-- 3. Pick Your Challenge — sample mazes -->
+  <!-- 3. Pick Your Challenge -->
   <FeatureMazes />
 
-  <!-- Mid-page daily reminder — dark band -->
+  <!-- Mid-page daily reminder
+       Surface bg with accent top rule — NOT dark, breaks consecutive-dark issue with HowItWorks -->
   <div
-    class="relative overflow-hidden py-12"
-    style="background-color: var(--color-charcoal);"
+    class="relative py-12 sm:py-14"
+    style="background-color: var(--color-surface); border-top: 3px solid var(--color-accent); border-bottom: 1px solid var(--color-border);"
   >
-    <div class="absolute inset-0 architect-dot-grid opacity-30 pointer-events-none" aria-hidden="true"></div>
-    <div class="relative mx-auto max-w-xl px-4 text-center">
-      <p
-        class="text-xs uppercase tracking-widest mb-3"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-accent);"
-      >Daily Challenge</p>
+    <div class="mx-auto max-w-xl px-4 text-center">
       <p
         class="font-display text-4xl sm:text-5xl uppercase mb-6"
-        style="color: var(--color-bg);"
+        style="color: var(--color-charcoal);"
       >Still haven't tried today's maze?</p>
       <a
         href="/play/maze-of-the-day/"
-        class="btn-primary text-sm px-8 py-3.5 inline-flex items-center gap-2"
+        class="btn-primary text-sm px-8 py-3.5 inline-flex items-center gap-2 w-full sm:w-auto justify-center"
       >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M8 5v14l11-7z" />
         </svg>
         Play Today's Maze
       </a>
       <p
         class="mt-4 text-xs uppercase tracking-widest"
-        style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 40%, transparent);"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
       >Free · Same puzzle for everyone · No account needed</p>
     </div>
   </div>
 
-  <!-- 4. How It Works -->
+  <!-- 4. How It Works (dark section — now unambiguously distinct) -->
   <HowItWorks />
 
   <!-- 5. Three Ways to Enjoy -->
   <HowToPlay />
 
-  <!-- 6. Why this product — feature grid -->
+  <!-- 6. Why this product — editorial list layout, not bordered grid -->
   <section
-    class="py-16 sm:py-20"
-    style="background-color: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);"
+    class="py-16 sm:py-24"
+    style="background-color: var(--color-surface); border-top: 1px solid var(--color-border);"
     aria-labelledby="why-heading"
   >
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
-      <div class="mb-10">
+      <div class="mb-12">
         <p
           class="text-xs uppercase tracking-widest mb-2"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
@@ -205,7 +181,8 @@ const organizationSchema = JSON.stringify({
         >Built for<br />Puzzle Lovers</h2>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px" style="background-color: var(--color-border);">
+      <!-- Definition-list layout — no bordered boxes -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-8">
         {[
           {
             id: 'F1',
@@ -238,37 +215,36 @@ const organizationSchema = JSON.stringify({
             body: 'Maze puzzles build spatial reasoning, focus, and problem-solving skills. Great for kids developing motor skills and adults staying sharp.',
           },
         ].map(({ id, title, body }) => (
-          <div
-            class="p-6 sm:p-8"
-            style="background-color: var(--color-surface);"
-          >
+          <div class="flex gap-5">
             <span
-              class="block text-xs uppercase tracking-widest mb-4"
+              class="text-xs shrink-0 mt-1 w-6"
               style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
             >{id}</span>
-            <h3
-              class="text-base font-bold mb-2"
-              style="color: var(--color-charcoal);"
-            >{title}</h3>
-            <p
-              class="text-sm leading-relaxed"
-              style="color: var(--color-muted-strong);"
-            >{body}</p>
+            <div>
+              <h3
+                class="text-sm font-bold mb-1.5"
+                style="color: var(--color-charcoal);"
+              >{title}</h3>
+              <p
+                class="text-sm leading-relaxed"
+                style="color: var(--color-muted-strong);"
+              >{body}</p>
+            </div>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- 7. SEO content block — For Everyone -->
+  <!-- 7. SEO content — For Everyone -->
   <section
-    class="py-16 sm:py-20"
-    style="background-color: var(--color-bg);"
+    class="py-16 sm:py-24"
+    style="background-color: var(--color-bg); border-top: 1px solid var(--color-border);"
     aria-labelledby="about-mazes-heading"
   >
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
-      <div class="mb-10">
+      <div class="mb-12">
         <p
           class="text-xs uppercase tracking-widest mb-2"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
@@ -287,7 +263,8 @@ const organizationSchema = JSON.stringify({
         </p>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-px" style="background-color: var(--color-border);">
+      <!-- Two-column list with thin top rules — lighter than full bordered boxes -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-0">
         {[
           {
             id: 'P',
@@ -311,17 +288,19 @@ const organizationSchema = JSON.stringify({
           },
         ].map(({ id, title, body }) => (
           <div
-            class="p-6 sm:p-8"
-            style="background-color: var(--color-surface);"
+            class="py-7"
+            style="border-top: 1px solid var(--color-border);"
           >
-            <span
-              class="block text-xs uppercase tracking-widest mb-4"
-              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-            >{id}</span>
-            <h3
-              class="text-base font-bold mb-2"
-              style="color: var(--color-charcoal);"
-            >{title}</h3>
+            <div class="flex items-baseline gap-4 mb-2">
+              <span
+                class="text-xs"
+                style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+              >{id}</span>
+              <h3
+                class="text-base font-bold"
+                style="color: var(--color-charcoal);"
+              >{title}</h3>
+            </div>
             <p
               class="text-sm leading-relaxed"
               style="color: var(--color-muted-strong);"
@@ -332,22 +311,20 @@ const organizationSchema = JSON.stringify({
     </div>
   </section>
 
-  <!-- 8. Generator CTA — full-width dark -->
+  <!-- 8. Generator CTA -->
   <section
     class="relative overflow-hidden py-20 sm:py-28"
     style="background-color: var(--color-charcoal);"
     aria-labelledby="generator-cta-heading"
   >
     <div class="absolute inset-0 architect-dot-grid opacity-30 pointer-events-none" aria-hidden="true"></div>
-
-    <!-- Accent line top -->
     <div class="absolute top-0 left-0 right-0 h-0.5" style="background-color: var(--color-accent);"></div>
 
     <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl">
         <p
           class="text-xs uppercase tracking-widest mb-4"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-accent);"
+          style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 45%, transparent);"
         >Maze Generator</p>
         <h2
           id="generator-cta-heading"
@@ -356,16 +333,16 @@ const organizationSchema = JSON.stringify({
         >Build Your<br />Own Maze</h2>
         <p
           class="text-sm leading-relaxed mb-8 max-w-md"
-          style="color: color-mix(in srgb, var(--color-bg) 55%, transparent);"
+          style="color: color-mix(in srgb, var(--color-bg) 50%, transparent);"
         >
           Choose a size, generate instantly, then download as SVG or print directly from your browser.
           No account needed — free forever.
         </p>
         <a
           href="/maze-generator"
-          class="btn-primary text-sm px-8 py-4 inline-flex items-center gap-2.5"
+          class="btn-primary text-sm px-8 py-4 inline-flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-start"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
           </svg>
           Open Maze Generator
@@ -397,7 +374,7 @@ const organizationSchema = JSON.stringify({
         </div>
         <a
           href="/play/maze-of-the-day/"
-          class="btn-primary text-xs px-4 py-2 shrink-0"
+          class="btn-primary text-xs px-4 py-2.5 shrink-0"
           tabindex="-1"
           aria-hidden="true"
         >

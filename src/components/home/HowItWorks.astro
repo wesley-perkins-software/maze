@@ -6,16 +6,15 @@
   style="background-color: var(--color-charcoal);"
   aria-labelledby="how-it-works-heading"
 >
-  <!-- Dot grid on dark -->
-  <div class="absolute inset-0 architect-dot-grid opacity-40 pointer-events-none" aria-hidden="true"></div>
+  <div class="absolute inset-0 architect-dot-grid opacity-30 pointer-events-none" aria-hidden="true"></div>
 
   <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
-    <!-- Section header -->
+    <!-- Section header — label in muted-light, not accent -->
     <div class="mb-14">
       <p
         class="text-xs uppercase tracking-widest mb-3"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-accent);"
+        style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 45%, transparent);"
       >Get Started</p>
       <h2
         id="how-it-works-heading"
@@ -24,8 +23,8 @@
       >How It Works</h2>
     </div>
 
-    <!-- Steps — three columns with top-border number system -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-0 sm:divide-x" style="--tw-divide-opacity: 0.15; border-color: color-mix(in srgb, var(--color-bg) 20%, transparent);">
+    <!-- Steps -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-0">
       {[
         {
           num: '01',
@@ -43,11 +42,11 @@
           body: 'A new maze unlocks every day. Build a simple habit — ten minutes, a fresh challenge, no account needed.',
         },
       ].map(({ num, title, body }) => (
-        <div class="sm:px-8 first:pl-0 last:pr-0 pb-10 sm:pb-0">
-          <!-- Number in display font, accent color -->
+        <div class="sm:pr-10 last:pr-0 sm:border-r last:border-r-0" style="border-color: color-mix(in srgb, var(--color-bg) 12%, transparent);">
+          <!-- Step number — large, very low opacity, watermark-like -->
           <div
-            class="font-display text-7xl sm:text-8xl leading-none mb-4"
-            style="color: var(--color-accent);"
+            class="font-display text-8xl sm:text-9xl leading-none mb-4 select-none"
+            style="color: color-mix(in srgb, var(--color-bg) 18%, transparent);"
             aria-hidden="true"
           >{num}</div>
           <h3
@@ -56,29 +55,26 @@
           >{title}</h3>
           <p
             class="text-sm leading-relaxed"
-            style="color: color-mix(in srgb, var(--color-bg) 55%, transparent);"
+            style="color: color-mix(in srgb, var(--color-bg) 50%, transparent);"
           >{body}</p>
         </div>
       ))}
     </div>
 
-    <!-- CTA -->
+    <!-- CTA row -->
     <div
       class="mt-14 pt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8"
-      style="border-top: 1px solid color-mix(in srgb, var(--color-bg) 15%, transparent);"
+      style="border-top: 1px solid color-mix(in srgb, var(--color-bg) 12%, transparent);"
     >
-      <a
-        href="/maze-of-the-day/"
-        class="btn-primary text-sm px-7 py-3.5"
-      >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <a href="/maze-of-the-day/" class="btn-primary text-sm px-7 py-3.5 w-full sm:w-auto justify-center sm:justify-start">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M8 5v14l11-7z" />
         </svg>
         Start with Today's Maze
       </a>
       <span
         class="text-xs uppercase tracking-widest"
-        style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 40%, transparent);"
+        style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 35%, transparent);"
       >Free · No account · New maze daily</span>
     </div>
   </div>
