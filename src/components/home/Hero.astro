@@ -159,17 +159,15 @@ const heroSvg = renderThumbnail(heroMaze);
   .maze-fill-width :global(svg)  { width: 100%; height: auto;  display: block; }
   .maze-fill-square :global(svg) { width: 100%; height: 100%;  display: block; }
 
-  /* ── Mobile root: fills viewport below the h-14 (3.5rem) sticky header ─── */
   /*
-    display/flex-direction are set as Tailwind classes (flex flex-col) on the
-    element so they share the same specificity as md:hidden. If we set them
-    here, the attribute-scoped selector (.hero-mobile-root[data-astro-cid-*])
-    has higher specificity than md:hidden and the element stays visible on
-    desktop.
+    Mobile root: display/flex-direction live as Tailwind classes (flex flex-col)
+    so md:hidden can override display without specificity conflict.
+    No forced min-height — the natural height of poster + content is enough
+    on any real phone, and letting the next section peek slightly reads as
+    intentional scroll invitation rather than a dead zone.
   */
   .hero-mobile-root {
-    min-height: calc(100vh  - 3.5rem); /* legacy fallback */
-    min-height: calc(100svh - 3.5rem); /* excludes mobile browser chrome */
+    /* intentionally no min-height */
   }
 
   /* ── Mobile maze poster ─────────────────────────────────────────────────── */
@@ -218,17 +216,11 @@ const heroSvg = renderThumbnail(heroMaze);
     /* no text-decoration — it's a layout link, the heading is the content */
   }
 
-  /* ── Mobile content: grows to fill remaining viewport space ─────────────── */
+  /* ── Mobile content: natural height, no flex-grow ───────────────────────── */
   .hero-mobile-content {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 1.25rem 1rem 0;
-    /*
-      Don't pad-bottom here — the secondary link group provides its own
-      bottom clearance via min-height, and the flex container's growth
-      adds natural breathing room on taller screens.
-    */
+    padding: 1.25rem 1rem 1.75rem;
   }
 
   /* ── Daily status block ─────────────────────────────────────────────────── */
@@ -264,52 +256,51 @@ const heroSvg = renderThumbnail(heroMaze);
     box-shadow: none;
   }
 
-  /* ── Secondary links ────────────────────────────────────────────────────── */
+  /* ── Secondary links — compact bordered chips ───────────────────────────── */
+  /*
+    Small auto-width buttons with a thin 1px border. Clearly tappable due to
+    the visible border, clearly subordinate to the red CTA due to small size,
+    muted color, and no fill. Not the old full-width bordered buttons.
+  */
   .hero-sec-link {
+    display:         inline-flex;
+    align-items:     center;
     font-family:     'IBM Plex Mono', monospace;
-    font-size:       0.8125rem; /* 13px */
+    font-size:       0.75rem; /* 12px — intentionally smaller than the CTA */
     color:           var(--color-muted-strong);
     text-decoration: none;
     cursor:          pointer;
-    transition:      color 120ms ease;
+    border:          1px solid var(--color-border-strong);
+    padding:         0.4rem 0.875rem;
+    white-space:     nowrap;
+    transition:      color 120ms ease, border-color 120ms ease;
   }
   .hero-sec-link:hover {
-    color:                    var(--color-charcoal);
-    text-decoration:          underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset:    3px;
+    color:         var(--color-charcoal);
+    border-color:  var(--color-charcoal);
   }
   .hero-sec-link:focus-visible {
     outline:        2px solid var(--color-charcoal);
-    outline-offset: 3px;
-    border-radius:  2px;
+    outline-offset: 2px;
   }
 
-  /* Mobile: horizontal row, compact */
+  /* Mobile: side-by-side chips with 44px tap zone via padding trick */
   .hero-sec-group-mobile {
-    display:        flex;
-    flex-direction: row;
-    flex-wrap:      nowrap;
-    gap:            1.5rem;
-    padding-bottom: 0.75rem;
+    display:     flex;
+    flex-wrap:   wrap;
+    gap:         0.625rem;
+    padding-top: 0.125rem; /* optical alignment with status above */
   }
   .hero-sec-group-mobile .hero-sec-link {
-    display:      flex;
-    align-items:  center;
-    min-height:   44px;
-    padding:      0 2px;
-    white-space:  nowrap;
+    padding: 0.625rem 0.875rem; /* taller padding = 44px tap target naturally */
   }
 
-  /* Desktop: horizontal row */
+  /* Desktop: same chip style, compact horizontal row */
   .hero-sec-group-desktop {
     display:     flex;
     flex-direction: row;
-    gap:         1.5rem;
+    gap:         0.625rem;
     align-items: center;
-  }
-  .hero-sec-group-desktop .hero-sec-link {
-    padding: 0.25rem 0;
   }
 </style>
 
