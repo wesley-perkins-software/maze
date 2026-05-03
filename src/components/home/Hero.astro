@@ -285,17 +285,20 @@ const heroSvg = renderThumbnail(heroMaze);
     border-radius:  2px;
   }
 
-  /* Mobile: vertical, 44px tap targets */
+  /* Mobile: horizontal row, compact */
   .hero-sec-group-mobile {
     display:        flex;
-    flex-direction: column;
-    padding-bottom: 2rem; /* breathing room before next section */
+    flex-direction: row;
+    flex-wrap:      nowrap;
+    gap:            1.5rem;
+    padding-bottom: 0.75rem;
   }
   .hero-sec-group-mobile .hero-sec-link {
-    display:     flex;
-    align-items: center;
-    min-height:  44px;
-    padding:     0 2px;
+    display:      flex;
+    align-items:  center;
+    min-height:   44px;
+    padding:      0 2px;
+    white-space:  nowrap;
   }
 
   /* Desktop: horizontal row */
