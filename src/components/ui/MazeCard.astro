@@ -17,21 +17,31 @@ const title = generateMazeTitle(entry);
 
 <a
   href={`/mazes/${entry.slug}`}
-  class="card hover:shadow-md transition-all hover:-translate-y-0.5 group block"
+  class="card card-hover group block"
   aria-label={`Play or print: ${title}`}
 >
-  <!-- SVG Thumbnail — rendered at build time, zero JS -->
+  <!-- SVG Thumbnail — rendered at build time -->
   <div
-    class="bg-slate-50 flex items-center justify-center p-3 aspect-square"
+    class="flex items-center justify-center p-2 aspect-square overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
+    style="background-color: var(--color-bg);"
     set:html={svg}
   />
-  <div class="p-3 space-y-1.5">
-    <p class="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition-colors leading-tight">
+  <div
+    class="p-3 space-y-1.5"
+    style="border-top: 1px solid var(--color-border);"
+  >
+    <p
+      class="text-sm font-semibold leading-tight transition-colors duration-150"
+      style="color: var(--color-charcoal);"
+    >
       {title}
     </p>
     <div class="flex items-center justify-between gap-2">
       <DifficultyBadge difficulty={entry.difficulty} size="sm" />
-      <span class="text-xs text-slate-400">{entry.width}×{entry.height}</span>
+      <span
+        class="text-xs"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+      >{entry.width}×{entry.height}</span>
     </div>
   </div>
 </a>

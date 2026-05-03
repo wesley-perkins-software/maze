@@ -38,155 +38,197 @@ const organizationSchema = JSON.stringify({
   schemaLD={[websiteSchema, organizationSchema]}
 >
 
-  <!-- 1. Hero — merged with Maze of the Day -->
+  <!-- 1. Hero -->
   <Hero />
 
-  <!-- 2. Maze Library — SEO section -->
-  <section class="py-16 bg-white dark:bg-slate-950" aria-labelledby="library-heading">
+  <!-- 2. Maze Library — SEO + navigation section -->
+  <section
+    class="py-16 sm:py-20"
+    style="background-color: var(--color-bg);"
+    aria-labelledby="library-heading"
+  >
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-
-      <div class="text-center mb-10">
-        <span class="section-label">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-          </svg>
-          Maze Library
-        </span>
-        <h2 id="library-heading" class="text-3xl font-bold text-slate-900 dark:text-white mb-3">
-          420+ Free Printable Mazes
-        </h2>
-        <p class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+      <div class="mb-10">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >Free Maze Library</p>
+        <h2
+          id="library-heading"
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >420+ Free<br />Printable Mazes</h2>
+        <p
+          class="mt-4 text-sm leading-relaxed max-w-xl"
+          style="color: var(--color-muted-strong);"
+        >
           Hand-crafted mazes in three sizes — play online or print at home. Perfect for classrooms,
           homeschooling, and puzzle books.
         </p>
       </div>
 
-      <!-- Size categories -->
-      <div class="grid grid-cols-3 gap-4 mb-8">
-        <a href="/small-mazes" class="group relative flex flex-col items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-card-md hover:-translate-y-0.5 overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 to-transparent dark:from-emerald-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <span class="relative text-3xl mb-1" aria-hidden="true">🌱</span>
-          <span class="relative text-sm font-bold text-slate-800 dark:text-slate-100">Small Mazes</span>
-          <span class="relative text-xs text-slate-500 dark:text-slate-400">20×20 · ~1–2 min</span>
-          <span class="relative mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">Explore →</span>
-        </a>
-        <a href="/medium-mazes" class="group relative flex flex-col items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-card-md hover:-translate-y-0.5 overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent dark:from-blue-950/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <span class="relative text-3xl mb-1" aria-hidden="true">⚡</span>
-          <span class="relative text-sm font-bold text-slate-800 dark:text-slate-100">Medium Mazes</span>
-          <span class="relative text-xs text-slate-500 dark:text-slate-400">40×40 · ~5–10 min</span>
-          <span class="relative mt-1 text-xs font-medium text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">Explore →</span>
-        </a>
-        <a href="/large-mazes" class="group relative flex flex-col items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-card-md hover:-translate-y-0.5 overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent dark:from-orange-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <span class="relative text-3xl mb-1" aria-hidden="true">🔥</span>
-          <span class="relative text-sm font-bold text-slate-800 dark:text-slate-100">Large Mazes</span>
-          <span class="relative text-xs text-slate-500 dark:text-slate-400">60×60 · ~10–20 min</span>
-          <span class="relative mt-1 text-xs font-medium text-orange-600 dark:text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity">Explore →</span>
-        </a>
+      <!-- Size categories — bordered grid, no emojis -->
+      <div class="grid grid-cols-3 gap-px mb-8" style="background-color: var(--color-border);">
+        {[
+          { href: '/small-mazes',  label: 'Small',  sub: '20×20 grid', time: '~1–2 min',   num: '01' },
+          { href: '/medium-mazes', label: 'Medium', sub: '40×40 grid', time: '~5–10 min',  num: '02' },
+          { href: '/large-mazes',  label: 'Large',  sub: '60×60 grid', time: '~10–20 min', num: '03' },
+        ].map(({ href, label, sub, time, num }) => (
+          <a
+            href={href}
+            class="group flex flex-col p-4 sm:p-7 transition-colors duration-150"
+            style="background-color: var(--color-surface);"
+            onmouseover="this.style.backgroundColor='var(--color-bg)';"
+            onmouseout="this.style.backgroundColor='var(--color-surface)';"
+          >
+            <span
+              class="text-xs uppercase tracking-widest mb-4"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{num}</span>
+            <span
+              class="font-display text-3xl sm:text-5xl uppercase mb-2"
+              style="color: var(--color-charcoal);"
+            >{label}</span>
+            <span
+              class="text-xs mb-1 hidden sm:block"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{sub}</span>
+            <span
+              class="text-xs"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{time}</span>
+            <span
+              class="mt-4 text-xs uppercase tracking-widest transition-colors"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+            >Explore →</span>
+          </a>
+        ))}
       </div>
 
-      <!-- Audience + topic links -->
-      <div class="flex flex-wrap justify-center gap-2 text-sm">
-        <a href="/printable-mazes" class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:border-blue-500 dark:hover:text-blue-400 hover:shadow-sm transition-all duration-150">
-          🖨️ Free Printable Mazes
-        </a>
-        <a href="/mazes-for-kids" class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:border-blue-500 dark:hover:text-blue-400 hover:shadow-sm transition-all duration-150">
-          🧒 Mazes for Kids
-        </a>
-        <a href="/mazes-for-adults" class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:border-blue-500 dark:hover:text-blue-400 hover:shadow-sm transition-all duration-150">
-          🧩 Mazes for Adults
-        </a>
-        <a href="/mazes-for-classroom" class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:border-blue-500 dark:hover:text-blue-400 hover:shadow-sm transition-all duration-150">
-          🏫 Classroom Mazes
-        </a>
+      <!-- Audience links -->
+      <div class="flex flex-wrap gap-2 text-xs">
+        {[
+          { href: '/printable-mazes',     label: 'Printable Mazes' },
+          { href: '/mazes-for-kids',      label: 'Mazes for Kids' },
+          { href: '/mazes-for-adults',    label: 'Mazes for Adults' },
+          { href: '/mazes-for-classroom', label: 'Classroom Mazes' },
+        ].map(({ href, label }) => (
+          <a
+            href={href}
+            class="inline-flex items-center px-3.5 py-1.5 uppercase tracking-widest transition-colors duration-150"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);"
+            onmouseover="this.style.color='var(--color-charcoal)'; this.style.borderColor='var(--color-border-strong)';"
+            onmouseout="this.style.color='var(--color-muted-strong)'; this.style.borderColor='var(--color-border)';"
+          >{label}</a>
+        ))}
       </div>
     </div>
   </section>
 
-  <!-- 3. Pick Your Challenge — sample mazes with time estimates -->
+  <!-- 3. Pick Your Challenge -->
   <FeatureMazes />
 
-  <!-- Mid-page daily reminder -->
-  <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-violet-600">
-    <div class="absolute inset-0 maze-bg-pattern opacity-20" aria-hidden="true"></div>
-    <div class="relative mx-auto max-w-xl px-4 py-12 text-center">
-      <p class="text-lg font-bold text-white mb-1">
-        Still haven't tried today's maze?
-      </p>
-      <p class="text-sm text-blue-100/90 mb-6">
-        A new maze every day — come back tomorrow for a fresh challenge.
-      </p>
-      <a href="/play/maze-of-the-day/" class="inline-flex items-center gap-2 rounded-2xl bg-white px-7 py-3 text-sm font-bold text-blue-700 shadow-lg hover:bg-blue-50 hover:shadow-xl active:scale-[0.98] transition-all duration-150">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+  <!-- Mid-page daily reminder
+       Surface bg with accent top rule — NOT dark, breaks consecutive-dark issue with HowItWorks -->
+  <div
+    class="relative py-12 sm:py-14"
+    style="background-color: var(--color-surface); border-top: 3px solid var(--color-accent); border-bottom: 1px solid var(--color-border);"
+  >
+    <div class="mx-auto max-w-xl px-4 text-center">
+      <p
+        class="font-display text-4xl sm:text-5xl uppercase mb-6"
+        style="color: var(--color-charcoal);"
+      >Still haven't tried today's maze?</p>
+      <a
+        href="/play/maze-of-the-day/"
+        class="btn-primary text-sm px-8 py-3.5 inline-flex items-center gap-2 w-full sm:w-auto justify-center"
+      >
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M8 5v14l11-7z" />
         </svg>
         Play Today's Maze
       </a>
-      <p class="mt-3 text-xs text-blue-200">Free · Same puzzle for everyone · No account needed</p>
+      <p
+        class="mt-4 text-xs uppercase tracking-widest"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+      >Free · Same puzzle for everyone · No account needed</p>
     </div>
   </div>
 
-  <!-- 4. How It Works — retention loop -->
+  <!-- 4. How It Works (dark section — now unambiguously distinct) -->
   <HowItWorks />
 
   <!-- 5. Three Ways to Enjoy -->
   <HowToPlay />
 
-  <!-- 6. Why MazeThis -->
-  <section class="py-20 bg-slate-50 dark:bg-slate-900/50" aria-labelledby="why-heading">
+  <!-- 6. Why this product — editorial list layout, not bordered grid -->
+  <section
+    class="py-16 sm:py-24"
+    style="background-color: var(--color-surface); border-top: 1px solid var(--color-border);"
+    aria-labelledby="why-heading"
+  >
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <span class="section-label">Why MazeThis</span>
-        <h2 id="why-heading" class="text-3xl font-bold text-slate-900 dark:text-white mb-3">Built for Puzzle Lovers</h2>
-        <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-          Everything you need for free printable maze puzzles — print-ready, play-ready, and always free.
-        </p>
+
+      <div class="mb-12">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >Why MazeThis</p>
+        <h2
+          id="why-heading"
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >Built for<br />Puzzle Lovers</h2>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      <!-- Definition-list layout — no bordered boxes -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-8">
         {[
           {
-            icon: '🖨️',
+            id: 'F1',
             title: 'Print-Perfect Worksheets',
             body: 'Every maze prints cleanly with proper margins and an answer key on a separate page. Ideal for teachers, homeschoolers, and activity books.',
-            color: 'from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/20',
           },
           {
-            icon: '♾️',
+            id: 'F2',
             title: 'Unlimited Unique Mazes',
             body: 'Our maze generator creates a different puzzle every time — you\'ll never run out of fresh printable mazes to solve or share.',
-            color: 'from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/20',
           },
           {
-            icon: '🎯',
+            id: 'F3',
             title: 'Three Difficulty Sizes',
             body: 'Small (20×20), Medium (40×40), and Large (60×60) — each size is independently tuned for branching and loops, not just scaled up.',
-            color: 'from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/20',
           },
           {
-            icon: '📱',
+            id: 'F4',
             title: 'Play on Any Device',
             body: 'Arrow keys on desktop, swipe on mobile, or the on-screen D-pad. Maze puzzles that work wherever you are.',
-            color: 'from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/20',
           },
           {
-            icon: '🆓',
+            id: 'F5',
             title: 'Always Free',
             body: 'No account, no subscription, no watermarks. All 420+ mazes and the full maze generator are free to use forever.',
-            color: 'from-green-50 to-lime-50 dark:from-green-950/30 dark:to-lime-950/20',
           },
           {
-            icon: '🧠',
+            id: 'F6',
             title: 'Good for Your Brain',
             body: 'Maze puzzles build spatial reasoning, focus, and problem-solving skills. Great for kids developing motor skills and adults staying sharp.',
-            color: 'from-pink-50 to-rose-50 dark:from-pink-950/30 dark:to-rose-950/20',
           },
-        ].map(({ icon, title, body, color }) => (
-          <div class={`group flex gap-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br ${color} p-5 hover:shadow-card-md hover:-translate-y-0.5 transition-all duration-200`}>
-            <span class="text-2xl shrink-0 leading-none mt-0.5 transition-transform duration-200 group-hover:scale-110" aria-hidden="true">{icon}</span>
+        ].map(({ id, title, body }) => (
+          <div class="flex gap-5">
+            <span
+              class="text-xs shrink-0 mt-1 w-6"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{id}</span>
             <div>
-              <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-1.5">{title}</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{body}</p>
+              <h3
+                class="text-sm font-bold mb-1.5"
+                style="color: var(--color-charcoal);"
+              >{title}</h3>
+              <p
+                class="text-sm leading-relaxed"
+                style="color: var(--color-muted-strong);"
+              >{body}</p>
             </div>
           </div>
         ))}
@@ -194,48 +236,75 @@ const organizationSchema = JSON.stringify({
     </div>
   </section>
 
-  <!-- 7. SEO content block -->
-  <section class="py-16 bg-white dark:bg-slate-950" aria-labelledby="about-mazes-heading">
-    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <span class="section-label">For Everyone</span>
-        <h2 id="about-mazes-heading" class="text-3xl font-bold text-slate-900 dark:text-white mb-3">
-          Free Maze Puzzles for Everyone
-        </h2>
-        <p class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+  <!-- 7. SEO content — For Everyone -->
+  <section
+    class="py-16 sm:py-24"
+    style="background-color: var(--color-bg); border-top: 1px solid var(--color-border);"
+    aria-labelledby="about-mazes-heading"
+  >
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+      <div class="mb-12">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >For Everyone</p>
+        <h2
+          id="about-mazes-heading"
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >Free Maze Puzzles<br />for Everyone</h2>
+        <p
+          class="mt-4 text-sm leading-relaxed max-w-xl"
+          style="color: var(--color-muted-strong);"
+        >
           Maze puzzles are one of the most satisfying brain exercises around — and MazeThis makes
           them free, instant, and always fresh.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <!-- Two-column list with thin top rules — lighter than full bordered boxes -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-0">
         {[
           {
-            icon: '🖨️',
+            id: 'P',
             title: 'Print at Home',
             body: 'Every maze includes a clean, printer-friendly version with a separate answer key. Free to download — perfect for classroom worksheets, homeschool activities, and puzzle books. No watermarks, no sign-up.',
           },
           {
-            icon: '🖱️',
+            id: 'O',
             title: 'Play Mazes Online',
             body: 'Solve mazes directly in your browser. Arrow keys or WASD on desktop, swipe or D-pad on mobile. Your path is tracked so you never lose your place. Works on any device, no app needed.',
           },
           {
-            icon: '📅',
+            id: 'D',
             title: 'Daily Maze Challenge',
             body: 'A new 60×60 maze unlocks every day — the same puzzle for everyone worldwide. It\'s a simple daily habit: solve it, come back tomorrow, keep the streak. Takes about 10–15 minutes.',
           },
           {
-            icon: '👨‍👩‍👧',
+            id: 'K',
             title: 'For Kids, Adults & Classrooms',
             body: 'Quick 1-minute mazes for kids, 20-minute labyrinths for adults, and printable worksheets for teachers. The maze generator creates unlimited unique puzzles in any size — free forever.',
           },
-        ].map(({ icon, title, body }) => (
-          <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:shadow-card-md hover:-translate-y-0.5 transition-all duration-200">
-            <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-2.5">
-              <span aria-hidden="true" class="mr-1.5">{icon}</span>{title}
-            </h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{body}</p>
+        ].map(({ id, title, body }) => (
+          <div
+            class="py-7"
+            style="border-top: 1px solid var(--color-border);"
+          >
+            <div class="flex items-baseline gap-4 mb-2">
+              <span
+                class="text-xs"
+                style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+              >{id}</span>
+              <h3
+                class="text-base font-bold"
+                style="color: var(--color-charcoal);"
+              >{title}</h3>
+            </div>
+            <p
+              class="text-sm leading-relaxed"
+              style="color: var(--color-muted-strong);"
+            >{body}</p>
           </div>
         ))}
       </div>
@@ -243,44 +312,69 @@ const organizationSchema = JSON.stringify({
   </section>
 
   <!-- 8. Generator CTA -->
-  <section class="relative overflow-hidden py-20" aria-labelledby="generator-cta-heading">
-    <div class="absolute inset-0 bg-cta-gradient"></div>
-    <div class="absolute inset-0 maze-bg-pattern opacity-20" aria-hidden="true"></div>
-    <!-- Decorative orbs -->
-    <div class="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none" aria-hidden="true"></div>
-    <div class="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none" aria-hidden="true"></div>
-    <div class="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
-      <h2 id="generator-cta-heading" class="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight">
-        Build Your Own Maze
-      </h2>
-      <p class="text-blue-100 mb-8 max-w-xl mx-auto text-lg">
-        Choose a size, generate instantly, then download as SVG or print directly from your browser.
-        No account needed — free forever.
-      </p>
-      <a href="/maze-generator" class="group inline-flex items-center gap-2.5 rounded-2xl bg-white px-8 py-4 text-base font-bold text-blue-700 shadow-lg hover:bg-blue-50 hover:shadow-xl active:scale-[0.98] transition-all duration-200">
-        <svg class="w-5 h-5 transition-transform group-hover:rotate-90 duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-        </svg>
-        Open Maze Generator
-      </a>
+  <section
+    class="relative overflow-hidden py-20 sm:py-28"
+    style="background-color: var(--color-charcoal);"
+    aria-labelledby="generator-cta-heading"
+  >
+    <div class="absolute inset-0 architect-dot-grid opacity-30 pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute top-0 left-0 right-0 h-0.5" style="background-color: var(--color-accent);"></div>
+
+    <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl">
+        <p
+          class="text-xs uppercase tracking-widest mb-4"
+          style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 45%, transparent);"
+        >Maze Generator</p>
+        <h2
+          id="generator-cta-heading"
+          class="font-display text-6xl sm:text-7xl lg:text-8xl uppercase leading-none mb-6"
+          style="color: var(--color-bg);"
+        >Build Your<br />Own Maze</h2>
+        <p
+          class="text-sm leading-relaxed mb-8 max-w-md"
+          style="color: color-mix(in srgb, var(--color-bg) 50%, transparent);"
+        >
+          Choose a size, generate instantly, then download as SVG or print directly from your browser.
+          No account needed — free forever.
+        </p>
+        <a
+          href="/maze-generator"
+          class="btn-primary text-sm px-8 py-4 inline-flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-start"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+          </svg>
+          Open Maze Generator
+        </a>
+      </div>
     </div>
   </section>
 
-  <!-- Sticky CTA — mobile only, slides up when hero CTA scrolls out of view -->
+  <!-- Sticky CTA — mobile only -->
   <div
     id="sticky-cta"
     class="fixed bottom-0 left-0 right-0 z-50 sm:hidden translate-y-full transition-transform duration-300 ease-in-out"
     aria-hidden="true"
   >
-    <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-xl px-4 py-3">
+    <div
+      class="px-4 py-3 backdrop-blur-md"
+      style="background-color: color-mix(in srgb, var(--color-bg) 95%, transparent); border-top: 1px solid var(--color-border);"
+    >
       <div class="mx-auto max-w-xl flex items-center justify-between gap-4">
         <div class="min-w-0">
-          <p class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">Today's Maze Challenge</p>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Same puzzle for everyone · Free to play</p>
+          <p
+            class="text-sm font-bold truncate"
+            style="color: var(--color-charcoal);"
+          >Today's Maze Challenge</p>
+          <p
+            class="text-xs"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+          >Same puzzle for everyone · Free</p>
         </div>
         <a
           href="/play/maze-of-the-day/"
-          class="btn-primary text-sm px-4 py-2 shrink-0"
+          class="btn-primary text-xs px-4 py-2.5 shrink-0"
           tabindex="-1"
           aria-hidden="true"
         >
