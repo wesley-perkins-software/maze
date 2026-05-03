@@ -17,21 +17,33 @@ const heroSvg = renderThumbnail(heroMaze);
   <div class="absolute inset-0 architect-dot-grid pointer-events-none" aria-hidden="true"></div>
 
   <!-- ─── MOBILE: poster overlay layout ─────────────────────────────────── -->
-  <div class="md:hidden">
+  <!--
+    min-height fills the viewport below the sticky header (h-14 = 3.5rem).
+    flex-col lets the content area grow to fill remaining space, so the
+    next section never awkwardly peeks above the fold.
+  -->
+  <div class="hero-mobile-root md:hidden">
+
     <!-- Full-width maze with headline overlaid -->
-    <div class="relative overflow-hidden" style="background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);">
-      <!-- Maze at reduced opacity acts as the visual hero -->
+    <div class="hero-maze-poster">
+      <!-- Maze at reduced opacity — crisp but subordinate to the headline -->
       <div class="maze-fill-width" style="opacity: 0.38;" set:html={heroSvg} />
-      <!-- Cream radial overlay behind headline for legibility -->
-      <div
-        class="absolute inset-0"
-        style="background: radial-gradient(ellipse at center, rgba(246,245,240,0.84) 10%, rgba(246,245,240,0.64) 42%, rgba(246,245,240,0.22) 70%, transparent 100%);"
-        aria-hidden="true"
-      ></div>
-      <!-- Headline centered over maze -->
+
+      <!--
+        Scrim: elliptical cream shape, taller at the vertical center where
+        the headline lives. Strong enough to feel "printed on" without
+        washing out the outer maze.
+      -->
+      <div class="hero-scrim" aria-hidden="true"></div>
+
+      <!--
+        Headline: absolutely fills the poster, flexed to center, but
+        padding-bottom shifts the visual center ~10% upward for better
+        composition and breathing room toward the bottom edge.
+      -->
       <a
         href="/play/maze-of-the-day/"
-        class="absolute inset-0 flex items-center justify-center p-5"
+        class="hero-headline-link"
         aria-label="Play today's maze"
         tabindex="-1"
       >
@@ -46,27 +58,34 @@ const heroSvg = renderThumbnail(heroMaze);
     </div>
 
     <!-- Below-poster: daily state + CTA + secondary links -->
-    <div class="px-4 pt-5 pb-8 relative">
-      <div id="hero-daily-status-mobile" class="mb-5">
-        <p class="font-semibold text-base" style="color: var(--color-charcoal);">
-          <span style="color: var(--color-accent);">●</span> Ready now — Today's maze is waiting.
+    <div class="hero-mobile-content">
+
+      <!-- Daily state — two lines, prominent but not larger than the CTA -->
+      <div id="hero-daily-status-mobile" class="hero-status-block">
+        <p class="hero-status-line1">
+          <span style="color: var(--color-accent);">●</span>&thinsp;Ready now
         </p>
+        <p class="hero-status-line2">Today's maze is waiting.</p>
       </div>
+
+      <!-- Primary CTA — full-width, subtle tactile depth -->
       <a
         id="hero-play-cta"
         href="/play/maze-of-the-day/"
-        class="btn-primary w-full justify-center text-sm px-7 py-4 mb-4 inline-flex items-center gap-2"
+        class="hero-cta-primary btn-primary w-full justify-center text-sm px-7 py-4 inline-flex items-center gap-2"
       >
         <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M8 5v14l11-7z" />
         </svg>
         Play Today's Maze
       </a>
-      <p class="text-center text-sm" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);">
-        <a href="/maze-library" class="hover:underline">Browse library</a>
-        <span class="mx-1.5" aria-hidden="true">·</span>
-        <a href="/maze-generator" class="hover:underline">Create your own</a>
-      </p>
+
+      <!-- Secondary links — clearly links, clearly secondary, 44px tap targets -->
+      <div class="hero-sec-group-mobile">
+        <a href="/maze-library" class="hero-sec-link">Browse Library →</a>
+        <a href="/maze-generator" class="hero-sec-link">Create Your Own →</a>
+      </div>
+
     </div>
   </div>
 
@@ -85,16 +104,17 @@ const heroSvg = renderThumbnail(heroMaze);
           </h1>
 
           <!-- Daily state — prominent, between headline and CTA -->
-          <div id="hero-daily-status-desktop" class="mb-6">
-            <p class="font-semibold text-base" style="color: var(--color-charcoal);">
-              <span style="color: var(--color-accent);">●</span> Ready now — Today's maze is waiting.
+          <div id="hero-daily-status-desktop" class="hero-status-block mb-6">
+            <p class="hero-status-line1">
+              <span style="color: var(--color-accent);">●</span>&thinsp;Ready now
             </p>
+            <p class="hero-status-line2">Today's maze is waiting.</p>
           </div>
 
           <!-- Primary CTA -->
           <a
             href="/play/maze-of-the-day/"
-            class="btn-primary text-sm px-8 py-4 mb-4 inline-flex items-center gap-2"
+            class="hero-cta-primary btn-primary text-sm px-8 py-4 mb-5 inline-flex items-center gap-2"
           >
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
@@ -102,18 +122,17 @@ const heroSvg = renderThumbnail(heroMaze);
             Play Today's Maze
           </a>
 
-          <!-- Secondary links — quiet inline text -->
-          <p class="text-sm" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);">
-            <a href="/maze-library" class="hover:underline">Browse library</a>
-            <span class="mx-1.5" aria-hidden="true">·</span>
-            <a href="/maze-generator" class="hover:underline">Create your own</a>
-          </p>
+          <!-- Secondary links — horizontal row on desktop -->
+          <div class="hero-sec-group-desktop">
+            <a href="/maze-library" class="hero-sec-link">Browse Library →</a>
+            <a href="/maze-generator" class="hero-sec-link">Create Your Own →</a>
+          </div>
         </div>
 
-        <!-- Right: maze preview with corner frame -->
+        <!-- Right: maze preview with corner-bracket frame -->
         <div class="pt-1">
           <div class="relative">
-            <!-- Corner bracket frame -->
+            <!-- Corner brackets -->
             <div class="absolute -top-1.5 -left-1.5 w-5 h-5 border-t-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
             <div class="absolute -top-1.5 -right-1.5 w-5 h-5 border-t-2 border-r-2 z-10" style="border-color: var(--color-charcoal);"></div>
             <div class="absolute -bottom-1.5 -left-1.5 w-5 h-5 border-b-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
@@ -136,17 +155,153 @@ const heroSvg = renderThumbnail(heroMaze);
 </section>
 
 <style>
-  /* Mobile poster: SVG fills full screen width */
-  .maze-fill-width :global(svg) {
-    width: 100%;
-    height: auto;
-    display: block;
+  /* ── SVG scaling ────────────────────────────────────────────────────────── */
+  .maze-fill-width :global(svg)  { width: 100%; height: auto;  display: block; }
+  .maze-fill-square :global(svg) { width: 100%; height: 100%;  display: block; }
+
+  /* ── Mobile root: fills viewport below the h-14 (3.5rem) sticky header ─── */
+  .hero-mobile-root {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh  - 3.5rem); /* legacy fallback */
+    min-height: calc(100svh - 3.5rem); /* small viewport height — excludes mobile browser chrome */
   }
-  /* Desktop: SVG fills the square aspect-ratio container */
-  .maze-fill-square :global(svg) {
-    width: 100%;
-    height: 100%;
-    display: block;
+
+  /* ── Mobile maze poster ─────────────────────────────────────────────────── */
+  .hero-maze-poster {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: var(--color-surface);
+    /* Thin print-rule frame above and below the maze image */
+    border-top:    1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border-strong);
+  }
+
+  /*
+    Scrim: cream ellipse concentrated around the headline area.
+    Positioned at 44% vertical (slightly above center) to match
+    the headline's upward shift.
+    Opacity values chosen to feel "printed on" — strong center,
+    maze visible at the edges.
+  */
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 90% 70% at 50% 44%,
+      rgba(246, 245, 240, 0.93)  0%,
+      rgba(246, 245, 240, 0.80) 22%,
+      rgba(246, 245, 240, 0.50) 45%,
+      rgba(246, 245, 240, 0.16) 65%,
+      transparent                84%
+    );
+  }
+
+  /*
+    Headline overlay: fills the poster, flexed to center.
+    padding-bottom of 14% shifts the visual center ~7% upward —
+    better negative space at the bottom, avoids feeling cramped at top.
+  */
+  .hero-headline-link {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 14%;
+    /* no text-decoration — it's a layout link, the heading is the content */
+  }
+
+  /* ── Mobile content: grows to fill remaining viewport space ─────────────── */
+  .hero-mobile-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem 1rem 0;
+    /*
+      Don't pad-bottom here — the secondary link group provides its own
+      bottom clearance via min-height, and the flex container's growth
+      adds natural breathing room on taller screens.
+    */
+  }
+
+  /* ── Daily status block ─────────────────────────────────────────────────── */
+  .hero-status-block {
+    margin-bottom: 1.1rem;
+  }
+  .hero-status-line1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size:   0.9375rem; /* 15px */
+    font-weight: 600;
+    color:       var(--color-charcoal);
+    line-height: 1.3;
+  }
+  .hero-status-line2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size:   0.8125rem; /* 13px */
+    color:       var(--color-muted-strong);
+    margin-top:  0.2rem;
+    line-height: 1.4;
+  }
+
+  /* ── Primary CTA: subtle tactile bottom-edge depth ──────────────────────── */
+  /*
+    box-shadow creates a 2px dark bottom ledge — like a rubber stamp.
+    Active state "presses" it down by 2px and removes the shadow.
+  */
+  .hero-cta-primary {
+    box-shadow: 0 2px 0 0 var(--color-accent-dark);
+    margin-bottom: 0.75rem;
+  }
+  .hero-cta-primary:active {
+    transform:  translateY(2px);
+    box-shadow: none;
+  }
+
+  /* ── Secondary links ────────────────────────────────────────────────────── */
+  .hero-sec-link {
+    font-family:     'IBM Plex Mono', monospace;
+    font-size:       0.8125rem; /* 13px */
+    color:           var(--color-muted-strong);
+    text-decoration: none;
+    cursor:          pointer;
+    transition:      color 120ms ease;
+  }
+  .hero-sec-link:hover {
+    color:                    var(--color-charcoal);
+    text-decoration:          underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset:    3px;
+  }
+  .hero-sec-link:focus-visible {
+    outline:        2px solid var(--color-charcoal);
+    outline-offset: 3px;
+    border-radius:  2px;
+  }
+
+  /* Mobile: vertical, 44px tap targets */
+  .hero-sec-group-mobile {
+    display:        flex;
+    flex-direction: column;
+    padding-bottom: 2rem; /* breathing room before next section */
+  }
+  .hero-sec-group-mobile .hero-sec-link {
+    display:     flex;
+    align-items: center;
+    min-height:  44px;
+    padding:     0 2px;
+  }
+
+  /* Desktop: horizontal row */
+  .hero-sec-group-desktop {
+    display:     flex;
+    flex-direction: row;
+    gap:         1.5rem;
+    align-items: center;
+  }
+  .hero-sec-group-desktop .hero-sec-link {
+    padding: 0.25rem 0;
   }
 </style>
 
@@ -170,28 +325,38 @@ const heroSvg = renderThumbnail(heroMaze);
     return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
+  /*
+    Renders two-line status HTML with fully inline styles so it works
+    correctly whether rendered server-side or injected via innerHTML.
+    Classes on the container are Astro-scoped; inner content uses inline styles.
+  */
   const renderStatus = (done: boolean): string => {
-    const charcoal = 'var(--color-charcoal)';
-    const accent = 'var(--color-accent)';
-    const muted = 'var(--color-muted-strong)';
+    const monoBase = `font-family:'IBM Plex Mono',monospace;`;
+    const line1Style = `${monoBase}font-size:0.9375rem;font-weight:600;color:var(--color-charcoal);line-height:1.3;`;
+    const line2Style = `${monoBase}font-size:0.8125rem;color:var(--color-muted-strong);margin-top:0.2rem;line-height:1.4;`;
+    const accentStyle = `color:var(--color-accent);`;
+
     if (!done) {
-      return `<p class="font-semibold text-base" style="color:${charcoal};"><span style="color:${accent};">●</span> Ready now — Today's maze is waiting.</p>`;
+      return `<p style="${line1Style}"><span style="${accentStyle}">●</span>&thinsp;Ready now</p>`
+           + `<p style="${line2Style}">Today's maze is waiting.</p>`;
     }
     const cd = formatCountdown(msUntilMidnight());
-    return `<p class="font-semibold text-base" style="color:${charcoal};">✓ You solved today's maze</p><p class="text-sm mt-1" style="font-family:'IBM Plex Mono',monospace;color:${muted};">Next maze in <span style="font-variant-numeric:tabular-nums;">${cd}</span></p>`;
+    return `<p style="${line1Style}"><span style="${accentStyle}">✓</span>&thinsp;Solved today</p>`
+         + `<p style="${line2Style}">Next maze in <span style="font-variant-numeric:tabular-nums;">${cd}</span></p>`;
   };
 
   const desktopEl = document.getElementById('hero-daily-status-desktop');
-  const mobileEl = document.getElementById('hero-daily-status-mobile');
+  const mobileEl  = document.getElementById('hero-daily-status-mobile');
 
   let prevDone: boolean | null = null;
 
   const updateStatus = (): void => {
     const done = localStorage.getItem(todayKey()) === 'true';
+    // Always re-render when completed (countdown ticks); only on transition when not.
     if (done !== prevDone || done) {
       const html = renderStatus(done);
       if (desktopEl) desktopEl.innerHTML = html;
-      if (mobileEl) mobileEl.innerHTML = html;
+      if (mobileEl)  mobileEl.innerHTML  = html;
       prevDone = done;
     }
   };
