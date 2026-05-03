@@ -19,18 +19,18 @@ const heroSvg = renderThumbnail(heroMaze);
   <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16 lg:py-16">
     <div class="grid grid-cols-1 md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_410px] gap-7 lg:gap-14 items-start">
       <div>
-        <h1 id="hero-heading" class="font-display uppercase leading-[0.88] mb-4 sm:mb-6" style="font-size: clamp(3.4rem, 12.5vw, 8.5rem); color: var(--color-charcoal);">
-          Can You<br />
-          Solve<br />
-          <span style="color: var(--color-accent);">Today's</span><br />
-          Maze?
+        <h1 id="hero-heading" class="font-display uppercase leading-[0.88] mb-4 sm:mb-6 text-center md:text-left" style="font-size: clamp(3.1rem, 12vw, 8.5rem); color: var(--color-charcoal);">
+          <span class="md:hidden">Can You Solve<br /><span style="color: var(--color-accent);">Today's</span> Maze?</span>
+          <span class="hidden md:inline">Can You<br />Solve<br /><span style="color: var(--color-accent);">Today's</span><br />Maze?</span>
         </h1>
 
-        <p class="text-sm sm:text-base leading-relaxed mb-4 max-w-sm" style="color: var(--color-muted-strong);">
-          A new maze every day.
-        </p>
+        <div class="md:hidden mb-3">
+          <a href="/play/maze-of-the-day/" class="block max-w-[260px] mx-auto overflow-hidden" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface);" aria-label="Play today's maze" tabindex="-1">
+            <div set:html={heroSvg} />
+          </a>
+        </div>
 
-        <div class="flex flex-col sm:flex-row gap-2.5 mb-4 sm:mb-5">
+        <div class="flex flex-col sm:flex-row gap-2.5 mb-2 sm:mb-5">
           <a id="hero-play-cta" href="/play/maze-of-the-day/" class="btn-primary justify-center sm:justify-start text-sm px-7 py-3.5 font-semibold w-full sm:w-auto">
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
             Play Today's Maze
@@ -40,13 +40,10 @@ const heroSvg = renderThumbnail(heroMaze);
           </a>
         </div>
 
-        <div class="md:hidden">
-          <a href="/play/maze-of-the-day/" class="block max-w-[230px] overflow-hidden" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface);" aria-label="Play today's maze" tabindex="-1">
-            <div set:html={heroSvg} />
-          </a>
-        </div>
+        <p class="md:hidden text-xs text-center" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); letter-spacing: 0.01em;">
+          New maze daily • free • no signup
+        </p>
       </div>
-
       <div class="hidden md:block pt-2">
         <div class="mb-2" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); font-size: 0.65rem;">
           <span class="uppercase tracking-widest">Maze of the Day</span>
