@@ -16,94 +16,188 @@ const heroSvg = renderThumbnail(heroMaze);
 >
   <div class="absolute inset-0 architect-dot-grid pointer-events-none" aria-hidden="true"></div>
 
-  <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-6 pb-12 sm:pt-9 sm:pb-14 lg:py-14">
-    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] lg:grid-cols-[1fr_490px] gap-7 lg:gap-14 items-start">
-      <div>
-        <h1 id="hero-heading" class="font-display uppercase leading-[0.88] mb-4 sm:mb-6 text-center md:text-left" style="font-size: clamp(3.1rem, 12vw, 8.5rem); color: var(--color-charcoal);">
-          <span class="md:hidden">Can You Solve<br /><span style="color: var(--color-accent);">Today's</span> Maze?</span>
-          <span class="hidden md:inline">Can You<br />Solve<br /><span style="color: var(--color-accent);">Today's</span><br />Maze?</span>
+  <!-- ─── MOBILE: poster overlay layout ─────────────────────────────────── -->
+  <div class="md:hidden">
+    <!-- Full-width maze with headline overlaid -->
+    <div class="relative overflow-hidden" style="background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);">
+      <!-- Maze at reduced opacity acts as the visual hero -->
+      <div class="maze-fill-width" style="opacity: 0.38;" set:html={heroSvg} />
+      <!-- Cream radial overlay behind headline for legibility -->
+      <div
+        class="absolute inset-0"
+        style="background: radial-gradient(ellipse at center, rgba(246,245,240,0.84) 10%, rgba(246,245,240,0.64) 42%, rgba(246,245,240,0.22) 70%, transparent 100%);"
+        aria-hidden="true"
+      ></div>
+      <!-- Headline centered over maze -->
+      <a
+        href="/play/maze-of-the-day/"
+        class="absolute inset-0 flex items-center justify-center p-5"
+        aria-label="Play today's maze"
+        tabindex="-1"
+      >
+        <h1
+          id="hero-heading"
+          class="font-display uppercase text-center"
+          style="font-size: clamp(2.9rem, 14.5vw, 5rem); line-height: 0.86; color: var(--color-charcoal); pointer-events: none;"
+        >
+          CAN YOU<br />SOLVE<br /><span style="color: var(--color-accent);">TODAY'S</span><br />MAZE?
         </h1>
+      </a>
+    </div>
 
-        <div class="md:hidden mb-2">
-          <a href="/play/maze-of-the-day/" class="block max-w-[260px] mx-auto overflow-hidden active:scale-[0.99] transition-transform duration-150" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface);" aria-label="Play today's maze" tabindex="-1">
-            <div set:html={heroSvg} />
+    <!-- Below-poster: daily state + CTA + secondary links -->
+    <div class="px-4 pt-5 pb-8 relative">
+      <div id="hero-daily-status-mobile" class="mb-5">
+        <p class="font-semibold text-base" style="color: var(--color-charcoal);">
+          <span style="color: var(--color-accent);">●</span> Ready now — Today's maze is waiting.
+        </p>
+      </div>
+      <a
+        id="hero-play-cta"
+        href="/play/maze-of-the-day/"
+        class="btn-primary w-full justify-center text-sm px-7 py-4 mb-4 inline-flex items-center gap-2"
+      >
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+        Play Today's Maze
+      </a>
+      <p class="text-center text-sm" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);">
+        <a href="/maze-library" class="hover:underline">Browse library</a>
+        <span class="mx-1.5" aria-hidden="true">·</span>
+        <a href="/maze-generator" class="hover:underline">Create your own</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ─── DESKTOP: split editorial layout ───────────────────────────────── -->
+  <div class="hidden md:block relative">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-8 pb-12 lg:pt-10 lg:pb-14">
+      <div class="grid grid-cols-[1fr_500px] lg:grid-cols-[1fr_540px] gap-10 lg:gap-14 items-start">
+
+        <!-- Left: headline + daily state + CTA + secondary links -->
+        <div class="flex flex-col items-start">
+          <h1
+            class="font-display uppercase mb-5"
+            style="font-size: clamp(3.5rem, 9vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
+          >
+            Can You<br />Solve<br /><span style="color: var(--color-accent);">Today's</span><br />Maze?
+          </h1>
+
+          <!-- Daily state — prominent, between headline and CTA -->
+          <div id="hero-daily-status-desktop" class="mb-6">
+            <p class="font-semibold text-base" style="color: var(--color-charcoal);">
+              <span style="color: var(--color-accent);">●</span> Ready now — Today's maze is waiting.
+            </p>
+          </div>
+
+          <!-- Primary CTA -->
+          <a
+            href="/play/maze-of-the-day/"
+            class="btn-primary text-sm px-8 py-4 mb-4 inline-flex items-center gap-2"
+          >
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            Play Today's Maze
           </a>
-          <p id="hero-daily-status-mobile" class="text-sm text-center mt-2" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);">
-            ● Ready now — Today's maze is waiting.
+
+          <!-- Secondary links — quiet inline text -->
+          <p class="text-sm" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);">
+            <a href="/maze-library" class="hover:underline">Browse library</a>
+            <span class="mx-1.5" aria-hidden="true">·</span>
+            <a href="/maze-generator" class="hover:underline">Create your own</a>
           </p>
         </div>
 
-        <div class="flex flex-col gap-2.5 mb-2 sm:mb-4">
-          <a id="hero-play-cta" href="/play/maze-of-the-day/" class="btn-primary justify-center sm:justify-start text-sm px-7 py-3.5 font-semibold w-full sm:w-auto">
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-            Play Today's Maze
-          </a>
-          <div class="flex flex-col sm:flex-row gap-2.5">
-            <a href="/maze-library" class="justify-center sm:justify-start text-sm px-5 py-2.5 w-full sm:w-auto inline-flex items-center" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);">
-              Browse Maze Library
-            </a>
-            <a href="/maze-generator" class="justify-center sm:justify-start text-sm px-5 py-2.5 w-full sm:w-auto inline-flex items-center" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);">
-              Create Your Own Maze
+        <!-- Right: maze preview with corner frame -->
+        <div class="pt-1">
+          <div class="relative">
+            <!-- Corner bracket frame -->
+            <div class="absolute -top-1.5 -left-1.5 w-5 h-5 border-t-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
+            <div class="absolute -top-1.5 -right-1.5 w-5 h-5 border-t-2 border-r-2 z-10" style="border-color: var(--color-charcoal);"></div>
+            <div class="absolute -bottom-1.5 -left-1.5 w-5 h-5 border-b-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
+            <div class="absolute -bottom-1.5 -right-1.5 w-5 h-5 border-b-2 border-r-2 z-10" style="border-color: var(--color-charcoal);"></div>
+            <a
+              href="/play/maze-of-the-day/"
+              class="block w-full group overflow-hidden cursor-pointer"
+              style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface); aspect-ratio: 1;"
+              aria-label="Play today's maze"
+              tabindex="-1"
+            >
+              <div class="maze-fill-square w-full h-full transition-transform duration-500 group-hover:scale-[1.02]" set:html={heroSvg} />
             </a>
           </div>
         </div>
-      </div>
-      <div class="hidden md:block pt-1">
-        <div class="relative">
-          <div class="absolute -top-1.5 -left-1.5 w-5 h-5 border-t-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
-          <div class="absolute -top-1.5 -right-1.5 w-5 h-5 border-t-2 border-r-2 z-10" style="border-color: var(--color-charcoal);"></div>
-          <div class="absolute -bottom-1.5 -left-1.5 w-5 h-5 border-b-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
-          <div class="absolute -bottom-1.5 -right-1.5 w-5 h-5 border-b-2 border-r-2 z-10" style="border-color: var(--color-charcoal);"></div>
-          <a href="/play/maze-of-the-day/" class="block w-full group overflow-hidden cursor-pointer" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface); aspect-ratio: 1;" aria-label="Play today's maze" tabindex="-1">
-            <div class="w-full h-full transition-transform duration-500 group-hover:scale-[1.02]" set:html={heroSvg} />
-          </a>
-        </div>
-        <p id="hero-daily-status-desktop" class="hidden md:block text-sm mt-3" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);">
-          ● Ready now — Today's maze is waiting.
-        </p>
+
       </div>
     </div>
   </div>
 </section>
 
-<script>
-  const statusDesktopEl = document.getElementById('hero-daily-status-desktop');
-  const statusMobileEl = document.getElementById('hero-daily-status-mobile');
+<style>
+  /* Mobile poster: SVG fills full screen width */
+  .maze-fill-width :global(svg) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  /* Desktop: SVG fills the square aspect-ratio container */
+  .maze-fill-square :global(svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
 
-  const todayKey = () => {
+<script>
+  const todayKey = (): string => {
     const n = new Date();
-    const yyyy = n.getUTCFullYear();
-    const mm = String(n.getUTCMonth() + 1).padStart(2, '0');
-    const dd = String(n.getUTCDate()).padStart(2, '0');
-    return `daily_completed_${yyyy}-${mm}-${dd}`;
+    return `daily_completed_${n.getUTCFullYear()}-${String(n.getUTCMonth() + 1).padStart(2, '0')}-${String(n.getUTCDate()).padStart(2, '0')}`;
   };
 
-  const msUntilMidnightUTC = () => {
+  const msUntilMidnight = (): number => {
     const now = new Date();
     const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
     return midnight.getTime() - now.getTime();
   };
 
-  const formatCountdown = (ms) => {
-    const s = Math.max(0, Math.floor(ms / 1000));
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    return `${h}h ${String(m).padStart(2, '0')}m`;
+  const formatCountdown = (ms: number): string => {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
-  let timer;
-  const updateStatus = () => {
-    const done = localStorage.getItem(todayKey()) === 'true';
-    const next = done
-      ? `✓ Completed — Next maze in ${formatCountdown(msUntilMidnightUTC())}`
-      : `● Ready now — Today's maze is waiting.`;
+  const renderStatus = (done: boolean): string => {
+    const charcoal = 'var(--color-charcoal)';
+    const accent = 'var(--color-accent)';
+    const muted = 'var(--color-muted-strong)';
+    if (!done) {
+      return `<p class="font-semibold text-base" style="color:${charcoal};"><span style="color:${accent};">●</span> Ready now — Today's maze is waiting.</p>`;
+    }
+    const cd = formatCountdown(msUntilMidnight());
+    return `<p class="font-semibold text-base" style="color:${charcoal};">✓ You solved today's maze</p><p class="text-sm mt-1" style="font-family:'IBM Plex Mono',monospace;color:${muted};">Next maze in <span style="font-variant-numeric:tabular-nums;">${cd}</span></p>`;
+  };
 
-    if (statusDesktopEl) statusDesktopEl.textContent = next;
-    if (statusMobileEl) statusMobileEl.textContent = next;
+  const desktopEl = document.getElementById('hero-daily-status-desktop');
+  const mobileEl = document.getElementById('hero-daily-status-mobile');
+
+  let prevDone: boolean | null = null;
+
+  const updateStatus = (): void => {
+    const done = localStorage.getItem(todayKey()) === 'true';
+    if (done !== prevDone || done) {
+      const html = renderStatus(done);
+      if (desktopEl) desktopEl.innerHTML = html;
+      if (mobileEl) mobileEl.innerHTML = html;
+      prevDone = done;
+    }
   };
 
   updateStatus();
-  timer = window.setInterval(updateStatus, 60000);
+  const timer = window.setInterval(updateStatus, 1000);
   window.addEventListener('storage', updateStatus);
   window.addEventListener('beforeunload', () => {
     clearInterval(timer);
