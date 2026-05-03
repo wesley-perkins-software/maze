@@ -4,39 +4,73 @@ import CategoryNav from './CategoryNav.astro';
 const pathname = Astro.url.pathname;
 ---
 
-<header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 shadow-sm">
+<header
+  class="sticky top-0 z-40 backdrop-blur-md"
+  style="background-color: color-mix(in srgb, var(--color-bg) 92%, transparent); border-bottom: 1px solid var(--color-border);"
+>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-14 items-center justify-between gap-4">
-      <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 font-bold text-lg text-blue-600 shrink-0 group" aria-label="MazeThis home">
-        <span class="transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="28" height="28" rx="7" fill="url(#logo-grad)"/>
-            <path d="M4 4h7v4H4zM17 4h7v7h-4V8h-3zM4 12h3v4H4zM11 8h3v8h-3zM4 20h7v4H4zM14 16h7v4h-4v4h-3z" fill="white"/>
-            <defs>
-              <linearGradient id="logo-grad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#3b82f6"/>
-                <stop offset="100%" stop-color="#6d28d9"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </span>
-        <span class="tracking-tight">MazeThis</span>
+
+      <!-- Logo — geometric, text-based -->
+      <a
+        href="/"
+        class="flex items-center gap-3 shrink-0 group"
+        aria-label="MazeThis home"
+      >
+        <!-- Maze-path logomark -->
+        <svg
+          width="24" height="24" viewBox="0 0 24 24" fill="none"
+          xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+          class="transition-transform duration-200 group-hover:scale-110"
+        >
+          <rect width="24" height="24" fill="var(--color-charcoal)"/>
+          <path
+            d="M3 3h6v3H3zM15 3h6v6h-3V6h-3zM3 10h3v4H3zM9 7h3v7H9zM3 17h6v4H3zM12 14h6v3h-3v4h-3z"
+            fill="var(--color-accent)"
+          />
+        </svg>
+        <span
+          class="font-display text-xl tracking-wider uppercase"
+          style="color: var(--color-charcoal);"
+        >MazeThis</span>
       </a>
 
       <!-- Desktop nav -->
-      <nav class="hidden md:flex items-center gap-0.5" aria-label="Main navigation">
-        <a href="/maze-generator" class:list={['btn-ghost dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100', pathname === '/maze-generator' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400' : '']}>
+      <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+        <a
+          href="/maze-generator"
+          class:list={[
+            'btn-ghost text-sm px-3 py-1.5',
+            pathname === '/maze-generator' ? 'text-accent font-semibold' : '',
+          ]}
+          style={pathname === '/maze-generator' ? 'color: var(--color-accent);' : ''}
+        >
           Generator
         </a>
-        <a href="/easy-mazes" class:list={['btn-ghost dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100', pathname.includes('mazes') && !pathname.includes('maze-generator') ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400' : '']}>
+        <a
+          href="/easy-mazes"
+          class:list={[
+            'btn-ghost text-sm px-3 py-1.5',
+            pathname.includes('mazes') && !pathname.includes('maze-generator') ? 'font-semibold' : '',
+          ]}
+          style={pathname.includes('mazes') && !pathname.includes('maze-generator') ? 'color: var(--color-accent);' : ''}
+        >
           Maze Library
         </a>
-        <a href="/blog" class:list={['btn-ghost dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100', pathname.startsWith('/blog') ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400' : '']}>
+        <a
+          href="/blog"
+          class:list={[
+            'btn-ghost text-sm px-3 py-1.5',
+            pathname.startsWith('/blog') ? 'font-semibold' : '',
+          ]}
+          style={pathname.startsWith('/blog') ? 'color: var(--color-accent);' : ''}
+        >
           Blog
         </a>
-        <a href="/maze-generator" class="btn-primary ml-3 text-xs px-4 py-2">
-          Create Maze
+
+        <!-- Primary CTA -->
+        <a href="/play/maze-of-the-day/" class="btn-primary ml-4 text-xs px-4 py-2">
+          Play Today
         </a>
       </nav>
 
@@ -44,14 +78,15 @@ const pathname = Astro.url.pathname;
         <!-- Dark mode toggle -->
         <button
           id="theme-toggle"
-          class="btn-ghost p-2 rounded-xl"
+          class="btn-ghost p-2"
           aria-label="Toggle dark mode"
           title="Toggle dark mode"
+          style="color: var(--color-muted-strong);"
         >
-          <svg id="theme-icon-sun" class="w-4.5 h-4.5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg id="theme-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
           </svg>
-          <svg id="theme-icon-moon" class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg id="theme-icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
           </svg>
         </button>
@@ -59,7 +94,7 @@ const pathname = Astro.url.pathname;
         <!-- Mobile nav toggle -->
         <button
           id="mobile-menu-toggle"
-          class="md:hidden btn-ghost p-2 rounded-xl"
+          class="md:hidden btn-ghost p-2"
           aria-expanded="false"
           aria-controls="mobile-menu"
           aria-label="Open menu"
@@ -73,23 +108,24 @@ const pathname = Astro.url.pathname;
   </div>
 
   <!-- Mobile menu -->
-  <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md px-4 py-3 space-y-1">
-    <a href="/maze-generator" class="block btn-ghost w-full text-left">Generator</a>
-    <a href="/easy-mazes" class="block btn-ghost w-full text-left">Easy Mazes</a>
-    <a href="/medium-mazes" class="block btn-ghost w-full text-left">Medium Mazes</a>
-    <a href="/hard-mazes" class="block btn-ghost w-full text-left">Hard Mazes</a>
-    <a href="/mazes-for-kids" class="block btn-ghost w-full text-left">Kids Mazes</a>
-    <a href="/mazes-for-adults" class="block btn-ghost w-full text-left">Adults Mazes</a>
-    <a href="/blog" class="block btn-ghost w-full text-left">Blog</a>
-    <a href="/faq" class="block btn-ghost w-full text-left">FAQ</a>
-    <div class="pt-2 pb-1">
-      <a href="/maze-generator" class="btn-primary w-full justify-center">Create Maze</a>
-    </div>
+  <div
+    id="mobile-menu"
+    class="hidden md:hidden px-4 py-3 space-y-0.5"
+    style="border-top: 1px solid var(--color-border); background-color: var(--color-bg);"
+  >
+    <a href="/play/maze-of-the-day/" class="block btn-ghost w-full text-left font-semibold py-2.5" style="color: var(--color-accent);">Play Today's Maze</a>
+    <a href="/maze-generator" class="block btn-ghost w-full text-left py-2.5">Generator</a>
+    <a href="/easy-mazes" class="block btn-ghost w-full text-left py-2.5">Easy Mazes</a>
+    <a href="/medium-mazes" class="block btn-ghost w-full text-left py-2.5">Medium Mazes</a>
+    <a href="/hard-mazes" class="block btn-ghost w-full text-left py-2.5">Hard Mazes</a>
+    <a href="/mazes-for-kids" class="block btn-ghost w-full text-left py-2.5">Kids Mazes</a>
+    <a href="/mazes-for-adults" class="block btn-ghost w-full text-left py-2.5">Adults Mazes</a>
+    <a href="/blog" class="block btn-ghost w-full text-left py-2.5">Blog</a>
+    <a href="/faq" class="block btn-ghost w-full text-left py-2.5">FAQ</a>
   </div>
 </header>
 
 <script>
-  // Mobile menu
   const toggle = document.getElementById('mobile-menu-toggle');
   const menu = document.getElementById('mobile-menu');
   toggle?.addEventListener('click', () => {
@@ -97,7 +133,6 @@ const pathname = Astro.url.pathname;
     toggle.setAttribute('aria-expanded', String(!open));
   });
 
-  // Dark mode toggle
   const themeBtn = document.getElementById('theme-toggle');
   const sunIcon = document.getElementById('theme-icon-sun');
   const moonIcon = document.getElementById('theme-icon-moon');

@@ -2,42 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Architect Design Tokens ──────────────────────────────────────────────── */
 @layer base {
   :root {
+    /* Core palette */
+    --color-bg:           #F6F5F0;
+    --color-surface:      #FFFFFF;
+    --color-charcoal:     #1C1C1E;
+    --color-charcoal-2:   #2A2A2C;
+    --color-accent:       #E03B24;
+    --color-accent-dark:  #C42E18;
+    --color-border:       #D6D4CF;
+    --color-border-strong:#B0AEA8;
+    --color-muted:        #9A9892;
+    --color-muted-strong: #5C5A55;
+
+    /* Legacy brand vars — gameplay components reference these */
     --color-brand:      #2563eb;
     --color-brand-dark: #1d4ed8;
-    --color-accent:     #7c3aed;
+  }
+
+  .dark {
+    --color-bg:           #111110;
+    --color-surface:      #1C1C1E;
+    --color-charcoal:     #F0EFE9;
+    --color-charcoal-2:   #D8D6D0;
+    --color-border:       #2E2E30;
+    --color-border-strong:#4A4A4C;
+    --color-muted:        #6A6A6C;
+    --color-muted-strong: #9A9A9C;
   }
 
   html {
     @apply scroll-smooth;
-    font-family: Inter, system-ui, sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
   }
 
   body {
-    @apply bg-white text-slate-800 antialiased;
+    background-color: var(--color-bg);
+    color: var(--color-charcoal);
+    @apply antialiased;
   }
 
-  /* ── Dark mode base overrides ─────────────────────────────────────────────── */
-  .dark body {
-    @apply bg-slate-950 text-slate-100;
+  h1 {
+    font-family: 'Bebas Neue', system-ui, sans-serif;
+    @apply tracking-tight leading-none;
   }
-  .dark .card {
-    @apply bg-slate-800/80 border-slate-700;
+  h2 {
+    font-family: 'Bebas Neue', system-ui, sans-serif;
+    @apply tracking-tight leading-none;
   }
-  .dark .btn-secondary {
-    @apply bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700;
+  h3 {
+    @apply text-xl font-semibold tracking-tight;
   }
-  .dark .btn-ghost {
-    @apply text-slate-300 hover:bg-slate-800;
-  }
-
-  h1 { @apply text-3xl font-bold tracking-tight md:text-4xl; }
-  h2 { @apply text-2xl font-bold tracking-tight md:text-3xl; }
-  h3 { @apply text-xl font-semibold; }
 }
 
-/* ── Subtle maze-path background pattern ──────────────────────────────────── */
+/* ── Architect dot-grid background ───────────────────────────────────────── */
+.architect-dot-grid {
+  background-image: radial-gradient(circle, rgba(28,28,30,0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.dark .architect-dot-grid {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+}
+
+/* ── Legacy maze-path background — kept for gameplay pages ────────────────── */
 .maze-bg-pattern {
   background-image:
     linear-gradient(rgba(37,99,235,.04) 1px, transparent 1px),
@@ -50,7 +79,7 @@
     linear-gradient(90deg, rgba(96,165,250,.05) 1px, transparent 1px);
 }
 
-/* ── Maze game animations ─────────────────────────────────────────────────── */
+/* ── Maze game animations — do not modify ─────────────────────────────────── */
 @keyframes maze-player-pulse {
   0%, 100% { opacity: 0.15; }
   50%       { opacity: 0.45; }
@@ -59,7 +88,6 @@
   animation: maze-player-pulse 1.8s ease-in-out infinite;
 }
 
-/* ── Post-solve overlay animations ───────────────────────────────────────── */
 @keyframes post-solve-card-in {
   from { opacity: 0; transform: scale(0.94) translateY(10px); }
   to   { opacity: 1; transform: scale(1)    translateY(0);    }
@@ -72,7 +100,6 @@
   animation: post-solve-card-in 220ms ease-out forwards;
 }
 
-/* Respect reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -82,43 +109,127 @@
   }
 }
 
+/* ── Component layer ──────────────────────────────────────────────────────── */
 @layer components {
-  /* ── Buttons ────────────────────────────────────────────────────────────── */
+
+  /* Buttons ───────────────────────────────────────────────────────────────── */
   .btn-primary {
-    @apply inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-700 hover:shadow-lg active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-150;
+    @apply inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white
+           transition-colors duration-150
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+           active:scale-[0.98];
+    background-color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-accent-dark);
+    border-color: var(--color-accent-dark);
+  }
+  .btn-primary:focus-visible {
+    outline-color: var(--color-accent);
   }
 
   .btn-secondary {
-    @apply inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 hover:shadow-md active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-150;
+    @apply inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-transparent
+           transition-all duration-150
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+           active:scale-[0.98];
+    color: var(--color-charcoal);
+    border: 1px solid var(--color-charcoal);
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-charcoal);
+    color: var(--color-bg);
+  }
+  .dark .btn-secondary {
+    color: var(--color-charcoal);
+    border-color: var(--color-charcoal);
   }
 
   .btn-ghost {
-    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200 transition-all duration-150;
+    @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+           transition-colors duration-150;
+    color: var(--color-muted-strong);
+  }
+  .btn-ghost:hover {
+    color: var(--color-charcoal);
+    background-color: var(--color-border);
+  }
+  .dark .btn-ghost {
+    color: var(--color-muted-strong);
+  }
+  .dark .btn-ghost:hover {
+    color: var(--color-charcoal);
+    background-color: var(--color-border);
   }
 
-  /* ── Cards ──────────────────────────────────────────────────────────────── */
+  /* Cards ─────────────────────────────────────────────────────────────────── */
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white shadow-card overflow-hidden;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    @apply overflow-hidden;
   }
   .card-hover {
-    @apply card transition-all duration-200 hover:shadow-card-md hover:-translate-y-0.5;
+    @apply card transition-all duration-200;
+  }
+  .card-hover:hover {
+    border-color: var(--color-border-strong);
+    transform: translateY(-1px);
+  }
+  .dark .card {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
   }
 
-  /* ── Badges ─────────────────────────────────────────────────────────────── */
+  /* Badges ────────────────────────────────────────────────────────────────── */
   .badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium;
+    font-family: 'IBM Plex Mono', Menlo, monospace;
+    border: 1px solid var(--color-border);
+    color: var(--color-muted-strong);
+    background-color: var(--color-surface);
   }
 
-  /* ── Section headings ───────────────────────────────────────────────────── */
+  /* Section labels ────────────────────────────────────────────────────────── */
   .section-label {
-    @apply inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 mb-3;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-widest mb-3;
+    font-family: 'IBM Plex Mono', Menlo, monospace;
+    color: var(--color-muted-strong);
+    border: 1px solid var(--color-border);
+    background-color: transparent;
   }
   .dark .section-label {
-    @apply bg-blue-950 border-blue-800 text-blue-400;
+    color: var(--color-muted-strong);
+    border-color: var(--color-border);
   }
 
-  /* ── Gradient text ──────────────────────────────────────────────────────── */
+  /* Gradient text — kept for pages that still use it ──────────────────────── */
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600;
+  }
+
+  /* Architect accent text ─────────────────────────────────────────────────── */
+  .text-accent {
+    color: var(--color-accent);
+  }
+
+  /* Architect section container ───────────────────────────────────────────── */
+  .arch-section {
+    @apply py-16 sm:py-24;
+    background-color: var(--color-bg);
+  }
+  .arch-section-surface {
+    @apply py-16 sm:py-24;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .arch-section-dark {
+    @apply py-16 sm:py-24;
+    background-color: var(--color-charcoal);
+  }
+  .dark .arch-section-dark {
+    background-color: var(--color-bg);
+    border-top: 1px solid var(--color-border);
   }
 }

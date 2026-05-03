@@ -1,64 +1,90 @@
 ---
 ---
 
-<section class="py-16" aria-labelledby="how-to-play-heading">
-  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-    <h2 id="how-to-play-heading" class="text-2xl font-bold text-slate-800 mb-2 text-center">
-      Three Ways to Enjoy Maze Puzzles
-    </h2>
-    <p class="text-slate-500 text-center mb-10 max-w-xl mx-auto">
-      Print free mazes, solve them online, or build your own — all free, no account needed.
-    </p>
+<section
+  class="py-16 sm:py-20"
+  style="background-color: var(--color-bg);"
+  aria-labelledby="how-to-play-heading"
+>
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-      <div class="rounded-xl border border-slate-200 bg-white p-6 text-center">
-        <div class="mx-auto mb-4 w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-          </svg>
-        </div>
-        <h3 class="font-semibold text-slate-800 mb-2">Print Free Mazes</h3>
-        <p class="text-sm text-slate-500 leading-relaxed">
-          Open any maze and click "Print Maze" for a clean worksheet with a separate answer key.
-          Perfect for classrooms, homeschooling, and activity books.
-        </p>
-        <a href="/printable-mazes" class="mt-4 inline-block text-xs font-medium text-blue-600 hover:underline">
-          Browse printable mazes →
-        </a>
-      </div>
+    <!-- Header -->
+    <div class="mb-10">
+      <p
+        class="text-xs uppercase tracking-widest mb-2"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+      >Three Ways to Play</p>
+      <h2
+        id="how-to-play-heading"
+        class="font-display text-5xl sm:text-6xl uppercase"
+        style="color: var(--color-charcoal);"
+      >Enjoy Maze<br />Puzzles</h2>
+    </div>
 
-      <div class="rounded-xl border border-slate-200 bg-white p-6 text-center">
-        <div class="mx-auto mb-4 w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-        </div>
-        <h3 class="font-semibold text-slate-800 mb-2">Play Online</h3>
-        <p class="text-sm text-slate-500 leading-relaxed">
-          Solve maze puzzles in your browser using arrow keys or WASD on desktop, or swipe on
-          mobile. Your path is tracked so you never lose your place.
-        </p>
-        <a href="/maze-of-the-day/" class="mt-4 inline-block text-xs font-medium text-blue-600 hover:underline">
-          Try today's maze →
-        </a>
-      </div>
+    <!-- Grid — three bordered columns -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-px" style="background-color: var(--color-border);">
+      {[
+        {
+          num: 'A',
+          title: 'Print Free Mazes',
+          body: 'Open any maze and click "Print Maze" for a clean worksheet with a separate answer key. Perfect for classrooms, homeschooling, and activity books.',
+          href: '/printable-mazes',
+          linkText: 'Browse printable mazes',
+          icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>`,
+        },
+        {
+          num: 'B',
+          title: 'Play Online',
+          body: 'Solve maze puzzles in your browser using arrow keys or WASD on desktop, or swipe on mobile. Your path is tracked so you never lose your place.',
+          href: '/maze-of-the-day/',
+          linkText: 'Try today\'s maze',
+          icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>`,
+        },
+        {
+          num: 'C',
+          title: 'Generate Custom Mazes',
+          body: 'Build unlimited maze puzzles in any size. Download as SVG or print instantly — no account or sign-up needed.',
+          href: '/maze-generator',
+          linkText: 'Open maze generator',
+          icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>`,
+        },
+      ].map(({ num, title, body, href, linkText, icon }) => (
+        <div
+          class="flex flex-col p-6 sm:p-8"
+          style="background-color: var(--color-surface);"
+        >
+          <!-- Letter in mono, muted -->
+          <span
+            class="text-xs uppercase tracking-widest mb-5"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+          >{num}</span>
 
-      <div class="rounded-xl border border-slate-200 bg-white p-6 text-center">
-        <div class="mx-auto mb-4 w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-          </svg>
+          <!-- Icon -->
+          <div class="mb-4">
+            <svg
+              class="w-6 h-6"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              aria-hidden="true"
+              style="color: var(--color-accent);"
+              set:html={icon}
+            />
+          </div>
+
+          <h3
+            class="text-base font-bold mb-3"
+            style="color: var(--color-charcoal);"
+          >{title}</h3>
+          <p
+            class="text-sm leading-relaxed mb-5 flex-1"
+            style="color: var(--color-muted-strong);"
+          >{body}</p>
+          <a
+            href={href}
+            class="text-xs uppercase tracking-widest transition-colors pb-px"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-accent); border-bottom: 1px solid var(--color-accent);"
+          >{linkText} →</a>
         </div>
-        <h3 class="font-semibold text-slate-800 mb-2">Generate Custom Mazes</h3>
-        <p class="text-sm text-slate-500 leading-relaxed">
-          Build unlimited maze puzzles in any size with the maze generator. Download as SVG or
-          print instantly — no account or sign-up needed.
-        </p>
-        <a href="/maze-generator" class="mt-4 inline-block text-xs font-medium text-blue-600 hover:underline">
-          Open maze generator →
-        </a>
-      </div>
+      ))}
     </div>
   </div>
 </section>

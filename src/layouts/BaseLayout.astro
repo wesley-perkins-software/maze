@@ -24,6 +24,13 @@ const props = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <SeoHead {...props} />
+    <!-- Architect typography: Bebas Neue (display) + Outfit (body) + IBM Plex Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    />
     <!-- Inline dark mode initializer — runs before first paint to prevent flash -->
     <script is:inline>
       (function() {

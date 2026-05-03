@@ -8,12 +8,6 @@ export interface Props {
 
 const { difficulty, size = 'md' } = Astro.props;
 
-const colorMap: Record<Difficulty, string> = {
-  small:  'bg-green-50 border-green-200 text-green-700',
-  medium: 'bg-yellow-50 border-yellow-200 text-yellow-700',
-  large:  'bg-red-50 border-red-200 text-red-700',
-};
-
 const labelMap: Record<Difficulty, string> = {
   small: 'Small', medium: 'Medium', large: 'Large',
 };
@@ -21,8 +15,7 @@ const labelMap: Record<Difficulty, string> = {
 
 <span
   class:list={[
-    'badge border font-medium',
-    colorMap[difficulty],
+    'badge',
     size === 'sm' ? 'text-xs px-2 py-0.5' : 'text-sm px-2.5 py-1',
   ]}
 >

@@ -1,68 +1,85 @@
 ---
 ---
 
-<section class="relative overflow-hidden py-20 bg-slate-900 dark:bg-slate-950" aria-labelledby="how-it-works-heading">
-  <!-- Subtle maze pattern -->
-  <div class="absolute inset-0 maze-bg-pattern opacity-30" aria-hidden="true"></div>
-  <!-- Accent glow -->
-  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-48 bg-blue-600/10 blur-3xl rounded-full pointer-events-none" aria-hidden="true"></div>
+<section
+  class="py-16 sm:py-24 relative overflow-hidden"
+  style="background-color: var(--color-charcoal);"
+  aria-labelledby="how-it-works-heading"
+>
+  <!-- Dot grid on dark -->
+  <div class="absolute inset-0 architect-dot-grid opacity-40 pointer-events-none" aria-hidden="true"></div>
 
-  <div class="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-    <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-900/60 border border-blue-800 px-3 py-1 text-xs font-semibold text-blue-400 mb-4">
-      Get Started
-    </span>
-    <h2 id="how-it-works-heading" class="text-3xl font-extrabold text-white mb-3 tracking-tight">
-      How It Works
-    </h2>
-    <p class="text-slate-400 mb-14 max-w-md mx-auto">
-      Build a daily puzzle habit in three easy steps.
-    </p>
+  <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
-    <!-- Steps grid with connecting line on desktop -->
-    <div class="relative grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6">
-      <!-- Connecting line (desktop only) -->
-      <div class="absolute hidden sm:block top-6 left-[calc(16.66%+1.5rem)] right-[calc(16.66%+1.5rem)] h-px bg-gradient-to-r from-blue-700 via-violet-600 to-blue-700" aria-hidden="true"></div>
+    <!-- Section header -->
+    <div class="mb-14">
+      <p
+        class="text-xs uppercase tracking-widest mb-3"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-accent);"
+      >Get Started</p>
+      <h2
+        id="how-it-works-heading"
+        class="font-display text-5xl sm:text-6xl uppercase"
+        style="color: var(--color-bg);"
+      >How It Works</h2>
+    </div>
 
+    <!-- Steps — three columns with top-border number system -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-0 sm:divide-x" style="--tw-divide-opacity: 0.15; border-color: color-mix(in srgb, var(--color-bg) 20%, transparent);">
       {[
         {
-          step: '1',
+          num: '01',
           title: 'Solve today\'s maze',
-          body: 'A fresh 60×60 puzzle waits every morning. Takes about 10–15 minutes. Same maze for everyone, so you can compare times.',
-          color: 'from-blue-600 to-blue-500',
+          body: 'A fresh 60×60 puzzle waits every morning. Same maze for everyone — compare times, come back tomorrow.',
         },
         {
-          step: '2',
+          num: '02',
           title: 'Explore the library',
-          body: 'Browse 420+ free printable mazes — small quick ones, medium challenges, and large labyrinths. Play online or print at home.',
-          color: 'from-violet-600 to-blue-600',
+          body: 'Browse 420+ free printable mazes. Small (1–2 min), Medium (5–10 min), Large (10–20 min). Play online or print.',
         },
         {
-          step: '3',
+          num: '03',
           title: 'Come back tomorrow',
-          body: 'A new maze unlocks every day. Keep the streak going — it only takes a few minutes and gets a little easier each time.',
-          color: 'from-violet-500 to-violet-600',
+          body: 'A new maze unlocks every day. Build a simple habit — ten minutes, a fresh challenge, no account needed.',
         },
-      ].map(({ step, title, body, color }) => (
-        <div class="flex flex-col items-center">
-          <div class={`relative z-10 w-12 h-12 rounded-full bg-gradient-to-br ${color} text-white font-extrabold text-lg flex items-center justify-center mb-5 shadow-lg ring-4 ring-slate-900 dark:ring-slate-950`}>
-            {step}
-          </div>
-          <h3 class="font-bold text-white mb-2 text-base">{title}</h3>
-          <p class="text-slate-400 text-sm leading-relaxed max-w-[220px] mx-auto">{body}</p>
+      ].map(({ num, title, body }) => (
+        <div class="sm:px-8 first:pl-0 last:pr-0 pb-10 sm:pb-0">
+          <!-- Number in display font, accent color -->
+          <div
+            class="font-display text-7xl sm:text-8xl leading-none mb-4"
+            style="color: var(--color-accent);"
+            aria-hidden="true"
+          >{num}</div>
+          <h3
+            class="text-base font-semibold mb-3 uppercase tracking-wide"
+            style="color: var(--color-bg);"
+          >{title}</h3>
+          <p
+            class="text-sm leading-relaxed"
+            style="color: color-mix(in srgb, var(--color-bg) 55%, transparent);"
+          >{body}</p>
         </div>
       ))}
     </div>
 
-    <div class="mt-12">
+    <!-- CTA -->
+    <div
+      class="mt-14 pt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8"
+      style="border-top: 1px solid color-mix(in srgb, var(--color-bg) 15%, transparent);"
+    >
       <a
         href="/maze-of-the-day/"
-        class="group inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-violet-700 active:scale-[0.98] transition-all duration-200"
+        class="btn-primary text-sm px-7 py-3.5"
       >
-        <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M8 5v14l11-7z" />
         </svg>
         Start with Today's Maze
       </a>
+      <span
+        class="text-xs uppercase tracking-widest"
+        style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 40%, transparent);"
+      >Free · No account · New maze daily</span>
     </div>
   </div>
 </section>
