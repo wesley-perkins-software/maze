@@ -2,30 +2,38 @@
 import { CATEGORIES } from '../../types/maze.js';
 ---
 
-<footer class="mt-16 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-    <div class="grid grid-cols-2 gap-8 md:grid-cols-5">
+<footer class="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+    <div class="grid grid-cols-2 gap-8 md:grid-cols-5 mb-10">
       <!-- Brand -->
       <div class="col-span-2 md:col-span-1">
-        <a href="/" class="flex items-center gap-2 font-bold text-blue-600">
-          <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="28" height="28" rx="6" fill="#2563eb"/>
-            <path d="M4 4h7v4H4zM17 4h7v7h-4V8h-3zM4 12h3v4H4zM11 8h3v8h-3zM4 20h7v4H4zM14 16h7v4h-4v4h-3z" fill="white"/>
-          </svg>
+        <a href="/" class="inline-flex items-center gap-2 font-bold text-blue-600 hover:text-blue-700 transition-colors group mb-3">
+          <span class="transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3">
+            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect width="28" height="28" rx="7" fill="url(#footer-logo-grad)"/>
+              <path d="M4 4h7v4H4zM17 4h7v7h-4V8h-3zM4 12h3v4H4zM11 8h3v8h-3zM4 20h7v4H4zM14 16h7v4h-4v4h-3z" fill="white"/>
+              <defs>
+                <linearGradient id="footer-logo-grad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#6d28d9"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </span>
           MazeThis
         </a>
-        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
           Free printable mazes and interactive maze games for all ages.
         </p>
       </div>
 
       <!-- Maze Library -->
       <div>
-        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Maze Library</h3>
-        <ul class="space-y-2">
+        <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-4">Maze Library</h3>
+        <ul class="space-y-2.5">
           {CATEGORIES.map((cat) => (
             <li>
-              <a href={`/${cat.slug}`} class="text-sm text-slate-500 hover:text-blue-600 transition-colors">
+              <a href={`/${cat.slug}`} class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                 {cat.label}
               </a>
             </li>
@@ -35,44 +43,44 @@ import { CATEGORIES } from '../../types/maze.js';
 
       <!-- Collections -->
       <div>
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">Collections</h3>
-        <ul class="space-y-2">
-          <li><a href="/printable-mazes" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">Printable Mazes</a></li>
-          <li><a href="/mazes-for-classroom" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">Mazes for Classrooms</a></li>
-          <li><a href="/mazes-for-seniors" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">Mazes for Seniors</a></li>
-          <li><a href="/maze-generator" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">Maze Generator</a></li>
+        <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-4">Collections</h3>
+        <ul class="space-y-2.5">
+          <li><a href="/printable-mazes" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Printable Mazes</a></li>
+          <li><a href="/mazes-for-classroom" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Mazes for Classrooms</a></li>
+          <li><a href="/mazes-for-seniors" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Mazes for Seniors</a></li>
+          <li><a href="/maze-generator" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Maze Generator</a></li>
         </ul>
       </div>
 
       <!-- Learn -->
       <div>
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">Learn</h3>
-        <ul class="space-y-2">
-          <li><a href="/blog" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">Blog</a></li>
-          <li><a href="/blog/how-maze-generation-algorithms-work" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">How Mazes Work</a></li>
-          <li><a href="/blog/how-to-solve-a-maze" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">How to Solve a Maze</a></li>
-          <li><a href="/faq" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">FAQ</a></li>
+        <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-4">Learn</h3>
+        <ul class="space-y-2.5">
+          <li><a href="/blog" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Blog</a></li>
+          <li><a href="/blog/how-maze-generation-algorithms-work" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">How Mazes Work</a></li>
+          <li><a href="/blog/how-to-solve-a-maze" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">How to Solve a Maze</a></li>
+          <li><a href="/faq" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">FAQ</a></li>
         </ul>
       </div>
 
       <!-- About -->
       <div>
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">About</h3>
-        <ul class="space-y-2">
-          <li><a href="/about" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">About MazeThis</a></li>
-          <li><a href="/privacy" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">Privacy Policy</a></li>
-          <li><a href="/terms" class="text-sm text-slate-500 hover:text-blue-600 transition-colors">Terms of Service</a></li>
+        <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-4">About</h3>
+        <ul class="space-y-2.5">
+          <li><a href="/about" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About MazeThis</a></li>
+          <li><a href="/privacy" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</a></li>
+          <li><a href="/terms" class="text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</a></li>
         </ul>
       </div>
     </div>
 
-    <div class="mt-8 border-t border-slate-200 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2">
-      <p class="text-xs text-slate-400">
+    <div class="border-t border-slate-200 dark:border-slate-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <p class="text-xs text-slate-400 dark:text-slate-500">
         &copy; {new Date().getFullYear()} MazeThis. All mazes are free to print and use for personal and educational purposes.
       </p>
-      <div class="flex gap-4">
-        <a href="/privacy" class="text-xs text-slate-400 hover:text-slate-600 transition-colors">Privacy</a>
-        <a href="/terms" class="text-xs text-slate-400 hover:text-slate-600 transition-colors">Terms</a>
+      <div class="flex gap-5">
+        <a href="/privacy" class="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">Privacy</a>
+        <a href="/terms" class="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">Terms</a>
       </div>
     </div>
   </div>
