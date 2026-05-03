@@ -17,7 +17,7 @@ const heroSvg = renderThumbnail(heroMaze);
   <div class="absolute inset-0 architect-dot-grid pointer-events-none" aria-hidden="true"></div>
 
   <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16 lg:py-16">
-    <div class="grid grid-cols-1 md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_410px] gap-7 lg:gap-14 items-start">
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] lg:grid-cols-[1fr_490px] gap-7 lg:gap-14 items-start">
       <div>
         <h1 id="hero-heading" class="font-display uppercase leading-[0.88] mb-4 sm:mb-6 text-center md:text-left" style="font-size: clamp(3.1rem, 12vw, 8.5rem); color: var(--color-charcoal);">
           <span class="md:hidden">Can You Solve<br /><span style="color: var(--color-accent);">Today's</span> Maze?</span>
@@ -25,35 +25,38 @@ const heroSvg = renderThumbnail(heroMaze);
         </h1>
 
         <div class="md:hidden mb-3">
-          <a href="/play/maze-of-the-day/" class="block max-w-[260px] mx-auto overflow-hidden" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface);" aria-label="Play today's maze" tabindex="-1">
+          <a href="/play/maze-of-the-day/" class="block max-w-[260px] mx-auto overflow-hidden active:scale-[0.99] transition-transform duration-150" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface);" aria-label="Play today's maze" tabindex="-1">
             <div set:html={heroSvg} />
           </a>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-2.5 mb-2 sm:mb-5">
+        <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2.5 mb-2 sm:mb-4">
           <a id="hero-play-cta" href="/play/maze-of-the-day/" class="btn-primary justify-center sm:justify-start text-sm px-7 py-3.5 font-semibold w-full sm:w-auto">
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
             Play Today's Maze
           </a>
-          <a href="/printable-mazes" class="justify-center sm:justify-start text-sm px-5 py-2.5 w-full sm:w-auto inline-flex items-center" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);">
-            Browse Free Mazes
+          <a href="/maze-library" class="justify-center sm:justify-start text-sm px-5 py-2.5 w-full sm:w-auto inline-flex items-center" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);">
+            Browse Maze Library
+          </a>
+          <a href="/maze-generator" class="justify-center sm:justify-start text-sm px-5 py-2.5 w-full sm:w-auto inline-flex items-center" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);">
+            Create Your Own Maze
           </a>
         </div>
 
-        <p class="md:hidden text-xs text-center" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); letter-spacing: 0.01em;">
-          New maze daily • free • no signup
+        <p id="hero-daily-status" class="text-xs text-center sm:text-left" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); letter-spacing: 0.01em;">
+          A new maze is ready today.
+        </p>
+        <p class="md:hidden text-xs text-center mt-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">
+          A new maze every day.
         </p>
       </div>
-      <div class="hidden md:block pt-2">
-        <div class="mb-2" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); font-size: 0.65rem;">
-          <span class="uppercase tracking-widest">Maze of the Day</span>
-        </div>
+      <div class="hidden md:block pt-1">
         <div class="relative">
           <div class="absolute -top-1.5 -left-1.5 w-5 h-5 border-t-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
           <div class="absolute -top-1.5 -right-1.5 w-5 h-5 border-t-2 border-r-2 z-10" style="border-color: var(--color-charcoal);"></div>
           <div class="absolute -bottom-1.5 -left-1.5 w-5 h-5 border-b-2 border-l-2 z-10" style="border-color: var(--color-charcoal);"></div>
           <div class="absolute -bottom-1.5 -right-1.5 w-5 h-5 border-b-2 border-r-2 z-10" style="border-color: var(--color-charcoal);"></div>
-          <a href="/play/maze-of-the-day/" class="block w-full group overflow-hidden" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface); aspect-ratio: 1;" aria-label="Play today's maze" tabindex="-1">
+          <a href="/play/maze-of-the-day/" class="block w-full group overflow-hidden cursor-pointer" style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface); aspect-ratio: 1;" aria-label="Play today's maze" tabindex="-1">
             <div class="w-full h-full transition-transform duration-500 group-hover:scale-[1.02]" set:html={heroSvg} />
           </a>
         </div>
@@ -61,3 +64,41 @@ const heroSvg = renderThumbnail(heroMaze);
     </div>
   </div>
 </section>
+
+<script>
+  const statusEl = document.getElementById('hero-daily-status');
+
+  const todayKey = () => {
+    const n = new Date();
+    const yyyy = n.getUTCFullYear();
+    const mm = String(n.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(n.getUTCDate()).padStart(2, '0');
+    return `daily_completed_${yyyy}-${mm}-${dd}`;
+  };
+
+  const msUntilMidnightUTC = () => {
+    const now = new Date();
+    const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+    return midnight.getTime() - now.getTime();
+  };
+
+  const formatCountdown = (ms) => {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    return `${h}h ${String(m).padStart(2, '0')}m`;
+  };
+
+  let timer;
+  const updateStatus = () => {
+    if (!statusEl) return;
+    const done = localStorage.getItem(todayKey()) === 'true';
+    statusEl.textContent = done
+      ? `You solved today's maze. Next maze in ${formatCountdown(msUntilMidnightUTC())}`
+      : 'A new maze is ready today.';
+  };
+
+  updateStatus();
+  timer = window.setInterval(updateStatus, 30000);
+  window.addEventListener('beforeunload', () => clearInterval(timer));
+</script>
