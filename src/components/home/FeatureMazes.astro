@@ -13,6 +13,7 @@ const labels: Record<Difficulty, { num: string; title: string; time: string; hre
 ---
 
 <section
+  id="maze-library"
   class="py-16 sm:py-20"
   style="background-color: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);"
   aria-labelledby="challenge-heading"
@@ -25,12 +26,16 @@ const labels: Record<Difficulty, { num: string; title: string; time: string; hre
         <p
           class="text-xs uppercase tracking-widest mb-2"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-        >Maze Library</p>
+        >Free Maze Library</p>
         <h2
           id="challenge-heading"
           class="font-display text-5xl sm:text-6xl uppercase"
           style="color: var(--color-charcoal);"
         >Pick Your<br />Challenge</h2>
+        <p
+          class="mt-3 text-sm leading-relaxed max-w-md"
+          style="color: var(--color-muted-strong);"
+        >420+ free printable mazes in three sizes — play online or print at home.</p>
       </div>
       <a
         href="/large-mazes"
@@ -93,6 +98,24 @@ const labels: Record<Difficulty, { num: string; title: string; time: string; hre
         class="text-xs uppercase tracking-widest"
         style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
       >View all 420+ mazes →</a>
+    </div>
+
+    <!-- Audience navigation — subdirectory links, footnote weight -->
+    <div class="mt-8 pt-6 flex flex-wrap gap-2 text-xs" style="border-top: 1px solid var(--color-border);">
+      {[
+        { href: '/printable-mazes',     label: 'Printable Mazes' },
+        { href: '/mazes-for-kids',      label: 'Mazes for Kids' },
+        { href: '/mazes-for-adults',    label: 'Mazes for Adults' },
+        { href: '/mazes-for-classroom', label: 'Classroom Mazes' },
+      ].map(({ href, label }) => (
+        <a
+          href={href}
+          class="inline-flex items-center px-3 py-1.5 uppercase tracking-widest transition-colors duration-150"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); border: 1px solid var(--color-border);"
+          onmouseover="this.style.color='var(--color-charcoal)'; this.style.borderColor='var(--color-border-strong)';"
+          onmouseout="this.style.color='var(--color-muted)'; this.style.borderColor='var(--color-border)';"
+        >{label}</a>
+      ))}
     </div>
   </div>
 </section>
