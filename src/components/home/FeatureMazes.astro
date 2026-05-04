@@ -1,14 +1,16 @@
 ---
-import MazeCard from '../ui/MazeCard.astro';
 import { getFeaturedMazes } from '../../lib/catalog/index.js';
+import { generateMazeFromCatalog } from '../../lib/maze/index.js';
+import { renderThumbnail } from '../../lib/svg/renderToString.js';
 import type { Difficulty } from '../../types/maze.js';
 
 const featured = getFeaturedMazes();
+const svgs = featured.map(entry => renderThumbnail(generateMazeFromCatalog(entry)));
 
-const labels: Record<Difficulty, { num: string; title: string; time: string; href: string }> = {
-  small:  { num: '01', title: 'Small — Quick',      time: '~1–2 min',   href: '/small-mazes'  },
-  medium: { num: '02', title: 'Medium — Moderate',  time: '~5–10 min',  href: '/medium-mazes' },
-  large:  { num: '03', title: 'Large — Challenge',  time: '~10–20 min', href: '/large-mazes'  },
+const labels: Record<Difficulty, { num: string; name: string; time: string; desc: string; href: string }> = {
+  small:  { num: '01', name: 'Small',  time: '~1–2 min',   desc: 'Quick, satisfying puzzles. Perfect for kids and warm-ups.',      href: '/small-mazes'  },
+  medium: { num: '02', name: 'Medium', time: '~5–10 min',  desc: 'A proper challenge. Good for a focused 10-minute session.',      href: '/medium-mazes' },
+  large:  { num: '03', name: 'Large',  time: '~10–20 min', desc: 'The full experience. A serious maze that takes real effort.',    href: '/large-mazes'  },
 };
 ---
 
@@ -47,45 +49,42 @@ const labels: Record<Difficulty, { num: string; title: string; time: string; hre
     </div>
 
     <!-- Three columns -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-8 sm:gap-px" style="background-color: transparent;">
-      {featured.map((entry) => {
+    <div class="feat-grid">
+      {featured.map((entry, i) => {
         const meta = labels[entry.difficulty];
+        const svg  = svgs[i];
         return (
-          <div style="background-color: var(--color-surface); border-top: 1px solid var(--color-border);" class="flex flex-col sm:border-t-0">
-            <!-- Number label -->
-            <div
-              class="px-3 pt-4 pb-2 flex items-center justify-between"
-              style="border-bottom: 1px solid var(--color-border);"
-            >
-              <span
-                class="text-xs uppercase tracking-widest"
-                style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-              >{meta.num}</span>
-              <span
-                class="text-xs"
-                style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-              >{meta.time}</span>
+          <div class="feat-col">
+
+            <!-- Number + time strip -->
+            <div class="feat-strip-top">
+              <span class="feat-mono feat-num">{meta.num}</span>
+              <span class="feat-mono feat-time">{meta.time}</span>
             </div>
 
-            <!-- Maze card (no wrapper border — grid provides it) -->
-            <div class="flex-1">
-              <MazeCard entry={entry} />
-            </div>
+            <!-- Size name — large display, links to category -->
+            <a href={meta.href} class="feat-name-link">
+              <span class="font-display uppercase feat-name">{meta.name}</span>
+            </a>
 
-            <!-- Browse link -->
+            <!-- Maze preview — links to category, not individual maze -->
+            <a href={meta.href} class="feat-preview-link" aria-label={`Browse ${meta.name} mazes`}>
+              <div class="feat-preview" set:html={svg} />
+            </a>
+
+            <!-- Description -->
+            <p class="feat-desc feat-mono">{meta.desc}</p>
+
+            <!-- Browse footer -->
             <a
               href={meta.href}
-              class="px-3 py-3 flex items-center justify-between group transition-colors duration-150"
-              style="border-top: 1px solid var(--color-border); color: var(--color-muted-strong);"
+              class="feat-strip-bottom feat-mono"
               onmouseover="this.style.backgroundColor='var(--color-bg)';"
               onmouseout="this.style.backgroundColor='transparent';"
             >
-              <span class="text-xs font-semibold">{meta.title}</span>
-              <span
-                class="text-xs transition-colors"
-                style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
-              >Browse →</span>
+              Browse {meta.name} mazes →
             </a>
+
           </div>
         );
       })}
@@ -119,3 +118,105 @@ const labels: Record<Difficulty, { num: string; title: string; time: string; hre
     </div>
   </div>
 </section>
+
+<style>
+  /* ── SVG scaling ─────────────────────────────────────────────────────────── */
+  .feat-preview :global(svg) { width: 100%; height: auto; display: block; }
+
+  /* ── Grid: single col mobile, 3 col desktop with 1px dividers ───────────── */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    border-top: 1px solid var(--color-border);
+  }
+  @media (min-width: 640px) {
+    .feat-grid {
+      grid-template-columns: repeat(3, 1fr);
+      border-top: none;
+    }
+    /* Vertical dividers between columns via left border on 2nd and 3rd */
+    .feat-col:not(:first-child) {
+      border-left: 1px solid var(--color-border);
+    }
+  }
+
+  /* ── Column ─────────────────────────────────────────────────────────────── */
+  .feat-col {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-surface);
+  }
+
+  /* ── Shared mono base ───────────────────────────────────────────────────── */
+  .feat-mono {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ── Top strip: number + time ───────────────────────────────────────────── */
+  .feat-strip-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem 0.625rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .feat-num  { font-size: 0.75rem; color: var(--color-muted); }
+  .feat-time { font-size: 0.75rem; color: var(--color-muted); }
+
+  /* ── Size name: large display, links to category ───────────────────────── */
+  .feat-name-link {
+    display: block;
+    padding: 0.75rem 1rem 0.5rem;
+    text-decoration: none;
+  }
+  .feat-name {
+    display: block;
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    line-height: 1;
+    color: var(--color-charcoal);
+    transition: color 120ms ease;
+  }
+  .feat-name-link:hover .feat-name { color: var(--color-accent); }
+
+  /* ── Maze preview ───────────────────────────────────────────────────────── */
+  .feat-preview-link {
+    display: block;
+    overflow: hidden;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+  /* Constrain height on mobile so 3 stacked cards don't overwhelm the page */
+  .feat-preview {
+    max-height: 260px;
+    overflow: hidden;
+    transition: transform 400ms ease;
+  }
+  .feat-preview-link:hover .feat-preview { transform: scale(1.02); }
+
+  @media (min-width: 640px) {
+    .feat-preview { max-height: none; aspect-ratio: 1; overflow: hidden; }
+  }
+
+  /* ── Description ─────────────────────────────────────────────────────────  */
+  .feat-desc {
+    padding: 0.75rem 1rem 0.875rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--color-muted-strong);
+    flex: 1;
+  }
+
+  /* ── Bottom browse strip ─────────────────────────────────────────────────  */
+  .feat-strip-bottom {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    color: var(--color-muted-strong);
+    text-decoration: none;
+    border-top: 1px solid var(--color-border);
+    transition: background-color 150ms ease, color 120ms ease;
+  }
+  .feat-strip-bottom:hover { color: var(--color-charcoal); }
+</style>
