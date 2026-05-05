@@ -82,8 +82,8 @@ const heroSvg = renderThumbnail(heroMaze);
 
       <!-- Secondary links — clearly links, clearly secondary, 44px tap targets -->
       <div class="hero-sec-group-mobile">
-        <a href="/maze-library" class="hero-sec-link">Browse Library →</a>
-        <a href="/maze-generator" class="hero-sec-link">Create Your Own →</a>
+        <a href="/#maze-library" class="hero-sec-link">Browse Library →</a>
+        <a href="/maze-generator" class="hero-sec-link">Make a Maze →</a>
       </div>
 
     </div>
@@ -124,8 +124,8 @@ const heroSvg = renderThumbnail(heroMaze);
 
           <!-- Secondary links — horizontal row on desktop -->
           <div class="hero-sec-group-desktop">
-            <a href="/maze-library" class="hero-sec-link">Browse Library →</a>
-            <a href="/maze-generator" class="hero-sec-link">Create Your Own →</a>
+            <a href="/#maze-library" class="hero-sec-link">Browse Library →</a>
+            <a href="/maze-generator" class="hero-sec-link">Make a Maze →</a>
           </div>
         </div>
 
@@ -216,10 +216,12 @@ const heroSvg = renderThumbnail(heroMaze);
     /* no text-decoration — it's a layout link, the heading is the content */
   }
 
-  /* ── Mobile content: natural height, no flex-grow ───────────────────────── */
+  /* ── Mobile content: natural height, centered to match poster composition ── */
   .hero-mobile-content {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     padding: 1.25rem 1rem 1.75rem;
   }
 
@@ -292,7 +294,7 @@ const heroSvg = renderThumbnail(heroMaze);
     padding-top: 0.125rem; /* optical alignment with status above */
   }
   .hero-sec-group-mobile .hero-sec-link {
-    padding: 0.625rem 0.875rem; /* taller padding = 44px tap target naturally */
+    padding: 0.7rem 0.875rem; /* taller padding = solid 44px tap target */
   }
 
   /* Desktop: same chip style, compact horizontal row */
