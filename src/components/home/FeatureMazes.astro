@@ -97,23 +97,6 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
       >View all 420+ mazes →</a>
     </div>
 
-    <!-- Audience navigation — all pages exist -->
-    <div class="mt-8 pt-6 flex flex-wrap gap-2 text-xs" style="border-top: 1px solid var(--color-border);">
-      {[
-        { href: '/printable-mazes',     label: 'Printable Mazes' },
-        { href: '/mazes-for-kids',      label: 'Mazes for Kids' },
-        { href: '/mazes-for-adults',    label: 'Mazes for Adults' },
-        { href: '/mazes-for-classroom', label: 'Classroom Mazes' },
-      ].map(({ href, label }) => (
-        <a
-          href={href}
-          class="inline-flex items-center px-3 py-1.5 uppercase tracking-widest transition-colors duration-150"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted); border: 1px solid var(--color-border);"
-          onmouseover="this.style.color='var(--color-charcoal)'; this.style.borderColor='var(--color-border-strong)';"
-          onmouseout="this.style.color='var(--color-muted)'; this.style.borderColor='var(--color-border)';"
-        >{label}</a>
-      ))}
-    </div>
   </div>
 </section>
 
@@ -139,18 +122,17 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
 
   /* ── Card — whole card is one link ──────────────────────────────────────── */
   .feat-col {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 80px 1fr;
     background-color: var(--color-surface);
     text-decoration: none;
     border-top: 1px solid var(--color-border);
-    margin-bottom: 2rem;
     transition: background-color 120ms ease;
   }
-  .feat-col:last-child { margin-bottom: 0; }
   @media (min-width: 640px) {
     .feat-col {
-      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
       border-top: none;
     }
   }
@@ -169,32 +151,58 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
 
   /* ── Top strip ──────────────────────────────────────────────────────────── */
   .feat-strip-top {
+    grid-column: 2;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.875rem 1rem 0.625rem;
+    padding: 0.625rem 0.875rem 0.5rem;
     border-bottom: 1px solid var(--color-border);
+  }
+  @media (min-width: 640px) {
+    .feat-strip-top { grid-column: unset; padding: 0.875rem 1rem 0.625rem; }
   }
   .feat-num  { font-size: 0.75rem; color: var(--color-muted); }
   .feat-time { font-size: 0.75rem; color: var(--color-muted); }
 
   /* ── Size name ──────────────────────────────────────────────────────────── */
-  .feat-name-wrap { padding: 0.75rem 1rem 0.5rem; }
+  .feat-name-wrap {
+    grid-column: 2;
+    padding: 0.375rem 0.875rem 0.25rem;
+  }
+  @media (min-width: 640px) {
+    .feat-name-wrap { grid-column: unset; padding: 0.75rem 1rem 0.5rem; }
+  }
   .feat-name {
     display: block;
-    font-size: clamp(2rem, 5vw, 2.75rem);
+    font-size: 1.75rem;
     line-height: 1;
     color: var(--color-charcoal);
     transition: color 120ms ease;
   }
+  @media (min-width: 640px) {
+    .feat-name { font-size: clamp(2rem, 5vw, 2.75rem); }
+  }
   .feat-col:hover .feat-name { color: var(--color-accent); }
 
-  /* ── Maze preview: square frame, no clipping ────────────────────────────── */
+  /* ── Maze preview ────────────────────────────────────────────────────────── */
+  /* Mobile: left column, spans full card height */
   .feat-preview-frame {
-    aspect-ratio: 1;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    align-self: stretch;
     overflow: hidden;
-    border-top: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+  }
+  /* Desktop: full-width square above description */
+  @media (min-width: 640px) {
+    .feat-preview-frame {
+      grid-column: unset;
+      grid-row: unset;
+      aspect-ratio: 1;
+      border-right: none;
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
   }
   .feat-preview {
     width: 100%;
@@ -205,22 +213,29 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
 
   /* ── Description + grid size ────────────────────────────────────────────── */
   .feat-body {
-    flex: 1;
-    padding: 0.75rem 1rem 0.625rem;
+    grid-column: 2;
+    padding: 0.25rem 0.875rem 0.375rem;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+  }
+  @media (min-width: 640px) {
+    .feat-body { grid-column: unset; flex: 1; padding: 0.75rem 1rem 0.625rem; }
   }
   .feat-desc       { font-size: 0.75rem; line-height: 1.5; color: var(--color-muted-strong); }
   .feat-grid-label { font-size: 0.7rem;  color: var(--color-muted); }
 
   /* ── Browse footer ──────────────────────────────────────────────────────── */
   .feat-strip-bottom {
-    padding: 0.75rem 1rem;
+    grid-column: 2;
+    padding: 0.5rem 0.875rem;
     font-size: 0.75rem;
     color: var(--color-muted-strong);
     border-top: 1px solid var(--color-border);
     transition: color 120ms ease;
+  }
+  @media (min-width: 640px) {
+    .feat-strip-bottom { grid-column: unset; padding: 0.75rem 1rem; }
   }
   .feat-col:hover .feat-strip-bottom { color: var(--color-charcoal); }
 </style>
