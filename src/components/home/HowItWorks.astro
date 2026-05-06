@@ -1,0 +1,81 @@
+---
+---
+
+<section
+  class="py-16 sm:py-24 relative overflow-hidden"
+  style="background-color: var(--color-charcoal);"
+  aria-labelledby="how-it-works-heading"
+>
+  <div class="absolute inset-0 architect-dot-grid opacity-30 pointer-events-none" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+    <!-- Section header — label in muted-light, not accent -->
+    <div class="mb-14">
+      <p
+        class="text-xs uppercase tracking-widest mb-3"
+        style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 45%, transparent);"
+      >Get Started</p>
+      <h2
+        id="how-it-works-heading"
+        class="font-display text-5xl sm:text-6xl uppercase"
+        style="color: var(--color-bg);"
+      >How It Works</h2>
+    </div>
+
+    <!-- Steps -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-0">
+      {[
+        {
+          num: '01',
+          title: 'Solve today\'s maze',
+          body: 'A fresh 60×60 puzzle waits every morning. Same maze for everyone — compare times, come back tomorrow.',
+        },
+        {
+          num: '02',
+          title: 'Explore the library',
+          body: 'Browse 420+ free printable mazes. Small (1–2 min), Medium (5–10 min), Large (10–20 min). Play online or print.',
+        },
+        {
+          num: '03',
+          title: 'Come back tomorrow',
+          body: 'A new maze unlocks every day. Build a simple habit — ten minutes, a fresh challenge, no account needed.',
+        },
+      ].map(({ num, title, body }) => (
+        <div class="sm:pr-10 last:pr-0 sm:border-r last:border-r-0" style="border-color: color-mix(in srgb, var(--color-bg) 12%, transparent);">
+          <!-- Step number — large, very low opacity, watermark-like -->
+          <div
+            class="font-display text-8xl sm:text-9xl leading-none mb-4 select-none"
+            style="color: color-mix(in srgb, var(--color-bg) 18%, transparent);"
+            aria-hidden="true"
+          >{num}</div>
+          <h3
+            class="text-base font-semibold mb-3 uppercase tracking-wide"
+            style="color: var(--color-bg);"
+          >{title}</h3>
+          <p
+            class="text-sm leading-relaxed"
+            style="color: color-mix(in srgb, var(--color-bg) 50%, transparent);"
+          >{body}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- CTA row -->
+    <div
+      class="mt-14 pt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8"
+      style="border-top: 1px solid color-mix(in srgb, var(--color-bg) 12%, transparent);"
+    >
+      <a href="/maze-of-the-day/" class="btn-primary text-sm px-7 py-3.5 w-full sm:w-auto justify-center sm:justify-start">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+        Start with Today's Maze
+      </a>
+      <span
+        class="text-xs uppercase tracking-widest"
+        style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 35%, transparent);"
+      >Free · No account · New maze daily</span>
+    </div>
+  </div>
+</section>

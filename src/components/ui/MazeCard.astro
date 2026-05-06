@@ -1,0 +1,60 @@
+---
+import type { MazeCatalogEntry } from '../../types/maze.js';
+import { generateMazeTitle } from '../../lib/catalog/seo.js';
+import { generateMazeFromCatalog } from '../../lib/maze/index.js';
+import { renderThumbnail } from '../../lib/svg/renderToString.js';
+import DifficultyBadge from './DifficultyBadge.astro';
+
+export interface Props {
+  entry: MazeCatalogEntry;
+  imageOnly?: boolean;
+}
+
+const { entry, imageOnly = false } = Astro.props;
+const maze = generateMazeFromCatalog(entry);
+const svg = renderThumbnail(maze);
+const title = generateMazeTitle(entry);
+---
+
+{imageOnly ? (
+  <div
+    class="aspect-square overflow-hidden"
+    style="background-color: var(--color-bg);"
+  >
+    <div
+      class="flex items-center justify-center h-full p-2 transition-transform duration-300 group-hover:scale-[1.03]"
+      set:html={svg}
+    />
+  </div>
+) : (
+  <a
+    href={`/mazes/${entry.slug}`}
+    class="card card-hover group block"
+    aria-label={`Play or print: ${title}`}
+  >
+    <!-- SVG Thumbnail — rendered at build time -->
+    <div
+      class="flex items-center justify-center p-2 aspect-square overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
+      style="background-color: var(--color-bg);"
+      set:html={svg}
+    />
+    <div
+      class="p-3 space-y-1.5"
+      style="border-top: 1px solid var(--color-border);"
+    >
+      <p
+        class="text-sm font-semibold leading-tight transition-colors duration-150"
+        style="color: var(--color-charcoal);"
+      >
+        {title}
+      </p>
+      <div class="flex items-center justify-between gap-2">
+        <DifficultyBadge difficulty={entry.difficulty} size="sm" />
+        <span
+          class="text-xs"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >{entry.width}×{entry.height}</span>
+      </div>
+    </div>
+  </a>
+)}

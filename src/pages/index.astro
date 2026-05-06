@@ -1,0 +1,410 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import FeatureMazes from '../components/home/FeatureMazes.astro';
+import HowToPlay from '../components/home/HowToPlay.astro';
+import HowItWorks from '../components/home/HowItWorks.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const websiteSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'MazeThis',
+  url: siteUrl,
+  description: 'Free printable maze puzzles and daily maze challenge. 420+ mazes for kids and adults.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${siteUrl}/maze-generator`,
+    'query-input': 'required name=search_term_string',
+  },
+});
+
+const organizationSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'MazeThis',
+  url: siteUrl,
+  logo: `${siteUrl}/favicon.svg`,
+  description: 'Free printable mazes and interactive maze puzzles for kids and adults. Daily maze challenge, maze library, and custom maze generator.',
+  foundingDate: '2024',
+  knowsAbout: ['maze puzzles', 'printable mazes', 'daily maze challenge', 'maze generation', 'brain games', 'educational puzzles'],
+});
+---
+
+<BaseLayout
+  title="Free Maze Puzzles — Daily Challenge & Printable Mazes | MazeThis"
+  description="Play a new free maze puzzle every day. Browse 420+ printable mazes for kids and adults, or generate your own. No account needed — free forever."
+  schemaLD={[websiteSchema, organizationSchema]}
+>
+
+  <!-- 1. Hero -->
+  <Hero />
+
+  <!-- 2. Maze Library — SEO + navigation section -->
+  <section
+    class="py-16 sm:py-20"
+    style="background-color: var(--color-bg);"
+    aria-labelledby="library-heading"
+  >
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="mb-10">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >Free Maze Library</p>
+        <h2
+          id="library-heading"
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >420+ Free<br />Printable Mazes</h2>
+        <p
+          class="mt-4 text-sm leading-relaxed max-w-xl"
+          style="color: var(--color-muted-strong);"
+        >
+          Hand-crafted mazes in three sizes — play online or print at home. Perfect for classrooms,
+          homeschooling, and puzzle books.
+        </p>
+      </div>
+
+      <!-- Size categories — bordered grid, no emojis -->
+      <div class="grid grid-cols-3 gap-px mb-8" style="background-color: var(--color-border);">
+        {[
+          { href: '/small-mazes',  label: 'Small',  sub: '20×20 grid', time: '~1–2 min',   num: '01' },
+          { href: '/medium-mazes', label: 'Medium', sub: '40×40 grid', time: '~5–10 min',  num: '02' },
+          { href: '/large-mazes',  label: 'Large',  sub: '60×60 grid', time: '~10–20 min', num: '03' },
+        ].map(({ href, label, sub, time, num }) => (
+          <a
+            href={href}
+            class="group flex flex-col p-4 sm:p-7 transition-colors duration-150"
+            style="background-color: var(--color-surface);"
+            onmouseover="this.style.backgroundColor='var(--color-bg)';"
+            onmouseout="this.style.backgroundColor='var(--color-surface)';"
+          >
+            <span
+              class="text-xs uppercase tracking-widest mb-4"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{num}</span>
+            <span
+              class="font-display text-3xl sm:text-5xl uppercase mb-2"
+              style="color: var(--color-charcoal);"
+            >{label}</span>
+            <span
+              class="text-xs mb-1 hidden sm:block"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{sub}</span>
+            <span
+              class="text-xs"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{time}</span>
+            <span
+              class="mt-4 text-xs uppercase tracking-widest transition-colors"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+            >Explore →</span>
+          </a>
+        ))}
+      </div>
+
+      <!-- Audience links -->
+      <div class="flex flex-wrap gap-2 text-xs">
+        {[
+          { href: '/printable-mazes',     label: 'Printable Mazes' },
+          { href: '/mazes-for-kids',      label: 'Mazes for Kids' },
+          { href: '/mazes-for-adults',    label: 'Mazes for Adults' },
+          { href: '/mazes-for-classroom', label: 'Classroom Mazes' },
+        ].map(({ href, label }) => (
+          <a
+            href={href}
+            class="inline-flex items-center px-3.5 py-1.5 uppercase tracking-widest transition-colors duration-150"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border: 1px solid var(--color-border);"
+            onmouseover="this.style.color='var(--color-charcoal)'; this.style.borderColor='var(--color-border-strong)';"
+            onmouseout="this.style.color='var(--color-muted-strong)'; this.style.borderColor='var(--color-border)';"
+          >{label}</a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Pick Your Challenge -->
+  <FeatureMazes />
+
+  <!-- Mid-page daily reminder
+       Surface bg with accent top rule — NOT dark, breaks consecutive-dark issue with HowItWorks -->
+  <div
+    class="relative py-12 sm:py-14"
+    style="background-color: var(--color-surface); border-top: 3px solid var(--color-accent); border-bottom: 1px solid var(--color-border);"
+  >
+    <div class="mx-auto max-w-xl px-4 text-center">
+      <p
+        class="font-display text-4xl sm:text-5xl uppercase mb-6"
+        style="color: var(--color-charcoal);"
+      >Still haven't tried today's maze?</p>
+      <a
+        href="/play/maze-of-the-day/"
+        class="btn-primary text-sm px-8 py-3.5 inline-flex items-center gap-2 w-full sm:w-auto justify-center"
+      >
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+        Play Today's Maze
+      </a>
+      <p
+        class="mt-4 text-xs uppercase tracking-widest"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+      >Free · Same puzzle for everyone · No account needed</p>
+    </div>
+  </div>
+
+  <!-- 4. How It Works (dark section — now unambiguously distinct) -->
+  <HowItWorks />
+
+  <!-- 5. Three Ways to Enjoy -->
+  <HowToPlay />
+
+  <!-- 6. Why this product — editorial list layout, not bordered grid -->
+  <section
+    class="py-16 sm:py-24"
+    style="background-color: var(--color-surface); border-top: 1px solid var(--color-border);"
+    aria-labelledby="why-heading"
+  >
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+      <div class="mb-12">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >Why MazeThis</p>
+        <h2
+          id="why-heading"
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >Built for<br />Puzzle Lovers</h2>
+      </div>
+
+      <!-- Definition-list layout — no bordered boxes -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-8">
+        {[
+          {
+            id: 'F1',
+            title: 'Print-Perfect Worksheets',
+            body: 'Every maze prints cleanly with proper margins and an answer key on a separate page. Ideal for teachers, homeschoolers, and activity books.',
+          },
+          {
+            id: 'F2',
+            title: 'Unlimited Unique Mazes',
+            body: 'Our maze generator creates a different puzzle every time — you\'ll never run out of fresh printable mazes to solve or share.',
+          },
+          {
+            id: 'F3',
+            title: 'Three Difficulty Sizes',
+            body: 'Small (20×20), Medium (40×40), and Large (60×60) — each size is independently tuned for branching and loops, not just scaled up.',
+          },
+          {
+            id: 'F4',
+            title: 'Play on Any Device',
+            body: 'Arrow keys on desktop, swipe on mobile, or the on-screen D-pad. Maze puzzles that work wherever you are.',
+          },
+          {
+            id: 'F5',
+            title: 'Always Free',
+            body: 'No account, no subscription, no watermarks. All 420+ mazes and the full maze generator are free to use forever.',
+          },
+          {
+            id: 'F6',
+            title: 'Good for Your Brain',
+            body: 'Maze puzzles build spatial reasoning, focus, and problem-solving skills. Great for kids developing motor skills and adults staying sharp.',
+          },
+        ].map(({ id, title, body }) => (
+          <div class="flex gap-5">
+            <span
+              class="text-xs shrink-0 mt-1 w-6"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{id}</span>
+            <div>
+              <h3
+                class="text-sm font-bold mb-1.5"
+                style="color: var(--color-charcoal);"
+              >{title}</h3>
+              <p
+                class="text-sm leading-relaxed"
+                style="color: var(--color-muted-strong);"
+              >{body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. SEO content — For Everyone -->
+  <section
+    class="py-16 sm:py-24"
+    style="background-color: var(--color-bg); border-top: 1px solid var(--color-border);"
+    aria-labelledby="about-mazes-heading"
+  >
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+      <div class="mb-12">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >For Everyone</p>
+        <h2
+          id="about-mazes-heading"
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >Free Maze Puzzles<br />for Everyone</h2>
+        <p
+          class="mt-4 text-sm leading-relaxed max-w-xl"
+          style="color: var(--color-muted-strong);"
+        >
+          Maze puzzles are one of the most satisfying brain exercises around — and MazeThis makes
+          them free, instant, and always fresh.
+        </p>
+      </div>
+
+      <!-- Two-column list with thin top rules — lighter than full bordered boxes -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-0">
+        {[
+          {
+            id: 'P',
+            title: 'Print at Home',
+            body: 'Every maze includes a clean, printer-friendly version with a separate answer key. Free to download — perfect for classroom worksheets, homeschool activities, and puzzle books. No watermarks, no sign-up.',
+          },
+          {
+            id: 'O',
+            title: 'Play Mazes Online',
+            body: 'Solve mazes directly in your browser. Arrow keys or WASD on desktop, swipe or D-pad on mobile. Your path is tracked so you never lose your place. Works on any device, no app needed.',
+          },
+          {
+            id: 'D',
+            title: 'Daily Maze Challenge',
+            body: 'A new 60×60 maze unlocks every day — the same puzzle for everyone worldwide. It\'s a simple daily habit: solve it, come back tomorrow, keep the streak. Takes about 10–15 minutes.',
+          },
+          {
+            id: 'K',
+            title: 'For Kids, Adults & Classrooms',
+            body: 'Quick 1-minute mazes for kids, 20-minute labyrinths for adults, and printable worksheets for teachers. The maze generator creates unlimited unique puzzles in any size — free forever.',
+          },
+        ].map(({ id, title, body }) => (
+          <div
+            class="py-7"
+            style="border-top: 1px solid var(--color-border);"
+          >
+            <div class="flex items-baseline gap-4 mb-2">
+              <span
+                class="text-xs"
+                style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+              >{id}</span>
+              <h3
+                class="text-base font-bold"
+                style="color: var(--color-charcoal);"
+              >{title}</h3>
+            </div>
+            <p
+              class="text-sm leading-relaxed"
+              style="color: var(--color-muted-strong);"
+            >{body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Generator CTA -->
+  <section
+    class="relative overflow-hidden py-20 sm:py-28"
+    style="background-color: var(--color-charcoal);"
+    aria-labelledby="generator-cta-heading"
+  >
+    <div class="absolute inset-0 architect-dot-grid opacity-30 pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute top-0 left-0 right-0 h-0.5" style="background-color: var(--color-accent);"></div>
+
+    <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl">
+        <p
+          class="text-xs uppercase tracking-widest mb-4"
+          style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 45%, transparent);"
+        >Maze Generator</p>
+        <h2
+          id="generator-cta-heading"
+          class="font-display text-6xl sm:text-7xl lg:text-8xl uppercase leading-none mb-6"
+          style="color: var(--color-bg);"
+        >Build Your<br />Own Maze</h2>
+        <p
+          class="text-sm leading-relaxed mb-8 max-w-md"
+          style="color: color-mix(in srgb, var(--color-bg) 50%, transparent);"
+        >
+          Choose a size, generate instantly, then download as SVG or print directly from your browser.
+          No account needed — free forever.
+        </p>
+        <a
+          href="/maze-generator"
+          class="btn-primary text-sm px-8 py-4 inline-flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-start"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+          </svg>
+          Open Maze Generator
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sticky CTA — mobile only -->
+  <div
+    id="sticky-cta"
+    class="fixed bottom-0 left-0 right-0 z-50 sm:hidden translate-y-full transition-transform duration-300 ease-in-out"
+    aria-hidden="true"
+  >
+    <div
+      class="px-4 py-3 backdrop-blur-md"
+      style="background-color: color-mix(in srgb, var(--color-bg) 95%, transparent); border-top: 1px solid var(--color-border);"
+    >
+      <div class="mx-auto max-w-xl flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <p
+            class="text-sm font-bold truncate"
+            style="color: var(--color-charcoal);"
+          >Today's Maze Challenge</p>
+          <p
+            class="text-xs"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+          >Same puzzle for everyone · Free</p>
+        </div>
+        <a
+          href="/play/maze-of-the-day/"
+          class="btn-primary text-xs px-4 py-2.5 shrink-0"
+          tabindex="-1"
+          aria-hidden="true"
+        >
+          Play Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+</BaseLayout>
+
+<script>
+  const stickyEl = document.getElementById('sticky-cta');
+  const heroCta = document.getElementById('hero-play-cta');
+
+  if (stickyEl && heroCta) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const visible = entry.isIntersecting;
+        stickyEl.classList.toggle('translate-y-full', visible);
+        if (visible) {
+          stickyEl.setAttribute('aria-hidden', 'true');
+          stickyEl.querySelector('a')?.setAttribute('tabindex', '-1');
+        } else {
+          stickyEl.removeAttribute('aria-hidden');
+          stickyEl.querySelector('a')?.removeAttribute('tabindex');
+        }
+      },
+      { threshold: 0 },
+    );
+    observer.observe(heroCta);
+  }
+</script>

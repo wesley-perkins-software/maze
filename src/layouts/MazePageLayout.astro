@@ -1,0 +1,30 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../components/nav/Breadcrumb.astro';
+import type { CategoryInfo } from '../types/maze.js';
+
+export interface Props {
+  title: string;
+  description: string;
+  slug: string;
+  category: CategoryInfo;
+  mazeTitle: string;
+  schemaLD?: string | string[];
+  canonical?: string;
+}
+
+const { title, description, slug, category, mazeTitle, schemaLD, canonical } = Astro.props;
+---
+
+<BaseLayout {title} {description} {schemaLD} {canonical}>
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: category.label, href: `/${category.slug}` },
+      { label: mazeTitle },
+    ]} />
+
+    <slot />
+  </div>
+</BaseLayout>

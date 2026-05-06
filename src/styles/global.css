@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Architect Design Tokens ──────────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* Core palette */
+    --color-bg:           #F6F5F0;
+    --color-surface:      #FFFFFF;
+    --color-charcoal:     #1C1C1E;
+    --color-charcoal-2:   #2A2A2C;
+    --color-accent:       #E03B24;
+    --color-accent-dark:  #C42E18;
+    --color-border:       #D6D4CF;
+    --color-border-strong:#B0AEA8;
+    --color-muted:        #9A9892;
+    --color-muted-strong: #5C5A55;
+
+    /* Legacy brand vars — gameplay components reference these */
+    --color-brand:      #2563eb;
+    --color-brand-dark: #1d4ed8;
+  }
+
+  .dark {
+    --color-bg:           #111110;
+    --color-surface:      #1C1C1E;
+    --color-charcoal:     #F0EFE9;
+    --color-charcoal-2:   #D8D6D0;
+    --color-border:       #2E2E30;
+    --color-border-strong:#4A4A4C;
+    --color-muted:        #6A6A6C;
+    --color-muted-strong: #9A9A9C;
+  }
+
+  html {
+    @apply scroll-smooth;
+    font-family: 'Outfit', system-ui, sans-serif;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-charcoal);
+    @apply antialiased;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', system-ui, sans-serif;
+    @apply tracking-tight leading-none;
+  }
+  h2 {
+    font-family: 'Bebas Neue', system-ui, sans-serif;
+    @apply tracking-tight leading-none;
+  }
+  h3 {
+    @apply text-xl font-semibold tracking-tight;
+  }
+}
+
+/* ── Architect dot-grid background ───────────────────────────────────────── */
+.architect-dot-grid {
+  background-image: radial-gradient(circle, rgba(28,28,30,0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.dark .architect-dot-grid {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+}
+
+/* ── Legacy maze-path background — kept for gameplay pages ────────────────── */
+.maze-bg-pattern {
+  background-image:
+    linear-gradient(rgba(37,99,235,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.dark .maze-bg-pattern {
+  background-image:
+    linear-gradient(rgba(96,165,250,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96,165,250,.05) 1px, transparent 1px);
+}
+
+/* ── Maze game animations — do not modify ─────────────────────────────────── */
+@keyframes maze-player-pulse {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.45; }
+}
+.maze-player-glow {
+  animation: maze-player-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes post-solve-card-in {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+@keyframes post-solve-confetti {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--cx), var(--cy)) rotate(var(--cr)); opacity: 0; }
+}
+.post-solve-card-in {
+  animation: post-solve-card-in 220ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Component layer ──────────────────────────────────────────────────────── */
+@layer components {
+
+  /* Buttons ───────────────────────────────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white
+           transition-colors duration-150
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+           active:scale-[0.98];
+    background-color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-accent-dark);
+    border-color: var(--color-accent-dark);
+  }
+  .btn-primary:focus-visible {
+    outline-color: var(--color-accent);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-transparent
+           transition-all duration-150
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+           active:scale-[0.98];
+    color: var(--color-charcoal);
+    border: 1px solid var(--color-charcoal);
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-charcoal);
+    color: var(--color-bg);
+  }
+  .dark .btn-secondary {
+    color: var(--color-charcoal);
+    border-color: var(--color-charcoal);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+           transition-colors duration-150;
+    color: var(--color-muted-strong);
+  }
+  .btn-ghost:hover {
+    color: var(--color-charcoal);
+    background-color: var(--color-border);
+  }
+  .dark .btn-ghost {
+    color: var(--color-muted-strong);
+  }
+  .dark .btn-ghost:hover {
+    color: var(--color-charcoal);
+    background-color: var(--color-border);
+  }
+
+  /* Cards ─────────────────────────────────────────────────────────────────── */
+  .card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    @apply overflow-hidden;
+  }
+  .card-hover {
+    @apply card transition-all duration-200;
+  }
+  .card-hover:hover {
+    border-color: var(--color-border-strong);
+    transform: translateY(-1px);
+  }
+  .dark .card {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+  }
+
+  /* Badges ────────────────────────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium;
+    font-family: 'IBM Plex Mono', Menlo, monospace;
+    border: 1px solid var(--color-border);
+    color: var(--color-muted-strong);
+    background-color: var(--color-surface);
+  }
+
+  /* Section labels ────────────────────────────────────────────────────────── */
+  .section-label {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-widest mb-3;
+    font-family: 'IBM Plex Mono', Menlo, monospace;
+    color: var(--color-muted-strong);
+    border: 1px solid var(--color-border);
+    background-color: transparent;
+  }
+  .dark .section-label {
+    color: var(--color-muted-strong);
+    border-color: var(--color-border);
+  }
+
+  /* Gradient text — kept for pages that still use it ──────────────────────── */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600;
+  }
+
+  /* Architect accent text ─────────────────────────────────────────────────── */
+  .text-accent {
+    color: var(--color-accent);
+  }
+
+  /* Architect section container ───────────────────────────────────────────── */
+  .arch-section {
+    @apply py-16 sm:py-24;
+    background-color: var(--color-bg);
+  }
+  .arch-section-surface {
+    @apply py-16 sm:py-24;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .arch-section-dark {
+    @apply py-16 sm:py-24;
+    background-color: var(--color-charcoal);
+  }
+  .dark .arch-section-dark {
+    background-color: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+  }
+}

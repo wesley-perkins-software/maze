@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const faqs = [
+  {
+    q: 'Are all mazes on MazeThis free to use?',
+    a: 'Yes. Every maze on MazeThis — including the generator and all 420+ pre-made mazes — is completely free to use, print, and share for personal and educational purposes. No account or sign-up is required.',
+  },
+  {
+    q: 'Can I print mazes for my classroom?',
+    a: 'Absolutely. All mazes on MazeThis are free to print for classroom use. Click "Print Maze" on any maze page to get a clean, print-optimized version with no ads or navigation chrome. Print as many copies as you need.',
+  },
+  {
+    q: 'How do I play a maze online?',
+    a: 'Open any maze and use the arrow keys (or WASD) on desktop to move your character. On mobile and tablet, swipe in any direction or use the on-screen D-pad. Your path is shown as a trail so you can see where you\'ve been.',
+  },
+  {
+    q: 'How do I see the solution to a maze?',
+    a: 'Click the "Show Solution" button above the maze to reveal the shortest solution path in green. Click "Hide Solution" to hide it again. The solution is available for all mazes, including generated ones.',
+  },
+  {
+    q: 'How are mazes generated?',
+    a: 'MazeThis uses a Recursive Backtracker (depth-first search) algorithm to generate mazes. This produces perfect mazes — every cell is reachable and there is exactly one solution path. Difficulty is controlled by how many additional walls are removed after generation: easier mazes have more openings (less backtracking required); harder mazes preserve maximum dead ends.',
+  },
+  {
+    q: 'Can I generate infinite mazes?',
+    a: 'Yes. The maze generator creates a new unique maze every time you click "New Maze." You can set the size and difficulty and generate as many mazes as you want. Each maze can be downloaded as an SVG file or printed directly.',
+  },
+  {
+    q: 'What is the hardest maze on the site?',
+    a: 'The hardest pre-made mazes are in the Adults and Hard difficulty categories, specifically the 25×25 grids. Hard mazes have zero extra wall removals (maximum dead ends) while Adults mazes are similar in size but slightly more open. You can also generate custom mazes at any size — a 40×40 hard maze is possible with the generator.',
+  },
+  {
+    q: 'What are the maze difficulty levels?',
+    a: 'MazeThis has five difficulty levels: Kids (5×5–8×8, very open corridors), Easy (5×5–10×10, beginner-friendly), Medium (10×10–15×15, moderate challenge), Adults (15×15–25×25, large complex mazes), and Hard (15×15–25×25, maximum dead ends). Kids and Easy are great for children; Medium suits most adults; Adults and Hard are for experienced solvers.',
+  },
+  {
+    q: 'Are the mazes different every time I visit?',
+    a: 'Pre-made mazes are always the same (they\'re generated from a fixed seed, so they\'re consistent and sharable). The maze generator creates a new unique maze each time you use it. You can also use a specific seed number in the generator to reproduce the same maze.',
+  },
+  {
+    q: 'Can I download mazes?',
+    a: 'Yes. On the maze generator page, click "Download SVG" to save the current maze as an SVG vector file. SVG files print at any size without quality loss and can be edited in design tools like Inkscape, Figma, or Illustrator.',
+  },
+  {
+    q: 'Do mazes work on mobile phones?',
+    a: 'Yes. All mazes work on smartphones and tablets. You can swipe in any direction to move your character, or use the on-screen D-pad. The mazes automatically resize for smaller screens.',
+  },
+  {
+    q: 'Are mazes good for children\'s development?',
+    a: 'Yes. Maze puzzles support several areas of child development: fine motor control (pencil tracing), spatial reasoning (mental navigation), problem-solving (backtracking and trying new paths), and persistence (tolerating dead ends without frustration). Research consistently links early spatial activity with improved math performance in later years.',
+  },
+  {
+    q: 'Are mazes good for seniors?',
+    a: 'Research supports maze puzzles as a form of cognitive exercise for older adults, particularly for spatial memory and sustained attention — cognitive domains that are important to maintain as we age. Regular puzzle engagement as part of a broader cognitively active lifestyle is associated with slower cognitive decline. See our article on mazes for seniors for more detail.',
+  },
+  {
+    q: 'What is the difference between a maze and a labyrinth?',
+    a: 'A labyrinth is unicursal — it has a single path with no dead ends or choices. You simply follow the path to the center. A maze is multicursal — it has multiple paths, dead ends, and junctions where you must choose. All the puzzles on MazeThis are mazes (multicursal), not labyrinths. The terms are often used interchangeably in everyday English, but they describe fundamentally different structures.',
+  },
+  {
+    q: 'Can I use mazes for commercial purposes?',
+    a: 'Pre-made mazes on MazeThis are free for personal and educational use. For commercial use (publishing, merchandise, commercial products), please contact us to discuss licensing. Custom mazes you generate yourself with our generator may be used freely — they\'re unique to your generation.',
+  },
+  {
+    q: 'How do I reset a maze mid-solve?',
+    a: 'Click the "Reset" button above the maze to return to the start and clear your trail. Your timer will also reset. There is no penalty for resetting.',
+  },
+  {
+    q: 'Is there a daily maze challenge?',
+    a: 'Yes! Each day features a unique "Maze of the Day" on the home page — a new maze derived from the current date. See if you can maintain a solving streak.',
+  },
+];
+
+const faqSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+});
+---
+
+<BaseLayout
+  title="Frequently Asked Questions | MazeThis"
+  description="Answers to common questions about MazeThis — how to print mazes, play online, use the generator, difficulty levels, and more."
+  schemaLD={faqSchema}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
+    <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'FAQ' }]} />
+
+    <div class="mt-4 mb-10">
+      <h1 class="mb-2">Frequently Asked Questions</h1>
+      <p class="text-slate-500 text-lg">
+        Everything you need to know about MazeThis.
+      </p>
+    </div>
+
+    <div class="space-y-4" itemscope itemtype="https://schema.org/FAQPage">
+      {faqs.map(({ q, a }, i) => (
+        <details
+          class="group rounded-xl border border-slate-200 bg-white overflow-hidden"
+          itemscope
+          itemprop="mainEntity"
+          itemtype="https://schema.org/Question"
+        >
+          <summary
+            class="flex cursor-pointer items-center justify-between gap-4 p-5 font-semibold text-slate-800 hover:bg-slate-50 transition-colors list-none"
+            itemprop="name"
+          >
+            <span>{q}</span>
+            <svg
+              class="w-5 h-5 text-slate-400 shrink-0 transition-transform group-open:rotate-180"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </summary>
+          <div
+            class="px-5 pb-5 text-slate-600 text-sm leading-relaxed border-t border-slate-100"
+            itemscope
+            itemprop="acceptedAnswer"
+            itemtype="https://schema.org/Answer"
+          >
+            <div class="pt-4" itemprop="text">{a}</div>
+          </div>
+        </details>
+      ))}
+    </div>
+
+    <div class="mt-12 rounded-2xl bg-blue-50 border border-blue-100 p-8 text-center">
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Still have questions?</h2>
+      <p class="text-slate-600 mb-4 text-sm">
+        Can't find what you're looking for? Browse our guides and articles for more detail.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/blog" class="btn-primary">Read Our Blog</a>
+        <a href="/maze-generator" class="btn-secondary">Try the Generator</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,167 @@
+---
+import { CATEGORIES } from '../../types/maze.js';
+---
+
+<footer style="border-top: 1px solid var(--color-border); background-color: var(--color-surface);">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+
+    <div class="grid grid-cols-2 gap-8 md:grid-cols-5 mb-12">
+
+      <!-- Brand -->
+      <div class="col-span-2 md:col-span-1">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2.5 mb-4 group"
+          aria-label="MazeThis home"
+        >
+          <svg
+            width="20" height="20" viewBox="0 0 24 24" fill="none"
+            xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+            class="transition-transform duration-200 group-hover:scale-110"
+          >
+            <rect width="24" height="24" fill="var(--color-charcoal)"/>
+            <path
+              d="M3 3h6v3H3zM15 3h6v6h-3V6h-3zM3 10h3v4H3zM9 7h3v7H9zM3 17h6v4H3zM12 14h6v3h-3v4h-3z"
+              fill="var(--color-accent)"
+            />
+          </svg>
+          <span
+            class="font-display text-lg uppercase tracking-wider"
+            style="color: var(--color-charcoal);"
+          >MazeThis</span>
+        </a>
+        <p
+          class="text-sm leading-relaxed"
+          style="color: var(--color-muted-strong);"
+        >
+          Free printable mazes and interactive maze games for all ages.
+        </p>
+      </div>
+
+      <!-- Maze Library -->
+      <div>
+        <h3
+          class="text-xs uppercase tracking-widest mb-4"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
+        >Maze Library</h3>
+        <ul class="space-y-2.5">
+          {CATEGORIES.map((cat) => (
+            <li>
+              <a
+                href={`/${cat.slug}`}
+                class="text-sm transition-colors duration-150"
+                style="color: var(--color-muted-strong);"
+                onmouseover="this.style.color='var(--color-accent)';"
+                onmouseout="this.style.color='var(--color-muted-strong)';"
+              >{cat.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Collections -->
+      <div>
+        <h3
+          class="text-xs uppercase tracking-widest mb-4"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
+        >Collections</h3>
+        <ul class="space-y-2.5">
+          {[
+            { href: '/printable-mazes',      label: 'Printable Mazes' },
+            { href: '/mazes-for-classroom',  label: 'Classroom Mazes' },
+            { href: '/mazes-for-seniors',    label: 'Mazes for Seniors' },
+            { href: '/maze-generator',       label: 'Maze Generator' },
+          ].map(({ href, label }) => (
+            <li>
+              <a
+                href={href}
+                class="text-sm transition-colors duration-150"
+                style="color: var(--color-muted-strong);"
+                onmouseover="this.style.color='var(--color-accent)';"
+                onmouseout="this.style.color='var(--color-muted-strong)';"
+              >{label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Learn -->
+      <div>
+        <h3
+          class="text-xs uppercase tracking-widest mb-4"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
+        >Learn</h3>
+        <ul class="space-y-2.5">
+          {[
+            { href: '/blog',                                          label: 'Blog' },
+            { href: '/blog/how-maze-generation-algorithms-work',      label: 'How Mazes Work' },
+            { href: '/blog/how-to-solve-a-maze',                      label: 'How to Solve a Maze' },
+            { href: '/faq',                                           label: 'FAQ' },
+          ].map(({ href, label }) => (
+            <li>
+              <a
+                href={href}
+                class="text-sm transition-colors duration-150"
+                style="color: var(--color-muted-strong);"
+                onmouseover="this.style.color='var(--color-accent)';"
+                onmouseout="this.style.color='var(--color-muted-strong)';"
+              >{label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- About -->
+      <div>
+        <h3
+          class="text-xs uppercase tracking-widest mb-4"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
+        >About</h3>
+        <ul class="space-y-2.5">
+          {[
+            { href: '/about',   label: 'About MazeThis' },
+            { href: '/privacy', label: 'Privacy Policy' },
+            { href: '/terms',   label: 'Terms of Service' },
+          ].map(({ href, label }) => (
+            <li>
+              <a
+                href={href}
+                class="text-sm transition-colors duration-150"
+                style="color: var(--color-muted-strong);"
+                onmouseover="this.style.color='var(--color-accent)';"
+                onmouseout="this.style.color='var(--color-muted-strong)';"
+              >{label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div
+      class="pt-6 flex flex-col sm:flex-row justify-between items-center gap-2"
+      style="border-top: 1px solid var(--color-border);"
+    >
+      <p
+        class="text-xs"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+      >
+        &copy; {new Date().getFullYear()} MazeThis. All mazes are free for personal and educational use.
+      </p>
+      <div class="flex gap-5">
+        {[
+          { href: '/privacy', label: 'Privacy' },
+          { href: '/terms',   label: 'Terms' },
+        ].map(({ href, label }) => (
+          <a
+            href={href}
+            class="text-xs transition-colors duration-150"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            onmouseover="this.style.color='var(--color-charcoal)';"
+            onmouseout="this.style.color='var(--color-muted)';"
+          >{label}</a>
+        ))}
+      </div>
+    </div>
+  </div>
+</footer>

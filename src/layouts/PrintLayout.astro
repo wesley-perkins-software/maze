@@ -1,0 +1,56 @@
+---
+/**
+ * Minimal layout for print pages.
+ * No nav, no footer, no JS.
+ * Auto-triggers window.print() on load.
+ */
+import '../styles/global.css';
+import '../styles/print.css';
+
+export interface Props {
+  title: string;
+  canonical: string;
+}
+
+const { title, canonical } = Astro.props;
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href={canonical.startsWith('http') ? canonical : `${siteUrl}${canonical}`} />
+    <style>
+      body { margin: 0; padding: 0; background: white; }
+      .print-header { padding: 12px 16px 4px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+      .print-header a { font-weight: 700; color: #2563eb; text-decoration: none; font-size: 1.1rem; }
+      .print-header .no-print { font-size: 0.85rem; color: #64748b; }
+      .maze-print-container { padding: 16px; display: flex; flex-direction: column; align-items: center; }
+      h1 { font-size: 1.1rem; font-weight: 600; margin: 0 0 12px; text-align: center; color: #1e293b; }
+      svg { max-width: 100%; height: auto; display: block; }
+      @media print {
+        .no-print { display: none !important; }
+        .print-header { border-bottom: none; padding: 0 0 8px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="print-header no-print">
+      <a href="/">MazeThis</a>
+      <span>
+        <a href={canonical} class="no-print" style="color:#2563eb;text-decoration:none;font-size:0.85rem;">← Back to maze</a>
+        &nbsp;&nbsp;
+        <button onclick="window.print()" style="cursor:pointer;background:#2563eb;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:0.85rem;font-weight:600;">Print</button>
+      </span>
+    </div>
+    <div class="maze-print-container">
+      <slot />
+    </div>
+    <script>window.print();</script>
+  </body>
+</html>

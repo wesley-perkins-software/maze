@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/nav/Breadcrumb.astro';
+
+const updated = 'January 1, 2025';
+---
+
+<BaseLayout
+  title="Privacy Policy | MazeThis"
+  description="MazeThis privacy policy — how we handle your data, what we collect, and your rights."
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
+    <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }]} />
+
+    <div class="mt-4 mb-8">
+      <h1 class="mb-2">Privacy Policy</h1>
+      <p class="text-slate-500 text-sm">Last updated: {updated}</p>
+    </div>
+
+    <div class="prose prose-slate max-w-none prose-headings:font-bold prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-p:text-slate-600 prose-p:leading-relaxed prose-ul:text-slate-600 prose-li:mb-1">
+
+      <p>
+        MazeThis ("we," "us," or "our") is committed to protecting your privacy. This Privacy Policy
+        explains what information we collect, how we use it, and your rights with respect to that information.
+      </p>
+
+      <h2>Information We Collect</h2>
+      <p>MazeThis is a static website. We do not require accounts or sign-ups. The information we collect is limited to:</p>
+      <ul>
+        <li>
+          <strong>Usage analytics:</strong> We may collect anonymized data about pages visited, browser type,
+          and general geographic region (country-level) to understand how the site is used and improve it.
+          No personally identifiable information is collected for this purpose.
+        </li>
+        <li>
+          <strong>Local storage:</strong> MazeThis uses your browser's local storage to save your preferences
+          (such as dark mode preference) and game state (such as personal best times). This data never
+          leaves your device and is not transmitted to our servers.
+        </li>
+        <li>
+          <strong>Server logs:</strong> Our hosting provider (Netlify) automatically records standard server
+          access logs (IP address, timestamp, URL requested). These are used for security, diagnostics,
+          and uptime monitoring. We do not use these logs for marketing or tracking.
+        </li>
+      </ul>
+
+      <h2>Cookies</h2>
+      <p>
+        MazeThis does not use tracking cookies or third-party advertising cookies. We may use
+        a single session cookie to support site functionality. No cross-site tracking occurs.
+      </p>
+
+      <h2>Third-Party Services</h2>
+      <p>We may use the following third-party services:</p>
+      <ul>
+        <li><strong>Netlify</strong> (hosting): Processes server requests. Subject to Netlify's own privacy policy.</li>
+      </ul>
+      <p>We do not use Google Analytics, Meta Pixel, or any advertising networks.</p>
+
+      <h2>Children's Privacy</h2>
+      <p>
+        MazeThis is intended to be safe for all ages, including children. We do not knowingly collect
+        personal information from children under 13. If you believe a child has provided us with personal
+        information, please contact us and we will promptly delete it.
+      </p>
+
+      <h2>Data Retention and Deletion</h2>
+      <p>
+        Because we collect minimal data and no personally identifiable information, there is no personal
+        data to delete. Data stored in your browser's local storage can be cleared at any time through
+        your browser settings.
+      </p>
+
+      <h2>Your Rights</h2>
+      <p>
+        You have the right to know what data we hold about you, to request deletion, and to opt out
+        of any analytics collection. Since we collect only anonymized usage data, there is no
+        personally identifiable information to request or delete.
+      </p>
+
+      <h2>Changes to This Policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time. We will update the "Last updated" date
+        at the top of this page when we do so. Continued use of MazeThis after changes constitutes
+        acceptance of the updated policy.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        If you have questions about this Privacy Policy, please visit our
+        <a href="/about">About page</a>.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

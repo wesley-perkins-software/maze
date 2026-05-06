@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CategoryNav from '../components/nav/CategoryNav.astro';
+---
+
+<BaseLayout
+  title="Page Not Found | MazeThis"
+  description="The page you're looking for doesn't exist."
+  noindex={true}
+>
+  <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-24 text-center">
+    <div class="text-6xl mb-6" aria-hidden="true">🧩</div>
+    <h1 class="text-4xl font-extrabold text-slate-800 mb-3">Lost in the Maze?</h1>
+    <p class="text-slate-500 text-lg mb-8">
+      This page doesn't exist — but there are plenty of mazes to explore.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center mb-12">
+      <a href="/" class="btn-primary">Back to Home</a>
+      <a href="/easy-mazes" class="btn-secondary">Browse Mazes</a>
+      <a href="/maze-generator" class="btn-secondary">Make a Maze</a>
+    </div>
+    <div class="mt-8">
+      <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">Browse by difficulty</h2>
+      <CategoryNav compact />
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,75 @@
+---
+// Date label and countdown are injected client-side so they always reflect
+// the user's current moment rather than the build date.
+---
+
+<section class="py-12 bg-gradient-to-r from-blue-600 to-blue-700" aria-labelledby="daily-maze-heading">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="text-center md:text-left">
+        <div class="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white mb-3">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span id="daily-maze-date">Today's Challenge</span>
+        </div>
+        <h2 id="daily-maze-heading" class="text-2xl sm:text-3xl font-bold text-white mb-2">
+          Today's Maze Challenge
+        </h2>
+        <div class="flex items-center gap-2 justify-center md:justify-start flex-wrap mb-2">
+          <span class="inline-flex items-center rounded-full bg-white/20 border border-white/30 px-2.5 py-0.5 text-xs font-medium text-white">Large</span>
+          <span class="text-white/80 text-sm">60×60 · A new maze every day — same puzzle for everyone</span>
+        </div>
+        <!-- Countdown -->
+        <p class="text-white/60 text-xs mt-1">
+          Next maze in <span id="daily-home-countdown" class="font-mono text-white/80">…</span>
+        </p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 shrink-0">
+        <a
+          href="/maze-of-the-day/"
+          class="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-blue-700 shadow hover:bg-blue-50 transition-colors"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Play Today's Maze
+        </a>
+        <a
+          href="/large-mazes"
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-colors"
+        >
+          Browse Large Mazes
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const dateEl = document.getElementById('daily-maze-date');
+  if (dateEl) {
+    dateEl.textContent = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', month: 'long', day: 'numeric',
+    });
+  }
+
+  function tickHomeCountdown() {
+    const now = new Date();
+    const midnight = new Date(Date.UTC(
+      now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1,
+    ));
+    const rem = Math.max(0, Math.floor((midnight.getTime() - now.getTime()) / 1000));
+    const h = Math.floor(rem / 3600);
+    const m = Math.floor((rem % 3600) / 60);
+    const s = rem % 60;
+    const el = document.getElementById('daily-home-countdown');
+    if (el) {
+      el.textContent = h > 0
+        ? `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`
+        : `${m}m ${String(s).padStart(2, '0')}s`;
+    }
+  }
+  tickHomeCountdown();
+  setInterval(tickHomeCountdown, 1000);
+</script>

@@ -1,0 +1,55 @@
+---
+import { CATEGORIES } from '../../types/maze.js';
+
+export interface Props {
+  activeDifficulty?: string;
+  compact?: boolean;
+}
+
+const { activeDifficulty, compact = false } = Astro.props;
+
+const emojiMap: Record<string, string> = {
+  small:  '🌱',
+  medium: '⚡',
+  large:  '🔥',
+};
+---
+
+<nav aria-label="Maze categories">
+  {compact ? (
+    <div class="flex flex-wrap gap-2">
+      {CATEGORIES.map((cat) => (
+        <a
+          href={`/${cat.slug}`}
+          class:list={[
+            'badge border',
+            activeDifficulty === cat.difficulty
+              ? 'bg-blue-50 border-blue-200 text-blue-700'
+              : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-colors',
+          ]}
+          aria-current={activeDifficulty === cat.difficulty ? 'page' : undefined}
+        >
+          {cat.label}
+        </a>
+      ))}
+    </div>
+  ) : (
+    <div class="grid grid-cols-3 gap-3">
+      {CATEGORIES.map((cat) => (
+        <a
+          href={`/${cat.slug}`}
+          class:list={[
+            'flex flex-col items-center gap-1 rounded-xl border p-4 text-center transition-all hover:shadow-md',
+            activeDifficulty === cat.difficulty
+              ? 'border-blue-400 bg-blue-50'
+              : 'border-slate-200 bg-white hover:border-blue-300',
+          ]}
+          aria-current={activeDifficulty === cat.difficulty ? 'page' : undefined}
+        >
+          <span class="text-2xl" aria-hidden="true">{emojiMap[cat.difficulty]}</span>
+          <span class="text-sm font-semibold text-slate-700">{cat.label}</span>
+        </a>
+      ))}
+    </div>
+  )}
+</nav>

@@ -1,0 +1,197 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { MazeGenerator } from '../components/maze/MazeGenerator';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const faqItems = [
+  {
+    q: 'Is the maze generator free?',
+    a: 'Yes, completely free. No account, no sign-up, no limits. Generate as many mazes as you like.',
+  },
+  {
+    q: 'Can I print the mazes?',
+    a: 'Yes. Click the Print button to send the current maze directly to your printer. You can also Download SVG and print from any image viewer.',
+  },
+  {
+    q: 'What sizes can I make?',
+    a: 'Choose Small (20×20), Medium (40×40), or Large (60×60) with one click. Need something specific? Use the Custom size toggle to set exact dimensions up to 80×80.',
+  },
+  {
+    q: 'Can I use these mazes in my classroom?',
+    a: 'Absolutely. Teachers use MazeThis to print mazes for worksheets, activity packs, and early-learning exercises. All mazes are free to print and share.',
+  },
+  {
+    q: 'How are the mazes generated?',
+    a: 'Every maze is built with a Growing Tree algorithm — a hybrid between depth-first search and Prim\'s algorithm. Larger mazes use more branching and loop carving to create genuine decision points, not just long corridors.',
+  },
+  {
+    q: 'Why do larger mazes feel harder?',
+    a: 'Larger mazes use higher branching (more junction choices) and more loop density (more cycles that defeat wall-following). This creates real disorientation, not just a longer path.',
+  },
+];
+
+const schema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebApplication',
+      name: 'Free Maze Generator',
+      url: `${siteUrl}/maze-generator`,
+      description:
+        'Free online maze generator. Create custom mazes in Small, Medium, or Large size. Play in your browser, download as SVG, or print.',
+      applicationCategory: 'UtilityApplication',
+      isAccessibleForFree: true,
+      operatingSystem: 'Web Browser',
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
+  ],
+});
+---
+
+<BaseLayout
+  title="Free Maze Generator — Create Custom Mazes Online | MazeThis"
+  description="Make a free maze online in seconds. Pick Small, Medium, or Large — then play it in your browser, download as SVG, or print. Smart branching and loop carving make every maze genuinely challenging."
+  schemaLD={schema}
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Breadcrumb + heading -->
+    <div class="mb-8">
+      <nav aria-label="Breadcrumb" class="text-sm text-slate-500 mb-4">
+        <ol class="flex items-center gap-1">
+          <li><a href="/" class="hover:text-blue-600">Home</a></li>
+          <li>
+            <svg class="w-3 h-3 mx-1 text-slate-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </li>
+          <li><span class="text-slate-700 font-medium" aria-current="page">Maze Generator</span></li>
+        </ol>
+      </nav>
+
+      <h1 class="text-3xl font-bold text-slate-900 mb-2">Free Maze Generator</h1>
+      <p class="text-slate-500 text-lg">
+        Create a custom maze in any size. Play online, download as SVG, or print — all free.
+      </p>
+    </div>
+
+    <!-- Generator Island -->
+    <MazeGenerator client:load />
+
+    <!-- ── How to Use ─────────────────────────────────────────────────────── -->
+    <section class="mt-16 border-t border-slate-200 pt-10">
+      <h2 class="text-xl font-bold text-slate-800 mb-6">How to Create Your Maze</h2>
+      <ol class="grid grid-cols-1 sm:grid-cols-3 gap-6 list-none">
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center">1</span>
+          <div>
+            <p class="font-semibold text-slate-700">Pick a size</p>
+            <p class="text-sm text-slate-500 mt-1">Small for quick fun, Large for a serious challenge. Complexity scales automatically.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center">2</span>
+          <div>
+            <p class="font-semibold text-slate-700">Generate</p>
+            <p class="text-sm text-slate-500 mt-1">Each maze is unique and seeded — hit Generate New Maze as many times as you like.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center">3</span>
+          <div>
+            <p class="font-semibold text-slate-700">Play, print, or download</p>
+            <p class="text-sm text-slate-500 mt-1">Solve it in your browser with arrow keys, or export for printing.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ── Size Guide ─────────────────────────────────────────────────────── -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-slate-800 mb-6">Choosing the Right Size</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">Small</span>
+            <span class="text-xs text-slate-400">20×20 · ~3 min</span>
+          </div>
+          <p class="text-sm text-slate-600">Quick and approachable. Fits on one screen on mobile. A handful of junctions and a couple of loops — the right warm-up.</p>
+          <a href="/small-mazes" class="mt-3 inline-block text-xs text-blue-600 hover:underline font-medium">Browse small mazes →</a>
+        </div>
+        <div class="rounded-xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700">Medium</span>
+            <span class="text-xs text-slate-400">40×40 · ~12 min</span>
+          </div>
+          <p class="text-sm text-slate-600">The balanced challenge. More branching means real junctions. Enough loops that wall-following stops working. Requires focus.</p>
+          <a href="/medium-mazes" class="mt-3 inline-block text-xs text-blue-600 hover:underline font-medium">Browse medium mazes →</a>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">Large</span>
+            <span class="text-xs text-slate-400">60×60 · ~30 min</span>
+          </div>
+          <p class="text-sm text-slate-600">A genuine labyrinth. Dense branching and frequent loops make it easy to get turned around. Consult the minimap often.</p>
+          <a href="/large-mazes" class="mt-3 inline-block text-xs text-blue-600 hover:underline font-medium">Browse large mazes →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Use Cases ──────────────────────────────────────────────────────── -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-slate-800 mb-6">Ways to Use Your Maze</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-slate-600">
+        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <p class="font-semibold text-slate-700 mb-1">🏫 Classroom worksheets</p>
+          <p>Print a fresh maze for every student. Small mazes work well for younger kids; Medium for primary school.</p>
+        </div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <p class="font-semibold text-slate-700 mb-1">🧒 Kids activity</p>
+          <p>Keep kids entertained on car trips, rainy days, or waiting rooms. Generate a Small maze for ages 4–8.</p>
+        </div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <p class="font-semibold text-slate-700 mb-1">🎮 Play online</p>
+          <p>Solve with arrow keys on desktop or swipe on mobile. The timer and hint system keep it engaging for all ages.</p>
+        </div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <p class="font-semibold text-slate-700 mb-1">🧩 Puzzle challenge</p>
+          <p>Try a Large maze for a serious mental workout. Download as SVG to share or print at any resolution.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ────────────────────────────────────────────────────────────── -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-slate-800 mb-6">Frequently Asked Questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b border-slate-100 pb-5 last:border-0">
+            <dt class="font-semibold text-slate-800 mb-1">{q}</dt>
+            <dd class="text-sm text-slate-600">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- ── Browse Pre-Made Mazes ──────────────────────────────────────────── -->
+    <section class="mt-12 rounded-xl border border-slate-200 bg-slate-50 p-6">
+      <h2 class="text-lg font-bold text-slate-800 mb-4">Browse Pre-Made Mazes</h2>
+      <p class="text-sm text-slate-500 mb-4">Prefer to browse a curated collection? We have 150+ ready-to-play mazes across all three sizes.</p>
+      <nav aria-label="Maze library categories" class="flex flex-wrap gap-3">
+        <a href="/small-mazes"      class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-blue-400 hover:text-blue-700 transition-colors">Small Mazes</a>
+        <a href="/medium-mazes"     class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-blue-400 hover:text-blue-700 transition-colors">Medium Mazes</a>
+        <a href="/large-mazes"      class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-blue-400 hover:text-blue-700 transition-colors">Large Mazes</a>
+        <a href="/printable-mazes"  class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-blue-400 hover:text-blue-700 transition-colors">Printable Mazes</a>
+      </nav>
+    </section>
+
+  </div>
+</BaseLayout>

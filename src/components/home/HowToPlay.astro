@@ -1,0 +1,79 @@
+---
+---
+
+<section
+  class="py-16 sm:py-24"
+  style="background-color: var(--color-bg);"
+  aria-labelledby="how-to-play-heading"
+>
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+    <div class="mb-12">
+      <p
+        class="text-xs uppercase tracking-widest mb-2"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+      >Three Ways to Play</p>
+      <h2
+        id="how-to-play-heading"
+        class="font-display text-5xl sm:text-6xl uppercase"
+        style="color: var(--color-charcoal);"
+      >Enjoy Maze<br />Puzzles</h2>
+    </div>
+
+    <!-- Open three-column layout — no bordered boxes -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
+      {[
+        {
+          num: 'A',
+          title: 'Print Free Mazes',
+          body: 'Open any maze and click "Print Maze" for a clean worksheet with a separate answer key. Perfect for classrooms, homeschooling, and activity books.',
+          href: '/printable-mazes',
+          linkText: 'Browse printable mazes',
+        },
+        {
+          num: 'B',
+          title: 'Play Online',
+          body: 'Solve maze puzzles in your browser using arrow keys or WASD on desktop, or swipe on mobile. Your path is tracked so you never lose your place.',
+          href: '/maze-of-the-day/',
+          linkText: 'Try today\'s maze',
+        },
+        {
+          num: 'C',
+          title: 'Generate Custom Mazes',
+          body: 'Build unlimited maze puzzles in any size. Download as SVG or print instantly — no account or sign-up needed.',
+          href: '/maze-generator',
+          linkText: 'Open maze generator',
+        },
+      ].map(({ num, title, body, href, linkText }) => (
+        <div>
+          <!-- Short top rule + letter — replaces bordered box -->
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-8 h-px" style="background-color: var(--color-border-strong);"></div>
+            <span
+              class="text-xs uppercase tracking-widest"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{num}</span>
+          </div>
+
+          <h3
+            class="text-base font-bold mb-3"
+            style="color: var(--color-charcoal);"
+          >{title}</h3>
+          <p
+            class="text-sm leading-relaxed mb-5"
+            style="color: var(--color-muted-strong);"
+          >{body}</p>
+
+          <!-- Link — neutral, hover gets a slight darker treatment -->
+          <a
+            href={href}
+            class="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest transition-colors duration-150 pb-px"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border-bottom: 1px solid var(--color-border);"
+            onmouseover="this.style.color='var(--color-charcoal)'; this.style.borderColor='var(--color-charcoal)';"
+            onmouseout="this.style.color='var(--color-muted-strong)'; this.style.borderColor='var(--color-border)';"
+          >{linkText} →</a>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
