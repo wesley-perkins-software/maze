@@ -4,76 +4,83 @@
 <section
   class="py-12 sm:py-16"
   style="background-color: #EEECEA; border-top: 1px solid var(--color-border);"
-  aria-labelledby="how-to-play-heading"
+  aria-labelledby="find-your-maze-heading"
 >
   <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
-    <div class="mb-12">
-      <p
-        class="text-xs uppercase tracking-widest mb-2"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-      >Three Ways to Play</p>
-      <h2
-        id="how-to-play-heading"
-        class="font-display text-5xl sm:text-6xl uppercase"
-        style="color: var(--color-charcoal);"
-      >Enjoy Maze<br />Puzzles</h2>
-    </div>
+    <!-- Two-column layout on desktop: heading left, links right -->
+    <div class="flex flex-col sm:flex-row sm:gap-16 lg:gap-24">
 
-    <!-- Open three-column layout — no bordered boxes -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
-      {[
-        {
-          num: 'A',
-          title: 'Print Free Mazes',
-          body: 'Print any maze as a clean worksheet with a separate answer key — no watermarks, no sign-up.',
-          href: '/printable-mazes',
-          linkText: 'Browse printable mazes',
-        },
-        {
-          num: 'B',
-          title: 'Play Online',
-          body: 'Solve in your browser with arrow keys on desktop or swipe on mobile. Your path is tracked, your place always saved.',
-          href: '/maze-of-the-day/',
-          linkText: 'Try today\'s maze',
-        },
-        {
-          num: 'C',
-          title: 'Generate Custom Mazes',
-          body: 'Build unlimited mazes in any size and download as SVG or print instantly — free, no account needed.',
-          href: '/maze-generator',
-          linkText: 'Open maze generator',
-        },
-      ].map(({ num, title, body, href, linkText }) => (
-        <div>
-          <!-- Short top rule + letter — replaces bordered box -->
-          <div class="flex items-center gap-3 mb-6">
-            <div class="w-8 h-px" style="background-color: var(--color-border-strong);"></div>
-            <span
-              class="text-xs uppercase tracking-widest"
-              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-            >{num}</span>
-          </div>
+      <!-- Left: label + heading -->
+      <div class="mb-10 sm:mb-0 sm:w-52 sm:shrink-0 sm:pt-1">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >Free Maze Library</p>
+        <h2
+          id="find-your-maze-heading"
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >Find Your<br />Maze</h2>
+      </div>
 
-          <h3
-            class="text-base font-bold mb-3"
-            style="color: var(--color-charcoal);"
-          >{title}</h3>
-          <p
-            class="text-sm leading-relaxed mb-5"
-            style="color: var(--color-muted-strong);"
-          >{body}</p>
+      <!-- Right: 5 curated browse links -->
+      <div class="flex-1">
+        <ul class="divide-y" style="border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); --tw-divide-opacity: 1;">
+          {[
+            {
+              title: 'Printable Mazes',
+              body: 'Clean worksheets with answer keys — ready to print, no watermarks.',
+              href: '/printable-mazes',
+            },
+            {
+              title: 'Mazes for Kids',
+              body: 'Simple, fast mazes sized for younger solvers.',
+              href: '/mazes-for-kids',
+            },
+            {
+              title: 'Classroom Mazes',
+              body: 'Print-friendly puzzles for groups, homework, and activity sheets.',
+              href: '/mazes-for-classroom',
+            },
+            {
+              title: 'Easy Mazes',
+              body: 'Quick solves for warm-ups, beginners, and younger players.',
+              href: '/easy-mazes',
+            },
+            {
+              title: 'Hard Mazes',
+              body: 'Dense, complex mazes for a real challenge.',
+              href: '/hard-mazes',
+            },
+          ].map(({ title, body, href }) => (
+            <li>
+              <a
+                href={href}
+                class="group flex items-center justify-between gap-6 py-4 transition-colors duration-150"
+                style="color: inherit; text-decoration: none;"
+              >
+                <div class="min-w-0">
+                  <span
+                    class="block text-sm font-semibold mb-0.5 transition-colors duration-150"
+                    style="color: var(--color-charcoal);"
+                  >{title}</span>
+                  <span
+                    class="block text-xs leading-relaxed"
+                    style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+                  >{body}</span>
+                </div>
+                <span
+                  class="text-sm shrink-0 transition-transform duration-150 group-hover:translate-x-1"
+                  style="color: var(--color-muted-strong);"
+                  aria-hidden="true"
+                >→</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-          <!-- Link — neutral, hover gets a slight darker treatment -->
-          <a
-            href={href}
-            class="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest transition-colors duration-150 pb-px"
-            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); border-bottom: 1px solid var(--color-border);"
-            onmouseover="this.style.color='var(--color-charcoal)'; this.style.borderColor='var(--color-charcoal)';"
-            onmouseout="this.style.color='var(--color-muted-strong)'; this.style.borderColor='var(--color-border)';"
-          >{linkText} →</a>
-        </div>
-      ))}
     </div>
   </div>
 </section>
