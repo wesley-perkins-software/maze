@@ -44,91 +44,63 @@ const organizationSchema = JSON.stringify({
   <!-- 2. Maze Library — combined section -->
   <FeatureMazes />
 
-  <!-- Mid-page daily reminder
-       Surface bg with accent top rule — NOT dark, breaks consecutive-dark issue with HowItWorks -->
-  <div
-    class="relative py-12 sm:py-14"
-    style="background-color: var(--color-surface); border-top: 3px solid var(--color-accent); border-bottom: 1px solid var(--color-border);"
-  >
-    <div class="mx-auto max-w-xl px-4 text-center">
-      <p
-        class="font-display text-4xl sm:text-5xl uppercase mb-6"
-        style="color: var(--color-charcoal);"
-      >Still haven't tried today's maze?</p>
-      <a
-        href="/play/maze-of-the-day/"
-        class="btn-primary text-sm px-8 py-3.5 inline-flex items-center gap-2 w-full sm:w-auto justify-center"
-      >
-        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M8 5v14l11-7z" />
-        </svg>
-        Play Today's Maze
-      </a>
-      <p
-        class="mt-4 text-xs uppercase tracking-widest"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-      >Free · Same puzzle for everyone · No account needed</p>
-    </div>
-  </div>
-
-  <!-- 4. How It Works (dark section — now unambiguously distinct) -->
+  <!-- 4. How It Works (dark section — unambiguously distinct from library) -->
   <HowItWorks />
 
   <!-- 5. Three Ways to Enjoy -->
   <HowToPlay />
 
-  <!-- 6. Why this product — editorial list layout, not bordered grid -->
+  <!-- 6. Features — merged from "Built for Puzzle Lovers" + "Free Maze Puzzles for Everyone" -->
   <section
-    class="py-16 sm:py-24"
+    class="py-14 sm:py-20"
     style="background-color: var(--color-surface); border-top: 1px solid var(--color-border);"
-    aria-labelledby="why-heading"
+    aria-labelledby="features-heading"
   >
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
-      <div class="mb-12">
+      <div class="mb-10">
         <p
           class="text-xs uppercase tracking-widest mb-2"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-        >Why MazeThis</p>
+        >Features</p>
         <h2
-          id="why-heading"
+          id="features-heading"
           class="font-display text-5xl sm:text-6xl uppercase"
           style="color: var(--color-charcoal);"
-        >Built for<br />Puzzle Lovers</h2>
+        >Made for<br />Maze Lovers</h2>
       </div>
 
-      <!-- Definition-list layout — no bordered boxes -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-8">
         {[
           {
-            id: 'F1',
+            id: '01',
+            title: 'Daily Maze Challenge',
+            body: 'A fresh maze every day, shared by everyone.',
+          },
+          {
+            id: '02',
             title: 'Print-Perfect Worksheets',
-            body: 'Every maze prints cleanly with proper margins and an answer key on a separate page. Ideal for teachers, homeschoolers, and activity books.',
+            body: 'Clean printable mazes for classrooms, folders, and puzzle books.',
           },
           {
-            id: 'F2',
+            id: '03',
+            title: 'Play Online on Any Device',
+            body: 'Solve instantly on desktop, tablet, or phone.',
+          },
+          {
+            id: '04',
             title: 'Unlimited Unique Mazes',
-            body: 'Our maze generator creates a different puzzle every time — you\'ll never run out of fresh printable mazes to solve or share.',
+            body: 'Generate new mazes whenever you want.',
           },
           {
-            id: 'F3',
-            title: 'Three Difficulty Sizes',
-            body: 'Small (20×20), Medium (40×40), and Large (60×60) — each size is independently tuned for branching and loops, not just scaled up.',
+            id: '05',
+            title: 'For Kids, Adults & Classrooms',
+            body: 'Simple enough for kids, challenging enough for grown-ups.',
           },
           {
-            id: 'F4',
-            title: 'Play on Any Device',
-            body: 'Arrow keys on desktop, swipe on mobile, or the on-screen D-pad. Maze puzzles that work wherever you are.',
-          },
-          {
-            id: 'F5',
+            id: '06',
             title: 'Always Free',
-            body: 'No account, no subscription, no watermarks. All 420+ mazes and the full maze generator are free to use forever.',
-          },
-          {
-            id: 'F6',
-            title: 'Good for Your Brain',
-            body: 'Maze puzzles build spatial reasoning, focus, and problem-solving skills. Great for kids developing motor skills and adults staying sharp.',
+            body: 'Play, print, and generate mazes without an account.',
           },
         ].map(({ id, title, body }) => (
           <div class="flex gap-5">
@@ -138,7 +110,7 @@ const organizationSchema = JSON.stringify({
             >{id}</span>
             <div>
               <h3
-                class="text-sm font-bold mb-1.5"
+                class="text-sm font-bold mb-1"
                 style="color: var(--color-charcoal);"
               >{title}</h3>
               <p
@@ -146,81 +118,6 @@ const organizationSchema = JSON.stringify({
                 style="color: var(--color-muted-strong);"
               >{body}</p>
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- 7. SEO content — For Everyone -->
-  <section
-    class="py-16 sm:py-24"
-    style="background-color: var(--color-bg); border-top: 1px solid var(--color-border);"
-    aria-labelledby="about-mazes-heading"
-  >
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-
-      <div class="mb-12">
-        <p
-          class="text-xs uppercase tracking-widest mb-2"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-        >For Everyone</p>
-        <h2
-          id="about-mazes-heading"
-          class="font-display text-5xl sm:text-6xl uppercase"
-          style="color: var(--color-charcoal);"
-        >Free Maze Puzzles<br />for Everyone</h2>
-        <p
-          class="mt-4 text-sm leading-relaxed max-w-xl"
-          style="color: var(--color-muted-strong);"
-        >
-          Maze puzzles are one of the most satisfying brain exercises around — and MazeThis makes
-          them free, instant, and always fresh.
-        </p>
-      </div>
-
-      <!-- Two-column list with thin top rules — lighter than full bordered boxes -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-0">
-        {[
-          {
-            id: 'P',
-            title: 'Print at Home',
-            body: 'Every maze includes a clean, printer-friendly version with a separate answer key. Free to download — perfect for classroom worksheets, homeschool activities, and puzzle books. No watermarks, no sign-up.',
-          },
-          {
-            id: 'O',
-            title: 'Play Mazes Online',
-            body: 'Solve mazes directly in your browser. Arrow keys or WASD on desktop, swipe or D-pad on mobile. Your path is tracked so you never lose your place. Works on any device, no app needed.',
-          },
-          {
-            id: 'D',
-            title: 'Daily Maze Challenge',
-            body: 'A new 60×60 maze unlocks every day — the same puzzle for everyone worldwide. It\'s a simple daily habit: solve it, come back tomorrow, keep the streak. Takes about 10–15 minutes.',
-          },
-          {
-            id: 'K',
-            title: 'For Kids, Adults & Classrooms',
-            body: 'Quick 1-minute mazes for kids, 20-minute labyrinths for adults, and printable worksheets for teachers. The maze generator creates unlimited unique puzzles in any size — free forever.',
-          },
-        ].map(({ id, title, body }) => (
-          <div
-            class="py-7"
-            style="border-top: 1px solid var(--color-border);"
-          >
-            <div class="flex items-baseline gap-4 mb-2">
-              <span
-                class="text-xs"
-                style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-              >{id}</span>
-              <h3
-                class="text-base font-bold"
-                style="color: var(--color-charcoal);"
-              >{title}</h3>
-            </div>
-            <p
-              class="text-sm leading-relaxed"
-              style="color: var(--color-muted-strong);"
-            >{body}</p>
           </div>
         ))}
       </div>
@@ -285,7 +182,7 @@ const organizationSchema = JSON.stringify({
           >Today's Maze Challenge</p>
           <p
             class="text-xs"
-            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
           >Same puzzle for everyone · Free</p>
         </div>
         <a
