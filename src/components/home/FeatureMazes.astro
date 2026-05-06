@@ -84,7 +84,7 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
 
               <!-- Browse footer -->
               <div class="feat-strip-bottom feat-mono">
-                Browse {meta.name} →
+                Browse {meta.name.toLowerCase()} →
               </div>
 
             </div>
@@ -95,11 +95,14 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
     </div>
 
     <!-- Mobile: view all link -->
-    <div class="mt-6 sm:hidden text-center">
+    <div
+      class="mt-4 sm:hidden"
+      style="border-top: 1px solid var(--color-border); padding-top: 0.875rem;"
+    >
       <a
         href="/large-mazes"
-        class="text-xs uppercase tracking-widest"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+        class="feat-viewall-link text-xs uppercase tracking-widest block text-center"
+        style="font-family: 'IBM Plex Mono', monospace;"
       >View all 420+ mazes →</a>
     </div>
 
@@ -110,16 +113,22 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
   /* ── SVG fills its container ─────────────────────────────────────────────── */
   .feat-preview :global(svg) { width: 100%; height: 100%; display: block; }
 
-  /* ── Outer grid: 1-col stack on mobile, 3-col editorial on desktop ────────── */
+  /* ── Outer grid ──────────────────────────────────────────────────────────────
+     Mobile:  1-col stack with 6px cream gaps — each row reads as a distinct unit
+     Desktop: 3-col editorial table
+  ─────────────────────────────────────────────────────────────────────────── */
   .feat-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0;
+    gap: 6px;
+    background-color: var(--color-bg);
   }
   @media (min-width: 640px) {
     .feat-grid {
       grid-template-columns: repeat(3, 1fr);
       border-top: 1px solid var(--color-border);
+      gap: 0;
+      background-color: transparent;
     }
     .feat-col:not(:first-child) {
       border-left: 1px solid var(--color-border);
@@ -127,22 +136,20 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
   }
 
   /* ── Card ────────────────────────────────────────────────────────────────────
-     Mobile:  2-col thumbnail-left media row (96px | 1fr)
+     Mobile:  2-col thumbnail-left media row (84px | 1fr)
      Desktop: vertical flex card
   ─────────────────────────────────────────────────────────────────────────── */
   .feat-col {
     display: grid;
-    grid-template-columns: 96px 1fr;
+    grid-template-columns: 84px 1fr;
     background-color: var(--color-surface);
     text-decoration: none;
-    border-top: 1px solid var(--color-border);
     transition: background-color 120ms ease;
   }
   @media (min-width: 640px) {
     .feat-col {
       display: flex;
       flex-direction: column;
-      border-top: none;
     }
   }
   .feat-col:hover,
@@ -157,8 +164,7 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
 
   /* ── Right content wrapper ───────────────────────────────────────────────────
      Mobile:  flex column occupying col 2 of the card grid
-     Desktop: display:contents — children become direct flex items of .feat-col,
-              preserving the original desktop layout exactly
+     Desktop: display:contents — children become direct flex items of .feat-col
   ─────────────────────────────────────────────────────────────────────────── */
   .feat-right {
     display: flex;
@@ -189,7 +195,7 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
   /* ── Mobile-only inline solve time (sits beside the title) ──────────────── */
   .feat-time-mobile {
     font-size: 0.6875rem;
-    color: var(--color-muted);
+    color: var(--color-muted-strong);
     line-height: 1;
     flex-shrink: 0;
     white-space: nowrap;
@@ -199,13 +205,12 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
   }
 
   /* ── Size name ──────────────────────────────────────────────────────────── */
-  /* Mobile: flex row — title left, solve time right */
   .feat-name-wrap {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 0.5rem;
-    padding: 0.625rem 0.875rem 0.1875rem;
+    padding: 0.75rem 0.875rem 0.25rem;
   }
   @media (min-width: 640px) {
     .feat-name-wrap {
@@ -228,16 +233,14 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
   .feat-col:hover .feat-name { color: var(--color-accent); }
 
   /* ── Maze preview ────────────────────────────────────────────────────────── */
-  /* Mobile: fixed square thumbnail, vertically centered, contained */
   .feat-preview-frame {
-    width: 96px;
+    width: 84px;
     aspect-ratio: 1;
     align-self: center;
     overflow: hidden;
     border-right: 1px solid var(--color-border);
     flex-shrink: 0;
   }
-  /* Desktop: full-width square between strips */
   @media (min-width: 640px) {
     .feat-preview-frame {
       width: auto;
@@ -257,7 +260,7 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
   /* ── Description + grid size ────────────────────────────────────────────── */
   .feat-body {
     flex: 1;
-    padding: 0.1875rem 0.875rem 0.25rem;
+    padding: 0.25rem 0.875rem 0.375rem;
     display: flex;
     flex-direction: column;
     gap: 0.125rem;
@@ -268,18 +271,19 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
   .feat-desc { font-size: 0.75rem; line-height: 1.4; color: var(--color-muted-strong); }
   .feat-grid-label { font-size: 0.7rem; color: var(--color-muted); }
 
-  /* Hide grid size label on mobile */
   @media (max-width: 639px) {
     .feat-grid-label { display: none; }
   }
 
   /* ── Browse footer ──────────────────────────────────────────────────────── */
-  /* Mobile: no border, lighter treatment */
   .feat-strip-bottom {
-    padding: 0.25rem 0.875rem 0.6875rem;
+    padding: 0.3125rem 0.875rem 0.75rem;
     font-size: 0.6875rem;
-    color: var(--color-muted);
-    transition: color 120ms ease;
+    color: var(--color-muted-strong);
+    transition: color 120ms ease, text-decoration-color 120ms ease;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 2px;
   }
   @media (min-width: 640px) {
     .feat-strip-bottom {
@@ -287,7 +291,27 @@ const labels: Record<Difficulty, { num: string; name: string; time: string; grid
       font-size: 0.75rem;
       color: var(--color-muted-strong);
       border-top: 1px solid var(--color-border);
+      text-decoration: none;
     }
   }
-  .feat-col:hover .feat-strip-bottom { color: var(--color-charcoal); }
+  .feat-col:hover .feat-strip-bottom,
+  .feat-col:focus-visible .feat-strip-bottom {
+    color: var(--color-charcoal);
+    text-decoration-color: currentColor;
+  }
+
+  /* ── Mobile "View all" closing link ─────────────────────────────────────── */
+  .feat-viewall-link {
+    color: var(--color-muted-strong);
+    transition: color 120ms ease;
+  }
+  .feat-viewall-link:hover,
+  .feat-viewall-link:focus-visible {
+    color: var(--color-charcoal);
+    outline: none;
+  }
+  .feat-viewall-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 </style>
