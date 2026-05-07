@@ -50,45 +50,76 @@ const organizationSchema = JSON.stringify({
   <!-- 5. Three Ways to Enjoy -->
   <HowToPlay />
 
-  <!-- 6. Made for Maze Lovers — compact trust manifesto -->
+  <!-- 6. Features — Made for Maze Lovers -->
   <section
-    class="py-10 sm:py-14"
-    style="background-color: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);"
+    class="py-14 sm:py-20"
+    style="background-color: var(--color-surface); border-top: 1px solid var(--color-border);"
     aria-labelledby="features-heading"
   >
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-0">
 
-        <!-- Label + heading -->
-        <div class="sm:w-56 sm:shrink-0 sm:pr-10 sm:border-r" style="border-color: var(--color-border);">
-          <p
-            class="text-xs uppercase tracking-widest mb-1.5"
-            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-          >Made for Maze Lovers</p>
-          <div
-            class="w-6 h-px"
-            style="background-color: var(--color-accent);"
-            aria-hidden="true"
-          ></div>
-        </div>
-
-        <!-- Manifesto statements -->
-        <dl
+      <div class="mb-10">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >Features</p>
+        <h2
           id="features-heading"
-          class="sm:pl-10 flex flex-col sm:flex-row sm:flex-wrap gap-y-3 gap-x-10"
-        >
-          {[
-            'No login. No watermarks. No paywall.',
-            'Play in your browser or print at home — free, forever.',
-            '420+ free mazes. A new daily challenge every morning.',
-          ].map((line) => (
-            <dd
-              class="text-sm leading-relaxed"
-              style="color: var(--color-muted-strong);"
-            >{line}</dd>
-          ))}
-        </dl>
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >Made for<br />Maze Lovers</h2>
+      </div>
 
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-8">
+        {[
+          {
+            id: '01',
+            title: 'Daily Maze Challenge',
+            body: 'A fresh maze every day, shared by everyone.',
+          },
+          {
+            id: '02',
+            title: 'Print-Perfect Worksheets',
+            body: 'Clean printable mazes for classrooms, folders, and puzzle books.',
+          },
+          {
+            id: '03',
+            title: 'Play Online on Any Device',
+            body: 'Solve instantly on desktop, tablet, or phone.',
+          },
+          {
+            id: '04',
+            title: 'Unlimited Unique Mazes',
+            body: 'Generate new mazes whenever you want.',
+          },
+          {
+            id: '05',
+            title: 'For Kids, Adults & Classrooms',
+            body: 'Simple enough for kids, challenging enough for grown-ups.',
+          },
+          {
+            id: '06',
+            title: 'Always Free',
+            body: 'Play, print, and generate mazes without an account.',
+          },
+        ].map(({ id, title, body }) => (
+          <div class="flex gap-5">
+            <span
+              class="text-xs shrink-0 mt-1 w-6"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+            >{id}</span>
+            <div>
+              <h3
+                class="text-sm font-bold mb-1"
+                style="color: var(--color-charcoal);"
+              >{title}</h3>
+              <p
+                class="text-sm leading-relaxed"
+                style="color: var(--color-muted-strong);"
+              >{body}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   </section>
