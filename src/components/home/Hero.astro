@@ -91,20 +91,20 @@ const heroSvg = renderThumbnail(heroMaze);
 
   <!-- ─── DESKTOP: split editorial layout ───────────────────────────────── -->
   <div class="hidden md:block relative">
-    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-8 pb-12 lg:pt-10 lg:pb-14">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-4 pb-8 lg:pt-6 lg:pb-10">
       <div class="grid grid-cols-[1fr_540px] lg:grid-cols-[1fr_580px] gap-10 lg:gap-14 items-start">
 
         <!-- Left: headline + daily state + CTA + secondary links -->
         <div class="flex flex-col items-start">
           <h1
-            class="font-display uppercase mb-5"
+            class="font-display uppercase mb-4"
             style="font-size: clamp(3.5rem, 9vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
           >
             Can You<br />Solve<br /><span style="color: var(--color-accent);">Today's</span><br />Maze?
           </h1>
 
           <!-- Daily state — prominent, between headline and CTA -->
-          <div id="hero-daily-status-desktop" class="hero-status-block mb-6">
+          <div id="hero-daily-status-desktop" class="hero-status-block mb-4">
             <p class="hero-status-line1">
               <span style="color: var(--color-accent);">●</span>&thinsp;Ready now
             </p>
@@ -114,7 +114,7 @@ const heroSvg = renderThumbnail(heroMaze);
           <!-- Primary CTA -->
           <a
             href="/play/maze-of-the-day/"
-            class="hero-cta-primary btn-primary text-sm px-8 py-4 mb-5 inline-flex items-center gap-2"
+            class="hero-cta-primary btn-primary text-sm px-8 py-4 mb-4 inline-flex items-center gap-2"
           >
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z" />

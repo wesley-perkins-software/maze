@@ -2,7 +2,6 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/home/Hero.astro';
 import FeatureMazes from '../components/home/FeatureMazes.astro';
-import HowToPlay from '../components/home/HowToPlay.astro';
 import HowItWorks from '../components/home/HowItWorks.astro';
 
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
@@ -44,29 +43,68 @@ const organizationSchema = JSON.stringify({
   <!-- 2. Maze Library — combined section -->
   <FeatureMazes />
 
-  <!-- 4. How It Works (dark section — unambiguously distinct from library) -->
+  <!-- 3. How It Works (dark section) -->
   <HowItWorks />
 
-  <!-- 5. Three Ways to Enjoy -->
-  <HowToPlay />
-
-  <!-- 6. Features — merged from "Built for Puzzle Lovers" + "Free Maze Puzzles for Everyone" -->
+  <!-- 4. Generator CTA (light section) -->
   <section
-    class="py-14 sm:py-20"
-    style="background-color: var(--color-surface); border-top: 1px solid var(--color-border);"
+    class="relative overflow-hidden py-20 sm:py-28"
+    style="background-color: var(--color-bg); border-top: 1px solid var(--color-border);"
+    aria-labelledby="generator-cta-heading"
+  >
+    <div class="absolute inset-0 architect-dot-grid opacity-60 pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute top-0 left-0 right-0 h-0.5" style="background-color: var(--color-accent);"></div>
+
+    <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl">
+        <p
+          class="text-xs uppercase tracking-widest mb-4"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >Maze Generator</p>
+        <h2
+          id="generator-cta-heading"
+          class="font-display text-6xl sm:text-7xl lg:text-8xl uppercase leading-none mb-6"
+          style="color: var(--color-charcoal);"
+        >Build Your<br />Own Maze</h2>
+        <p
+          class="text-sm leading-relaxed mb-8 max-w-md"
+          style="color: var(--color-muted-strong);"
+        >
+          Create a unique maze in seconds — Small, Medium, or Large. Download as SVG or print from your browser. No account, no limit.
+        </p>
+        <a
+          href="/maze-generator"
+          class="btn-primary text-sm px-8 py-4 inline-flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-start"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+          </svg>
+          Generate a Maze
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Made for Maze Lovers (dark section) -->
+  <section
+    class="relative overflow-hidden py-14 sm:py-20"
+    style="background-color: var(--color-charcoal);"
     aria-labelledby="features-heading"
   >
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <div class="absolute inset-0 architect-dot-grid opacity-20 pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute top-0 left-0 right-0 h-0.5" style="background-color: var(--color-accent);" aria-hidden="true"></div>
+
+    <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
       <div class="mb-10">
         <p
           class="text-xs uppercase tracking-widest mb-2"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+          style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 50%, transparent);"
         >Features</p>
         <h2
           id="features-heading"
           class="font-display text-5xl sm:text-6xl uppercase"
-          style="color: var(--color-charcoal);"
+          style="color: var(--color-bg);"
         >Made for<br />Maze Lovers</h2>
       </div>
 
@@ -106,60 +144,20 @@ const organizationSchema = JSON.stringify({
           <div class="flex gap-5">
             <span
               class="text-xs shrink-0 mt-1 w-6"
-              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+              style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 40%, transparent);"
             >{id}</span>
             <div>
               <h3
                 class="text-sm font-bold mb-1"
-                style="color: var(--color-charcoal);"
+                style="color: var(--color-bg);"
               >{title}</h3>
               <p
                 class="text-sm leading-relaxed"
-                style="color: var(--color-muted-strong);"
+                style="color: color-mix(in srgb, var(--color-bg) 65%, transparent);"
               >{body}</p>
             </div>
           </div>
         ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- 8. Generator CTA -->
-  <section
-    class="relative overflow-hidden py-20 sm:py-28"
-    style="background-color: var(--color-charcoal);"
-    aria-labelledby="generator-cta-heading"
-  >
-    <div class="absolute inset-0 architect-dot-grid opacity-30 pointer-events-none" aria-hidden="true"></div>
-    <div class="absolute top-0 left-0 right-0 h-0.5" style="background-color: var(--color-accent);"></div>
-
-    <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <div class="max-w-2xl">
-        <p
-          class="text-xs uppercase tracking-widest mb-4"
-          style="font-family: 'IBM Plex Mono', monospace; color: color-mix(in srgb, var(--color-bg) 60%, transparent);"
-        >Maze Generator</p>
-        <h2
-          id="generator-cta-heading"
-          class="font-display text-6xl sm:text-7xl lg:text-8xl uppercase leading-none mb-6"
-          style="color: var(--color-bg);"
-        >Build Your<br />Own Maze</h2>
-        <p
-          class="text-sm leading-relaxed mb-8 max-w-md"
-          style="color: color-mix(in srgb, var(--color-bg) 70%, transparent);"
-        >
-          Choose a size, generate instantly, then download as SVG or print directly from your browser.
-          No account needed — free forever.
-        </p>
-        <a
-          href="/maze-generator"
-          class="btn-primary text-sm px-8 py-4 inline-flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-start"
-        >
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-          </svg>
-          Open Maze Generator
-        </a>
       </div>
     </div>
   </section>
