@@ -26,22 +26,18 @@ function newSeed() {
   return Math.floor(Math.random() * 999999);
 }
 
-// Derive a newestBias from grid size so custom-sized mazes scale naturally:
-// small grids lean DFS-like (0.5), large grids lean Prim's-like (0.15).
-function newestBiasForSize(w: number, h: number): number {
+export function difficultyForCustomSize(w: number, h: number): Difficulty {
   const area = w * h;
-  const minArea = 20 * 20;  // small
-  const maxArea = 60 * 60;  // large
-  const t = Math.min(1, Math.max(0, (area - minArea) / (maxArea - minArea)));
-  return 0.50 - t * 0.35; // 0.50 → 0.15
-}
+  const smallArea = SIZE_MAP.small.w * SIZE_MAP.small.h;
+  const mediumArea = SIZE_MAP.medium.w * SIZE_MAP.medium.h;
+  const largeArea = SIZE_MAP.large.w * SIZE_MAP.large.h;
 
-function braidFactorForSize(w: number, h: number): number {
-  const area = w * h;
-  const minArea = 20 * 20;
-  const maxArea = 60 * 60;
-  const t = Math.min(1, Math.max(0, (area - minArea) / (maxArea - minArea)));
-  return 0.10 + t * 0.22; // 0.10 → 0.32
+  const smallMediumMidpoint = (smallArea + mediumArea) / 2;
+  const mediumLargeMidpoint = (mediumArea + largeArea) / 2;
+
+  if (area <= smallMediumMidpoint) return 'small';
+  if (area <= mediumLargeMidpoint) return 'medium';
+  return 'large';
 }
 
 export function MazeGenerator() {
@@ -66,16 +62,12 @@ export function MazeGenerator() {
   });
 
   const generate = useCallback((preset: SizePreset | null, dims: { w: number; h: number }) => {
-    const difficulty: Difficulty = preset ?? 'medium';
-    const nb = preset ? undefined : newestBiasForSize(dims.w, dims.h);
-    const bf = preset ? undefined : braidFactorForSize(dims.w, dims.h);
+    const difficulty: Difficulty = preset ?? difficultyForCustomSize(dims.w, dims.h);
     const m = generateMaze({
       width: dims.w,
       height: dims.h,
       difficulty,
       seed: newSeed(),
-      newestBias: nb,
-      braidFactor: bf,
     });
     setMaze(m);
     setPlaying(false);
