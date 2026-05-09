@@ -215,7 +215,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
             onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
             className={`text-xs px-3 py-1.5 rounded-md border font-medium transition-colors ${
               state.solutionVisible
-                ? 'bg-green-50 border-green-300 text-green-700'
+                ? 'bg-violet-50 border-violet-300 text-violet-700'
                 : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'
             }`}
             aria-pressed={state.solutionVisible}

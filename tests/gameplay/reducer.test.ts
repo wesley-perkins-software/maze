@@ -141,6 +141,19 @@ describe('gameReducer', () => {
     expect(state.hintCells).toEqual([]);
   });
 
+  it('does not add hints while solution is visible', () => {
+    const maze = makeMaze();
+    let state: GameState = {
+      ...createInitialState(maze),
+      solutionVisible: true,
+    };
+
+    state = gameReducer(state, { type: 'USE_HINT', cells: maze.solution.slice(0, 4) }, maze);
+    expect(state.solutionVisible).toBe(true);
+    expect(state.hintCells).toEqual([]);
+    expect(state.hintsUsed).toBe(0);
+  });
+
   it('resets state', () => {
     const maze = makeMaze();
     let state = createInitialState(maze);

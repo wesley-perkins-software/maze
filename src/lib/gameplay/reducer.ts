@@ -132,6 +132,7 @@ export function gameReducer(
     }
 
     case 'USE_HINT':
+      if (state.solutionVisible && action.cells.length > 0) return state;
       return {
         ...state,
         hintsUsed: action.cells.length > 0 ? state.hintsUsed + 1 : state.hintsUsed,

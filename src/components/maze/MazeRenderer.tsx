@@ -7,6 +7,13 @@ import type { MazeData, Point } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { indexToPoint } from '../../lib/maze/utils';
 
+const PLAYER_PATH_COLOR = '#3b82f6';
+const PLAYER_MARKER_COLOR = '#2563eb';
+const START_MARKER_COLOR = '#22c55e';
+const FINISH_MARKER_COLOR = '#f59e0b';
+const SOLUTION_PATH_COLOR = '#7C3AED';
+const HINT_PATH_COLOR = '#F2B84B';
+
 export interface MazeRendererProps {
   maze: MazeData;
   cellSize?: number;
@@ -129,6 +136,8 @@ export function MazeRenderer({
   // ── Solution polyline ────────────────────────────────────────────────────────
   const solutionStartsAtEntry = solution[0] === entry.y * width + entry.x;
   const solutionEndsAtExit = solution[solution.length - 1] === exit.y * width + exit.x;
+  const visibleHintCells = showSolution ? [] : hintCells;
+
   const solutionPoints = showSolution && solution.length > 0
     ? [
         ...(markersOutside && solutionStartsAtEntry ? [`${entryMx},${entryMy}`] : []),
@@ -209,46 +218,6 @@ export function MazeRenderer({
       {/* Background */}
       <rect width={totalW} height={totalH} fill="white" />
 
-      {/* Hint path — amber dashed temporary guidance */}
-      {hintCells.length >= 2 && (
-        <polyline
-          points={hintCells.map(cellCenter).join(' ')}
-          stroke="#F59E0B"
-          strokeWidth={cellSize * 0.12}
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeDasharray={`${cellSize * 0.45} ${cellSize * 0.28}`}
-          opacity={0.85}
-        />
-      )}
-      {/* Solution overlay */}
-      {solutionPoints && (
-        <polyline
-          points={solutionPoints}
-          stroke="#22c55e"
-          strokeWidth={cellSize * 0.18}
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity={0.7}
-        />
-      )}
-
-      {/* Fading trail — rendered oldest to newest so recent segment is on top */}
-      {trailSegments.map((seg, i) => (
-        <polyline
-          key={`trail-${i}`}
-          points={seg.pts}
-          stroke="#3b82f6"
-          strokeWidth={cellSize * seg.width}
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity={seg.opacity}
-        />
-      ))}
-
       {/* Walls */}
       <path
         d={wallPaths.join(' ')}
@@ -258,10 +227,74 @@ export function MazeRenderer({
         fill="none"
       />
 
+      {/* Solution path — wide translucent violet underlay behind player trail */}
+      {solutionPoints && (
+        <polyline
+          points={solutionPoints}
+          stroke={SOLUTION_PATH_COLOR}
+          strokeWidth={cellSize * 0.42}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity={0.55}
+        />
+      )}
+
+      {/* Hint path — gold dashed guidance underlay, distinct from finish marker */}
+      {visibleHintCells.length >= 2 && (
+        <polyline
+          points={visibleHintCells.map(cellCenter).join(' ')}
+          stroke={HINT_PATH_COLOR}
+          strokeWidth={cellSize * 0.36}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray={`${cellSize * 0.52} ${cellSize * 0.34}`}
+          opacity={0.85}
+        />
+      )}
+
+      {/* Fading trail — rendered oldest to newest so recent segment is on top */}
+      {trailSegments.map((seg, i) => (
+        <polyline
+          key={`trail-${i}`}
+          points={seg.pts}
+          stroke={PLAYER_PATH_COLOR}
+          strokeWidth={cellSize * seg.width}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity={seg.opacity}
+        />
+      ))}
+
+      {/* Player */}
+      {playerCx !== null && playerCy !== null && (
+        <>
+          {/* Animated glow ring */}
+          <circle
+            cx={playerCx}
+            cy={playerCy}
+            r={glowR}
+            fill={PLAYER_MARKER_COLOR}
+            className="maze-player-glow"
+          />
+          {/* Solid player dot */}
+          <circle
+            cx={playerCx}
+            cy={playerCy}
+            r={pr}
+            fill={PLAYER_MARKER_COLOR}
+            stroke="white"
+            strokeWidth={playerMarkerRadius ? Math.max(1.5, playerMarkerRadius * 0.35) : 2}
+          />
+        </>
+      )}
+
       {showEndpointMarkers && (
         <>
           {/* Entry marker — green circle with directional play arrow */}
-          <circle cx={entryMx} cy={entryMy} r={markerR} fill="#22c55e" opacity={0.9} />
+          <circle cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_COLOR} opacity={0.9} />
           {markerR >= 5 && (
             <polygon
               points={entryArrowPoints}
@@ -271,7 +304,7 @@ export function MazeRenderer({
           )}
 
           {/* Exit marker — amber circle with flag pennant */}
-          <circle cx={exitMx} cy={exitMy} r={markerR} fill="#f59e0b" opacity={0.9} />
+          <circle cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
           {markerR >= 5 && (
             <>
               {/* Flag pole */}
@@ -292,29 +325,6 @@ export function MazeRenderer({
               />
             </>
           )}
-        </>
-      )}
-
-      {/* Player */}
-      {playerCx !== null && playerCy !== null && (
-        <>
-          {/* Animated glow ring */}
-          <circle
-            cx={playerCx}
-            cy={playerCy}
-            r={glowR}
-            fill="#2563eb"
-            className="maze-player-glow"
-          />
-          {/* Solid player dot */}
-          <circle
-            cx={playerCx}
-            cy={playerCy}
-            r={pr}
-            fill="#2563eb"
-            stroke="white"
-            strokeWidth={playerMarkerRadius ? Math.max(1.5, playerMarkerRadius * 0.35) : 2}
-          />
         </>
       )}
     </svg>
