@@ -32,7 +32,7 @@ function getPathStartCell(maze: MazeData, playerPosition: MazeData['entry']): Ma
 }
 
 function getHintStepCount(maze: MazeData): number {
-  return clamp(8, Math.round(Math.max(maze.width, maze.height) * 0.4), 24);
+  return clamp(8, Math.round(Math.max(maze.width, maze.height) * 0.4), 20);
 }
 
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
@@ -131,13 +131,11 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
 
   // ── Hint computation ─────────────────────────────────────────────────────────
   const handleHint = useCallback(() => {
-    if (state.solutionVisible) return;
-
     const hintSteps = getHintStepCount(maze);
     const pathFromPlayer = currentSolution;
     if (pathFromPlayer.length <= 1) return;
 
-    // Include the current cell so the amber hint is anchored at the player's
+    // Include the current cell so the green hint is anchored at the player's
     // position. The reducer clears this temporary hint after the next move.
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
 
@@ -146,7 +144,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
     hintTimerRef.current = window.setTimeout(() => {
       dispatch({ type: 'USE_HINT', cells: [] });
     }, 3000);
-  }, [maze, currentSolution, state.solutionVisible]);
+  }, [maze, currentSolution]);
 
   const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;

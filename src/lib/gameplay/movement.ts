@@ -66,7 +66,7 @@ export function getExitDirection(maze: MazeData): Direction {
   return OUTWARD_DIR_BY_SIDE.right;
 }
 
-/** Returns true when `from` is the green start marker and `direction` enters the maze. */
+/** Returns true when `from` is the start marker and `direction` enters the maze. */
 export function isEntryStep(maze: MazeData, from: Point, direction: Direction): boolean {
   const start = getEntryStartPosition(maze);
   return from.x === start.x && from.y === start.y && direction === getEntryDirection(maze);

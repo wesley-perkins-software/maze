@@ -54,7 +54,7 @@ describe('applyMove', () => {
 
 
 describe('computeRun', () => {
-  it('starts from the green entry marker and stops at the next directional choice', () => {
+  it('starts from the entry marker and stops at the next directional choice', () => {
     const maze = {
       id: 'test',
       slug: 'test',

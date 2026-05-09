@@ -17,7 +17,7 @@ function perimeterDir(pt: Point, width: number, height: number): Direction {
 }
 
 describe('gameReducer', () => {
-  it('starts in idle state on the green entry marker', () => {
+  it('starts in idle state on the entry marker', () => {
     const maze = makeMaze();
     const state = createInitialState(maze);
     expect(state.status).toBe('idle');
@@ -26,7 +26,7 @@ describe('gameReducer', () => {
     expect(state.solutionVisible).toBe(false);
   });
 
-  it('transitions to playing when moving from the green marker into the maze', () => {
+  it('transitions to playing when moving from the entry marker into the maze', () => {
     const maze = makeMaze();
     let state = createInitialState(maze);
     state = gameReducer(state, { type: 'MOVE', direction: getEntryDirection(maze) }, maze);
@@ -139,6 +139,20 @@ describe('gameReducer', () => {
     state = gameReducer(state, { type: 'TOGGLE_SOLUTION' }, maze);
     expect(state.solutionVisible).toBe(true);
     expect(state.hintCells).toEqual([]);
+  });
+
+  it('turns off solution when a hint is shown', () => {
+    const maze = makeMaze();
+    let state: GameState = {
+      ...createInitialState(maze),
+      solutionVisible: true,
+    };
+    const hintCells = maze.solution.slice(0, 4);
+
+    state = gameReducer(state, { type: 'USE_HINT', cells: hintCells }, maze);
+    expect(state.solutionVisible).toBe(false);
+    expect(state.hintCells).toEqual(hintCells);
+    expect(state.hintsUsed).toBe(1);
   });
 
   it('resets state', () => {
