@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useRef, useCallback, useState } from 'react';
+import { useReducer, useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
@@ -65,6 +65,15 @@ function MinimapEndpointMarkers({
     filter: 'drop-shadow(0 2px 3px rgba(15, 23, 42, 0.5)) drop-shadow(0 0 7px rgba(255, 255, 255, 0.98))',
   };
 
+  // Arrow direction based on which perimeter wall the entry is on (viewBox 0 0 24 24, circle r=8.8 at 12,12)
+  const entryArrow = (() => {
+    const { entry, width, height } = maze;
+    if (entry.y === 0)          return '6.72,8.92 17.28,8.92 12,16.84';   // top → DOWN
+    if (entry.y === height - 1) return '6.72,15.08 17.28,15.08 12,7.16';  // bottom → UP
+    if (entry.x === 0)          return '8.92,6.72 16.84,12 8.92,17.28';   // left → RIGHT
+    return '15.08,6.72 7.16,12 15.08,17.28';                              // right → LEFT
+  })();
+
   return (
     <>
       <svg
@@ -74,9 +83,8 @@ function MinimapEndpointMarkers({
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill="#22c55e" />
-        <circle cx="12" cy="12" r="6.3" fill="none" stroke="#67e8f9" strokeWidth="2.1" />
-        <circle cx="12" cy="12" r="4.3" fill="#2563eb" />
+        <circle cx="12" cy="12" r="8.8" fill="#22c55e" opacity="0.9" />
+        <polygon points={entryArrow} fill="white" opacity="0.95" />
       </svg>
       <svg
         viewBox="0 0 24 24"
@@ -248,12 +256,30 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     const lookahead = Math.min(30, Math.max(8, Math.round(Math.max(maze.width, maze.height) * 0.4)));
     const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
     const pos = solution.indexOf(currentIdx);
-    const slice = solution.slice(pos !== -1 ? pos + 1 : 0, (pos !== -1 ? pos + 1 : 0) + lookahead);
+
+    let startIdx: number;
+    if (pos !== -1) {
+      // Player is on the optimal path — show next steps forward
+      startIdx = pos + 1;
+    } else {
+      // Player wandered off — scan their trail in reverse to find the last cell
+      // they visited that was on the solution path (the branch point where they
+      // went wrong), then hint forward from there.
+      const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
+      let branchPos = -1;
+      for (let t = state.trail.length - 1; t >= 0; t--) {
+        const sp = solutionMap.get(state.trail[t]);
+        if (sp !== undefined) { branchPos = sp; break; }
+      }
+      startIdx = branchPos !== -1 ? branchPos + 1 : 0;
+    }
+
+    const slice = solution.slice(startIdx, startIdx + lookahead);
     if (!slice.length) return;
     dispatch({ type: 'USE_HINT', cells: slice });
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     hintTimerRef.current = window.setTimeout(() => dispatch({ type: 'USE_HINT', cells: [] }), 5000);
-  }, [maze, state.playerPosition]);
+  }, [maze, state.playerPosition, state.trail]);
 
   const handleResetRequest = useCallback(() => {
     setResetConfirming(true);
@@ -279,6 +305,24 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     };
   }, []);
+
+  // Solution path trimmed to start from the player's current position.
+  // Mirrors the hint logic: on-path → slice from current cell forward;
+  // off-path → scan trail in reverse to find the branch point, then slice from there.
+  const trimmedSolution = useMemo(() => {
+    const { solution } = maze;
+    if (!solution.length) return solution;
+    const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
+    const posInSolution = solution.indexOf(currentIdx);
+    if (posInSolution !== -1) return solution.slice(posInSolution);
+    const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
+    let branchPos = -1;
+    for (let t = state.trail.length - 1; t >= 0; t--) {
+      const sp = solutionMap.get(state.trail[t]);
+      if (sp !== undefined) { branchPos = sp; break; }
+    }
+    return branchPos !== -1 ? solution.slice(branchPos) : solution;
+  }, [maze, state.playerPosition, state.trail]);
 
   // ── Follow-camera math ───────────────────────────────────────────────────────
   const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
@@ -488,21 +532,31 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             </button>
 
             {menuOpen && (
-              <div className="absolute top-full right-0 mt-1.5 w-36 rounded-xl shadow-lg border border-slate-200 bg-white overflow-hidden z-10">
+              <div className="absolute top-full right-0 mt-1.5 w-40 rounded-xl shadow-lg border border-slate-200 bg-white overflow-hidden z-10">
                 {state.status !== 'solved' && (
                   <button
                     onClick={() => { handleHint(); setMenuOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm text-amber-600 font-medium hover:bg-amber-50 transition-colors flex items-center gap-2"
                   >
-                    <span>💡</span>
-                    {state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17H8v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z"/>
+                    </svg>
+                    Show Hint
                   </button>
                 )}
                 <button
                   onClick={() => { dispatch({ type: 'TOGGLE_SOLUTION' }); setMenuOpen(false); }}
                   className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
                 >
-                  <span>{state.solutionVisible ? '🙈' : '🗺️'}</span>
+                  {state.solutionVisible ? (
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  )}
                   {state.solutionVisible ? 'Hide solution' : 'Show solution'}
                 </button>
                 <div className="h-px bg-slate-100" />
@@ -510,7 +564,9 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   onClick={() => { dispatch({ type: 'RESET', startPosition: maze.entry }); setMenuOpen(false); }}
                   className="w-full text-left px-4 py-2.5 text-sm text-slate-500 hover:bg-slate-50 transition-colors flex items-center gap-2"
                 >
-                  <span>↩️</span>
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+                  </svg>
                   Reset
                 </button>
               </div>
@@ -542,7 +598,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               padding={MAZE_PADDING}
               playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
               trail={state.trail}
-              solution={maze.solution}
+              solution={trimmedSolution}
               showSolution={state.solutionVisible}
               hintCells={state.hintCells}
               interactive={isActive}
@@ -617,8 +673,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   onClick={handleHint}
                   className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
                 >
-                  <span aria-hidden="true">💡</span>
-                  <span>{state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}</span>
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17H8v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z"/>
+                  </svg>
+                  <span>Show Hint</span>
                 </button>
               )}
               <button
@@ -631,7 +689,15 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 } : undefined}
                 aria-pressed={state.solutionVisible}
               >
-                <span aria-hidden="true">{state.solutionVisible ? '🙈' : '🗺️'}</span>
+                {state.solutionVisible ? (
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                )}
                 <span>{state.solutionVisible ? 'Hide solution' : 'Show solution'}</span>
               </button>
             </div>
@@ -681,7 +747,9 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   onClick={handleResetRequest}
                   className="btn-ghost w-full rounded text-left px-3 py-2.5 gap-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
                 >
-                  <span aria-hidden="true">↩️</span>
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+                  </svg>
                   <span>Reset progress</span>
                 </button>
               )}
@@ -702,10 +770,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
       </div>
 
-      {/* AD_SLOT: Banner ad goes here — between maze and controls.
-          This placement preserves the full maze viewport height and sits naturally
-          above the controls, matching standard mobile game ad placement.
-          To enable: set AD_SLOT_H = 50 and un-comment the div below. */}
       {AD_SLOT_H > 0 && (
         <div
           style={{ height: AD_SLOT_H }}

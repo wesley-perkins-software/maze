@@ -3,7 +3,7 @@
  * Features: keyboard/touch/D-pad input, timer with pause, hint system,
  * personal best tracking (localStorage), solution toggle, solved modal.
  */
-import { useReducer, useEffect, useRef, useCallback, useState } from 'react';
+import { useReducer, useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
@@ -115,9 +115,19 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
 
     let startIdx: number;
     if (posInSolution !== -1) {
+      // Player is on the optimal path — show next steps forward
       startIdx = posInSolution + 1;
     } else {
-      startIdx = 0;
+      // Player wandered off — scan their trail in reverse to find the last cell
+      // they visited that was on the solution path (the branch point where they
+      // went wrong), then hint forward from there.
+      const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
+      let branchPos = -1;
+      for (let t = state.trail.length - 1; t >= 0; t--) {
+        const sp = solutionMap.get(state.trail[t]);
+        if (sp !== undefined) { branchPos = sp; break; }
+      }
+      startIdx = branchPos !== -1 ? branchPos + 1 : 0;
     }
 
     const hintSlice = solution.slice(startIdx, startIdx + HINT_LOOKAHEAD);
@@ -129,7 +139,25 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
     setTimeout(() => {
       dispatch({ type: 'USE_HINT', cells: [] });
     }, 3000);
-  }, [maze, state.playerPosition]);
+  }, [maze, state.playerPosition, state.trail]);
+
+  // ── Solution path trimmed to start from player's current position ─────────────
+  // On-path: slice from current cell forward.
+  // Off-path: scan trail in reverse to find the branch point, then slice from there.
+  const trimmedSolution = useMemo(() => {
+    const { solution } = maze;
+    if (!solution.length) return solution;
+    const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
+    const posInSolution = solution.indexOf(currentIdx);
+    if (posInSolution !== -1) return solution.slice(posInSolution);
+    const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
+    let branchPos = -1;
+    for (let t = state.trail.length - 1; t >= 0; t--) {
+      const sp = solutionMap.get(state.trail[t]);
+      if (sp !== undefined) { branchPos = sp; break; }
+    }
+    return branchPos !== -1 ? solution.slice(branchPos) : solution;
+  }, [maze, state.playerPosition, state.trail]);
 
   const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
@@ -178,7 +206,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
               className="text-xs px-3 py-1.5 rounded-md border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 font-medium transition-colors"
               title="Reveal the next few steps toward the exit for 3 seconds"
             >
-              {state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}
+              Show Hint
             </button>
           )}
 
@@ -208,8 +236,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
 
           {/* Reset */}
           <button
-            onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}
-            className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
+            onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}            className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
             aria-label="Reset maze"
           >
             Reset
@@ -234,7 +261,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
           cellSize={cellSize}
           playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
           trail={state.trail}
-          solution={maze.solution}
+          solution={trimmedSolution}
           showSolution={state.solutionVisible}
           hintCells={state.hintCells}
           interactive={isActive}
