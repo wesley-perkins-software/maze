@@ -117,7 +117,16 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
     if (posInSolution !== -1) {
       startIdx = posInSolution + 1;
     } else {
-      startIdx = 0;
+      // Player is off the optimal path — find the nearest solution cell by Manhattan distance
+      const px = state.playerPosition.x;
+      const py = state.playerPosition.y;
+      let bestDist = Infinity;
+      let bestPos = 0;
+      solution.forEach((cellIdx, i) => {
+        const dist = Math.abs((cellIdx % maze.width) - px) + Math.abs(Math.floor(cellIdx / maze.width) - py);
+        if (dist < bestDist) { bestDist = dist; bestPos = i; }
+      });
+      startIdx = bestPos + 1;
     }
 
     const hintSlice = solution.slice(startIdx, startIdx + HINT_LOOKAHEAD);
@@ -178,7 +187,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
               className="text-xs px-3 py-1.5 rounded-md border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 font-medium transition-colors"
               title="Reveal the next few steps toward the exit for 3 seconds"
             >
-              {state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}
+              Show Hint
             </button>
           )}
 
