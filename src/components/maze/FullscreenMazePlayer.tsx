@@ -27,7 +27,7 @@ const SAFE_PAD = 32;
 const MINIMAP_SIZE = 96;
 const SIDEBAR_W = 224;
 const SIDEBAR_MINIMAP_SIZE = 192;
-const HINT_LOOKAHEAD = 6;
+const SIDEBAR_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
 
@@ -130,6 +130,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const hintTimerRef = useRef<number | null>(null);
   const isNewBestRef = useRef(false);
   const camXRef = useRef<number | null>(null);
   const camYRef = useRef<number | null>(null);
@@ -244,12 +245,14 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const handleHint = useCallback(() => {
     const { solution } = maze;
     if (!solution.length) return;
+    const lookahead = Math.min(30, Math.max(8, Math.round(Math.max(maze.width, maze.height) * 0.4)));
     const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
     const pos = solution.indexOf(currentIdx);
-    const slice = solution.slice(pos !== -1 ? pos + 1 : 0, (pos !== -1 ? pos + 1 : 0) + HINT_LOOKAHEAD);
+    const slice = solution.slice(pos !== -1 ? pos + 1 : 0, (pos !== -1 ? pos + 1 : 0) + lookahead);
     if (!slice.length) return;
     dispatch({ type: 'USE_HINT', cells: slice });
-    setTimeout(() => dispatch({ type: 'USE_HINT', cells: [] }), 3000);
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    hintTimerRef.current = window.setTimeout(() => dispatch({ type: 'USE_HINT', cells: [] }), 5000);
   }, [maze, state.playerPosition]);
 
   const handleResetRequest = useCallback(() => {
@@ -260,6 +263,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const handleResetConfirm = useCallback(() => {
     if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     setResetConfirming(false);
     dispatch({ type: 'RESET', startPosition: maze.entry });
   }, [maze.entry]);
@@ -270,7 +274,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   }, []);
 
   useEffect(() => {
-    return () => { if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current); };
+    return () => {
+      if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
+      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    };
   }, []);
 
   // ── Follow-camera math ───────────────────────────────────────────────────────
@@ -460,7 +467,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           {(state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors text-sm"
+              className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors text-sm"
               aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
             >
               {state.status === 'playing' ? '⏸' : '▶'}
@@ -468,7 +475,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           )}
 
           {/* ⋯ overflow menu */}
-          <div ref={menuRef} className="relative">
+          <div ref={menuRef} className="relative md:hidden">
             <button
               onClick={() => setMenuOpen(v => !v)}
               className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors"
@@ -561,109 +568,95 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
         </div>
 
-        {/* Desktop sidebar — MAP / ASSIST / CONTROLS */}
+        {/* Desktop sidebar — quiet utility rail */}
         <aside
           className="hidden md:flex flex-col w-56 shrink-0 border-l architect-dot-grid"
           style={{ backgroundColor: 'var(--color-bg)', borderColor: 'var(--color-border)', color: 'var(--color-charcoal)' }}
         >
-          <div className="flex flex-col gap-5 p-4">
+          <div className="flex flex-col p-4">
 
-            {/* MAP */}
-            <section aria-labelledby="maze-map-heading" className="space-y-2">
-              <h2 id="maze-map-heading" className="section-label mb-0">Map</h2>
+            {/* Minimap — no label, no legend */}
+            <div
+              aria-label="Minimap"
+              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
+              style={{ width: SIDEBAR_MINIMAP_SIZE, height: SIDEBAR_MINIMAP_SIZE }}
+            >
+              <MazeRenderer
+                maze={maze}
+                cellSize={sidebarMinimapCell}
+                wallThickness={1}
+                padding={MINIMAP_PADDING}
+                playerPosition={state.playerPosition}
+                playerMarkerRadius={6}
+                showEndpointMarkers={false}
+              />
+              <MinimapEndpointMarkers
+                maze={maze}
+                cellSize={sidebarMinimapCell}
+                markerSize={DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE}
+              />
               <div
-                className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
-                style={{ width: SIDEBAR_MINIMAP_SIZE, height: SIDEBAR_MINIMAP_SIZE }}
-                aria-hidden="true"
-              >
-                <MazeRenderer
-                  maze={maze}
-                  cellSize={sidebarMinimapCell}
-                  wallThickness={1}
-                  padding={MINIMAP_PADDING}
-                  playerPosition={state.playerPosition}
-                  playerMarkerRadius={6}
-                  showEndpointMarkers={false}
-                />
-                <MinimapEndpointMarkers
-                  maze={maze}
-                  cellSize={sidebarMinimapCell}
-                  markerSize={DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE}
-                />
-                <div
-                  className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
-                  style={{
-                    left: dmFrameX,
-                    top: dmFrameY,
-                    width: dmFrameW,
-                    height: dmFrameH,
-                    opacity: 0.65,
-                  }}
-                />
-              </div>
-              {/* Legend: You · Start · Finish */}
-              <div
-                className="flex items-center justify-between px-0.5 font-mono text-[0.65rem] uppercase tracking-[0.16em]"
-                style={{ color: 'var(--color-muted-strong)' }}
-              >
-                <span className="inline-flex items-center gap-1">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#2563eb] shrink-0" />
-                  You
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" className="shrink-0">
-                    <circle cx="12" cy="12" r="12" fill="white" />
-                    <circle cx="12" cy="12" r="8.8" fill="#22c55e" />
-                    <circle cx="12" cy="12" r="6.3" fill="none" stroke="#67e8f9" strokeWidth="2.1" />
-                    <circle cx="12" cy="12" r="4.3" fill="#2563eb" />
-                  </svg>
-                  Start
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" className="shrink-0">
-                    <circle cx="12" cy="12" r="12" fill="white" />
-                    <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
-                    <line x1="8.8" y1="17" x2="8.8" y2="6.4" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-                    <path d="M10 6.3 H16.8 L14.8 9.1 L16.8 11.9 H10 Z" fill="white" />
-                  </svg>
-                  Finish
-                </span>
-              </div>
-            </section>
+                className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
+                style={{
+                  left: dmFrameX,
+                  top: dmFrameY,
+                  width: dmFrameW,
+                  height: dmFrameH,
+                  opacity: 0.65,
+                }}
+              />
+            </div>
 
-            {/* ASSIST */}
-            <section aria-labelledby="maze-assist-heading" className="space-y-2">
-              <h2 id="maze-assist-heading" className="section-label mb-0">Assist</h2>
-              <div className="space-y-2">
-                {state.status !== 'solved' && (
-                  <button
-                    onClick={handleHint}
-                    className="btn-primary w-full rounded text-left px-3 py-3 gap-2.5"
-                    style={{ boxShadow: '0 2px 0 0 var(--color-accent-dark)' }}
-                  >
-                    <span aria-hidden="true">💡</span>
-                    <span>{state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}</span>
-                  </button>
-                )}
+            {/* Divider */}
+            <div className="h-px mt-4 mb-3" style={{ backgroundColor: 'var(--color-border)' }} />
+
+            {/* Group 1: Assist */}
+            <div className="space-y-2">
+              {state.status !== 'solved' && (
                 <button
-                  onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
+                  onClick={handleHint}
                   className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
-                  style={state.solutionVisible ? {
-                    backgroundColor: 'var(--color-charcoal)',
-                    color: 'var(--color-bg)',
-                    borderColor: 'var(--color-charcoal)',
-                  } : undefined}
-                  aria-pressed={state.solutionVisible}
                 >
-                  <span aria-hidden="true">{state.solutionVisible ? '🙈' : '🗺️'}</span>
-                  <span>{state.solutionVisible ? 'Hide solution' : 'Show solution'}</span>
+                  <span aria-hidden="true">💡</span>
+                  <span>{state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}</span>
                 </button>
-              </div>
-            </section>
+              )}
+              <button
+                onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
+                className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                style={state.solutionVisible ? {
+                  backgroundColor: 'var(--color-charcoal)',
+                  color: 'var(--color-bg)',
+                  borderColor: 'var(--color-charcoal)',
+                } : undefined}
+                aria-pressed={state.solutionVisible}
+              >
+                <span aria-hidden="true">{state.solutionVisible ? '🙈' : '🗺️'}</span>
+                <span>{state.solutionVisible ? 'Hide solution' : 'Show solution'}</span>
+              </button>
+            </div>
 
-            {/* CONTROLS */}
-            <section aria-labelledby="maze-controls-heading" className="space-y-2">
-              <h2 id="maze-controls-heading" className="section-label mb-0">Controls</h2>
+            {/* Divider */}
+            <div className="h-px my-3" style={{ backgroundColor: 'var(--color-border)' }} />
+
+            {/* Group 2: Game controls */}
+            <div className="space-y-2">
+              {(state.status === 'playing' || state.status === 'paused') && (
+                <button
+                  onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
+                  className="btn-ghost w-full rounded text-left px-3 py-2.5 gap-2.5"
+                  aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
+                >
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    {state.status === 'playing' ? (
+                      <><rect x="3" y="2" width="3.5" height="12" rx="0.5" /><rect x="9.5" y="2" width="3.5" height="12" rx="0.5" /></>
+                    ) : (
+                      <polygon points="3,1 14,8 3,15" />
+                    )}
+                  </svg>
+                  <span>{state.status === 'playing' ? 'Pause' : 'Resume'}</span>
+                </button>
+              )}
               {resetConfirming ? (
                 <div className="rounded border border-red-200 bg-red-50 px-3 py-2.5 space-y-2.5">
                   <p className="text-sm font-medium text-red-800">Reset progress?</p>
@@ -692,9 +685,19 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   <span>Reset progress</span>
                 </button>
               )}
-            </section>
+            </div>
 
           </div>
+
+          {/* Future ad slot — hidden until SIDEBAR_AD_ENABLED = true */}
+          {SIDEBAR_AD_ENABLED && (
+            <div style={{ marginTop: 'auto' }}>
+              <div className="h-px" style={{ backgroundColor: 'var(--color-border)' }} />
+              <div className="flex items-center justify-center p-4" style={{ minHeight: 300 }}>
+                {/* Ad unit */}
+              </div>
+            </div>
+          )}
         </aside>
 
       </div>

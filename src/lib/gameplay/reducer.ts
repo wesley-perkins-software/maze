@@ -3,6 +3,20 @@ import { pointToIndex } from '../maze/utils';
 import { canMove, applyMove, computeRun, getEntryStartPosition, getExitEndPosition, isEntryStep, isExitStep } from './movement';
 import type { GameState, GameAction } from './types';
 
+function updateHintCells(hintCells: number[], visitedIndices: number[]): number[] {
+  if (hintCells.length === 0) return hintCells;
+  let remaining = hintCells;
+  for (const idx of visitedIndices) {
+    if (remaining.length === 0) break;
+    if (idx === remaining[0]) {
+      remaining = remaining.slice(1);
+    } else {
+      return [];
+    }
+  }
+  return remaining;
+}
+
 export function createInitialState(maze: MazeData): GameState {
   return {
     status: 'idle',
@@ -35,6 +49,7 @@ export function gameReducer(
           status: 'playing',
           playerPosition: { ...maze.entry },
           trail: [...state.trail, newIdx],
+          hintCells: updateHintCells(state.hintCells, [newIdx]),
           startTime: state.startTime ?? now,
           elapsedMs: state.startTime ? now - state.startTime : 0,
         };
@@ -46,6 +61,7 @@ export function gameReducer(
           ...state,
           status: 'solved',
           playerPosition: getExitEndPosition(maze),
+          hintCells: [],
           startTime: state.startTime ?? now,
           elapsedMs: state.startTime ? now - state.startTime : 0,
         };
@@ -61,6 +77,7 @@ export function gameReducer(
         status: 'playing',
         playerPosition: newPos,
         trail: [...state.trail, newIdx],
+        hintCells: updateHintCells(state.hintCells, [newIdx]),
         startTime: state.startTime ?? now,
         elapsedMs: state.startTime ? now - state.startTime : 0,
       };
@@ -77,6 +94,7 @@ export function gameReducer(
           ...state,
           status: 'solved',
           playerPosition: getExitEndPosition(maze),
+          hintCells: [],
           startTime: state.startTime ?? now,
           elapsedMs: state.startTime ? now - state.startTime : 0,
         };
@@ -93,6 +111,7 @@ export function gameReducer(
         status: 'playing',
         playerPosition: finalPos,
         trail: [...state.trail, ...newIndices],
+        hintCells: updateHintCells(state.hintCells, newIndices),
         startTime: state.startTime ?? now,
         elapsedMs: state.startTime ? now - state.startTime : 0,
       };
@@ -116,7 +135,11 @@ export function gameReducer(
     }
 
     case 'USE_HINT':
-      return { ...state, hintsUsed: state.hintsUsed + 1, hintCells: action.cells };
+      return {
+        ...state,
+        hintsUsed: action.cells.length > 0 ? state.hintsUsed + 1 : state.hintsUsed,
+        hintCells: action.cells,
+      };
 
     case 'SHOW_SOLUTION':
       return { ...state, solutionVisible: true };
