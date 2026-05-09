@@ -32,7 +32,8 @@ const SIDEBAR_MINIMAP_SIZE = 192;
 const SIDEBAR_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
-const START_MARKER_COLOR = '#22c55e';
+const START_MARKER_RING_COLOR = '#64748b';
+const START_MARKER_CENTER_COLOR = '#ffffff';
 const FINISH_MARKER_COLOR = '#f59e0b';
 
 function clamp(min: number, value: number, max: number): number {
@@ -44,7 +45,7 @@ function getPathStartCell(maze: MazeData, playerPosition: MazeData['entry']): Ma
 }
 
 function getHintStepCount(maze: MazeData): number {
-  return clamp(8, Math.round(Math.max(maze.width, maze.height) * 0.4), 24);
+  return clamp(8, Math.round(Math.max(maze.width, maze.height) * 0.4), 20);
 }
 
 const MINIMAP_PADDING = 2;
@@ -99,8 +100,9 @@ function MinimapEndpointMarkers({
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_COLOR} opacity="0.9" />
-        <polygon points={entryArrow} fill="white" opacity="0.95" />
+        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_RING_COLOR} opacity="0.85" />
+        <circle cx="12" cy="12" r="5.1" fill={START_MARKER_CENTER_COLOR} opacity="0.96" />
+        <polygon points={entryArrow} fill={START_MARKER_RING_COLOR} opacity="0.9" />
       </svg>
       <svg
         viewBox="0 0 24 24"
@@ -272,18 +274,16 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   }, [maze, state.playerPosition]);
 
   const handleHint = useCallback(() => {
-    if (state.solutionVisible) return;
-
     const hintSteps = getHintStepCount(maze);
     const pathFromPlayer = currentSolution;
     if (pathFromPlayer.length <= 1) return;
 
-    // Include the current cell so the amber hint is anchored at the player's
+    // Include the current cell so the green hint is anchored at the player's
     // position. The reducer clears this temporary hint after the next move.
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     hintTimerRef.current = window.setTimeout(() => dispatch({ type: 'USE_HINT', cells: [] }), 5000);
-  }, [maze, currentSolution, state.solutionVisible]);
+  }, [maze, currentSolution]);
 
   const handleResetRequest = useCallback(() => {
     setResetConfirming(true);

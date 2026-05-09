@@ -36,7 +36,7 @@ export function gameReducer(
 
       const now = Date.now();
 
-      // Player steps from the green start marker into the maze.
+      // Player steps from the start marker into the maze.
       if (isEntryStep(maze, state.playerPosition, action.direction)) {
         const newIdx = pointToIndex(maze.entry, maze.width);
         return {
@@ -131,13 +131,15 @@ export function gameReducer(
       return { ...state, status: 'playing', startTime: newStart };
     }
 
-    case 'USE_HINT':
-      if (state.solutionVisible && action.cells.length > 0) return state;
+    case 'USE_HINT': {
+      const hasHint = action.cells.length > 0;
       return {
         ...state,
-        hintsUsed: action.cells.length > 0 ? state.hintsUsed + 1 : state.hintsUsed,
+        solutionVisible: hasHint ? false : state.solutionVisible,
+        hintsUsed: hasHint ? state.hintsUsed + 1 : state.hintsUsed,
         hintCells: action.cells,
       };
+    }
 
     case 'SHOW_SOLUTION':
       return { ...state, solutionVisible: true, hintCells: [] };

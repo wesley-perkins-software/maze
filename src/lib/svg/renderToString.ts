@@ -27,11 +27,11 @@ const DEFAULTS: Required<RenderOptions> = {
   wallThickness: 2,
   padding: 4,
   showSolution: false,
-  solutionColor: '#7C3AED',
+  solutionColor: '#22c55e',
   bgColor: '#ffffff',
   wallColor: '#1e293b',
-  entryColor: '#3b82f6',
-  exitColor: '#ef4444',
+  entryColor: '#64748b',
+  exitColor: '#f59e0b',
   markerSize: 0.4,
 };
 
@@ -107,7 +107,7 @@ export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}):
         return `${cx},${cy}`;
       })
       .join(' ');
-    solutionPath = `<polyline points="${pts}" stroke="${o.solutionColor}" stroke-width="${cellSize * 0.42}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>`;
+    solutionPath = `<polyline points="${pts}" stroke="${o.solutionColor}" stroke-width="${cellSize * 0.18}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>`;
   }
 
   // ── Assemble SVG ─────────────────────────────────────────────────────────────
