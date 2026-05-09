@@ -86,7 +86,8 @@ function MinimapEndpointMarkers({
       >
         <circle cx="12" cy="12" r="12" fill="white" />
         <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
-        <path d="M9 6.8 L16.2 12 L9 17.2 V14.2 H5.8 V9.8 H9 Z" fill="white" />
+        <line x1="8.8" y1="17" x2="8.8" y2="6.4" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M10 6.3 H16.8 L14.8 9.1 L16.8 11.9 H10 Z" fill="white" />
       </svg>
     </>
   );
@@ -577,8 +578,17 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 </div>
               </div>
               <div className="flex items-center justify-between px-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-stone-500">
-                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full border-2 border-white bg-blue-600 ring-1 ring-emerald-400" />Start</span>
-                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full border-2 border-white bg-amber-500" />Finish</span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full border-2 border-white bg-blue-600 ring-1 ring-emerald-400" />
+                  Start
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <svg className="h-3 w-3 rounded-full border-2 border-white bg-amber-500" viewBox="0 0 12 12" aria-hidden="true">
+                    <line x1="4.3" y1="9" x2="4.3" y2="3" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+                    <path d="M5 3 H9 L7.9 4.6 L9 6.2 H5 Z" fill="white" />
+                  </svg>
+                  Finish
+                </span>
               </div>
             </section>
 
