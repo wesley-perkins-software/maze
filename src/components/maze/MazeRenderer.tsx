@@ -207,20 +207,30 @@ export function MazeRenderer({
       {/* Background */}
       <rect width={totalW} height={totalH} fill="white" />
 
-      {/* Hint highlight circles */}
-      {hintCells.map((idx) => {
-        const { x, y } = indexToPoint(idx, width);
+      {/* Hint path — blue polyline */}
+      {hintCells.length >= 2 && (
+        <polyline
+          points={hintCells.map(cellCenter).join(' ')}
+          stroke="#60a5fa"
+          strokeWidth={cellSize * 0.13}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity={0.4}
+        />
+      )}
+      {hintCells.length === 1 && (() => {
+        const { x, y } = indexToPoint(hintCells[0], width);
         return (
           <circle
-            key={`hint-${idx}`}
             cx={padding + x * cellSize + cellSize / 2}
             cy={padding + y * cellSize + cellSize / 2}
-            r={cellSize * 0.28}
-            fill="#f59e0b"
-            opacity={0.45}
+            r={cellSize * 0.065}
+            fill="#60a5fa"
+            opacity={0.4}
           />
         );
-      })}
+      })()}
 
       {/* Solution overlay */}
       {solutionPoints && (
