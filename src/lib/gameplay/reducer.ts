@@ -42,9 +42,11 @@ export function gameReducer(
       const newPos = applyMove(state.playerPosition, action.direction);
       const newIdx = pointToIndex(newPos, maze.width);
 
+      const solved = newPos.x === maze.exit.x && newPos.y === maze.exit.y;
+
       return {
         ...state,
-        status: 'playing',
+        status: solved ? 'solved' : 'playing',
         playerPosition: newPos,
         trail: [...state.trail, newIdx],
         startTime: state.startTime ?? now,
@@ -73,9 +75,11 @@ export function gameReducer(
       const finalPos = path[path.length - 1];
       const newIndices = path.map(p => pointToIndex(p, maze.width));
 
+      const solved = finalPos.x === maze.exit.x && finalPos.y === maze.exit.y;
+
       return {
         ...state,
-        status: 'playing',
+        status: solved ? 'solved' : 'playing',
         playerPosition: finalPos,
         trail: [...state.trail, ...newIndices],
         startTime: state.startTime ?? now,
