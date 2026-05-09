@@ -98,19 +98,10 @@ export function MazeRenderer({
   const exitMy  = outsideY(exit,  exitCy);
 
   // ── Entry arrow — points INTO the maze from whichever perimeter wall ─────────
-  //
-  // When markersOutside is true the icon sits outside the wall, so the arrow
-  // must point inward. When false (thumbnails, print) we always point right —
-  // the classic "play" convention for a start marker.
   const entryArrowPoints = (() => {
     const cx = entryMx;
     const cy = entryMy;
     const r  = markerR;
-
-    if (!markersOutside) {
-      // Classic rightward play triangle
-      return `${cx - r*0.35},${cy - r*0.6} ${cx + r*0.55},${cy} ${cx - r*0.35},${cy + r*0.6}`;
-    }
 
     if (entry.y === 0) {
       // Top wall → arrow points DOWN
@@ -128,12 +119,18 @@ export function MazeRenderer({
     return `${cx + r*0.35},${cy - r*0.6} ${cx - r*0.55},${cy} ${cx + r*0.35},${cy + r*0.6}`;
   })();
 
+  const cellCenter = (idx: number) => {
+    const { x, y } = indexToPoint(idx, width);
+    return `${padding + x * cellSize + cellSize / 2},${padding + y * cellSize + cellSize / 2}`;
+  };
+
   // ── Solution polyline ────────────────────────────────────────────────────────
   const solutionPoints = showSolution && solution.length > 0
-    ? solution.map((idx) => {
-        const { x, y } = indexToPoint(idx, width);
-        return `${padding + x * cellSize + cellSize / 2},${padding + y * cellSize + cellSize / 2}`;
-      }).join(' ')
+    ? [
+        ...(markersOutside ? [`${entryMx},${entryMy}`] : []),
+        ...solution.map(cellCenter),
+        ...(markersOutside ? [`${exitMx},${exitMy}`] : []),
+      ].join(' ')
     : null;
 
   // ── Fading trail — 4 opacity segments, oldest→newest ────────────────────────
@@ -154,11 +151,34 @@ export function MazeRenderer({
   })() : [];
 
   // ── Player circle ────────────────────────────────────────────────────────────
+  // The player can be on a virtual cell just outside an entry/exit gap.
+  // In that case, draw it centered on the corresponding outside marker.
+  const isEntryMarkerPosition = playerPosition && (
+    (entry.y === 0 && playerPosition.x === entry.x && playerPosition.y === -1) ||
+    (entry.y === height - 1 && playerPosition.x === entry.x && playerPosition.y === height) ||
+    (entry.x === 0 && playerPosition.x === -1 && playerPosition.y === entry.y) ||
+    (entry.x === width - 1 && playerPosition.x === width && playerPosition.y === entry.y)
+  );
+  const isExitMarkerPosition = playerPosition && (
+    (exit.y === 0 && playerPosition.x === exit.x && playerPosition.y === -1) ||
+    (exit.y === height - 1 && playerPosition.x === exit.x && playerPosition.y === height) ||
+    (exit.x === 0 && playerPosition.x === -1 && playerPosition.y === exit.y) ||
+    (exit.x === width - 1 && playerPosition.x === width && playerPosition.y === exit.y)
+  );
+
   const playerCx = playerPosition
-    ? padding + playerPosition.x * cellSize + cellSize / 2
+    ? isEntryMarkerPosition
+      ? entryMx
+      : isExitMarkerPosition
+        ? exitMx
+        : padding + playerPosition.x * cellSize + cellSize / 2
     : null;
   const playerCy = playerPosition
-    ? padding + playerPosition.y * cellSize + cellSize / 2
+    ? isEntryMarkerPosition
+      ? entryMy
+      : isExitMarkerPosition
+        ? exitMy
+        : padding + playerPosition.y * cellSize + cellSize / 2
     : null;
 
   const pr    = playerMarkerRadius ?? cellSize * 0.32;

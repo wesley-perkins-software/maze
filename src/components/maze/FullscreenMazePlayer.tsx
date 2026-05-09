@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useLayoutEffect, useRef, useCallback, useState } from 'react';
+import { useReducer, useEffect, useRef, useCallback, useState } from 'react';
 import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
@@ -29,6 +29,7 @@ const SIDEBAR_W = 192;
 const SIDEBAR_MINIMAP_SIZE = 160;
 const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
+const SOLVE_REVEAL_DELAY_MS = 250;
 
 function getPersonalBest(slug: string): number | null {
   try {
@@ -109,15 +110,19 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     return () => clearInterval(id);
   }, [state.status, state.startTime]);
 
-  // Synchronously notify parent on solve — useLayoutEffect guarantees this runs before
-  // the browser paints and before any ghost-click events can fire, so the parent's
-  // PostSolveOverlay is in the DOM before any touch events can reach the Exit button.
-  useLayoutEffect(() => {
-    if (state.status === 'solved') {
-      const isNewBest = maze.slug ? savePersonalBest(maze.slug, state.elapsedMs) : false;
-      isNewBestRef.current = isNewBest;
+  // Delay parent completion UI long enough for the solved render to paint,
+  // so players can see the cursor move onto the outside flag marker first.
+  useEffect(() => {
+    if (state.status !== 'solved') return;
+
+    const isNewBest = maze.slug ? savePersonalBest(maze.slug, state.elapsedMs) : false;
+    isNewBestRef.current = isNewBest;
+
+    const id = window.setTimeout(() => {
       onSolve?.({ elapsedMs: state.elapsedMs, stepCount: state.trail.length, hintsUsed: state.hintsUsed, isNewBest });
-    }
+    }, SOLVE_REVEAL_DELAY_MS);
+
+    return () => window.clearTimeout(id);
   }, [state.status]);
 
   // Screen reader announcement
@@ -187,8 +192,32 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
   const mazeH = maze.height * PLAY_CELL_SIZE + MAZE_PADDING * 2;
 
-  const playerPx = MAZE_PADDING + state.playerPosition.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
-  const playerPy = MAZE_PADDING + state.playerPosition.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
+  const pointOnMarker = (point: typeof maze.entry, marker: typeof maze.entry) => (
+    (marker.y === 0 && point.x === marker.x && point.y === -1) ||
+    (marker.y === maze.height - 1 && point.x === marker.x && point.y === maze.height) ||
+    (marker.x === 0 && point.x === -1 && point.y === marker.y) ||
+    (marker.x === maze.width - 1 && point.x === maze.width && point.y === marker.y)
+  );
+  const markerPx = (point: typeof maze.entry) => (
+    point.x === 0 ? MAZE_PADDING / 2 : point.x === maze.width - 1 ? mazeW - MAZE_PADDING / 2 : MAZE_PADDING + point.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2
+  );
+  const markerPy = (point: typeof maze.entry) => (
+    point.y === 0 ? MAZE_PADDING / 2 : point.y === maze.height - 1 ? mazeH - MAZE_PADDING / 2 : MAZE_PADDING + point.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2
+  );
+
+  const playerOnEntryMarker = pointOnMarker(state.playerPosition, maze.entry);
+  const playerOnExitMarker = pointOnMarker(state.playerPosition, maze.exit);
+
+  const playerPx = playerOnEntryMarker
+    ? markerPx(maze.entry)
+    : playerOnExitMarker
+      ? markerPx(maze.exit)
+      : MAZE_PADDING + state.playerPosition.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
+  const playerPy = playerOnEntryMarker
+    ? markerPy(maze.entry)
+    : playerOnExitMarker
+      ? markerPy(maze.exit)
+      : MAZE_PADDING + state.playerPosition.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
 
   const stripH = vpSize.w < 768 ? controlStripH : 0;
   const sidebarW = vpSize.w >= 768 ? SIDEBAR_W : 0;
@@ -333,7 +362,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             : (
               <>
                 <span className="md:hidden text-slate-400 text-xs">Swipe or use D-pad to move</span>
-                <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to move</span>
+                <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
               </>
             )
           )}

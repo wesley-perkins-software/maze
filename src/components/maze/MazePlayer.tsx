@@ -3,7 +3,7 @@
  * Features: keyboard/touch/D-pad input, timer with pause, hint system,
  * personal best tracking (localStorage), solution toggle, solved modal.
  */
-import { useReducer, useEffect, useRef, useCallback } from 'react';
+import { useReducer, useEffect, useRef, useCallback, useState } from 'react';
 import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
@@ -24,6 +24,7 @@ export interface MazePlayerProps {
 
 const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
+const SOLVE_REVEAL_DELAY_MS = 250;
 
 function getPersonalBest(slug: string): number | null {
   try {
@@ -56,6 +57,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
   const isNewBestRef = useRef(false);
+  const [showSolvedOverlay, setShowSolvedOverlay] = useState(false);
 
   const [state, dispatch] = useReducer(
     (s: ReturnType<typeof createInitialState>, a: Parameters<typeof gameReducer>[1]) =>
@@ -73,12 +75,21 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
     return () => clearInterval(interval);
   }, [state.status, state.startTime]);
 
-  // ── Personal best on solve ────────────────────────────────────────────────────
+  // ── Personal best / solved overlay ────────────────────────────────────────────
   useEffect(() => {
-    if (state.status === 'solved') {
-      if (maze.slug) isNewBestRef.current = savePersonalBest(maze.slug, state.elapsedMs);
-      onSolve?.();
+    if (state.status !== 'solved') {
+      setShowSolvedOverlay(false);
+      return;
     }
+
+    if (maze.slug) isNewBestRef.current = savePersonalBest(maze.slug, state.elapsedMs);
+
+    const id = window.setTimeout(() => {
+      setShowSolvedOverlay(true);
+      onSolve?.();
+    }, SOLVE_REVEAL_DELAY_MS);
+
+    return () => window.clearTimeout(id);
   }, [state.status]);
 
   // ── Announce completion ──────────────────────────────────────────────────────
@@ -246,7 +257,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
         )}
 
         {/* Solved overlay */}
-        {state.status === 'solved' && (
+        {showSolvedOverlay && (
           <PostSolveOverlay
             elapsedMs={state.elapsedMs}
             stepCount={state.trail.length}
@@ -257,6 +268,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
             mazeSlug={maze.slug}
             onPlayAgain={() => {
               isNewBestRef.current = false;
+              setShowSolvedOverlay(false);
               dispatch({ type: 'RESET', startPosition: maze.entry });
             }}
           />
@@ -270,7 +282,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
         Tap controls or swipe to move
       </p>
       <p className="text-xs text-slate-400 text-center hidden md:block" aria-hidden="true">
-        Arrow keys or WASD to move
+        Arrow keys or WASD to run
       </p>
     </div>
   );
