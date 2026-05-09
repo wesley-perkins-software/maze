@@ -10,7 +10,8 @@ import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
-import { indexToPoint } from '../../lib/maze/utils';
+import { inBounds } from '../../lib/maze/utils';
+import { solveMazeFrom } from '../../lib/maze/solver';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import type { PostSolveNav } from './PostSolveOverlay';
 
@@ -22,7 +23,18 @@ export interface MazePlayerProps {
   postSolveNav?: PostSolveNav;
 }
 
-const HINT_LOOKAHEAD = 6;
+function clamp(min: number, value: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getPathStartCell(maze: MazeData, playerPosition: MazeData['entry']): MazeData['entry'] {
+  return inBounds(playerPosition, maze.width, maze.height) ? playerPosition : maze.entry;
+}
+
+function getHintStepCount(maze: MazeData): number {
+  return clamp(8, Math.round(Math.max(maze.width, maze.height) * 0.4), 24);
+}
+
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
 
@@ -57,6 +69,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
   const isNewBestRef = useRef(false);
+  const hintTimerRef = useRef<number | null>(null);
   const [showSolvedOverlay, setShowSolvedOverlay] = useState(false);
 
   const [state, dispatch] = useReducer(
@@ -105,59 +118,35 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
   useKeyboardInput(dispatch, isActive);
   useTouchInput(svgRef, dispatch, isActive);
 
+  useEffect(() => {
+    return () => {
+      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    };
+  }, []);
+
+  const currentSolution = useMemo(() => {
+    const startCell = getPathStartCell(maze, state.playerPosition);
+    return solveMazeFrom(maze, startCell);
+  }, [maze, state.playerPosition]);
+
   // ── Hint computation ─────────────────────────────────────────────────────────
   const handleHint = useCallback(() => {
-    const { solution } = maze;
-    if (!solution.length) return;
+    if (state.solutionVisible) return;
 
-    const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
-    const posInSolution = solution.indexOf(currentIdx);
+    const hintSteps = getHintStepCount(maze);
+    const pathFromPlayer = currentSolution;
+    if (pathFromPlayer.length <= 1) return;
 
-    let startIdx: number;
-    if (posInSolution !== -1) {
-      // Player is on the optimal path — show next steps forward
-      startIdx = posInSolution + 1;
-    } else {
-      // Player wandered off — scan their trail in reverse to find the last cell
-      // they visited that was on the solution path (the branch point where they
-      // went wrong), then hint forward from there.
-      const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
-      let branchPos = -1;
-      for (let t = state.trail.length - 1; t >= 0; t--) {
-        const sp = solutionMap.get(state.trail[t]);
-        if (sp !== undefined) { branchPos = sp; break; }
-      }
-      startIdx = branchPos !== -1 ? branchPos + 1 : 0;
-    }
-
-    const hintSlice = solution.slice(startIdx, startIdx + HINT_LOOKAHEAD);
-    if (hintSlice.length === 0) return;
-
-    dispatch({ type: 'USE_HINT', cells: hintSlice });
+    // Include the current cell so the amber hint is anchored at the player's
+    // position. The reducer clears this temporary hint after the next move.
+    dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
 
     // Auto-clear hint after 3 seconds
-    setTimeout(() => {
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    hintTimerRef.current = window.setTimeout(() => {
       dispatch({ type: 'USE_HINT', cells: [] });
     }, 3000);
-  }, [maze, state.playerPosition, state.trail]);
-
-  // ── Solution path trimmed to start from player's current position ─────────────
-  // On-path: slice from current cell forward.
-  // Off-path: scan trail in reverse to find the branch point, then slice from there.
-  const trimmedSolution = useMemo(() => {
-    const { solution } = maze;
-    if (!solution.length) return solution;
-    const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
-    const posInSolution = solution.indexOf(currentIdx);
-    if (posInSolution !== -1) return solution.slice(posInSolution);
-    const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
-    let branchPos = -1;
-    for (let t = state.trail.length - 1; t >= 0; t--) {
-      const sp = solutionMap.get(state.trail[t]);
-      if (sp !== undefined) { branchPos = sp; break; }
-    }
-    return branchPos !== -1 ? solution.slice(branchPos) : solution;
-  }, [maze, state.playerPosition, state.trail]);
+  }, [maze, currentSolution, state.solutionVisible]);
 
   const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
@@ -261,7 +250,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
           cellSize={cellSize}
           playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
           trail={state.trail}
-          solution={trimmedSolution}
+          solution={currentSolution}
           showSolution={state.solutionVisible}
           hintCells={state.hintCells}
           interactive={isActive}

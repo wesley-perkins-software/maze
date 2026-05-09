@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateMaze } from '../../src/lib/maze/generator';
-import { solveMaze } from '../../src/lib/maze/solver';
+import { solveMaze, solveMazeFrom } from '../../src/lib/maze/solver';
 import { pointToIndex, getPassages } from '../../src/lib/maze/utils';
 
 describe('solveMaze', () => {
@@ -29,6 +29,21 @@ describe('solveMaze', () => {
     const maze = generateMaze({ width: 6, height: 6, difficulty: 'small', seed: 7 });
     const fresh = solveMaze(maze);
     expect(fresh).toEqual(maze.solution);
+  });
+
+  it('returns a path from an arbitrary current cell to the exit', () => {
+    const maze = generateMaze({ width: 10, height: 10, difficulty: 'medium', seed: 99 });
+    const start = { x: 3, y: 4 };
+    const path = solveMazeFrom(maze, start);
+    expect(path[0]).toBe(pointToIndex(start, maze.width));
+    expect(path[path.length - 1]).toBe(pointToIndex(maze.exit, maze.width));
+
+    for (let i = 0; i < path.length - 1; i++) {
+      const from = { x: path[i] % maze.width, y: Math.floor(path[i] / maze.width) };
+      const to = { x: path[i + 1] % maze.width, y: Math.floor(path[i + 1] / maze.width) };
+      const passages = getPassages(maze.grid, from, maze.width, maze.height);
+      expect(passages.some((p) => p.x === to.x && p.y === to.y)).toBe(true);
+    }
   });
 
   it('works for a 1x1 maze', () => {
