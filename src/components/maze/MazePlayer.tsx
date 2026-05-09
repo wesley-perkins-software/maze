@@ -3,7 +3,7 @@
  * Features: keyboard/touch/D-pad input, timer with pause, hint system,
  * personal best tracking (localStorage), solution toggle, solved modal.
  */
-import { useReducer, useEffect, useRef, useCallback, useState } from 'react';
+import { useReducer, useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
@@ -141,6 +141,24 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
     }, 3000);
   }, [maze, state.playerPosition, state.trail]);
 
+  // ── Solution path trimmed to start from player's current position ─────────────
+  // On-path: slice from current cell forward.
+  // Off-path: scan trail in reverse to find the branch point, then slice from there.
+  const trimmedSolution = useMemo(() => {
+    const { solution } = maze;
+    if (!solution.length) return solution;
+    const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
+    const posInSolution = solution.indexOf(currentIdx);
+    if (posInSolution !== -1) return solution.slice(posInSolution);
+    const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
+    let branchPos = -1;
+    for (let t = state.trail.length - 1; t >= 0; t--) {
+      const sp = solutionMap.get(state.trail[t]);
+      if (sp !== undefined) { branchPos = sp; break; }
+    }
+    return branchPos !== -1 ? solution.slice(branchPos) : solution;
+  }, [maze, state.playerPosition, state.trail]);
+
   const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
 
@@ -243,7 +261,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
           cellSize={cellSize}
           playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
           trail={state.trail}
-          solution={maze.solution}
+          solution={trimmedSolution}
           showSolution={state.solutionVisible}
           hintCells={state.hintCells}
           interactive={isActive}
