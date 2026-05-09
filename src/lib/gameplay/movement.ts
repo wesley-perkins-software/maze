@@ -17,6 +17,40 @@ const DIR_DELTA: Record<Direction, { dx: number; dy: number }> = {
   W: { dx: -1, dy:  0 },
 };
 
+const ENTRY_DIR_BY_SIDE = {
+  top: 'S',
+  right: 'W',
+  bottom: 'N',
+  left: 'E',
+} as const satisfies Record<string, Direction>;
+
+/**
+ * Returns the virtual starting marker position just outside the entry gap.
+ * This lets gameplay begin on the green marker instead of inside the maze.
+ */
+export function getEntryStartPosition(maze: MazeData): Point {
+  const { entry } = maze;
+  if (entry.y === 0) return { x: entry.x, y: -1 };
+  if (entry.y === maze.height - 1) return { x: entry.x, y: maze.height };
+  if (entry.x === 0) return { x: -1, y: entry.y };
+  return { x: maze.width, y: entry.y };
+}
+
+/** Returns the direction that moves from the start marker into the entry cell. */
+export function getEntryDirection(maze: MazeData): Direction {
+  const { entry } = maze;
+  if (entry.y === 0) return ENTRY_DIR_BY_SIDE.top;
+  if (entry.y === maze.height - 1) return ENTRY_DIR_BY_SIDE.bottom;
+  if (entry.x === 0) return ENTRY_DIR_BY_SIDE.left;
+  return ENTRY_DIR_BY_SIDE.right;
+}
+
+/** Returns true when `from` is the green start marker and `direction` enters the maze. */
+export function isEntryStep(maze: MazeData, from: Point, direction: Direction): boolean {
+  const start = getEntryStartPosition(maze);
+  return from.x === start.x && from.y === start.y && direction === getEntryDirection(maze);
+}
+
 /**
  * Returns true if there is no wall between `from` and the neighbor in `direction`,
  * and the destination is within the grid bounds.
@@ -30,6 +64,9 @@ export function canMove(maze: MazeData, from: Point, direction: Direction): bool
   const destX = from.x + dx;
   const destY = from.y + dy;
   if (destX < 0 || destY < 0 || destX >= maze.width || destY >= maze.height) {
+    return false;
+  }
+  if (from.x < 0 || from.y < 0 || from.x >= maze.width || from.y >= maze.height) {
     return false;
   }
   const idx = pointToIndex(from, maze.width);
@@ -77,6 +114,18 @@ export function computeRun(maze: MazeData, startPos: Point, direction: Direction
   const back = REVERSE_DIR[direction];
   const path: Point[] = [];
   let pos = startPos;
+
+  if (isEntryStep(maze, pos, direction)) {
+    pos = { ...maze.entry };
+    path.push({ ...pos });
+
+    if (pos.x === maze.exit.x && pos.y === maze.exit.y) return path;
+
+    const isJunction = ALL_DIRS
+      .filter(d => d !== direction && d !== back)
+      .some(d => canMove(maze, pos, d));
+    if (isJunction) return path;
+  }
 
   while (canMove(maze, pos, direction)) {
     pos = applyMove(pos, direction);

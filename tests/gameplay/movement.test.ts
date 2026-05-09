@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateMaze } from '../../src/lib/maze/generator';
-import { canMove, applyMove } from '../../src/lib/gameplay/movement';
+import { applyMove, canMove, computeRun, getEntryDirection, getEntryStartPosition } from '../../src/lib/gameplay/movement';
 import type { Point } from '../../src/types/maze';
 import type { Direction } from '../../src/lib/gameplay/types';
 
@@ -50,4 +50,35 @@ describe('applyMove', () => {
   it('moves E correctly', () => expect(applyMove({x:2,y:3},'E')).toEqual({x:3,y:3}));
   it('moves S correctly', () => expect(applyMove({x:2,y:3},'S')).toEqual({x:2,y:4}));
   it('moves W correctly', () => expect(applyMove({x:2,y:3},'W')).toEqual({x:1,y:3}));
+});
+
+
+describe('computeRun', () => {
+  it('starts from the green entry marker and stops at the next directional choice', () => {
+    const maze = {
+      id: 'test',
+      slug: 'test',
+      difficulty: 'small' as const,
+      width: 4,
+      height: 3,
+      seed: 1,
+      entry: { x: 0, y: 1 },
+      exit: { x: 3, y: 1 },
+      grid: [
+        15, 15, 11, 15,
+        5, 5, 6, 15,
+        15, 15, 15, 15,
+      ],
+      solution: [],
+      generatedAt: '2026-05-09T00:00:00.000Z',
+    };
+
+    expect(getEntryStartPosition(maze)).toEqual({ x: -1, y: 1 });
+    expect(getEntryDirection(maze)).toBe('E');
+    expect(computeRun(maze, getEntryStartPosition(maze), 'E')).toEqual([
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      { x: 2, y: 1 },
+    ]);
+  });
 });

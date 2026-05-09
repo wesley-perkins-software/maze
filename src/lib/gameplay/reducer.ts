@@ -1,13 +1,13 @@
 import type { MazeData } from '../../types/maze';
 import { pointToIndex } from '../maze/utils';
-import { canMove, applyMove, computeRun, isExitStep } from './movement';
+import { canMove, applyMove, computeRun, getEntryStartPosition, isEntryStep, isExitStep } from './movement';
 import type { GameState, GameAction } from './types';
 
 export function createInitialState(maze: MazeData): GameState {
   return {
     status: 'idle',
-    playerPosition: { ...maze.entry },
-    trail: [pointToIndex(maze.entry, maze.width)],
+    playerPosition: getEntryStartPosition(maze),
+    trail: [],
     startTime: null,
     elapsedMs: 0,
     solutionVisible: false,
@@ -26,6 +26,19 @@ export function gameReducer(
       if (state.status === 'solved' || state.status === 'paused') return state;
 
       const now = Date.now();
+
+      // Player steps from the green start marker into the maze.
+      if (isEntryStep(maze, state.playerPosition, action.direction)) {
+        const newIdx = pointToIndex(maze.entry, maze.width);
+        return {
+          ...state,
+          status: 'playing',
+          playerPosition: { ...maze.entry },
+          trail: [...state.trail, newIdx],
+          startTime: state.startTime ?? now,
+          elapsedMs: state.startTime ? now - state.startTime : 0,
+        };
+      }
 
       // Player steps through the exit gap onto the flag → solve
       if (isExitStep(maze, state.playerPosition, action.direction)) {

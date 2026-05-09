@@ -17,7 +17,7 @@ const KEY_DIR_MAP: Record<string, Direction> = {
 
 /**
  * Attaches keyboard listener to the window.
- * Arrow keys and WASD dispatch MOVE actions.
+ * Arrow keys and WASD dispatch RUN actions so desktop movement matches swipe/D-pad movement.
  */
 export function useKeyboardInput(dispatch: Dispatch, enabled: boolean): void {
   useEffect(() => {
@@ -28,7 +28,7 @@ export function useKeyboardInput(dispatch: Dispatch, enabled: boolean): void {
       if (!dir) return;
       // Prevent page scroll when inside maze
       e.preventDefault();
-      dispatch({ type: 'MOVE', direction: dir });
+      dispatch({ type: 'RUN', direction: dir });
     }
 
     window.addEventListener('keydown', handleKey);

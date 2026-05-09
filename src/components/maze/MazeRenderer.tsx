@@ -98,19 +98,10 @@ export function MazeRenderer({
   const exitMy  = outsideY(exit,  exitCy);
 
   // ── Entry arrow — points INTO the maze from whichever perimeter wall ─────────
-  //
-  // When markersOutside is true the icon sits outside the wall, so the arrow
-  // must point inward. When false (thumbnails, print) we always point right —
-  // the classic "play" convention for a start marker.
   const entryArrowPoints = (() => {
     const cx = entryMx;
     const cy = entryMy;
     const r  = markerR;
-
-    if (!markersOutside) {
-      // Classic rightward play triangle
-      return `${cx - r*0.35},${cy - r*0.6} ${cx + r*0.55},${cy} ${cx - r*0.35},${cy + r*0.6}`;
-    }
 
     if (entry.y === 0) {
       // Top wall → arrow points DOWN
@@ -154,11 +145,24 @@ export function MazeRenderer({
   })() : [];
 
   // ── Player circle ────────────────────────────────────────────────────────────
+  // The initial player position can be the virtual cell just outside the entry
+  // gap. In that case, draw the player centered on the green start marker.
+  const isEntryStartPosition = playerPosition && (
+    (entry.y === 0 && playerPosition.x === entry.x && playerPosition.y === -1) ||
+    (entry.y === height - 1 && playerPosition.x === entry.x && playerPosition.y === height) ||
+    (entry.x === 0 && playerPosition.x === -1 && playerPosition.y === entry.y) ||
+    (entry.x === width - 1 && playerPosition.x === width && playerPosition.y === entry.y)
+  );
+
   const playerCx = playerPosition
-    ? padding + playerPosition.x * cellSize + cellSize / 2
+    ? isEntryStartPosition
+      ? entryMx
+      : padding + playerPosition.x * cellSize + cellSize / 2
     : null;
   const playerCy = playerPosition
-    ? padding + playerPosition.y * cellSize + cellSize / 2
+    ? isEntryStartPosition
+      ? entryMy
+      : padding + playerPosition.y * cellSize + cellSize / 2
     : null;
 
   const pr    = playerMarkerRadius ?? cellSize * 0.32;
