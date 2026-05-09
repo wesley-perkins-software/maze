@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useLayoutEffect, useRef, useCallback, useState } from 'react';
+import { useReducer, useEffect, useRef, useCallback, useState } from 'react';
 import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
@@ -29,6 +29,7 @@ const SIDEBAR_W = 192;
 const SIDEBAR_MINIMAP_SIZE = 160;
 const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
+const SOLVE_REVEAL_DELAY_MS = 350;
 
 function getPersonalBest(slug: string): number | null {
   try {
@@ -109,15 +110,19 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     return () => clearInterval(id);
   }, [state.status, state.startTime]);
 
-  // Synchronously notify parent on solve — useLayoutEffect guarantees this runs before
-  // the browser paints and before any ghost-click events can fire, so the parent's
-  // PostSolveOverlay is in the DOM before any touch events can reach the Exit button.
-  useLayoutEffect(() => {
-    if (state.status === 'solved') {
-      const isNewBest = maze.slug ? savePersonalBest(maze.slug, state.elapsedMs) : false;
-      isNewBestRef.current = isNewBest;
+  // Delay parent completion UI long enough for the solved render to paint,
+  // so players can see the cursor move onto the outside flag marker first.
+  useEffect(() => {
+    if (state.status !== 'solved') return;
+
+    const isNewBest = maze.slug ? savePersonalBest(maze.slug, state.elapsedMs) : false;
+    isNewBestRef.current = isNewBest;
+
+    const id = window.setTimeout(() => {
       onSolve?.({ elapsedMs: state.elapsedMs, stepCount: state.trail.length, hintsUsed: state.hintsUsed, isNewBest });
-    }
+    }, SOLVE_REVEAL_DELAY_MS);
+
+    return () => window.clearTimeout(id);
   }, [state.status]);
 
   // Screen reader announcement
