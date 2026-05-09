@@ -26,7 +26,7 @@ const AD_SLOT_H = 0;
 const SAFE_PAD = 32;
 const MINIMAP_SIZE = 96;
 const SIDEBAR_W = 224;
-const SIDEBAR_MINIMAP_SIZE = 176;
+const SIDEBAR_MINIMAP_SIZE = 192;
 const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
@@ -137,6 +137,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const controlStripRef = useRef<HTMLDivElement>(null);
   const [controlStripH, setControlStripH] = useState(128);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [resetConfirming, setResetConfirming] = useState(false);
+  const resetConfirmTimerRef = useRef<number | null>(null);
 
   // Left-handed mode: D-pad on left, minimap on right (persisted)
   const [leftHanded, setLeftHanded] = useState(() => {
@@ -249,6 +251,27 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     dispatch({ type: 'USE_HINT', cells: slice });
     setTimeout(() => dispatch({ type: 'USE_HINT', cells: [] }), 3000);
   }, [maze, state.playerPosition]);
+
+  const handleResetRequest = useCallback(() => {
+    setResetConfirming(true);
+    if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
+    resetConfirmTimerRef.current = window.setTimeout(() => setResetConfirming(false), 4000);
+  }, []);
+
+  const handleResetConfirm = useCallback(() => {
+    if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
+    setResetConfirming(false);
+    dispatch({ type: 'RESET', startPosition: maze.entry });
+  }, [maze.entry]);
+
+  const handleResetCancel = useCallback(() => {
+    if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
+    setResetConfirming(false);
+  }, []);
+
+  useEffect(() => {
+    return () => { if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current); };
+  }, []);
 
   // ── Follow-camera math ───────────────────────────────────────────────────────
   const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
@@ -465,7 +488,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                     className="w-full text-left px-4 py-2.5 text-sm text-amber-600 font-medium hover:bg-amber-50 transition-colors flex items-center gap-2"
                   >
                     <span>💡</span>
-                    {state.hintsUsed > 0 ? `Hint (${state.hintsUsed})` : 'Hint'}
+                    {state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}
                   </button>
                 )}
                 <button
@@ -538,90 +561,127 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
         </div>
 
-        {/* Desktop sidebar — minimap + actions */}
+        {/* Desktop sidebar — MAP / ASSIST / CONTROLS */}
         <aside className="hidden md:flex flex-col w-56 shrink-0 border-l border-stone-300 bg-[#f7f1e8] text-stone-900">
           <div className="flex flex-col gap-5 p-4">
-            <section aria-labelledby="maze-map-heading" className="space-y-2.5">
+
+            {/* MAP */}
+            <section aria-labelledby="maze-map-heading" className="space-y-2">
               <h2 id="maze-map-heading" className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-stone-500">
                 Map
               </h2>
-              <div className="rounded-2xl border border-stone-300 bg-[#fffaf0] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+              <div
+                className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
+                style={{ width: SIDEBAR_MINIMAP_SIZE, height: SIDEBAR_MINIMAP_SIZE }}
+                aria-hidden="true"
+              >
+                <MazeRenderer
+                  maze={maze}
+                  cellSize={sidebarMinimapCell}
+                  wallThickness={1}
+                  padding={MINIMAP_PADDING}
+                  playerPosition={state.playerPosition}
+                  playerMarkerRadius={6}
+                  showEndpointMarkers={false}
+                />
+                <MinimapEndpointMarkers
+                  maze={maze}
+                  cellSize={sidebarMinimapCell}
+                  markerSize={DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE}
+                />
                 <div
-                  className="relative rounded-xl overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
-                  style={{ width: SIDEBAR_MINIMAP_SIZE, height: SIDEBAR_MINIMAP_SIZE }}
-                  aria-hidden="true"
-                >
-                  <MazeRenderer
-                    maze={maze}
-                    cellSize={sidebarMinimapCell}
-                    wallThickness={1}
-                    padding={MINIMAP_PADDING}
-                    playerPosition={state.playerPosition}
-                    playerMarkerRadius={6}
-                    showEndpointMarkers={false}
-                  />
-                  <MinimapEndpointMarkers
-                    maze={maze}
-                    cellSize={sidebarMinimapCell}
-                    markerSize={DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE}
-                  />
-                  <div
-                    className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
-                    style={{
-                      left: dmFrameX,
-                      top: dmFrameY,
-                      width: dmFrameW,
-                      height: dmFrameH,
-                      opacity: 0.65,
-                    }}
-                  />
-                </div>
+                  className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
+                  style={{
+                    left: dmFrameX,
+                    top: dmFrameY,
+                    width: dmFrameW,
+                    height: dmFrameH,
+                    opacity: 0.65,
+                  }}
+                />
               </div>
-              <div className="flex items-center justify-between px-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-stone-500">
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full border-2 border-white bg-blue-600 ring-1 ring-emerald-400" />
+              {/* Legend: You · Start · Finish */}
+              <div className="flex items-center justify-between px-0.5 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-stone-500">
+                <span className="inline-flex items-center gap-1">
+                  <span className="h-2 w-2 rounded-full bg-[#2563eb]" />
+                  You
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#22c55e]" />
                   Start
                 </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <svg className="h-3 w-3 rounded-full border-2 border-white bg-amber-500" viewBox="0 0 12 12" aria-hidden="true">
-                    <line x1="4.3" y1="9" x2="4.3" y2="3" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
-                    <path d="M5 3 H9 L7.9 4.6 L9 6.2 H5 Z" fill="white" />
-                  </svg>
+                <span className="inline-flex items-center gap-1">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#f59e0b]" />
                   Finish
                 </span>
               </div>
             </section>
 
-            <section aria-labelledby="maze-actions-heading" className="space-y-2.5">
-              <h2 id="maze-actions-heading" className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-stone-500">
-                Actions
+            {/* ASSIST */}
+            <section aria-labelledby="maze-assist-heading" className="space-y-2">
+              <h2 id="maze-assist-heading" className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-stone-500">
+                Assist
               </h2>
-              <div className="space-y-2 rounded-2xl border border-stone-300 bg-[#fffaf0] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+              <div className="space-y-2">
                 {state.status !== 'solved' && (
                   <button
                     onClick={handleHint}
-                    className="flex min-h-11 w-full items-center gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-left text-sm font-semibold text-amber-900 transition-colors hover:bg-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
+                    className="flex min-h-12 w-full items-center gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-left text-sm font-semibold text-amber-900 transition-colors hover:bg-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
                   >
                     <span aria-hidden="true">💡</span>
-                    <span>{state.hintsUsed > 0 ? `Hint (${state.hintsUsed})` : 'Hint'}</span>
+                    <span>{state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}</span>
                   </button>
                 )}
                 <button
                   onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
-                  className="flex min-h-11 w-full items-center gap-2.5 rounded-xl border border-stone-200 bg-white/80 px-3 py-2 text-left text-sm font-medium text-stone-700 transition-colors hover:border-stone-300 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
+                  className={`flex min-h-11 w-full items-center gap-2.5 rounded-xl border px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                    state.solutionVisible
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-[inset_3px_0_0_#16a34a] focus-visible:outline-emerald-600'
+                      : 'border-stone-200 bg-white/80 text-stone-700 hover:border-stone-300 hover:bg-white focus-visible:outline-stone-700'
+                  }`}
+                  aria-pressed={state.solutionVisible}
                 >
                   <span aria-hidden="true">{state.solutionVisible ? '🙈' : '🗺️'}</span>
                   <span>{state.solutionVisible ? 'Hide solution' : 'Show solution'}</span>
                 </button>
+              </div>
+            </section>
+
+            {/* CONTROLS */}
+            <section aria-labelledby="maze-controls-heading" className="space-y-2">
+              <h2 id="maze-controls-heading" className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-stone-500">
+                Controls
+              </h2>
+              {resetConfirming ? (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 space-y-2.5">
+                  <p className="text-sm font-medium text-red-800">Reset progress?</p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleResetCancel}
+                      className="flex-1 rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs font-medium text-stone-600 transition-colors hover:bg-stone-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-600"
+                      autoFocus
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleResetConfirm}
+                      className="flex-1 rounded-lg border border-red-300 bg-red-100 px-2 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:bg-red-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              ) : (
                 <button
-                  onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}
+                  onClick={handleResetRequest}
                   className="flex min-h-11 w-full items-center gap-2.5 rounded-xl border border-stone-200 bg-white/60 px-3 py-2 text-left text-sm font-medium text-stone-600 transition-colors hover:border-stone-300 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
                 >
                   <span aria-hidden="true">↩️</span>
-                  <span>Reset</span>
+                  <span>Reset progress</span>
                 </button>
-              </div>
+              )}
             </section>
+
           </div>
         </aside>
 

@@ -176,9 +176,9 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
             <button
               onClick={handleHint}
               className="text-xs px-3 py-1.5 rounded-md border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 font-medium transition-colors"
-              title="Reveal the next few steps of the solution for 3 seconds"
+              title="Reveal the next few steps toward the exit for 3 seconds"
             >
-              {state.hintsUsed > 0 ? `Hint (${state.hintsUsed})` : 'Hint'}
+              {state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}
             </button>
           )}
 
