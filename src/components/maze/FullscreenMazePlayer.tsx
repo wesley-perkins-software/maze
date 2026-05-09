@@ -29,7 +29,7 @@ const SIDEBAR_W = 192;
 const SIDEBAR_MINIMAP_SIZE = 160;
 const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
-const SOLVE_REVEAL_DELAY_MS = 350;
+const SOLVE_REVEAL_DELAY_MS = 250;
 
 function getPersonalBest(slug: string): number | null {
   try {

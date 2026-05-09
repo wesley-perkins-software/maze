@@ -183,7 +183,6 @@ export function MazeRenderer({
 
   const pr    = playerMarkerRadius ?? cellSize * 0.32;
   const glowR = playerMarkerRadius ? playerMarkerRadius * 1.6 : cellSize * 0.5;
-  const playerTransition = 'transform 180ms ease-out';
 
   const label = `${maze.difficulty} ${width}×${height} maze`;
 
@@ -292,30 +291,25 @@ export function MazeRenderer({
 
       {/* Player */}
       {playerCx !== null && playerCy !== null && (
-        <g
-          style={{
-            transform: `translate(${playerCx}px, ${playerCy}px)`,
-            transition: playerTransition,
-          }}
-        >
+        <>
           {/* Animated glow ring */}
           <circle
-            cx={0}
-            cy={0}
+            cx={playerCx}
+            cy={playerCy}
             r={glowR}
             fill="#2563eb"
             className="maze-player-glow"
           />
           {/* Solid player dot */}
           <circle
-            cx={0}
-            cy={0}
+            cx={playerCx}
+            cy={playerCy}
             r={pr}
             fill="#2563eb"
             stroke="white"
             strokeWidth={playerMarkerRadius ? Math.max(1.5, playerMarkerRadius * 0.35) : 2}
           />
-        </g>
+        </>
       )}
     </svg>
   );
