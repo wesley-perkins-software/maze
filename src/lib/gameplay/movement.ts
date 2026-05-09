@@ -17,32 +17,53 @@ const DIR_DELTA: Record<Direction, { dx: number; dy: number }> = {
   W: { dx: -1, dy:  0 },
 };
 
-const ENTRY_DIR_BY_SIDE = {
+const INWARD_DIR_BY_SIDE = {
   top: 'S',
   right: 'W',
   bottom: 'N',
   left: 'E',
 } as const satisfies Record<string, Direction>;
 
-/**
- * Returns the virtual starting marker position just outside the entry gap.
- * This lets gameplay begin on the green marker instead of inside the maze.
- */
+const OUTWARD_DIR_BY_SIDE = {
+  top: 'N',
+  right: 'E',
+  bottom: 'S',
+  left: 'W',
+} as const satisfies Record<string, Direction>;
+
+function getMarkerPosition(maze: MazeData, point: Point): Point {
+  if (point.y === 0) return { x: point.x, y: -1 };
+  if (point.y === maze.height - 1) return { x: point.x, y: maze.height };
+  if (point.x === 0) return { x: -1, y: point.y };
+  return { x: maze.width, y: point.y };
+}
+
+/** Returns the virtual starting marker position just outside the entry gap. */
 export function getEntryStartPosition(maze: MazeData): Point {
-  const { entry } = maze;
-  if (entry.y === 0) return { x: entry.x, y: -1 };
-  if (entry.y === maze.height - 1) return { x: entry.x, y: maze.height };
-  if (entry.x === 0) return { x: -1, y: entry.y };
-  return { x: maze.width, y: entry.y };
+  return getMarkerPosition(maze, maze.entry);
+}
+
+/** Returns the virtual ending marker position just outside the exit gap. */
+export function getExitEndPosition(maze: MazeData): Point {
+  return getMarkerPosition(maze, maze.exit);
 }
 
 /** Returns the direction that moves from the start marker into the entry cell. */
 export function getEntryDirection(maze: MazeData): Direction {
   const { entry } = maze;
-  if (entry.y === 0) return ENTRY_DIR_BY_SIDE.top;
-  if (entry.y === maze.height - 1) return ENTRY_DIR_BY_SIDE.bottom;
-  if (entry.x === 0) return ENTRY_DIR_BY_SIDE.left;
-  return ENTRY_DIR_BY_SIDE.right;
+  if (entry.y === 0) return INWARD_DIR_BY_SIDE.top;
+  if (entry.y === maze.height - 1) return INWARD_DIR_BY_SIDE.bottom;
+  if (entry.x === 0) return INWARD_DIR_BY_SIDE.left;
+  return INWARD_DIR_BY_SIDE.right;
+}
+
+/** Returns the direction that moves from the exit cell onto the flag marker. */
+export function getExitDirection(maze: MazeData): Direction {
+  const { exit } = maze;
+  if (exit.y === 0) return OUTWARD_DIR_BY_SIDE.top;
+  if (exit.y === maze.height - 1) return OUTWARD_DIR_BY_SIDE.bottom;
+  if (exit.x === 0) return OUTWARD_DIR_BY_SIDE.left;
+  return OUTWARD_DIR_BY_SIDE.right;
 }
 
 /** Returns true when `from` is the green start marker and `direction` enters the maze. */
@@ -92,6 +113,7 @@ export function applyMove(from: Point, direction: Direction): Point {
  */
 export function isExitStep(maze: MazeData, from: Point, direction: Direction): boolean {
   if (from.x !== maze.exit.x || from.y !== maze.exit.y) return false;
+  if (direction !== getExitDirection(maze)) return false;
   const { dx, dy } = DIR_DELTA[direction];
   const destX = from.x + dx;
   const destY = from.y + dy;

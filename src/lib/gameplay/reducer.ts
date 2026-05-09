@@ -1,6 +1,6 @@
 import type { MazeData } from '../../types/maze';
 import { pointToIndex } from '../maze/utils';
-import { canMove, applyMove, computeRun, getEntryStartPosition, isEntryStep, isExitStep } from './movement';
+import { canMove, applyMove, computeRun, getEntryStartPosition, getExitEndPosition, isEntryStep, isExitStep } from './movement';
 import type { GameState, GameAction } from './types';
 
 export function createInitialState(maze: MazeData): GameState {
@@ -40,11 +40,12 @@ export function gameReducer(
         };
       }
 
-      // Player steps through the exit gap onto the flag → solve
+      // Player steps through the exit gap onto the flag → solve.
       if (isExitStep(maze, state.playerPosition, action.direction)) {
         return {
           ...state,
           status: 'solved',
+          playerPosition: getExitEndPosition(maze),
           startTime: state.startTime ?? now,
           elapsedMs: state.startTime ? now - state.startTime : 0,
         };
@@ -55,11 +56,9 @@ export function gameReducer(
       const newPos = applyMove(state.playerPosition, action.direction);
       const newIdx = pointToIndex(newPos, maze.width);
 
-      const solved = newPos.x === maze.exit.x && newPos.y === maze.exit.y;
-
       return {
         ...state,
-        status: solved ? 'solved' : 'playing',
+        status: 'playing',
         playerPosition: newPos,
         trail: [...state.trail, newIdx],
         startTime: state.startTime ?? now,
@@ -72,11 +71,12 @@ export function gameReducer(
 
       const now = Date.now();
 
-      // Player swipes/d-pads through the exit gap onto the flag → solve
+      // Player swipes/d-pads through the exit gap onto the flag → solve.
       if (isExitStep(maze, state.playerPosition, action.direction)) {
         return {
           ...state,
           status: 'solved',
+          playerPosition: getExitEndPosition(maze),
           startTime: state.startTime ?? now,
           elapsedMs: state.startTime ? now - state.startTime : 0,
         };
@@ -88,11 +88,9 @@ export function gameReducer(
       const finalPos = path[path.length - 1];
       const newIndices = path.map(p => pointToIndex(p, maze.width));
 
-      const solved = finalPos.x === maze.exit.x && finalPos.y === maze.exit.y;
-
       return {
         ...state,
-        status: solved ? 'solved' : 'playing',
+        status: 'playing',
         playerPosition: finalPos,
         trail: [...state.trail, ...newIndices],
         startTime: state.startTime ?? now,

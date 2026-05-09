@@ -3,7 +3,7 @@ import { generateMaze } from '../../src/lib/maze/generator';
 import { gameReducer, createInitialState } from '../../src/lib/gameplay/reducer';
 import type { Point } from '../../src/types/maze';
 import type { Direction, GameState } from '../../src/lib/gameplay/types';
-import { getEntryDirection, getEntryStartPosition } from '../../src/lib/gameplay/movement';
+import { getEntryDirection, getEntryStartPosition, getExitDirection, getExitEndPosition } from '../../src/lib/gameplay/movement';
 
 function makeMaze() {
   return generateMaze({ width: 8, height: 8, difficulty: 'large', seed: 42 });
@@ -64,8 +64,39 @@ describe('gameReducer', () => {
       state = gameReducer(state, { type: 'MOVE', direction: dir as any }, maze);
     }
 
-    expect(state.status).toBe('solved');
+    expect(state.status).toBe('playing');
     expect(state.playerPosition).toEqual(maze.exit);
+
+    state = gameReducer(state, { type: 'MOVE', direction: getExitDirection(maze) }, maze);
+    expect(state.status).toBe('solved');
+    expect(state.playerPosition).toEqual(getExitEndPosition(maze));
+  });
+
+  it('does not solve on a run that only reaches the exit cell', () => {
+    const maze = makeMaze();
+    const solution = maze.solution;
+    const exitIdx = solution[solution.length - 1];
+    const beforeExitIdx = solution[solution.length - 2];
+    const beforeExit = { x: beforeExitIdx % maze.width, y: Math.floor(beforeExitIdx / maze.width) };
+    const exitCell = { x: exitIdx % maze.width, y: Math.floor(exitIdx / maze.width) };
+    const dx = exitCell.x - beforeExit.x;
+    const dy = exitCell.y - beforeExit.y;
+    const dir = dx === 1 ? 'E' : dx === -1 ? 'W' : dy === 1 ? 'S' : 'N';
+
+    let state: GameState = {
+      ...createInitialState(maze),
+      status: 'playing',
+      playerPosition: beforeExit,
+      trail: [beforeExitIdx],
+    };
+
+    state = gameReducer(state, { type: 'RUN', direction: dir as Direction }, maze);
+    expect(state.status).toBe('playing');
+    expect(state.playerPosition).toEqual(maze.exit);
+
+    state = gameReducer(state, { type: 'RUN', direction: getExitDirection(maze) }, maze);
+    expect(state.status).toBe('solved');
+    expect(state.playerPosition).toEqual(getExitEndPosition(maze));
   });
 
   it('toggles solution visibility', () => {
