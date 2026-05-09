@@ -127,11 +127,13 @@ export function MazeRenderer({
   };
 
   // ── Solution polyline ────────────────────────────────────────────────────────
+  const solutionStartsAtEntry = solution[0] === entry.y * width + entry.x;
+  const solutionEndsAtExit = solution[solution.length - 1] === exit.y * width + exit.x;
   const solutionPoints = showSolution && solution.length > 0
     ? [
-        ...(markersOutside ? [`${entryMx},${entryMy}`] : []),
+        ...(markersOutside && solutionStartsAtEntry ? [`${entryMx},${entryMy}`] : []),
         ...solution.map(cellCenter),
-        ...(markersOutside ? [`${exitMx},${exitMy}`] : []),
+        ...(markersOutside && solutionEndsAtExit ? [`${exitMx},${exitMy}`] : []),
       ].join(' ')
     : null;
 
@@ -207,31 +209,19 @@ export function MazeRenderer({
       {/* Background */}
       <rect width={totalW} height={totalH} fill="white" />
 
-      {/* Hint path — blue polyline */}
+      {/* Hint path — amber dashed temporary guidance */}
       {hintCells.length >= 2 && (
         <polyline
           points={hintCells.map(cellCenter).join(' ')}
-          stroke="#60a5fa"
-          strokeWidth={cellSize * 0.13}
+          stroke="#F59E0B"
+          strokeWidth={cellSize * 0.12}
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity={0.4}
+          strokeDasharray={`${cellSize * 0.45} ${cellSize * 0.28}`}
+          opacity={0.85}
         />
       )}
-      {hintCells.length === 1 && (() => {
-        const { x, y } = indexToPoint(hintCells[0], width);
-        return (
-          <circle
-            cx={padding + x * cellSize + cellSize / 2}
-            cy={padding + y * cellSize + cellSize / 2}
-            r={cellSize * 0.065}
-            fill="#60a5fa"
-            opacity={0.4}
-          />
-        );
-      })()}
-
       {/* Solution overlay */}
       {solutionPoints && (
         <polyline

@@ -109,6 +109,38 @@ describe('gameReducer', () => {
     expect(state.solutionVisible).toBe(false);
   });
 
+  it('clears hints after successful movement', () => {
+    const maze = makeMaze();
+    let state: GameState = {
+      ...createInitialState(maze),
+      status: 'playing',
+      playerPosition: { ...maze.entry },
+      trail: [maze.entry.y * maze.width + maze.entry.x],
+      hintCells: maze.solution.slice(0, 4),
+    };
+
+    const nextIdx = maze.solution[1];
+    const next = { x: nextIdx % maze.width, y: Math.floor(nextIdx / maze.width) };
+    const dx = next.x - maze.entry.x;
+    const dy = next.y - maze.entry.y;
+    const dir = dx === 1 ? 'E' : dx === -1 ? 'W' : dy === 1 ? 'S' : 'N';
+
+    state = gameReducer(state, { type: 'MOVE', direction: dir as Direction }, maze);
+    expect(state.hintCells).toEqual([]);
+  });
+
+  it('clears hints when solution is shown', () => {
+    const maze = makeMaze();
+    let state: GameState = {
+      ...createInitialState(maze),
+      hintCells: maze.solution.slice(0, 4),
+    };
+
+    state = gameReducer(state, { type: 'TOGGLE_SOLUTION' }, maze);
+    expect(state.solutionVisible).toBe(true);
+    expect(state.hintCells).toEqual([]);
+  });
+
   it('resets state', () => {
     const maze = makeMaze();
     let state = createInitialState(maze);

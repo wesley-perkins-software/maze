@@ -4,17 +4,12 @@ import { canMove, applyMove, computeRun, getEntryStartPosition, getExitEndPositi
 import type { GameState, GameAction } from './types';
 
 function updateHintCells(hintCells: number[], visitedIndices: number[]): number[] {
-  if (hintCells.length === 0) return hintCells;
-  let remaining = hintCells;
-  for (const idx of visitedIndices) {
-    if (remaining.length === 0) break;
-    if (idx === remaining[0]) {
-      remaining = remaining.slice(1);
-    } else {
-      return [];
-    }
-  }
-  return remaining;
+  if (hintCells.length === 0 || visitedIndices.length === 0) return hintCells;
+
+  // Hints are temporary guidance from the exact cell where they were requested.
+  // Clear the overlay after any successful movement instead of trying to keep an
+  // old hint anchored to a player who has already stepped away from its start.
+  return [];
 }
 
 export function createInitialState(maze: MazeData): GameState {
@@ -62,6 +57,7 @@ export function gameReducer(
           status: 'solved',
           playerPosition: getExitEndPosition(maze),
           hintCells: [],
+          solutionVisible: false,
           startTime: state.startTime ?? now,
           elapsedMs: state.startTime ? now - state.startTime : 0,
         };
@@ -95,6 +91,7 @@ export function gameReducer(
           status: 'solved',
           playerPosition: getExitEndPosition(maze),
           hintCells: [],
+          solutionVisible: false,
           startTime: state.startTime ?? now,
           elapsedMs: state.startTime ? now - state.startTime : 0,
         };
@@ -142,13 +139,17 @@ export function gameReducer(
       };
 
     case 'SHOW_SOLUTION':
-      return { ...state, solutionVisible: true };
+      return { ...state, solutionVisible: true, hintCells: [] };
 
     case 'HIDE_SOLUTION':
       return { ...state, solutionVisible: false };
 
     case 'TOGGLE_SOLUTION':
-      return { ...state, solutionVisible: !state.solutionVisible };
+      return {
+        ...state,
+        solutionVisible: !state.solutionVisible,
+        hintCells: state.solutionVisible ? state.hintCells : [],
+      };
 
     case 'RESET':
       return createInitialState(maze);

@@ -7,10 +7,21 @@ import type { MazeData } from '../../types/maze';
 import { pointToIndex, getPassages } from './utils';
 
 export function solveMaze(maze: MazeData): number[] {
-  const { width, height, grid, entry, exit } = maze;
+  return solveMazeFrom(maze, maze.entry);
+}
+
+/**
+ * BFS shortest path from any in-bounds maze cell to the maze exit.
+ * The returned path includes both `start` and `maze.exit`, making it suitable
+ * for rendering overlays that must originate at the player's current cell.
+ */
+export function solveMazeFrom(maze: MazeData, start: MazeData['entry']): number[] {
+  const { width, height, grid, exit } = maze;
   const total = width * height;
 
-  const startIdx = pointToIndex(entry, width);
+  if (start.x < 0 || start.y < 0 || start.x >= width || start.y >= height) return [];
+
+  const startIdx = pointToIndex(start, width);
   const exitIdx  = pointToIndex(exit,  width);
 
   if (startIdx === exitIdx) return [startIdx];

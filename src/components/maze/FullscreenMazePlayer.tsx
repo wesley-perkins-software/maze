@@ -5,6 +5,8 @@ import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
+import { inBounds } from '../../lib/maze/utils';
+import { solveMazeFrom } from '../../lib/maze/solver';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -30,6 +32,18 @@ const SIDEBAR_MINIMAP_SIZE = 192;
 const SIDEBAR_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
+
+function clamp(min: number, value: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getPathStartCell(maze: MazeData, playerPosition: MazeData['entry']): MazeData['entry'] {
+  return inBounds(playerPosition, maze.width, maze.height) ? playerPosition : maze.entry;
+}
+
+function getHintStepCount(maze: MazeData): number {
+  return clamp(8, Math.round(Math.max(maze.width, maze.height) * 0.4), 24);
+}
 
 const MINIMAP_PADDING = 2;
 const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
@@ -250,36 +264,24 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   useKeyboardInput(dispatch, isActive);
   useTouchInput(mazeViewportRef, dispatch, isActive);
 
+  const currentSolution = useMemo(() => {
+    const startCell = getPathStartCell(maze, state.playerPosition);
+    return solveMazeFrom(maze, startCell);
+  }, [maze, state.playerPosition]);
+
   const handleHint = useCallback(() => {
-    const { solution } = maze;
-    if (!solution.length) return;
-    const lookahead = Math.min(30, Math.max(8, Math.round(Math.max(maze.width, maze.height) * 0.4)));
-    const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
-    const pos = solution.indexOf(currentIdx);
+    if (state.solutionVisible) return;
 
-    let startIdx: number;
-    if (pos !== -1) {
-      // Player is on the optimal path — show next steps forward
-      startIdx = pos + 1;
-    } else {
-      // Player wandered off — scan their trail in reverse to find the last cell
-      // they visited that was on the solution path (the branch point where they
-      // went wrong), then hint forward from there.
-      const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
-      let branchPos = -1;
-      for (let t = state.trail.length - 1; t >= 0; t--) {
-        const sp = solutionMap.get(state.trail[t]);
-        if (sp !== undefined) { branchPos = sp; break; }
-      }
-      startIdx = branchPos !== -1 ? branchPos + 1 : 0;
-    }
+    const hintSteps = getHintStepCount(maze);
+    const pathFromPlayer = currentSolution;
+    if (pathFromPlayer.length <= 1) return;
 
-    const slice = solution.slice(startIdx, startIdx + lookahead);
-    if (!slice.length) return;
-    dispatch({ type: 'USE_HINT', cells: slice });
+    // Include the current cell so the amber hint is anchored at the player's
+    // position. The reducer clears this temporary hint after the next move.
+    dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     hintTimerRef.current = window.setTimeout(() => dispatch({ type: 'USE_HINT', cells: [] }), 5000);
-  }, [maze, state.playerPosition, state.trail]);
+  }, [maze, currentSolution, state.solutionVisible]);
 
   const handleResetRequest = useCallback(() => {
     setResetConfirming(true);
@@ -305,24 +307,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     };
   }, []);
-
-  // Solution path trimmed to start from the player's current position.
-  // Mirrors the hint logic: on-path → slice from current cell forward;
-  // off-path → scan trail in reverse to find the branch point, then slice from there.
-  const trimmedSolution = useMemo(() => {
-    const { solution } = maze;
-    if (!solution.length) return solution;
-    const currentIdx = state.playerPosition.y * maze.width + state.playerPosition.x;
-    const posInSolution = solution.indexOf(currentIdx);
-    if (posInSolution !== -1) return solution.slice(posInSolution);
-    const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
-    let branchPos = -1;
-    for (let t = state.trail.length - 1; t >= 0; t--) {
-      const sp = solutionMap.get(state.trail[t]);
-      if (sp !== undefined) { branchPos = sp; break; }
-    }
-    return branchPos !== -1 ? solution.slice(branchPos) : solution;
-  }, [maze, state.playerPosition, state.trail]);
 
   // ── Follow-camera math ───────────────────────────────────────────────────────
   const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
@@ -429,6 +413,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           padding={MINIMAP_PADDING}
           playerPosition={state.playerPosition}
           playerMarkerRadius={5}
+          solution={currentSolution}
+          showSolution={state.solutionVisible}
           showEndpointMarkers={false}
         />
         <MinimapEndpointMarkers maze={maze} cellSize={minimapCell} />
@@ -598,7 +584,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               padding={MAZE_PADDING}
               playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
               trail={state.trail}
-              solution={trimmedSolution}
+              solution={currentSolution}
               showSolution={state.solutionVisible}
               hintCells={state.hintCells}
               interactive={isActive}
@@ -644,6 +630,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 padding={MINIMAP_PADDING}
                 playerPosition={state.playerPosition}
                 playerMarkerRadius={6}
+                solution={currentSolution}
+                showSolution={state.solutionVisible}
                 showEndpointMarkers={false}
               />
               <MinimapEndpointMarkers
