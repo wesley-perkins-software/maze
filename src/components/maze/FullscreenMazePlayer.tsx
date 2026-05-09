@@ -31,6 +31,59 @@ const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
 
+const MINIMAP_PADDING = 2;
+const MINIMAP_ENDPOINT_MARKER_SIZE = 18;
+
+function getMinimapMarkerPosition(maze: MazeData, cellSize: number, point: MazeData['entry']) {
+  const totalW = maze.width * cellSize + MINIMAP_PADDING * 2;
+  const totalH = maze.height * cellSize + MINIMAP_PADDING * 2;
+  const x = MINIMAP_PADDING + point.x * cellSize + cellSize / 2;
+  const y = MINIMAP_PADDING + point.y * cellSize + cellSize / 2;
+
+  return {
+    left: `${(x / totalW) * 100}%`,
+    top: `${(y / totalH) * 100}%`,
+  };
+}
+
+function MinimapEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: number }) {
+  const entryPos = getMinimapMarkerPosition(maze, cellSize, maze.entry);
+  const exitPos = getMinimapMarkerPosition(maze, cellSize, maze.exit);
+  const markerStyle = {
+    width: MINIMAP_ENDPOINT_MARKER_SIZE,
+    height: MINIMAP_ENDPOINT_MARKER_SIZE,
+    transform: 'translate(-50%, -50%)',
+    filter: 'drop-shadow(0 1px 2px rgba(15, 23, 42, 0.45)) drop-shadow(0 0 5px rgba(255, 255, 255, 0.95))',
+  };
+
+  return (
+    <>
+      <svg
+        viewBox="0 0 20 20"
+        className="pointer-events-none absolute z-20 overflow-visible"
+        style={{ ...markerStyle, ...entryPos }}
+        aria-hidden="true"
+      >
+        <circle cx="10" cy="10" r="9.5" fill="white" />
+        <circle cx="10" cy="10" r="7.2" fill="#22c55e" />
+        <circle cx="10" cy="10" r="5.2" fill="none" stroke="#67e8f9" strokeWidth="1.6" />
+        <circle cx="10" cy="10" r="3.7" fill="#2563eb" />
+      </svg>
+      <svg
+        viewBox="0 0 20 20"
+        className="pointer-events-none absolute z-20 overflow-visible"
+        style={{ ...markerStyle, ...exitPos }}
+        aria-hidden="true"
+      >
+        <circle cx="10" cy="10" r="9.5" fill="white" />
+        <circle cx="10" cy="10" r="7.2" fill="#f59e0b" />
+        <line x1="8.1" y1="14" x2="8.1" y2="5.2" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M8.4 5.4 L14.1 7.6 L8.4 9.8 Z" fill="white" />
+      </svg>
+    </>
+  );
+}
+
 function getPersonalBest(slug: string): number | null {
   try {
     const raw = localStorage.getItem(PERSONAL_BEST_KEY(slug));
@@ -282,7 +335,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const minimapPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
       <div
-        className="relative rounded-lg overflow-hidden border border-slate-200 shadow-sm bg-white"
+        className="relative rounded-lg overflow-visible border border-slate-200 shadow-sm bg-white"
         style={{ width: MINIMAP_SIZE, height: MINIMAP_SIZE }}
         aria-hidden="true"
       >
@@ -290,11 +343,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           maze={maze}
           cellSize={minimapCell}
           wallThickness={1}
-          padding={2}
+          padding={MINIMAP_PADDING}
           playerPosition={state.playerPosition}
           playerMarkerRadius={5}
-          markerRadius={8}
+          showEndpointMarkers={false}
         />
+        <MinimapEndpointMarkers maze={maze} cellSize={minimapCell} />
         {/* Current viewport frame */}
         <div
           className="absolute border-2 border-blue-500 rounded pointer-events-none"
@@ -479,7 +533,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         <div className="hidden md:flex flex-col w-48 bg-white border-l border-slate-200 shrink-0">
           <div className="p-4 pb-3">
             <div
-              className="relative rounded-lg overflow-hidden border border-slate-200 bg-white"
+              className="relative rounded-lg overflow-visible border border-slate-200 bg-white"
               style={{ width: SIDEBAR_MINIMAP_SIZE, height: SIDEBAR_MINIMAP_SIZE }}
               aria-hidden="true"
             >
@@ -487,11 +541,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 maze={maze}
                 cellSize={sidebarMinimapCell}
                 wallThickness={1}
-                padding={2}
+                padding={MINIMAP_PADDING}
                 playerPosition={state.playerPosition}
                 playerMarkerRadius={6}
-                markerRadius={12}
+                showEndpointMarkers={false}
               />
+              <MinimapEndpointMarkers maze={maze} cellSize={sidebarMinimapCell} />
               <div
                 className="absolute border-2 border-blue-500 rounded pointer-events-none"
                 style={{
