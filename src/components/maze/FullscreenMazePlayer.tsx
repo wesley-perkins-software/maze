@@ -259,18 +259,19 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
     let startIdx: number;
     if (pos !== -1) {
+      // Player is on the optimal path — show next steps forward
       startIdx = pos + 1;
     } else {
-      // Player is off the optimal path — find the nearest solution cell by Manhattan distance
-      const px = state.playerPosition.x;
-      const py = state.playerPosition.y;
-      let bestDist = Infinity;
-      let bestPos = 0;
-      solution.forEach((cellIdx, i) => {
-        const dist = Math.abs((cellIdx % maze.width) - px) + Math.abs(Math.floor(cellIdx / maze.width) - py);
-        if (dist < bestDist) { bestDist = dist; bestPos = i; }
-      });
-      startIdx = bestPos + 1;
+      // Player wandered off — scan their trail in reverse to find the last cell
+      // they visited that was on the solution path (the branch point where they
+      // went wrong), then hint forward from there.
+      const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
+      let branchPos = -1;
+      for (let t = state.trail.length - 1; t >= 0; t--) {
+        const sp = solutionMap.get(state.trail[t]);
+        if (sp !== undefined) { branchPos = sp; break; }
+      }
+      startIdx = branchPos !== -1 ? branchPos + 1 : 0;
     }
 
     const slice = solution.slice(startIdx, startIdx + lookahead);
@@ -278,7 +279,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     dispatch({ type: 'USE_HINT', cells: slice });
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     hintTimerRef.current = window.setTimeout(() => dispatch({ type: 'USE_HINT', cells: [] }), 5000);
-  }, [maze, state.playerPosition]);
+  }, [maze, state.playerPosition, state.trail]);
 
   const handleResetRequest = useCallback(() => {
     setResetConfirming(true);

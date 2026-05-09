@@ -115,18 +115,19 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
 
     let startIdx: number;
     if (posInSolution !== -1) {
+      // Player is on the optimal path — show next steps forward
       startIdx = posInSolution + 1;
     } else {
-      // Player is off the optimal path — find the nearest solution cell by Manhattan distance
-      const px = state.playerPosition.x;
-      const py = state.playerPosition.y;
-      let bestDist = Infinity;
-      let bestPos = 0;
-      solution.forEach((cellIdx, i) => {
-        const dist = Math.abs((cellIdx % maze.width) - px) + Math.abs(Math.floor(cellIdx / maze.width) - py);
-        if (dist < bestDist) { bestDist = dist; bestPos = i; }
-      });
-      startIdx = bestPos + 1;
+      // Player wandered off — scan their trail in reverse to find the last cell
+      // they visited that was on the solution path (the branch point where they
+      // went wrong), then hint forward from there.
+      const solutionMap = new Map(solution.map((idx, i) => [idx, i]));
+      let branchPos = -1;
+      for (let t = state.trail.length - 1; t >= 0; t--) {
+        const sp = solutionMap.get(state.trail[t]);
+        if (sp !== undefined) { branchPos = sp; break; }
+      }
+      startIdx = branchPos !== -1 ? branchPos + 1 : 0;
     }
 
     const hintSlice = solution.slice(startIdx, startIdx + HINT_LOOKAHEAD);
@@ -138,7 +139,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
     setTimeout(() => {
       dispatch({ type: 'USE_HINT', cells: [] });
     }, 3000);
-  }, [maze, state.playerPosition]);
+  }, [maze, state.playerPosition, state.trail]);
 
   const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
@@ -217,8 +218,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
 
           {/* Reset */}
           <button
-            onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}
-            className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
+            onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}            className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
             aria-label="Reset maze"
           >
             Reset
