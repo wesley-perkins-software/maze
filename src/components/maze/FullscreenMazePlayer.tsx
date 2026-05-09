@@ -562,14 +562,15 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         </div>
 
         {/* Desktop sidebar — MAP / ASSIST / CONTROLS */}
-        <aside className="hidden md:flex flex-col w-56 shrink-0 border-l border-stone-300 bg-[#f7f1e8] text-stone-900">
+        <aside
+          className="hidden md:flex flex-col w-56 shrink-0 border-l architect-dot-grid"
+          style={{ backgroundColor: 'var(--color-bg)', borderColor: 'var(--color-border)', color: 'var(--color-charcoal)' }}
+        >
           <div className="flex flex-col gap-5 p-4">
 
             {/* MAP */}
             <section aria-labelledby="maze-map-heading" className="space-y-2">
-              <h2 id="maze-map-heading" className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-stone-500">
-                Map
-              </h2>
+              <h2 id="maze-map-heading" className="section-label mb-0">Map</h2>
               <div
                 className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
                 style={{ width: SIDEBAR_MINIMAP_SIZE, height: SIDEBAR_MINIMAP_SIZE }}
@@ -601,17 +602,30 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 />
               </div>
               {/* Legend: You · Start · Finish */}
-              <div className="flex items-center justify-between px-0.5 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-stone-500">
+              <div
+                className="flex items-center justify-between px-0.5 font-mono text-[0.65rem] uppercase tracking-[0.16em]"
+                style={{ color: 'var(--color-muted-strong)' }}
+              >
                 <span className="inline-flex items-center gap-1">
-                  <span className="h-2 w-2 rounded-full bg-[#2563eb]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#2563eb] shrink-0" />
                   You
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#22c55e]" />
+                  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" className="shrink-0">
+                    <circle cx="12" cy="12" r="12" fill="white" />
+                    <circle cx="12" cy="12" r="8.8" fill="#22c55e" />
+                    <circle cx="12" cy="12" r="6.3" fill="none" stroke="#67e8f9" strokeWidth="2.1" />
+                    <circle cx="12" cy="12" r="4.3" fill="#2563eb" />
+                  </svg>
                   Start
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#f59e0b]" />
+                  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" className="shrink-0">
+                    <circle cx="12" cy="12" r="12" fill="white" />
+                    <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
+                    <line x1="8.8" y1="17" x2="8.8" y2="6.4" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+                    <path d="M10 6.3 H16.8 L14.8 9.1 L16.8 11.9 H10 Z" fill="white" />
+                  </svg>
                   Finish
                 </span>
               </div>
@@ -619,14 +633,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
             {/* ASSIST */}
             <section aria-labelledby="maze-assist-heading" className="space-y-2">
-              <h2 id="maze-assist-heading" className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-stone-500">
-                Assist
-              </h2>
+              <h2 id="maze-assist-heading" className="section-label mb-0">Assist</h2>
               <div className="space-y-2">
                 {state.status !== 'solved' && (
                   <button
                     onClick={handleHint}
-                    className="flex min-h-12 w-full items-center gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-left text-sm font-semibold text-amber-900 transition-colors hover:bg-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
+                    className="btn-primary w-full rounded text-left px-3 py-3 gap-2.5"
+                    style={{ boxShadow: '0 2px 0 0 var(--color-accent-dark)' }}
                   >
                     <span aria-hidden="true">💡</span>
                     <span>{state.hintsUsed > 0 ? `Next Steps (${state.hintsUsed})` : 'Next Steps'}</span>
@@ -634,11 +647,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 )}
                 <button
                   onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
-                  className={`flex min-h-11 w-full items-center gap-2.5 rounded-xl border px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                    state.solutionVisible
-                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-[inset_3px_0_0_#16a34a] focus-visible:outline-emerald-600'
-                      : 'border-stone-200 bg-white/80 text-stone-700 hover:border-stone-300 hover:bg-white focus-visible:outline-stone-700'
-                  }`}
+                  className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                  style={state.solutionVisible ? {
+                    backgroundColor: 'var(--color-charcoal)',
+                    color: 'var(--color-bg)',
+                    borderColor: 'var(--color-charcoal)',
+                  } : undefined}
                   aria-pressed={state.solutionVisible}
                 >
                   <span aria-hidden="true">{state.solutionVisible ? '🙈' : '🗺️'}</span>
@@ -649,23 +663,21 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
             {/* CONTROLS */}
             <section aria-labelledby="maze-controls-heading" className="space-y-2">
-              <h2 id="maze-controls-heading" className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-stone-500">
-                Controls
-              </h2>
+              <h2 id="maze-controls-heading" className="section-label mb-0">Controls</h2>
               {resetConfirming ? (
-                <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 space-y-2.5">
+                <div className="rounded border border-red-200 bg-red-50 px-3 py-2.5 space-y-2.5">
                   <p className="text-sm font-medium text-red-800">Reset progress?</p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleResetCancel}
-                      className="flex-1 rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs font-medium text-stone-600 transition-colors hover:bg-stone-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-600"
+                      className="btn-ghost flex-1 rounded text-xs px-2 py-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-600"
                       autoFocus
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleResetConfirm}
-                      className="flex-1 rounded-lg border border-red-300 bg-red-100 px-2 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:bg-red-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                      className="flex-1 rounded border border-red-300 bg-red-100 px-2 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:bg-red-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
                     >
                       Reset
                     </button>
@@ -674,7 +686,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               ) : (
                 <button
                   onClick={handleResetRequest}
-                  className="flex min-h-11 w-full items-center gap-2.5 rounded-xl border border-stone-200 bg-white/60 px-3 py-2 text-left text-sm font-medium text-stone-600 transition-colors hover:border-stone-300 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
+                  className="btn-ghost w-full rounded text-left px-3 py-2.5 gap-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
                 >
                   <span aria-hidden="true">↩️</span>
                   <span>Reset progress</span>
