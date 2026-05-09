@@ -23,6 +23,7 @@ export interface MazeRendererProps {
   onKeyDown?: (e: React.KeyboardEvent) => void;
   playerMarkerRadius?: number; // override default radius for minimap high-contrast dot
   markerRadius?: number;       // override entry/exit marker radius
+  showEndpointMarkers?: boolean; // render entry/exit markers inside the SVG
   markersOutside?: boolean;    // place entry/exit icons outside the perimeter wall
 }
 
@@ -42,6 +43,7 @@ export function MazeRenderer({
   onKeyDown,
   playerMarkerRadius,
   markerRadius,
+  showEndpointMarkers = true,
   markersOutside = false,
 }: MazeRendererProps) {
   const { width, height, grid, entry, exit } = maze;
@@ -256,36 +258,40 @@ export function MazeRenderer({
         fill="none"
       />
 
-      {/* Entry marker — green circle with directional play arrow */}
-      <circle cx={entryMx} cy={entryMy} r={markerR} fill="#22c55e" opacity={0.9} />
-      {markerR >= 5 && (
-        <polygon
-          points={entryArrowPoints}
-          fill="white"
-          opacity={0.95}
-        />
-      )}
-
-      {/* Exit marker — amber circle with flag pennant */}
-      <circle cx={exitMx} cy={exitMy} r={markerR} fill="#f59e0b" opacity={0.9} />
-      {markerR >= 5 && (
+      {showEndpointMarkers && (
         <>
-          {/* Flag pole */}
-          <line
-            x1={exitMx - markerR * 0.08}
-            y1={exitMy + markerR * 0.52}
-            x2={exitMx - markerR * 0.08}
-            y2={exitMy - markerR * 0.62}
-            stroke="white"
-            strokeWidth={Math.max(1, markerR * 0.17)}
-            strokeLinecap="round"
-          />
-          {/* Flag pennant */}
-          <polygon
-            points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.62} ${exitMx + markerR * 0.58},${exitMy - markerR * 0.28} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.06}`}
-            fill="white"
-            opacity={0.95}
-          />
+          {/* Entry marker — green circle with directional play arrow */}
+          <circle cx={entryMx} cy={entryMy} r={markerR} fill="#22c55e" opacity={0.9} />
+          {markerR >= 5 && (
+            <polygon
+              points={entryArrowPoints}
+              fill="white"
+              opacity={0.95}
+            />
+          )}
+
+          {/* Exit marker — amber circle with flag pennant */}
+          <circle cx={exitMx} cy={exitMy} r={markerR} fill="#f59e0b" opacity={0.9} />
+          {markerR >= 5 && (
+            <>
+              {/* Flag pole */}
+              <line
+                x1={exitMx - markerR * 0.08}
+                y1={exitMy + markerR * 0.52}
+                x2={exitMx - markerR * 0.08}
+                y2={exitMy - markerR * 0.62}
+                stroke="white"
+                strokeWidth={Math.max(1, markerR * 0.17)}
+                strokeLinecap="round"
+              />
+              {/* Flag pennant */}
+              <polygon
+                points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.62} ${exitMx + markerR * 0.58},${exitMy - markerR * 0.28} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.06}`}
+                fill="white"
+                opacity={0.95}
+              />
+            </>
+          )}
         </>
       )}
 
