@@ -25,14 +25,15 @@ const TOP_BAR_H = 44;
 const AD_SLOT_H = 0;
 const SAFE_PAD = 32;
 const MINIMAP_SIZE = 96;
-const SIDEBAR_W = 192;
-const SIDEBAR_MINIMAP_SIZE = 160;
+const SIDEBAR_W = 224;
+const SIDEBAR_MINIMAP_SIZE = 176;
 const HINT_LOOKAHEAD = 6;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
 
 const MINIMAP_PADDING = 2;
-const MINIMAP_ENDPOINT_MARKER_SIZE = 18;
+const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
+const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
 
 function getMinimapMarkerPosition(maze: MazeData, cellSize: number, point: MazeData['entry']) {
   const totalW = maze.width * cellSize + MINIMAP_PADDING * 2;
@@ -46,39 +47,46 @@ function getMinimapMarkerPosition(maze: MazeData, cellSize: number, point: MazeD
   };
 }
 
-function MinimapEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: number }) {
+function MinimapEndpointMarkers({
+  maze,
+  cellSize,
+  markerSize = MINIMAP_ENDPOINT_MARKER_SIZE,
+}: {
+  maze: MazeData;
+  cellSize: number;
+  markerSize?: number;
+}) {
   const entryPos = getMinimapMarkerPosition(maze, cellSize, maze.entry);
   const exitPos = getMinimapMarkerPosition(maze, cellSize, maze.exit);
   const markerStyle = {
-    width: MINIMAP_ENDPOINT_MARKER_SIZE,
-    height: MINIMAP_ENDPOINT_MARKER_SIZE,
+    width: markerSize,
+    height: markerSize,
     transform: 'translate(-50%, -50%)',
-    filter: 'drop-shadow(0 1px 2px rgba(15, 23, 42, 0.45)) drop-shadow(0 0 5px rgba(255, 255, 255, 0.95))',
+    filter: 'drop-shadow(0 2px 3px rgba(15, 23, 42, 0.5)) drop-shadow(0 0 7px rgba(255, 255, 255, 0.98))',
   };
 
   return (
     <>
       <svg
-        viewBox="0 0 20 20"
+        viewBox="0 0 24 24"
         className="pointer-events-none absolute z-20 overflow-visible"
         style={{ ...markerStyle, ...entryPos }}
         aria-hidden="true"
       >
-        <circle cx="10" cy="10" r="9.5" fill="white" />
-        <circle cx="10" cy="10" r="7.2" fill="#22c55e" />
-        <circle cx="10" cy="10" r="5.2" fill="none" stroke="#67e8f9" strokeWidth="1.6" />
-        <circle cx="10" cy="10" r="3.7" fill="#2563eb" />
+        <circle cx="12" cy="12" r="12" fill="white" />
+        <circle cx="12" cy="12" r="8.8" fill="#22c55e" />
+        <circle cx="12" cy="12" r="6.3" fill="none" stroke="#67e8f9" strokeWidth="2.1" />
+        <circle cx="12" cy="12" r="4.3" fill="#2563eb" />
       </svg>
       <svg
-        viewBox="0 0 20 20"
+        viewBox="0 0 24 24"
         className="pointer-events-none absolute z-20 overflow-visible"
         style={{ ...markerStyle, ...exitPos }}
         aria-hidden="true"
       >
-        <circle cx="10" cy="10" r="9.5" fill="white" />
-        <circle cx="10" cy="10" r="7.2" fill="#f59e0b" />
-        <line x1="8.1" y1="14" x2="8.1" y2="5.2" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M8.4 5.4 L14.1 7.6 L8.4 9.8 Z" fill="white" />
+        <circle cx="12" cy="12" r="12" fill="white" />
+        <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
+        <path d="M9 6.8 L16.2 12 L9 17.2 V14.2 H5.8 V9.8 H9 Z" fill="white" />
       </svg>
     </>
   );
@@ -335,7 +343,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const minimapPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
       <div
-        className="relative rounded-lg overflow-visible border border-slate-200 shadow-sm bg-white"
+        className="relative rounded-xl overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
         style={{ width: MINIMAP_SIZE, height: MINIMAP_SIZE }}
         aria-hidden="true"
       >
@@ -351,7 +359,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         <MinimapEndpointMarkers maze={maze} cellSize={minimapCell} />
         {/* Current viewport frame */}
         <div
-          className="absolute border-2 border-blue-500 rounded pointer-events-none"
+          className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
           style={{
             left: mmFrameX,
             top: mmFrameY,
@@ -530,64 +538,82 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         </div>
 
         {/* Desktop sidebar — minimap + actions */}
-        <div className="hidden md:flex flex-col w-48 bg-white border-l border-slate-200 shrink-0">
-          <div className="p-4 pb-3">
-            <div
-              className="relative rounded-lg overflow-visible border border-slate-200 bg-white"
-              style={{ width: SIDEBAR_MINIMAP_SIZE, height: SIDEBAR_MINIMAP_SIZE }}
-              aria-hidden="true"
-            >
-              <MazeRenderer
-                maze={maze}
-                cellSize={sidebarMinimapCell}
-                wallThickness={1}
-                padding={MINIMAP_PADDING}
-                playerPosition={state.playerPosition}
-                playerMarkerRadius={6}
-                showEndpointMarkers={false}
-              />
-              <MinimapEndpointMarkers maze={maze} cellSize={sidebarMinimapCell} />
-              <div
-                className="absolute border-2 border-blue-500 rounded pointer-events-none"
-                style={{
-                  left: dmFrameX,
-                  top: dmFrameY,
-                  width: dmFrameW,
-                  height: dmFrameH,
-                  opacity: 0.65,
-                }}
-              />
-            </div>
-          </div>
+        <aside className="hidden md:flex flex-col w-56 shrink-0 border-l border-stone-300 bg-[#f7f1e8] text-stone-900">
+          <div className="flex flex-col gap-5 p-4">
+            <section aria-labelledby="maze-map-heading" className="space-y-2.5">
+              <h2 id="maze-map-heading" className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-stone-500">
+                Map
+              </h2>
+              <div className="rounded-2xl border border-stone-300 bg-[#fffaf0] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+                <div
+                  className="relative rounded-xl overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
+                  style={{ width: SIDEBAR_MINIMAP_SIZE, height: SIDEBAR_MINIMAP_SIZE }}
+                  aria-hidden="true"
+                >
+                  <MazeRenderer
+                    maze={maze}
+                    cellSize={sidebarMinimapCell}
+                    wallThickness={1}
+                    padding={MINIMAP_PADDING}
+                    playerPosition={state.playerPosition}
+                    playerMarkerRadius={6}
+                    showEndpointMarkers={false}
+                  />
+                  <MinimapEndpointMarkers
+                    maze={maze}
+                    cellSize={sidebarMinimapCell}
+                    markerSize={DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE}
+                  />
+                  <div
+                    className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
+                    style={{
+                      left: dmFrameX,
+                      top: dmFrameY,
+                      width: dmFrameW,
+                      height: dmFrameH,
+                      opacity: 0.65,
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center justify-between px-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-stone-500">
+                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full border-2 border-white bg-blue-600 ring-1 ring-emerald-400" />Start</span>
+                <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full border-2 border-white bg-amber-500" />Finish</span>
+              </div>
+            </section>
 
-          <div className="h-px bg-slate-100 mx-4" />
-
-          <div className="flex flex-col p-2 gap-0.5">
-            {state.status !== 'solved' && (
-              <button
-                onClick={handleHint}
-                className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-amber-50 transition-colors flex items-center gap-2 text-amber-600 font-medium"
-              >
-                <span>💡</span>
-                {state.hintsUsed > 0 ? `Hint (${state.hintsUsed})` : 'Hint'}
-              </button>
-            )}
-            <button
-              onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
-              className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-2 text-slate-600"
-            >
-              <span>{state.solutionVisible ? '🙈' : '🗺️'}</span>
-              {state.solutionVisible ? 'Hide solution' : 'Show solution'}
-            </button>
-            <button
-              onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}
-              className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-2 text-slate-500"
-            >
-              <span>↩️</span>
-              Reset
-            </button>
+            <section aria-labelledby="maze-actions-heading" className="space-y-2.5">
+              <h2 id="maze-actions-heading" className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-stone-500">
+                Actions
+              </h2>
+              <div className="space-y-2 rounded-2xl border border-stone-300 bg-[#fffaf0] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+                {state.status !== 'solved' && (
+                  <button
+                    onClick={handleHint}
+                    className="flex min-h-11 w-full items-center gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-left text-sm font-semibold text-amber-900 transition-colors hover:bg-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
+                  >
+                    <span aria-hidden="true">💡</span>
+                    <span>{state.hintsUsed > 0 ? `Hint (${state.hintsUsed})` : 'Hint'}</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
+                  className="flex min-h-11 w-full items-center gap-2.5 rounded-xl border border-stone-200 bg-white/80 px-3 py-2 text-left text-sm font-medium text-stone-700 transition-colors hover:border-stone-300 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
+                >
+                  <span aria-hidden="true">{state.solutionVisible ? '🙈' : '🗺️'}</span>
+                  <span>{state.solutionVisible ? 'Hide solution' : 'Show solution'}</span>
+                </button>
+                <button
+                  onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}
+                  className="flex min-h-11 w-full items-center gap-2.5 rounded-xl border border-stone-200 bg-white/60 px-3 py-2 text-left text-sm font-medium text-stone-600 transition-colors hover:border-stone-300 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
+                >
+                  <span aria-hidden="true">↩️</span>
+                  <span>Reset</span>
+                </button>
+              </div>
+            </section>
           </div>
-        </div>
+        </aside>
 
       </div>
 
@@ -607,7 +633,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       {/* Mobile control strip — equal halves: minimap + D-pad with left-handed swap */}
       <div
         ref={controlStripRef}
-        className="md:hidden bg-slate-50 border-t border-slate-200 shrink-0 flex items-stretch"
+        className="md:hidden bg-[#f7f1e8] border-t border-stone-300 shrink-0 flex items-stretch"
       >
         {leftHanded ? dpadPanel : minimapPanel}
 
