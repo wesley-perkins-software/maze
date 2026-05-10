@@ -213,6 +213,7 @@ export function MazeRenderer({
       height={totalH}
       viewBox={`0 0 ${totalW} ${totalH}`}
       xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
       className={className}
       style={fillContainer
         ? { display: 'block', width: '100%', height: '100%', overflow: 'visible' }
