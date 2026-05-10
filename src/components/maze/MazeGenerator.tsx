@@ -143,35 +143,39 @@ export function MazeGenerator() {
   const { w: width, h: height } = getDimensions();
   const cellSize = Math.max(8, Math.min(28, Math.floor(400 / Math.max(width, height))));
 
-  const btnBase    = 'rounded-sm border py-2.5 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent';
+  const btnBase    = 'rounded-sm border py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent';
   const activeBtn  = 'border-arch-charcoal bg-arch-charcoal text-white';
   const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
 
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
 
   return (
-    <div className="flex flex-col lg:flex-row-reverse gap-7 lg:gap-8 items-start">
+    <div className="flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-7 lg:gap-10 lg:items-start">
 
-      {/* ── Maze panel — top on mobile, right on desktop ── */}
-      <div className="flex-1 min-w-0 w-full">
+      {/* ── Maze panel — top on mobile, right column on desktop ── */}
+      <div className="min-w-0 w-full lg:col-start-2 lg:row-start-1">
 
-        {/* Preview card with inset double-rule frame */}
+        {/* Preview card — square, viewport-fitted */}
         <div
-          className="maze-generator-svg border border-arch-400/60 bg-arch-surface overflow-hidden"
+          className="maze-generator-svg border border-arch-400/60 bg-arch-surface overflow-hidden mx-auto"
           style={{
-            height:    'clamp(300px, calc(100vh - 300px), 640px)',
+            width: 'min(100%, calc(100vh - 140px))',
+            aspectRatio: '1 / 1',
             boxShadow: 'inset 0 0 0 6px #FFFFFF, inset 0 0 0 7px #B0AEA8',
           }}
         >
-          <div className="flex justify-center items-center w-full h-full p-4">
+          <div className="flex justify-center items-center w-full h-full p-3">
             <MazeRenderer maze={maze} cellSize={cellSize} fillContainer />
           </div>
         </div>
 
-        {/* Artifact identity strip — attached to card bottom */}
-        <div className="border border-arch-400/60 border-t-0 bg-arch-bg px-3 py-2 flex justify-between items-center mb-4">
-          <span className="text-xs font-mono font-medium text-arch-600">{width} × {height}</span>
-          <span className="text-xs font-mono font-medium text-arch-600">{presetLabel}</span>
+        {/* Identity caption — below card, flush with card edges */}
+        <div
+          className="flex justify-between items-center pt-2 pb-1 mx-auto"
+          style={{ width: 'min(100%, calc(100vh - 140px))' }}
+        >
+          <span className="text-xs font-mono text-arch-400">{width} × {height}</span>
+          <span className="text-xs font-mono text-arch-400">{presetLabel}</span>
         </div>
 
         {playing && (
@@ -206,7 +210,7 @@ export function MazeGenerator() {
 
         {/* Post-solve CTA */}
         {solved && (
-          <div className="rounded-sm border border-green-200 bg-green-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="mt-3 rounded-sm border border-green-200 bg-green-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-sm font-medium text-green-800">Nice work! Ready for another?</p>
             <div className="flex gap-2 shrink-0">
               {sizePreset !== 'monster' && !showCustom && (
@@ -228,13 +232,101 @@ export function MazeGenerator() {
         )}
       </div>
 
-      {/* ── Controls panel — below maze on mobile, left on desktop ──
-          Mobile order:  1 actions  →  2 size  →  3 browse
-          Desktop order: 1 size  →  2 divider  →  3 actions  →  4 browse  */}
-      <div className="w-full lg:w-72 shrink-0 flex flex-col gap-5">
+      {/* ── Controls panel — below maze on mobile, left column on desktop ──
+          Order: size selector → [rule] → actions → [rule] → browse */}
+      <div className="w-full shrink-0 flex flex-col gap-4 lg:col-start-1 lg:row-start-1">
 
-        {/* Actions — order-1 mobile (Play visible immediately), order-3 desktop */}
-        <div className="order-1 lg:order-3 space-y-2.5 border-t border-arch-200 pt-4 lg:border-t-0 lg:pt-0">
+        {/* Desktop-only editorial header — hidden on mobile (page renders heading above) */}
+        <div className="hidden lg:block">
+          <nav aria-label="Breadcrumb" className="mb-3">
+            <ol className="flex items-center gap-1">
+              <li>
+                <a href="/" className="text-xs font-mono text-arch-400 hover:text-arch-600 transition-colors">
+                  Home
+                </a>
+              </li>
+              <li><span className="text-xs font-mono text-arch-400 mx-1.5">/</span></li>
+              <li><span className="text-xs font-mono text-arch-600">Maze Generator</span></li>
+            </ol>
+          </nav>
+          <p className="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">Free Maze Generator</p>
+          {/* aria-hidden because the real h1 lives in the page (lg:hidden) for SEO */}
+          <div className="font-display text-5xl text-arch-charcoal leading-none mb-2" aria-hidden="true">
+            Build Your Own Maze
+          </div>
+          <p className="text-sm text-arch-600 leading-relaxed mb-4">
+            Choose a size, generate a maze, then play online or print.
+          </p>
+        </div>
+
+        {/* Size selector — always first */}
+        <fieldset>
+          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-600 mb-2">Size</legend>
+          <div className="grid grid-cols-3 gap-1.5">
+            {SIZE_OPTIONS.map(({ value, label, detail }) => (
+              <button
+                key={value}
+                onClick={() => handleSizeChange(value)}
+                className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
+                  !showCustom && sizePreset === value ? activeBtn : inactiveBtn
+                }`}
+                aria-pressed={!showCustom && sizePreset === value}
+              >
+                <span>{label}</span>
+                <span className={`text-xs font-mono ${!showCustom && sizePreset === value ? 'text-white/80' : 'text-arch-600'}`}>{detail}</span>
+              </button>
+            ))}
+            {/* Custom — sixth slot */}
+            <button
+              onClick={toggleCustom}
+              className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
+                showCustom ? activeBtn : inactiveBtn
+              }`}
+              aria-pressed={showCustom}
+            >
+              <span>Custom</span>
+              <span className={`text-xs font-mono ${showCustom ? 'text-white/80' : 'text-arch-600'}`}>Up to 100</span>
+            </button>
+          </div>
+
+          {/* Custom inputs — compact inline rows: Label [slider] Value */}
+          {showCustom && (
+            <div className="mt-3 space-y-2.5 border-t border-arch-200 pt-3">
+              <div className="flex items-center gap-2">
+                <label htmlFor="maze-width" className="text-xs font-semibold text-arch-600 w-12 shrink-0">Width</label>
+                <input
+                  id="maze-width"
+                  type="range"
+                  min={CUSTOM_RANGE.min}
+                  max={CUSTOM_RANGE.max}
+                  value={customWidth}
+                  onChange={(e) => setCustomWidth(Number(e.target.value))}
+                  className="generator-range flex-1 min-w-0"
+                />
+                <span className="text-xs font-mono font-medium text-arch-charcoal w-8 text-right shrink-0">{customWidth}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <label htmlFor="maze-height" className="text-xs font-semibold text-arch-600 w-12 shrink-0">Height</label>
+                <input
+                  id="maze-height"
+                  type="range"
+                  min={CUSTOM_RANGE.min}
+                  max={CUSTOM_RANGE.max}
+                  value={customHeight}
+                  onChange={(e) => setCustomHeight(Number(e.target.value))}
+                  className="generator-range flex-1 min-w-0"
+                />
+                <span className="text-xs font-mono font-medium text-arch-charcoal w-8 text-right shrink-0">{customHeight}</span>
+              </div>
+            </div>
+          )}
+        </fieldset>
+
+        {/* Divider */}
+        <div className="border-t border-arch-200" />
+
+        {/* Actions */}
+        <div className="space-y-2.5">
           {/* Primary */}
           <button
             onClick={handlePlay}
@@ -280,77 +372,11 @@ export function MazeGenerator() {
           </div>
         </div>
 
-        {/* Size selector — order-2 mobile, order-1 desktop */}
-        <fieldset className="order-2 lg:order-1">
-          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-600 mb-2">Size</legend>
-          <div className="grid grid-cols-3 gap-2">
-            {SIZE_OPTIONS.map(({ value, label, detail }) => (
-              <button
-                key={value}
-                onClick={() => handleSizeChange(value)}
-                className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
-                  !showCustom && sizePreset === value ? activeBtn : inactiveBtn
-                }`}
-                aria-pressed={!showCustom && sizePreset === value}
-              >
-                <span>{label}</span>
-                <span className={`text-xs font-mono ${!showCustom && sizePreset === value ? 'text-white/80' : 'text-arch-600'}`}>{detail}</span>
-              </button>
-            ))}
-            {/* Custom — sixth slot */}
-            <button
-              onClick={toggleCustom}
-              className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
-                showCustom ? activeBtn : inactiveBtn
-              }`}
-              aria-pressed={showCustom}
-            >
-              <span>Custom</span>
-              <span className={`text-xs font-mono ${showCustom ? 'text-white/80' : 'text-arch-600'}`}>Up to 100×100</span>
-            </button>
-          </div>
-
-          {showCustom && (
-            <div className="mt-4 space-y-4 border-t border-arch-200 pt-4">
-              <div>
-                <div className="flex justify-between gap-4 mb-1.5">
-                  <label htmlFor="maze-width" className="text-xs font-semibold text-arch-600">Width</label>
-                  <span className="text-xs font-mono font-medium text-arch-charcoal">{customWidth} cells</span>
-                </div>
-                <input
-                  id="maze-width"
-                  type="range"
-                  min={CUSTOM_RANGE.min}
-                  max={CUSTOM_RANGE.max}
-                  value={customWidth}
-                  onChange={(e) => setCustomWidth(Number(e.target.value))}
-                  className="generator-range w-full"
-                />
-              </div>
-              <div>
-                <div className="flex justify-between gap-4 mb-1.5">
-                  <label htmlFor="maze-height" className="text-xs font-semibold text-arch-600">Height</label>
-                  <span className="text-xs font-mono font-medium text-arch-charcoal">{customHeight} cells</span>
-                </div>
-                <input
-                  id="maze-height"
-                  type="range"
-                  min={CUSTOM_RANGE.min}
-                  max={CUSTOM_RANGE.max}
-                  value={customHeight}
-                  onChange={(e) => setCustomHeight(Number(e.target.value))}
-                  className="generator-range w-full"
-                />
-              </div>
-            </div>
-          )}
-        </fieldset>
-
-        {/* Divider — hidden on mobile, between size and actions on desktop */}
-        <div className="hidden lg:block lg:order-2 border-t border-arch-200" />
+        {/* Divider */}
+        <div className="border-t border-arch-200" />
 
         {/* Browse library — always last */}
-        <div className="order-3 lg:order-4 border-t border-arch-200 pt-4 text-center">
+        <div className="pb-2">
           <a
             href="/small-mazes"
             className="text-sm font-medium text-arch-600 underline decoration-arch-400/60 underline-offset-4 hover:text-arch-accent hover:decoration-arch-accent transition-colors"
