@@ -150,17 +150,17 @@ export function MazeGenerator() {
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
 
   return (
-    <div className="flex flex-col lg:flex-row-reverse gap-6 items-start">
+    <div className="flex flex-col lg:flex-row-reverse gap-7 lg:gap-8 items-start">
 
       {/* ── Maze panel — top on mobile, right on desktop ── */}
       <div className="flex-1 min-w-0 w-full">
 
         {/* Preview card with inset double-rule frame */}
         <div
-          className="maze-generator-svg border border-arch-200 bg-arch-surface overflow-hidden"
+          className="maze-generator-svg border border-arch-400/60 bg-arch-surface overflow-hidden"
           style={{
             height:    'clamp(300px, calc(100vh - 300px), 640px)',
-            boxShadow: 'inset 0 0 0 5px #FFFFFF, inset 0 0 0 6px #D6D4CF',
+            boxShadow: 'inset 0 0 0 6px #FFFFFF, inset 0 0 0 7px #B0AEA8',
           }}
         >
           <div className="flex justify-center items-center w-full h-full p-4">
@@ -169,9 +169,9 @@ export function MazeGenerator() {
         </div>
 
         {/* Artifact identity strip — attached to card bottom */}
-        <div className="border border-arch-200 border-t-0 bg-arch-bg px-3 py-1.5 flex justify-between items-center mb-4">
-          <span className="text-xs font-mono text-arch-400">{width} × {height}</span>
-          <span className="text-xs font-mono text-arch-400">{presetLabel}</span>
+        <div className="border border-arch-400/60 border-t-0 bg-arch-bg px-3 py-2 flex justify-between items-center mb-4">
+          <span className="text-xs font-mono font-medium text-arch-600">{width} × {height}</span>
+          <span className="text-xs font-mono font-medium text-arch-600">{presetLabel}</span>
         </div>
 
         {playing && (
@@ -231,10 +231,10 @@ export function MazeGenerator() {
       {/* ── Controls panel — below maze on mobile, left on desktop ──
           Mobile order:  1 actions  →  2 size  →  3 browse
           Desktop order: 1 size  →  2 divider  →  3 actions  →  4 browse  */}
-      <div className="w-full lg:w-72 shrink-0 flex flex-col gap-4">
+      <div className="w-full lg:w-72 shrink-0 flex flex-col gap-5">
 
         {/* Actions — order-1 mobile (Play visible immediately), order-3 desktop */}
-        <div className="order-1 lg:order-3 space-y-2.5">
+        <div className="order-1 lg:order-3 space-y-2.5 border-t border-arch-200 pt-4 lg:border-t-0 lg:pt-0">
           {/* Primary */}
           <button
             onClick={handlePlay}
@@ -261,7 +261,7 @@ export function MazeGenerator() {
           <div className="flex gap-2">
             <button
               onClick={handleDownloadSVG}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -270,7 +270,7 @@ export function MazeGenerator() {
             </button>
             <button
               onClick={handlePrint}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
@@ -282,7 +282,7 @@ export function MazeGenerator() {
 
         {/* Size selector — order-2 mobile, order-1 desktop */}
         <fieldset className="order-2 lg:order-1">
-          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-400 mb-2">Size</legend>
+          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-600 mb-2">Size</legend>
           <div className="grid grid-cols-3 gap-2">
             {SIZE_OPTIONS.map(({ value, label, detail }) => (
               <button
@@ -294,7 +294,7 @@ export function MazeGenerator() {
                 aria-pressed={!showCustom && sizePreset === value}
               >
                 <span>{label}</span>
-                <span className="text-xs font-mono opacity-60">{detail}</span>
+                <span className={`text-xs font-mono ${!showCustom && sizePreset === value ? 'text-white/80' : 'text-arch-600'}`}>{detail}</span>
               </button>
             ))}
             {/* Custom — sixth slot */}
@@ -306,16 +306,16 @@ export function MazeGenerator() {
               aria-pressed={showCustom}
             >
               <span>Custom</span>
-              <span className="text-xs font-mono opacity-60">up to 100</span>
+              <span className={`text-xs font-mono ${showCustom ? 'text-white/80' : 'text-arch-600'}`}>Up to 100×100</span>
             </button>
           </div>
 
           {showCustom && (
-            <div className="mt-3 space-y-3">
+            <div className="mt-4 space-y-4 border-t border-arch-200 pt-4">
               <div>
-                <div className="flex justify-between mb-1">
-                  <label htmlFor="maze-width" className="text-xs font-medium text-arch-600">Width</label>
-                  <span className="text-xs font-mono text-arch-400">{customWidth} cells</span>
+                <div className="flex justify-between gap-4 mb-1.5">
+                  <label htmlFor="maze-width" className="text-xs font-semibold text-arch-600">Width</label>
+                  <span className="text-xs font-mono font-medium text-arch-charcoal">{customWidth} cells</span>
                 </div>
                 <input
                   id="maze-width"
@@ -324,13 +324,13 @@ export function MazeGenerator() {
                   max={CUSTOM_RANGE.max}
                   value={customWidth}
                   onChange={(e) => setCustomWidth(Number(e.target.value))}
-                  className="w-full accent-arch-charcoal"
+                  className="generator-range w-full"
                 />
               </div>
               <div>
-                <div className="flex justify-between mb-1">
-                  <label htmlFor="maze-height" className="text-xs font-medium text-arch-600">Height</label>
-                  <span className="text-xs font-mono text-arch-400">{customHeight} cells</span>
+                <div className="flex justify-between gap-4 mb-1.5">
+                  <label htmlFor="maze-height" className="text-xs font-semibold text-arch-600">Height</label>
+                  <span className="text-xs font-mono font-medium text-arch-charcoal">{customHeight} cells</span>
                 </div>
                 <input
                   id="maze-height"
@@ -339,7 +339,7 @@ export function MazeGenerator() {
                   max={CUSTOM_RANGE.max}
                   value={customHeight}
                   onChange={(e) => setCustomHeight(Number(e.target.value))}
-                  className="w-full accent-arch-charcoal"
+                  className="generator-range w-full"
                 />
               </div>
             </div>
@@ -350,10 +350,10 @@ export function MazeGenerator() {
         <div className="hidden lg:block lg:order-2 border-t border-arch-200" />
 
         {/* Browse library — always last */}
-        <div className="order-3 lg:order-4 text-center">
+        <div className="order-3 lg:order-4 border-t border-arch-200 pt-4 text-center">
           <a
             href="/small-mazes"
-            className="text-sm text-arch-400 hover:text-arch-accent transition-colors"
+            className="text-sm font-medium text-arch-600 underline decoration-arch-400/60 underline-offset-4 hover:text-arch-accent hover:decoration-arch-accent transition-colors"
           >
             → Browse pre-made mazes
           </a>
