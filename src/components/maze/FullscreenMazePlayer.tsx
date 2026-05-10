@@ -156,7 +156,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const hintTimerRef = useRef<number | null>(null);
   const isNewBestRef = useRef(false);
   const camXRef = useRef<number | null>(null);
   const camYRef = useRef<number | null>(null);
@@ -279,10 +278,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     if (pathFromPlayer.length <= 1) return;
 
     // Include the current cell so the green hint is anchored at the player's
-    // position. The reducer clears this temporary hint after the next move.
+    // position and remains followable until completed or abandoned.
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
-    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-    hintTimerRef.current = window.setTimeout(() => dispatch({ type: 'USE_HINT', cells: [] }), 5000);
   }, [maze, currentSolution]);
 
   const handleResetRequest = useCallback(() => {
@@ -293,7 +290,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const handleResetConfirm = useCallback(() => {
     if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
-    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     setResetConfirming(false);
     dispatch({ type: 'RESET', startPosition: maze.entry });
   }, [maze.entry]);
@@ -306,7 +302,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   useEffect(() => {
     return () => {
       if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
-      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     };
   }, []);
 
