@@ -235,8 +235,8 @@ export function MazeGenerator() {
           className="flex justify-between items-center pt-2 pb-1 mx-auto"
           style={{ width: 'min(100%, calc(100vh - 140px))' }}
         >
-          <span className="text-xs font-mono text-arch-400">{width} × {height}</span>
-          <span className="text-xs font-mono text-arch-400">{presetLabel}</span>
+          <span className="text-sm font-mono font-medium text-arch-600">{width} × {height}</span>
+          <span className="text-sm font-mono font-medium text-arch-600">{presetLabel}</span>
         </div>
 
         {playing && (
@@ -334,7 +334,7 @@ export function MazeGenerator() {
                 aria-pressed={!showCustom && sizePreset === value}
               >
                 <span>{label}</span>
-                <span className={`text-xs font-mono ${!showCustom && sizePreset === value ? 'text-white/80' : 'text-arch-600'}`}>{detail}</span>
+                <span className={`text-xs font-mono font-medium ${!showCustom && sizePreset === value ? 'text-white/85' : 'text-arch-600'}`}>{detail}</span>
               </button>
             ))}
             {/* Custom — sixth slot */}
@@ -346,7 +346,7 @@ export function MazeGenerator() {
               aria-pressed={showCustom}
             >
               <span>Custom</span>
-              <span className={`text-xs font-mono ${showCustom ? 'text-white/80' : 'text-arch-600'}`}>Up to 100</span>
+              <span className={`text-xs font-mono font-medium ${showCustom ? 'text-white/85' : 'text-arch-600'}`}>Up to 100</span>
             </button>
           </div>
 
@@ -354,7 +354,7 @@ export function MazeGenerator() {
           {showCustom && (
             <div className="mt-3 space-y-2.5 border-t border-arch-200 pt-3">
               <div className="flex items-center gap-2">
-                <label htmlFor="maze-width" className="text-xs font-semibold text-arch-600 w-12 shrink-0">Width</label>
+                <label htmlFor="maze-width" className="text-sm font-semibold text-arch-charcoal w-12 shrink-0">Width</label>
                 <input
                   id="maze-width"
                   type="range"
@@ -364,10 +364,10 @@ export function MazeGenerator() {
                   onChange={(e) => setCustomWidth(Number(e.target.value))}
                   className="generator-range flex-1 min-w-0"
                 />
-                <span className="text-xs font-mono font-medium text-arch-charcoal w-8 text-right shrink-0">{customWidth}</span>
+                <span className="text-sm font-mono font-semibold text-arch-charcoal w-9 text-right shrink-0">{customWidth}</span>
               </div>
               <div className="flex items-center gap-2">
-                <label htmlFor="maze-height" className="text-xs font-semibold text-arch-600 w-12 shrink-0">Height</label>
+                <label htmlFor="maze-height" className="text-sm font-semibold text-arch-charcoal w-12 shrink-0">Height</label>
                 <input
                   id="maze-height"
                   type="range"
@@ -377,7 +377,7 @@ export function MazeGenerator() {
                   onChange={(e) => setCustomHeight(Number(e.target.value))}
                   className="generator-range flex-1 min-w-0"
                 />
-                <span className="text-xs font-mono font-medium text-arch-charcoal w-8 text-right shrink-0">{customHeight}</span>
+                <span className="text-sm font-mono font-semibold text-arch-charcoal w-9 text-right shrink-0">{customHeight}</span>
               </div>
             </div>
           )}
