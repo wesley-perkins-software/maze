@@ -150,28 +150,29 @@ export function MazeGenerator() {
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
 
   return (
-    <div className="flex flex-col lg:flex-row-reverse gap-7 lg:gap-8 items-start">
+    <div className="flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-7 lg:gap-10 lg:items-start">
 
-      {/* ── Maze panel — top on mobile, right on desktop ── */}
-      <div className="flex-1 min-w-0 w-full">
+      {/* ── Maze panel — top on mobile, right column on desktop ── */}
+      <div className="min-w-0 w-full lg:col-start-2 lg:row-start-1">
 
-        {/* Preview card with inset double-rule frame */}
+        {/* Preview card — square, viewport-fitted */}
         <div
-          className="maze-generator-svg border border-arch-400/60 bg-arch-surface overflow-hidden"
+          className="maze-generator-svg border border-arch-400/60 bg-arch-surface overflow-hidden relative mx-auto"
           style={{
-            height:    'clamp(300px, calc(100vh - 300px), 640px)',
+            width: 'min(100%, calc(100vh - 140px))',
+            aspectRatio: '1 / 1',
             boxShadow: 'inset 0 0 0 6px #FFFFFF, inset 0 0 0 7px #B0AEA8',
           }}
         >
-          <div className="flex justify-center items-center w-full h-full p-4">
+          <div className="flex justify-center items-center w-full h-full p-3">
             <MazeRenderer maze={maze} cellSize={cellSize} fillContainer />
           </div>
-        </div>
 
-        {/* Artifact identity strip — attached to card bottom */}
-        <div className="border border-arch-400/60 border-t-0 bg-arch-bg px-3 py-2 flex justify-between items-center mb-4">
-          <span className="text-xs font-mono font-medium text-arch-600">{width} × {height}</span>
-          <span className="text-xs font-mono font-medium text-arch-600">{presetLabel}</span>
+          {/* Identity strip — inside frame as bottom overlay */}
+          <div className="absolute bottom-0 left-0 right-0 border-t border-arch-400/40 bg-white/90 px-3 py-1.5 flex justify-between items-center">
+            <span className="text-xs font-mono font-medium text-arch-600">{width} × {height}</span>
+            <span className="text-xs font-mono font-medium text-arch-600">{presetLabel}</span>
+          </div>
         </div>
 
         {playing && (
@@ -206,7 +207,7 @@ export function MazeGenerator() {
 
         {/* Post-solve CTA */}
         {solved && (
-          <div className="rounded-sm border border-green-200 bg-green-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="mt-3 rounded-sm border border-green-200 bg-green-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-sm font-medium text-green-800">Nice work! Ready for another?</p>
             <div className="flex gap-2 shrink-0">
               {sizePreset !== 'monster' && !showCustom && (
@@ -228,10 +229,34 @@ export function MazeGenerator() {
         )}
       </div>
 
-      {/* ── Controls panel — below maze on mobile, left on desktop ──
-          Mobile order:  1 actions  →  2 size  →  3 browse
-          Desktop order: 1 size  →  2 divider  →  3 actions  →  4 browse  */}
-      <div className="w-full lg:w-72 shrink-0 flex flex-col gap-5">
+      {/* ── Controls panel — below maze on mobile, left column on desktop ──
+          Mobile order:  actions (1) → size (2) → browse (3)
+          Desktop order: editorial header → size (order-1) → divider (order-2) → actions (order-3) → browse (order-4) */}
+      <div className="w-full shrink-0 flex flex-col gap-5 lg:col-start-1 lg:row-start-1">
+
+        {/* Desktop-only editorial header — hidden on mobile (page renders heading above) */}
+        <div className="hidden lg:block">
+          <nav aria-label="Breadcrumb" className="mb-3">
+            <ol className="flex items-center gap-1">
+              <li>
+                <a href="/" className="text-xs font-mono text-arch-400 hover:text-arch-600 transition-colors">
+                  Home
+                </a>
+              </li>
+              <li><span className="text-xs font-mono text-arch-400 mx-1.5">/</span></li>
+              <li><span className="text-xs font-mono text-arch-600">Maze Generator</span></li>
+            </ol>
+          </nav>
+          <p className="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">Free Maze Generator</p>
+          {/* aria-hidden because the real h1 lives in the page (lg:hidden) for SEO */}
+          <div className="font-display text-5xl text-arch-charcoal leading-none mb-2" aria-hidden="true">
+            Build Your Own Maze
+          </div>
+          <p className="text-sm text-arch-600 leading-relaxed mb-4">
+            Choose a size, generate a maze, then play online or print.
+          </p>
+          <div className="border-t border-arch-200" />
+        </div>
 
         {/* Actions — order-1 mobile (Play visible immediately), order-3 desktop */}
         <div className="order-1 lg:order-3 space-y-2.5 border-t border-arch-200 pt-4 lg:border-t-0 lg:pt-0">

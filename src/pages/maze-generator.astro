@@ -61,10 +61,10 @@ const schema = JSON.stringify({
   description="Make a free maze online in seconds. Pick Small, Medium, or Large — then play it in your browser, download as SVG, or print. Smart branching and loop carving make every maze genuinely challenging."
   schemaLD={schema}
 >
-  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-14 pb-10 sm:pt-16">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10 lg:pt-8">
 
-    <!-- Breadcrumb + heading -->
-    <div class="mb-8 scroll-mt-24">
+    <!-- Breadcrumb + heading — mobile only; desktop version renders inside the generator component -->
+    <div class="mb-6 scroll-mt-24 lg:hidden">
       <nav aria-label="Breadcrumb" class="text-sm text-arch-600 mb-4">
         <ol class="flex items-center gap-1">
           <li><a href="/" class="hover:text-arch-charcoal transition-colors">Home</a></li>
@@ -78,9 +78,9 @@ const schema = JSON.stringify({
       </nav>
 
       <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">Free Maze Generator</p>
-      <h1 class="text-5xl lg:text-6xl text-arch-charcoal mb-3">Build Your Own Maze</h1>
-      <p class="text-arch-600 text-lg max-w-xl">
-        Custom size. Play online, download as SVG, or print — all free.
+      <h1 class="text-5xl text-arch-charcoal mb-3">Build Your Own Maze</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        Choose a size, generate a maze, then play online or print.
       </p>
     </div>
 
