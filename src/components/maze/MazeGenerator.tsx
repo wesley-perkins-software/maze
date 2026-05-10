@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import type { Difficulty } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
@@ -26,6 +26,8 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
 };
 
 const CUSTOM_RANGE = { min: 5, max: 100 };
+const PRINT_MAZE_MAX_WIDTH_IN = 7.25;
+const PRINT_MAZE_MAX_HEIGHT_IN = 9.5;
 
 function presetDifficulty(preset: SizePreset): Difficulty {
   if (preset === 'expert' || preset === 'monster') return 'large';
@@ -218,11 +220,23 @@ export function MazeGenerator() {
   const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
 
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
+  const printAspectRatio = maze.width / maze.height;
+  const printBoxAspectRatio = PRINT_MAZE_MAX_WIDTH_IN / PRINT_MAZE_MAX_HEIGHT_IN;
+  const printMazeWidthIn = maze.width === maze.height || printAspectRatio >= printBoxAspectRatio
+    ? PRINT_MAZE_MAX_WIDTH_IN
+    : PRINT_MAZE_MAX_HEIGHT_IN * printAspectRatio;
+  const printMazeHeightIn = maze.width === maze.height || printAspectRatio >= printBoxAspectRatio
+    ? PRINT_MAZE_MAX_WIDTH_IN / printAspectRatio
+    : PRINT_MAZE_MAX_HEIGHT_IN;
+  const printMazeStyle = {
+    '--print-maze-width': `${printMazeWidthIn.toFixed(3)}in`,
+    '--print-maze-height': `${printMazeHeightIn.toFixed(3)}in`,
+  } as CSSProperties;
 
   const printMaze = (
     <div className="print-only" aria-hidden="true">
       <div className="print-maze-sheet">
-        <div className="print-maze-art">
+        <div className="print-maze-art" style={printMazeStyle}>
           <MazeRenderer
             maze={maze}
             cellSize={12}
