@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { Difficulty } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
 import { MazeRenderer } from './MazeRenderer';
@@ -32,7 +32,11 @@ function presetDifficulty(preset: SizePreset): Difficulty {
 }
 
 function newSeed() {
-  return Math.floor(Math.random() * 999999);
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    return crypto.getRandomValues(new Uint32Array(1))[0];
+  }
+
+  return Math.floor(Math.random() * 0xffffffff);
 }
 
 export function difficultyForCustomSize(w: number, h: number): Difficulty {
@@ -59,6 +63,9 @@ export function MazeGenerator() {
   const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
   const [playerKey, setPlayerKey] = useState(0);
   const hasPlayedRef = useRef(false);
+  const lastSeedRef = useRef<number | null>(null);
+  const customPreviewTimerRef = useRef<number | null>(null);
+  const customPreviewRequestRef = useRef(0);
 
   const getDimensions = useCallback(
     () => showCustom ? { w: customWidth, h: customHeight } : SIZE_MAP[sizePreset],
@@ -67,33 +74,87 @@ export function MazeGenerator() {
 
   const [maze, setMaze] = useState(() => {
     const { w, h } = SIZE_MAP['medium'];
-    return generateMaze({ width: w, height: h, difficulty: 'medium', seed: newSeed() });
+    const seed = newSeed();
+    lastSeedRef.current = seed;
+    return generateMaze({ width: w, height: h, difficulty: 'medium', seed });
   });
+
+  const nextSeed = useCallback(() => {
+    let seed = newSeed();
+
+    while (seed === lastSeedRef.current) {
+      seed = newSeed();
+    }
+
+    lastSeedRef.current = seed;
+    return seed;
+  }, []);
+
+  const cancelScheduledCustomPreview = useCallback(() => {
+    if (customPreviewTimerRef.current !== null) {
+      window.clearTimeout(customPreviewTimerRef.current);
+      customPreviewTimerRef.current = null;
+    }
+
+    customPreviewRequestRef.current += 1;
+  }, []);
 
   const generate = useCallback((preset: SizePreset | null, dims: { w: number; h: number }) => {
     const difficulty: Difficulty = preset
       ? presetDifficulty(preset)
       : difficultyForCustomSize(dims.w, dims.h);
-    const m = generateMaze({ width: dims.w, height: dims.h, difficulty, seed: newSeed() });
+    const m = generateMaze({ width: dims.w, height: dims.h, difficulty, seed: nextSeed() });
     setMaze(m);
     setPlaying(false);
     setSolved(false);
     setSolveStats(null);
-  }, []);
+  }, [nextSeed]);
+
+  useEffect(() => {
+    if (!showCustom) {
+      cancelScheduledCustomPreview();
+      return;
+    }
+
+    const requestId = customPreviewRequestRef.current + 1;
+    customPreviewRequestRef.current = requestId;
+
+    if (customPreviewTimerRef.current !== null) {
+      window.clearTimeout(customPreviewTimerRef.current);
+    }
+
+    customPreviewTimerRef.current = window.setTimeout(() => {
+      customPreviewTimerRef.current = null;
+
+      if (customPreviewRequestRef.current !== requestId) return;
+
+      generate(null, { w: customWidth, h: customHeight });
+    }, 220);
+
+    return () => {
+      if (customPreviewTimerRef.current !== null) {
+        window.clearTimeout(customPreviewTimerRef.current);
+        customPreviewTimerRef.current = null;
+      }
+    };
+  }, [showCustom, customWidth, customHeight, generate, cancelScheduledCustomPreview]);
 
   const handleSizeChange = useCallback((s: SizePreset) => {
+    cancelScheduledCustomPreview();
     setSizePreset(s);
     setShowCustom(false);
     generate(s, SIZE_MAP[s]);
-  }, [generate]);
+  }, [generate, cancelScheduledCustomPreview]);
 
   const handleGenerate = useCallback(() => {
+    cancelScheduledCustomPreview();
+
     if (showCustom) {
       generate(null, { w: customWidth, h: customHeight });
     } else {
       generate(sizePreset, SIZE_MAP[sizePreset]);
     }
-  }, [showCustom, customWidth, customHeight, sizePreset, generate]);
+  }, [showCustom, customWidth, customHeight, sizePreset, generate, cancelScheduledCustomPreview]);
 
   const handlePlay = useCallback(() => {
     hasPlayedRef.current = true;
@@ -107,12 +168,13 @@ export function MazeGenerator() {
   }, []);
 
   const handleTryLarger = useCallback(() => {
+    cancelScheduledCustomPreview();
     const presets: SizePreset[] = ['small', 'medium', 'large', 'expert', 'monster'];
     const idx  = presets.indexOf(sizePreset);
     const next = presets[Math.min(idx + 1, presets.length - 1)];
     setSizePreset(next);
     generate(next, SIZE_MAP[next]);
-  }, [sizePreset, generate]);
+  }, [sizePreset, generate, cancelScheduledCustomPreview]);
 
   const handleDownloadSVG = useCallback(() => {
     const svgEl = document.querySelector('.maze-generator-svg svg');
@@ -120,12 +182,11 @@ export function MazeGenerator() {
     const blob = new Blob([svgEl.outerHTML], { type: 'image/svg+xml' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
-    const { w, h } = getDimensions();
     a.href     = url;
-    a.download = `maze-${w}x${h}.svg`;
+    a.download = `maze-${maze.width}x${maze.height}.svg`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [getDimensions]);
+  }, [maze.height, maze.width]);
 
   const handlePrint = useCallback(() => window.print(), []);
 
@@ -174,8 +235,8 @@ export function MazeGenerator() {
           className="flex justify-between items-center pt-2 pb-1 mx-auto"
           style={{ width: 'min(100%, calc(100vh - 140px))' }}
         >
-          <span className="text-xs font-mono text-arch-400">{width} × {height}</span>
-          <span className="text-xs font-mono text-arch-400">{presetLabel}</span>
+          <span className="text-sm font-mono font-medium text-arch-600">{width} × {height}</span>
+          <span className="text-sm font-mono font-medium text-arch-600">{presetLabel}</span>
         </div>
 
         {playing && (
@@ -273,7 +334,7 @@ export function MazeGenerator() {
                 aria-pressed={!showCustom && sizePreset === value}
               >
                 <span>{label}</span>
-                <span className={`text-xs font-mono ${!showCustom && sizePreset === value ? 'text-white/80' : 'text-arch-600'}`}>{detail}</span>
+                <span className={`text-xs font-mono font-medium ${!showCustom && sizePreset === value ? 'text-white/85' : 'text-arch-600'}`}>{detail}</span>
               </button>
             ))}
             {/* Custom — sixth slot */}
@@ -285,7 +346,7 @@ export function MazeGenerator() {
               aria-pressed={showCustom}
             >
               <span>Custom</span>
-              <span className={`text-xs font-mono ${showCustom ? 'text-white/80' : 'text-arch-600'}`}>Up to 100</span>
+              <span className={`text-xs font-mono font-medium ${showCustom ? 'text-white/85' : 'text-arch-600'}`}>Up to 100</span>
             </button>
           </div>
 
@@ -293,7 +354,7 @@ export function MazeGenerator() {
           {showCustom && (
             <div className="mt-3 space-y-2.5 border-t border-arch-200 pt-3">
               <div className="flex items-center gap-2">
-                <label htmlFor="maze-width" className="text-xs font-semibold text-arch-600 w-12 shrink-0">Width</label>
+                <label htmlFor="maze-width" className="text-sm font-semibold text-arch-charcoal w-12 shrink-0">Width</label>
                 <input
                   id="maze-width"
                   type="range"
@@ -303,10 +364,10 @@ export function MazeGenerator() {
                   onChange={(e) => setCustomWidth(Number(e.target.value))}
                   className="generator-range flex-1 min-w-0"
                 />
-                <span className="text-xs font-mono font-medium text-arch-charcoal w-8 text-right shrink-0">{customWidth}</span>
+                <span className="text-sm font-mono font-semibold text-arch-charcoal w-9 text-right shrink-0">{customWidth}</span>
               </div>
               <div className="flex items-center gap-2">
-                <label htmlFor="maze-height" className="text-xs font-semibold text-arch-600 w-12 shrink-0">Height</label>
+                <label htmlFor="maze-height" className="text-sm font-semibold text-arch-charcoal w-12 shrink-0">Height</label>
                 <input
                   id="maze-height"
                   type="range"
@@ -316,7 +377,7 @@ export function MazeGenerator() {
                   onChange={(e) => setCustomHeight(Number(e.target.value))}
                   className="generator-range flex-1 min-w-0"
                 />
-                <span className="text-xs font-mono font-medium text-arch-charcoal w-8 text-right shrink-0">{customHeight}</span>
+                <span className="text-sm font-mono font-semibold text-arch-charcoal w-9 text-right shrink-0">{customHeight}</span>
               </div>
             </div>
           )}
@@ -327,7 +388,18 @@ export function MazeGenerator() {
 
         {/* Actions */}
         <div className="space-y-2.5">
-          {/* Primary */}
+          {/* Primary generator action */}
+          <button
+            onClick={handleGenerate}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-sm border-2 border-arch-charcoal bg-arch-surface px-5 py-3 text-base font-semibold text-arch-charcoal hover:bg-arch-bg active:bg-arch-bg transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Generate New Maze
+          </button>
+
+          {/* Primary play action */}
           <button
             onClick={handlePlay}
             className="w-full inline-flex items-center justify-center gap-2 rounded-sm bg-arch-accent px-5 py-3 text-base font-semibold text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark transition-colors"
@@ -336,17 +408,6 @@ export function MazeGenerator() {
               <path d="M8 5v14l11-7z"/>
             </svg>
             Play This Maze
-          </button>
-
-          {/* Secondary */}
-          <button
-            onClick={handleGenerate}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-sm border border-arch-charcoal bg-arch-surface px-5 py-2.5 text-sm font-semibold text-arch-charcoal hover:bg-arch-bg transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
-            Generate New Maze
           </button>
 
           {/* Utility */}
@@ -372,18 +433,6 @@ export function MazeGenerator() {
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-arch-200" />
-
-        {/* Browse library — always last */}
-        <div className="pb-2">
-          <a
-            href="/small-mazes"
-            className="text-sm font-medium text-arch-600 underline decoration-arch-400/60 underline-offset-4 hover:text-arch-accent hover:decoration-arch-accent transition-colors"
-          >
-            → Browse pre-made mazes
-          </a>
-        </div>
       </div>
     </div>
   );
