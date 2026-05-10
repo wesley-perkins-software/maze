@@ -124,7 +124,14 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
   }, [maze, state.playerPosition]);
 
   // ── Hint computation ─────────────────────────────────────────────────────────
+  const isHintActive = state.hintCells.length > 0;
+
   const handleHint = useCallback(() => {
+    if (isHintActive) {
+      dispatch({ type: 'USE_HINT', cells: [] });
+      return;
+    }
+
     const hintSteps = getHintStepCount(maze);
     const pathFromPlayer = currentSolution;
     if (pathFromPlayer.length <= 1) return;
@@ -132,7 +139,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
     // Include the current cell so the green hint is anchored at the player's
     // position and remains followable until completed or abandoned.
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
-  }, [maze, currentSolution]);
+  }, [isHintActive, maze, currentSolution]);
 
   const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
@@ -179,9 +186,10 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
             <button
               onClick={handleHint}
               className="text-xs px-3 py-1.5 rounded-md border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 font-medium transition-colors"
-              title="Reveal a followable route segment toward the exit"
+              title={isHintActive ? 'Hide the current hint' : 'Reveal a followable route segment toward the exit'}
+              aria-pressed={isHintActive}
             >
-              Show Hint
+              {isHintActive ? 'Hide Hint' : 'Show Hint'}
             </button>
           )}
 

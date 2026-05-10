@@ -199,6 +199,21 @@ describe('gameReducer', () => {
     expect(state.hintCells).toEqual([]);
   });
 
+  it('clears an active hint without counting another hint when hint is toggled off', () => {
+    const maze = makeMaze();
+    const hintCells = maze.solution.slice(0, 4);
+    let state: GameState = {
+      ...createInitialState(maze),
+      hintCells,
+      hintsUsed: 1,
+    };
+
+    state = gameReducer(state, { type: 'USE_HINT', cells: [] }, maze);
+
+    expect(state.hintCells).toEqual([]);
+    expect(state.hintsUsed).toBe(1);
+  });
+
   it('clears hints when solution is shown', () => {
     const maze = makeMaze();
     let state: GameState = {
