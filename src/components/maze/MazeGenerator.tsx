@@ -6,21 +6,30 @@ import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 
-type SizePreset = 'small' | 'medium' | 'large';
+type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
 
-const SIZE_OPTIONS: { value: SizePreset; label: string; detail: string; description: string }[] = [
-  { value: 'small',  label: 'Small',  detail: '20 × 20', description: 'Quick and approachable' },
-  { value: 'medium', label: 'Medium', detail: '40 × 40', description: 'Focused challenge' },
-  { value: 'large',  label: 'Large',  detail: '60 × 60', description: 'Dense labyrinth' },
+const SIZE_OPTIONS: { value: SizePreset; label: string; detail: string }[] = [
+  { value: 'small',   label: 'Small',   detail: '20 × 20' },
+  { value: 'medium',  label: 'Medium',  detail: '40 × 40' },
+  { value: 'large',   label: 'Large',   detail: '60 × 60' },
+  { value: 'expert',  label: 'Expert',  detail: '80 × 80' },
+  { value: 'monster', label: 'Monster', detail: '100 × 100' },
 ];
 
 const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
-  small:  { w: 20, h: 20 },
-  medium: { w: 40, h: 40 },
-  large:  { w: 60, h: 60 },
+  small:   { w: 20,  h: 20 },
+  medium:  { w: 40,  h: 40 },
+  large:   { w: 60,  h: 60 },
+  expert:  { w: 80,  h: 80 },
+  monster: { w: 100, h: 100 },
 };
 
-const CUSTOM_RANGE = { min: 5, max: 80 };
+const CUSTOM_RANGE = { min: 5, max: 100 };
+
+function presetDifficulty(preset: SizePreset): Difficulty {
+  if (preset === 'expert' || preset === 'monster') return 'large';
+  return preset;
+}
 
 function newSeed() {
   return Math.floor(Math.random() * 999999);
@@ -28,12 +37,12 @@ function newSeed() {
 
 export function difficultyForCustomSize(w: number, h: number): Difficulty {
   const area = w * h;
-  const smallArea = SIZE_MAP.small.w * SIZE_MAP.small.h;
+  const smallArea  = SIZE_MAP.small.w  * SIZE_MAP.small.h;
   const mediumArea = SIZE_MAP.medium.w * SIZE_MAP.medium.h;
-  const largeArea = SIZE_MAP.large.w * SIZE_MAP.large.h;
+  const largeArea  = SIZE_MAP.large.w  * SIZE_MAP.large.h;
 
-  const smallMediumMidpoint = (smallArea + mediumArea) / 2;
-  const mediumLargeMidpoint = (mediumArea + largeArea) / 2;
+  const smallMediumMidpoint = (smallArea  + mediumArea) / 2;
+  const mediumLargeMidpoint = (mediumArea + largeArea)  / 2;
 
   if (area <= smallMediumMidpoint) return 'small';
   if (area <= mediumLargeMidpoint) return 'medium';
@@ -43,10 +52,10 @@ export function difficultyForCustomSize(w: number, h: number): Difficulty {
 export function MazeGenerator() {
   const [sizePreset, setSizePreset] = useState<SizePreset>('medium');
   const [showCustom, setShowCustom] = useState(false);
-  const [customWidth, setCustomWidth]   = useState(40);
+  const [customWidth,  setCustomWidth]  = useState(40);
   const [customHeight, setCustomHeight] = useState(40);
-  const [playing, setPlaying] = useState(false);
-  const [solved, setSolved]   = useState(false);
+  const [playing,   setPlaying]   = useState(false);
+  const [solved,    setSolved]    = useState(false);
   const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
   const [playerKey, setPlayerKey] = useState(0);
   const hasPlayedRef = useRef(false);
@@ -62,13 +71,10 @@ export function MazeGenerator() {
   });
 
   const generate = useCallback((preset: SizePreset | null, dims: { w: number; h: number }) => {
-    const difficulty: Difficulty = preset ?? difficultyForCustomSize(dims.w, dims.h);
-    const m = generateMaze({
-      width: dims.w,
-      height: dims.h,
-      difficulty,
-      seed: newSeed(),
-    });
+    const difficulty: Difficulty = preset
+      ? presetDifficulty(preset)
+      : difficultyForCustomSize(dims.w, dims.h);
+    const m = generateMaze({ width: dims.w, height: dims.h, difficulty, seed: newSeed() });
     setMaze(m);
     setPlaying(false);
     setSolved(false);
@@ -101,7 +107,9 @@ export function MazeGenerator() {
   }, []);
 
   const handleTryLarger = useCallback(() => {
-    const next: SizePreset = sizePreset === 'small' ? 'medium' : 'large';
+    const presets: SizePreset[] = ['small', 'medium', 'large', 'expert', 'monster'];
+    const idx  = presets.indexOf(sizePreset);
+    const next = presets[Math.min(idx + 1, presets.length - 1)];
     setSizePreset(next);
     generate(next, SIZE_MAP[next]);
   }, [sizePreset, generate]);
@@ -110,10 +118,10 @@ export function MazeGenerator() {
     const svgEl = document.querySelector('.maze-generator-svg svg');
     if (!svgEl) return;
     const blob = new Blob([svgEl.outerHTML], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
     const { w, h } = getDimensions();
-    a.href = url;
+    a.href     = url;
     a.download = `maze-${w}x${h}.svg`;
     a.click();
     URL.revokeObjectURL(url);
@@ -133,21 +141,37 @@ export function MazeGenerator() {
   }, [sizePreset]);
 
   const { w: width, h: height } = getDimensions();
-  const cellSize = Math.max(8, Math.min(28, Math.floor(480 / Math.max(width, height))));
+  const cellSize = Math.max(8, Math.min(28, Math.floor(400 / Math.max(width, height))));
 
-  const buttonBase = 'rounded-lg border py-2.5 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500';
-  const activeBtn  = 'border-blue-500 bg-blue-50 text-blue-700';
-  const inactiveBtn = 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-slate-50';
+  const btnBase    = 'rounded-sm border py-2.5 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent';
+  const activeBtn  = 'border-arch-charcoal bg-arch-charcoal text-white';
+  const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
+
+  const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
 
   return (
     <div className="flex flex-col lg:flex-row-reverse gap-6 items-start">
 
       {/* ── Maze panel — top on mobile, right on desktop ── */}
       <div className="flex-1 min-w-0 w-full">
-        <div className="maze-generator-svg rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-          <div className="flex justify-center p-4">
-            <MazeRenderer maze={maze} cellSize={cellSize} />
+
+        {/* Preview card with inset double-rule frame */}
+        <div
+          className="maze-generator-svg border border-arch-200 bg-arch-surface overflow-hidden"
+          style={{
+            height:    'clamp(300px, calc(100vh - 300px), 640px)',
+            boxShadow: 'inset 0 0 0 5px #FFFFFF, inset 0 0 0 6px #D6D4CF',
+          }}
+        >
+          <div className="flex justify-center items-center w-full h-full p-4">
+            <MazeRenderer maze={maze} cellSize={cellSize} fillContainer />
           </div>
+        </div>
+
+        {/* Artifact identity strip — attached to card bottom */}
+        <div className="border border-arch-200 border-t-0 bg-arch-bg px-3 py-1.5 flex justify-between items-center mb-4">
+          <span className="text-xs font-mono text-arch-400">{width} × {height}</span>
+          <span className="text-xs font-mono text-arch-400">{presetLabel}</span>
         </div>
 
         {playing && (
@@ -182,118 +206,39 @@ export function MazeGenerator() {
 
         {/* Post-solve CTA */}
         {solved && (
-          <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="rounded-sm border border-green-200 bg-green-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-sm font-medium text-green-800">Nice work! Ready for another?</p>
             <div className="flex gap-2 shrink-0">
-              {sizePreset !== 'large' && !showCustom && (
+              {sizePreset !== 'monster' && !showCustom && (
                 <button
                   onClick={handleTryLarger}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-sm bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
                 >
                   Try Larger →
                 </button>
               )}
               <button
                 onClick={handleGenerate}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-green-300 bg-white px-4 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-sm border border-green-300 bg-white px-4 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 transition-colors"
               >
                 New Maze
               </button>
             </div>
           </div>
         )}
-
-        {/* Play nudge — shown until first play */}
-        {!playing && !solved && !hasPlayedRef.current && (
-          <p className="mt-3 text-center text-sm text-slate-400">
-            Hit <strong className="text-slate-500">▶ Play</strong> to solve it interactively
-          </p>
-        )}
-
-        <div className="mt-4 text-center text-sm text-slate-500">
-          Looking for pre-made mazes?{' '}
-          <a href="/small-mazes" className="text-blue-600 font-medium hover:underline">
-            Browse the maze library →
-          </a>
-        </div>
       </div>
 
-      {/* ── Controls panel — bottom on mobile, left on desktop ── */}
-      <div className="w-full lg:w-72 shrink-0 space-y-5">
+      {/* ── Controls panel — below maze on mobile, left on desktop ──
+          Mobile order:  1 actions  →  2 size  →  3 browse
+          Desktop order: 1 size  →  2 divider  →  3 actions  →  4 browse  */}
+      <div className="w-full lg:w-72 shrink-0 flex flex-col gap-4">
 
-        {/* Size */}
-        <fieldset>
-          <legend className="block text-sm font-semibold text-slate-700 mb-2">Size</legend>
-          <div className="grid grid-cols-3 gap-2">
-            {SIZE_OPTIONS.map(({ value, label, detail }) => (
-              <button
-                key={value}
-                onClick={() => handleSizeChange(value)}
-                className={`${buttonBase} flex flex-col items-center leading-tight px-1 ${
-                  !showCustom && sizePreset === value ? activeBtn : inactiveBtn
-                }`}
-                aria-pressed={!showCustom && sizePreset === value}
-              >
-                <span>{label}</span>
-                <span className="text-xs font-normal opacity-60">{detail}</span>
-              </button>
-            ))}
-          </div>
-          <p className="mt-1.5 text-xs text-slate-400">
-            {!showCustom
-              ? SIZE_OPTIONS.find(o => o.value === sizePreset)?.description
-              : `Custom: ${customWidth} × ${customHeight} cells`}
-          </p>
-
-          <button
-            onClick={toggleCustom}
-            className="mt-2 text-xs text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            {showCustom ? '− Hide custom size' : '+ Custom size'}
-          </button>
-
-          {showCustom && (
-            <div className="mt-3 space-y-3">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <label htmlFor="maze-width" className="text-xs font-medium text-slate-600">Width</label>
-                  <span className="text-xs font-mono text-slate-400">{customWidth} cells</span>
-                </div>
-                <input
-                  id="maze-width"
-                  type="range"
-                  min={CUSTOM_RANGE.min}
-                  max={CUSTOM_RANGE.max}
-                  value={customWidth}
-                  onChange={(e) => setCustomWidth(Number(e.target.value))}
-                  className="w-full accent-blue-600"
-                />
-              </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <label htmlFor="maze-height" className="text-xs font-medium text-slate-600">Height</label>
-                  <span className="text-xs font-mono text-slate-400">{customHeight} cells</span>
-                </div>
-                <input
-                  id="maze-height"
-                  type="range"
-                  min={CUSTOM_RANGE.min}
-                  max={CUSTOM_RANGE.max}
-                  value={customHeight}
-                  onChange={(e) => setCustomHeight(Number(e.target.value))}
-                  className="w-full accent-blue-600"
-                />
-              </div>
-            </div>
-          )}
-        </fieldset>
-
-        {/* Actions */}
-        <div className="space-y-2.5">
+        {/* Actions — order-1 mobile (Play visible immediately), order-3 desktop */}
+        <div className="order-1 lg:order-3 space-y-2.5">
           {/* Primary */}
           <button
             onClick={handlePlay}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-base font-semibold text-white hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-sm bg-arch-accent px-5 py-3 text-base font-semibold text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark transition-colors"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z"/>
@@ -304,7 +249,7 @@ export function MazeGenerator() {
           {/* Secondary */}
           <button
             onClick={handleGenerate}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-sm border border-arch-charcoal bg-arch-surface px-5 py-2.5 text-sm font-semibold text-arch-charcoal hover:bg-arch-bg transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -312,11 +257,11 @@ export function MazeGenerator() {
             Generate New Maze
           </button>
 
-          {/* Tertiary */}
+          {/* Utility */}
           <div className="flex gap-2">
             <button
               onClick={handleDownloadSVG}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -325,7 +270,7 @@ export function MazeGenerator() {
             </button>
             <button
               onClick={handlePrint}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
@@ -333,6 +278,85 @@ export function MazeGenerator() {
               Print
             </button>
           </div>
+        </div>
+
+        {/* Size selector — order-2 mobile, order-1 desktop */}
+        <fieldset className="order-2 lg:order-1">
+          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-400 mb-2">Size</legend>
+          <div className="grid grid-cols-3 gap-2">
+            {SIZE_OPTIONS.map(({ value, label, detail }) => (
+              <button
+                key={value}
+                onClick={() => handleSizeChange(value)}
+                className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
+                  !showCustom && sizePreset === value ? activeBtn : inactiveBtn
+                }`}
+                aria-pressed={!showCustom && sizePreset === value}
+              >
+                <span>{label}</span>
+                <span className="text-xs font-mono opacity-60">{detail}</span>
+              </button>
+            ))}
+            {/* Custom — sixth slot */}
+            <button
+              onClick={toggleCustom}
+              className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
+                showCustom ? activeBtn : inactiveBtn
+              }`}
+              aria-pressed={showCustom}
+            >
+              <span>Custom</span>
+              <span className="text-xs font-mono opacity-60">up to 100</span>
+            </button>
+          </div>
+
+          {showCustom && (
+            <div className="mt-3 space-y-3">
+              <div>
+                <div className="flex justify-between mb-1">
+                  <label htmlFor="maze-width" className="text-xs font-medium text-arch-600">Width</label>
+                  <span className="text-xs font-mono text-arch-400">{customWidth} cells</span>
+                </div>
+                <input
+                  id="maze-width"
+                  type="range"
+                  min={CUSTOM_RANGE.min}
+                  max={CUSTOM_RANGE.max}
+                  value={customWidth}
+                  onChange={(e) => setCustomWidth(Number(e.target.value))}
+                  className="w-full accent-arch-charcoal"
+                />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <label htmlFor="maze-height" className="text-xs font-medium text-arch-600">Height</label>
+                  <span className="text-xs font-mono text-arch-400">{customHeight} cells</span>
+                </div>
+                <input
+                  id="maze-height"
+                  type="range"
+                  min={CUSTOM_RANGE.min}
+                  max={CUSTOM_RANGE.max}
+                  value={customHeight}
+                  onChange={(e) => setCustomHeight(Number(e.target.value))}
+                  className="w-full accent-arch-charcoal"
+                />
+              </div>
+            </div>
+          )}
+        </fieldset>
+
+        {/* Divider — hidden on mobile, between size and actions on desktop */}
+        <div className="hidden lg:block lg:order-2 border-t border-arch-200" />
+
+        {/* Browse library — always last */}
+        <div className="order-3 lg:order-4 text-center">
+          <a
+            href="/small-mazes"
+            className="text-sm text-arch-400 hover:text-arch-accent transition-colors"
+          >
+            → Browse pre-made mazes
+          </a>
         </div>
       </div>
     </div>
