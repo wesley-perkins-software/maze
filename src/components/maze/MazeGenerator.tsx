@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import type { Difficulty } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
 import { MazeRenderer } from './MazeRenderer';
@@ -62,10 +63,16 @@ export function MazeGenerator() {
   const [solved,    setSolved]    = useState(false);
   const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
   const [playerKey, setPlayerKey] = useState(0);
+  const [printRoot, setPrintRoot] = useState<HTMLElement | null>(null);
   const hasPlayedRef = useRef(false);
   const lastSeedRef = useRef<number | null>(null);
   const customPreviewTimerRef = useRef<number | null>(null);
   const customPreviewRequestRef = useRef(0);
+
+
+  useEffect(() => {
+    setPrintRoot(document.body);
+  }, []);
 
   const getDimensions = useCallback(
     () => showCustom ? { w: customWidth, h: customHeight } : SIZE_MAP[sizePreset],
@@ -188,7 +195,9 @@ export function MazeGenerator() {
     URL.revokeObjectURL(url);
   }, [maze.height, maze.width]);
 
-  const handlePrint = useCallback(() => window.print(), []);
+  const handlePrint = useCallback(() => {
+    window.requestAnimationFrame(() => window.print());
+  }, []);
 
   const toggleCustom = useCallback(() => {
     setShowCustom((prev) => {
@@ -210,8 +219,24 @@ export function MazeGenerator() {
 
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
 
+  const printMaze = (
+    <div className="print-only" aria-hidden="true">
+      <div className="print-maze-sheet">
+        <div className="print-maze-art">
+          <MazeRenderer
+            maze={maze}
+            cellSize={12}
+            wallThickness={2}
+            padding={6}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-7 lg:gap-10 lg:items-start">
+    <>
+    <div className="screen-only flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-7 lg:gap-10 lg:items-start">
 
       {/* ── Maze panel — top on mobile, right column on desktop ── */}
       <div className="min-w-0 w-full lg:col-start-2 lg:row-start-1">
@@ -435,5 +460,7 @@ export function MazeGenerator() {
 
       </div>
     </div>
+    {printRoot ? createPortal(printMaze, printRoot) : null}
+    </>
   );
 }
