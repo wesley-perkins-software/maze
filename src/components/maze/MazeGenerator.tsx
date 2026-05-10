@@ -157,7 +157,7 @@ export function MazeGenerator() {
 
         {/* Preview card — square, viewport-fitted */}
         <div
-          className="maze-generator-svg border border-arch-400/60 bg-arch-surface overflow-hidden relative mx-auto"
+          className="maze-generator-svg border border-arch-400/60 bg-arch-surface overflow-hidden mx-auto"
           style={{
             width: 'min(100%, calc(100vh - 140px))',
             aspectRatio: '1 / 1',
@@ -167,12 +167,15 @@ export function MazeGenerator() {
           <div className="flex justify-center items-center w-full h-full p-3">
             <MazeRenderer maze={maze} cellSize={cellSize} fillContainer />
           </div>
+        </div>
 
-          {/* Identity strip — inside frame as bottom overlay */}
-          <div className="absolute bottom-0 left-0 right-0 border-t border-arch-400/40 bg-white/90 px-3 py-1.5 flex justify-between items-center">
-            <span className="text-xs font-mono font-medium text-arch-600">{width} × {height}</span>
-            <span className="text-xs font-mono font-medium text-arch-600">{presetLabel}</span>
-          </div>
+        {/* Identity caption — below card, flush with card edges */}
+        <div
+          className="flex justify-between items-center pt-2 pb-1 mx-auto"
+          style={{ width: 'min(100%, calc(100vh - 140px))' }}
+        >
+          <span className="text-xs font-mono text-arch-400">{width} × {height}</span>
+          <span className="text-xs font-mono text-arch-400">{presetLabel}</span>
         </div>
 
         {playing && (
@@ -230,9 +233,9 @@ export function MazeGenerator() {
       </div>
 
       {/* ── Controls panel — below maze on mobile, left column on desktop ──
-          Mobile order:  actions (1) → size (2) → browse (3)
-          Desktop order: editorial header → size (order-1) → divider (order-2) → actions (order-3) → browse (order-4) */}
-      <div className="w-full shrink-0 flex flex-col gap-5 lg:col-start-1 lg:row-start-1">
+          Order on both mobile and desktop: actions → [rule] → size → [rule] → browse
+          Actions stay above the fold regardless of custom size expansion. */}
+      <div className="w-full shrink-0 flex flex-col gap-4 lg:col-start-1 lg:row-start-1">
 
         {/* Desktop-only editorial header — hidden on mobile (page renders heading above) */}
         <div className="hidden lg:block">
@@ -255,11 +258,10 @@ export function MazeGenerator() {
           <p className="text-sm text-arch-600 leading-relaxed mb-4">
             Choose a size, generate a maze, then play online or print.
           </p>
-          <div className="border-t border-arch-200" />
         </div>
 
-        {/* Actions — order-1 mobile (Play visible immediately), order-3 desktop */}
-        <div className="order-1 lg:order-3 space-y-2.5 border-t border-arch-200 pt-4 lg:border-t-0 lg:pt-0">
+        {/* Actions — always first, always above the fold */}
+        <div className="space-y-2.5">
           {/* Primary */}
           <button
             onClick={handlePlay}
@@ -305,8 +307,11 @@ export function MazeGenerator() {
           </div>
         </div>
 
-        {/* Size selector — order-2 mobile, order-1 desktop */}
-        <fieldset className="order-2 lg:order-1">
+        {/* Divider */}
+        <div className="border-t border-arch-200" />
+
+        {/* Size selector — below actions on both mobile and desktop */}
+        <fieldset>
           <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-600 mb-2">Size</legend>
           <div className="grid grid-cols-3 gap-2">
             {SIZE_OPTIONS.map(({ value, label, detail }) => (
@@ -371,11 +376,11 @@ export function MazeGenerator() {
           )}
         </fieldset>
 
-        {/* Divider — hidden on mobile, between size and actions on desktop */}
-        <div className="hidden lg:block lg:order-2 border-t border-arch-200" />
+        {/* Divider */}
+        <div className="border-t border-arch-200" />
 
         {/* Browse library — always last */}
-        <div className="order-3 lg:order-4 border-t border-arch-200 pt-4 text-center">
+        <div className="pb-2">
           <a
             href="/small-mazes"
             className="text-sm font-medium text-arch-600 underline decoration-arch-400/60 underline-offset-4 hover:text-arch-accent hover:decoration-arch-accent transition-colors"
