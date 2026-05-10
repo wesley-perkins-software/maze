@@ -1,15 +1,39 @@
 import type { MazeData } from '../../types/maze';
-import { pointToIndex } from '../maze/utils';
+import { inBounds, pointToIndex } from '../maze/utils';
 import { canMove, applyMove, computeRun, getEntryStartPosition, getExitEndPosition, isEntryStep, isExitStep } from './movement';
 import type { GameState, GameAction } from './types';
 
-function updateHintCells(hintCells: number[], visitedIndices: number[]): number[] {
+function inMazeIndex(position: GameState['playerPosition'], maze: MazeData): number | null {
+  return inBounds(position, maze.width, maze.height) ? pointToIndex(position, maze.width) : null;
+}
+
+function updateHintCells(
+  hintCells: number[],
+  currentIndex: number | null,
+  visitedIndices: number[],
+): number[] {
   if (hintCells.length === 0 || visitedIndices.length === 0) return hintCells;
 
-  // Hints are temporary guidance from the exact cell where they were requested.
-  // Clear the overlay after any successful movement instead of trying to keep an
-  // old hint anchored to a player who has already stepped away from its start.
-  return [];
+  // A hint is a followable route segment. Keep it active only while the
+  // player's movement advances through the segment in order. The full segment
+  // remains visible until it is completed or the player deviates from it.
+  let progressIndex = currentIndex === null ? -1 : hintCells.indexOf(currentIndex);
+
+  for (const visitedIndex of visitedIndices) {
+    const nextExpectedIndex = progressIndex + 1;
+
+    if (hintCells[nextExpectedIndex] !== visitedIndex) {
+      return [];
+    }
+
+    progressIndex = nextExpectedIndex;
+
+    if (progressIndex === hintCells.length - 1) {
+      return [];
+    }
+  }
+
+  return hintCells;
 }
 
 export function createInitialState(maze: MazeData): GameState {
@@ -44,7 +68,11 @@ export function gameReducer(
           status: 'playing',
           playerPosition: { ...maze.entry },
           trail: [...state.trail, newIdx],
-          hintCells: updateHintCells(state.hintCells, [newIdx]),
+          hintCells: updateHintCells(
+            state.hintCells,
+            inMazeIndex(state.playerPosition, maze),
+            [newIdx],
+          ),
           startTime: state.startTime ?? now,
           elapsedMs: state.startTime ? now - state.startTime : 0,
         };
@@ -73,7 +101,11 @@ export function gameReducer(
         status: 'playing',
         playerPosition: newPos,
         trail: [...state.trail, newIdx],
-        hintCells: updateHintCells(state.hintCells, [newIdx]),
+        hintCells: updateHintCells(
+          state.hintCells,
+          inMazeIndex(state.playerPosition, maze),
+          [newIdx],
+        ),
         startTime: state.startTime ?? now,
         elapsedMs: state.startTime ? now - state.startTime : 0,
       };
@@ -108,7 +140,11 @@ export function gameReducer(
         status: 'playing',
         playerPosition: finalPos,
         trail: [...state.trail, ...newIndices],
-        hintCells: updateHintCells(state.hintCells, newIndices),
+        hintCells: updateHintCells(
+          state.hintCells,
+          inMazeIndex(state.playerPosition, maze),
+          newIndices,
+        ),
         startTime: state.startTime ?? now,
         elapsedMs: state.startTime ? now - state.startTime : 0,
       };

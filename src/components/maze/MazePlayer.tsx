@@ -69,7 +69,6 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
   const isNewBestRef = useRef(false);
-  const hintTimerRef = useRef<number | null>(null);
   const [showSolvedOverlay, setShowSolvedOverlay] = useState(false);
 
   const [state, dispatch] = useReducer(
@@ -118,11 +117,6 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
   useKeyboardInput(dispatch, isActive);
   useTouchInput(svgRef, dispatch, isActive);
 
-  useEffect(() => {
-    return () => {
-      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-    };
-  }, []);
 
   const currentSolution = useMemo(() => {
     const startCell = getPathStartCell(maze, state.playerPosition);
@@ -130,21 +124,22 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
   }, [maze, state.playerPosition]);
 
   // ── Hint computation ─────────────────────────────────────────────────────────
+  const isHintActive = state.hintCells.length > 0;
+
   const handleHint = useCallback(() => {
+    if (isHintActive) {
+      dispatch({ type: 'USE_HINT', cells: [] });
+      return;
+    }
+
     const hintSteps = getHintStepCount(maze);
     const pathFromPlayer = currentSolution;
     if (pathFromPlayer.length <= 1) return;
 
     // Include the current cell so the green hint is anchored at the player's
-    // position. The reducer clears this temporary hint after the next move.
+    // position and remains followable until completed or abandoned.
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
-
-    // Auto-clear hint after 3 seconds
-    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-    hintTimerRef.current = window.setTimeout(() => {
-      dispatch({ type: 'USE_HINT', cells: [] });
-    }, 3000);
-  }, [maze, currentSolution]);
+  }, [isHintActive, maze, currentSolution]);
 
   const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
@@ -191,9 +186,10 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
             <button
               onClick={handleHint}
               className="text-xs px-3 py-1.5 rounded-md border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 font-medium transition-colors"
-              title="Reveal the next few steps toward the exit for 3 seconds"
+              title={isHintActive ? 'Hide the current hint' : 'Reveal a followable route segment toward the exit'}
+              aria-pressed={isHintActive}
             >
-              Show Hint
+              {isHintActive ? 'Hide Hint' : 'Show Hint'}
             </button>
           )}
 

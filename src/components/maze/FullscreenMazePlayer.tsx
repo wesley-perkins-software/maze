@@ -156,7 +156,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const hintTimerRef = useRef<number | null>(null);
   const isNewBestRef = useRef(false);
   const camXRef = useRef<number | null>(null);
   const camYRef = useRef<number | null>(null);
@@ -273,17 +272,22 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     return solveMazeFrom(maze, startCell);
   }, [maze, state.playerPosition]);
 
+  const isHintActive = state.hintCells.length > 0;
+
   const handleHint = useCallback(() => {
+    if (isHintActive) {
+      dispatch({ type: 'USE_HINT', cells: [] });
+      return;
+    }
+
     const hintSteps = getHintStepCount(maze);
     const pathFromPlayer = currentSolution;
     if (pathFromPlayer.length <= 1) return;
 
     // Include the current cell so the green hint is anchored at the player's
-    // position. The reducer clears this temporary hint after the next move.
+    // position and remains followable until completed or abandoned.
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
-    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-    hintTimerRef.current = window.setTimeout(() => dispatch({ type: 'USE_HINT', cells: [] }), 5000);
-  }, [maze, currentSolution]);
+  }, [isHintActive, maze, currentSolution]);
 
   const handleResetRequest = useCallback(() => {
     setResetConfirming(true);
@@ -293,7 +297,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const handleResetConfirm = useCallback(() => {
     if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
-    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     setResetConfirming(false);
     dispatch({ type: 'RESET', startPosition: maze.entry });
   }, [maze.entry]);
@@ -306,7 +309,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   useEffect(() => {
     return () => {
       if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
-      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     };
   }, []);
 
@@ -525,11 +527,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   <button
                     onClick={() => { handleHint(); setMenuOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm text-amber-600 font-medium hover:bg-amber-50 transition-colors flex items-center gap-2"
+                    aria-pressed={isHintActive}
                   >
                     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17H8v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z"/>
                     </svg>
-                    Show Hint
+                    {isHintActive ? 'Hide Hint' : 'Show Hint'}
                   </button>
                 )}
                 <button
@@ -662,11 +665,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 <button
                   onClick={handleHint}
                   className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                  aria-pressed={isHintActive}
                 >
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17H8v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z"/>
                   </svg>
-                  <span>Show Hint</span>
+                  <span>{isHintActive ? 'Hide Hint' : 'Show Hint'}</span>
                 </button>
               )}
               <button

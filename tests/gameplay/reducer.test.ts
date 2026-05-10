@@ -3,7 +3,7 @@ import { generateMaze } from '../../src/lib/maze/generator';
 import { gameReducer, createInitialState } from '../../src/lib/gameplay/reducer';
 import type { Point } from '../../src/types/maze';
 import type { Direction, GameState } from '../../src/lib/gameplay/types';
-import { getEntryDirection, getEntryStartPosition, getExitDirection, getExitEndPosition } from '../../src/lib/gameplay/movement';
+import { applyMove, canMove, getEntryDirection, getEntryStartPosition, getExitDirection, getExitEndPosition } from '../../src/lib/gameplay/movement';
 
 function makeMaze() {
   return generateMaze({ width: 8, height: 8, difficulty: 'large', seed: 42 });
@@ -14,6 +14,41 @@ function perimeterDir(pt: Point, width: number, height: number): Direction {
   if (pt.y === height - 1) return 'S';
   if (pt.x === 0)          return 'W';
   return 'E';
+}
+
+const DIRECTIONS: Direction[] = ['N', 'E', 'S', 'W'];
+
+function pointToIndex(point: Point, width: number): number {
+  return point.y * width + point.x;
+}
+
+function indexToPoint(index: number, width: number): Point {
+  return { x: index % width, y: Math.floor(index / width) };
+}
+
+function directionBetween(from: Point, to: Point): Direction {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  return dx === 1 ? 'E' : dx === -1 ? 'W' : dy === 1 ? 'S' : 'N';
+}
+
+function findDeviationFromSolution(maze: ReturnType<typeof makeMaze>) {
+  for (let i = 0; i < maze.solution.length - 1; i++) {
+    const current = indexToPoint(maze.solution[i], maze.width);
+    const previousIndex = i > 0 ? maze.solution[i - 1] : null;
+
+    for (const direction of DIRECTIONS) {
+      if (!canMove(maze, current, direction)) continue;
+
+      const candidate = applyMove(current, direction);
+      const candidateIndex = pointToIndex(candidate, maze.width);
+      if (candidateIndex !== maze.solution[i + 1] && candidateIndex !== previousIndex) {
+        return { solutionIndex: i, direction };
+      }
+    }
+  }
+
+  throw new Error('Expected generated maze to include a deviation from the solution path');
 }
 
 describe('gameReducer', () => {
@@ -109,24 +144,74 @@ describe('gameReducer', () => {
     expect(state.solutionVisible).toBe(false);
   });
 
-  it('clears hints after successful movement', () => {
+  it('keeps hints visible while the player follows the hinted path', () => {
     const maze = makeMaze();
+    const hintCells = maze.solution.slice(0, 4);
     let state: GameState = {
       ...createInitialState(maze),
       status: 'playing',
       playerPosition: { ...maze.entry },
-      trail: [maze.entry.y * maze.width + maze.entry.x],
-      hintCells: maze.solution.slice(0, 4),
+      trail: [pointToIndex(maze.entry, maze.width)],
+      hintCells,
     };
 
-    const nextIdx = maze.solution[1];
-    const next = { x: nextIdx % maze.width, y: Math.floor(nextIdx / maze.width) };
-    const dx = next.x - maze.entry.x;
-    const dy = next.y - maze.entry.y;
-    const dir = dx === 1 ? 'E' : dx === -1 ? 'W' : dy === 1 ? 'S' : 'N';
+    const next = indexToPoint(maze.solution[1], maze.width);
+    state = gameReducer(state, { type: 'MOVE', direction: directionBetween(maze.entry, next) }, maze);
 
-    state = gameReducer(state, { type: 'MOVE', direction: dir as Direction }, maze);
+    expect(state.hintCells).toEqual(hintCells);
+  });
+
+  it('clears hints when the hinted segment is completed', () => {
+    const maze = makeMaze();
+    const hintCells = maze.solution.slice(0, 4);
+    let state: GameState = {
+      ...createInitialState(maze),
+      status: 'playing',
+      playerPosition: { ...maze.entry },
+      trail: [pointToIndex(maze.entry, maze.width)],
+      hintCells,
+    };
+
+    for (let i = 0; i < hintCells.length - 1; i++) {
+      state = gameReducer(state, {
+        type: 'MOVE',
+        direction: directionBetween(indexToPoint(hintCells[i], maze.width), indexToPoint(hintCells[i + 1], maze.width)),
+      }, maze);
+    }
+
     expect(state.hintCells).toEqual([]);
+  });
+
+  it('clears hints when the player leaves the hinted path', () => {
+    const maze = makeMaze();
+    const deviation = findDeviationFromSolution(maze);
+    const currentIndex = maze.solution[deviation.solutionIndex];
+    let state: GameState = {
+      ...createInitialState(maze),
+      status: 'playing',
+      playerPosition: indexToPoint(currentIndex, maze.width),
+      trail: maze.solution.slice(0, deviation.solutionIndex + 1),
+      hintCells: maze.solution.slice(deviation.solutionIndex, deviation.solutionIndex + 4),
+    };
+
+    state = gameReducer(state, { type: 'MOVE', direction: deviation.direction }, maze);
+
+    expect(state.hintCells).toEqual([]);
+  });
+
+  it('clears an active hint without counting another hint when hint is toggled off', () => {
+    const maze = makeMaze();
+    const hintCells = maze.solution.slice(0, 4);
+    let state: GameState = {
+      ...createInitialState(maze),
+      hintCells,
+      hintsUsed: 1,
+    };
+
+    state = gameReducer(state, { type: 'USE_HINT', cells: [] }, maze);
+
+    expect(state.hintCells).toEqual([]);
+    expect(state.hintsUsed).toBe(1);
   });
 
   it('clears hints when solution is shown', () => {
