@@ -143,7 +143,7 @@ export function MazeGenerator() {
   const { w: width, h: height } = getDimensions();
   const cellSize = Math.max(8, Math.min(28, Math.floor(400 / Math.max(width, height))));
 
-  const btnBase    = 'rounded-sm border py-2.5 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent';
+  const btnBase    = 'rounded-sm border py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent';
   const activeBtn  = 'border-arch-charcoal bg-arch-charcoal text-white';
   const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
 
@@ -233,8 +233,7 @@ export function MazeGenerator() {
       </div>
 
       {/* ── Controls panel — below maze on mobile, left column on desktop ──
-          Order on both mobile and desktop: actions → [rule] → size → [rule] → browse
-          Actions stay above the fold regardless of custom size expansion. */}
+          Order: size selector → [rule] → actions → [rule] → browse */}
       <div className="w-full shrink-0 flex flex-col gap-4 lg:col-start-1 lg:row-start-1">
 
         {/* Desktop-only editorial header — hidden on mobile (page renders heading above) */}
@@ -260,7 +259,73 @@ export function MazeGenerator() {
           </p>
         </div>
 
-        {/* Actions — always first, always above the fold */}
+        {/* Size selector — always first */}
+        <fieldset>
+          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-600 mb-2">Size</legend>
+          <div className="grid grid-cols-3 gap-1.5">
+            {SIZE_OPTIONS.map(({ value, label, detail }) => (
+              <button
+                key={value}
+                onClick={() => handleSizeChange(value)}
+                className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
+                  !showCustom && sizePreset === value ? activeBtn : inactiveBtn
+                }`}
+                aria-pressed={!showCustom && sizePreset === value}
+              >
+                <span>{label}</span>
+                <span className={`text-xs font-mono ${!showCustom && sizePreset === value ? 'text-white/80' : 'text-arch-600'}`}>{detail}</span>
+              </button>
+            ))}
+            {/* Custom — sixth slot */}
+            <button
+              onClick={toggleCustom}
+              className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
+                showCustom ? activeBtn : inactiveBtn
+              }`}
+              aria-pressed={showCustom}
+            >
+              <span>Custom</span>
+              <span className={`text-xs font-mono ${showCustom ? 'text-white/80' : 'text-arch-600'}`}>Up to 100</span>
+            </button>
+          </div>
+
+          {/* Custom inputs — compact inline rows: Label [slider] Value */}
+          {showCustom && (
+            <div className="mt-3 space-y-2.5 border-t border-arch-200 pt-3">
+              <div className="flex items-center gap-2">
+                <label htmlFor="maze-width" className="text-xs font-semibold text-arch-600 w-12 shrink-0">Width</label>
+                <input
+                  id="maze-width"
+                  type="range"
+                  min={CUSTOM_RANGE.min}
+                  max={CUSTOM_RANGE.max}
+                  value={customWidth}
+                  onChange={(e) => setCustomWidth(Number(e.target.value))}
+                  className="generator-range flex-1 min-w-0"
+                />
+                <span className="text-xs font-mono font-medium text-arch-charcoal w-8 text-right shrink-0">{customWidth}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <label htmlFor="maze-height" className="text-xs font-semibold text-arch-600 w-12 shrink-0">Height</label>
+                <input
+                  id="maze-height"
+                  type="range"
+                  min={CUSTOM_RANGE.min}
+                  max={CUSTOM_RANGE.max}
+                  value={customHeight}
+                  onChange={(e) => setCustomHeight(Number(e.target.value))}
+                  className="generator-range flex-1 min-w-0"
+                />
+                <span className="text-xs font-mono font-medium text-arch-charcoal w-8 text-right shrink-0">{customHeight}</span>
+              </div>
+            </div>
+          )}
+        </fieldset>
+
+        {/* Divider */}
+        <div className="border-t border-arch-200" />
+
+        {/* Actions */}
         <div className="space-y-2.5">
           {/* Primary */}
           <button
@@ -306,75 +371,6 @@ export function MazeGenerator() {
             </button>
           </div>
         </div>
-
-        {/* Divider */}
-        <div className="border-t border-arch-200" />
-
-        {/* Size selector — below actions on both mobile and desktop */}
-        <fieldset>
-          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-600 mb-2">Size</legend>
-          <div className="grid grid-cols-3 gap-2">
-            {SIZE_OPTIONS.map(({ value, label, detail }) => (
-              <button
-                key={value}
-                onClick={() => handleSizeChange(value)}
-                className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
-                  !showCustom && sizePreset === value ? activeBtn : inactiveBtn
-                }`}
-                aria-pressed={!showCustom && sizePreset === value}
-              >
-                <span>{label}</span>
-                <span className={`text-xs font-mono ${!showCustom && sizePreset === value ? 'text-white/80' : 'text-arch-600'}`}>{detail}</span>
-              </button>
-            ))}
-            {/* Custom — sixth slot */}
-            <button
-              onClick={toggleCustom}
-              className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
-                showCustom ? activeBtn : inactiveBtn
-              }`}
-              aria-pressed={showCustom}
-            >
-              <span>Custom</span>
-              <span className={`text-xs font-mono ${showCustom ? 'text-white/80' : 'text-arch-600'}`}>Up to 100×100</span>
-            </button>
-          </div>
-
-          {showCustom && (
-            <div className="mt-4 space-y-4 border-t border-arch-200 pt-4">
-              <div>
-                <div className="flex justify-between gap-4 mb-1.5">
-                  <label htmlFor="maze-width" className="text-xs font-semibold text-arch-600">Width</label>
-                  <span className="text-xs font-mono font-medium text-arch-charcoal">{customWidth} cells</span>
-                </div>
-                <input
-                  id="maze-width"
-                  type="range"
-                  min={CUSTOM_RANGE.min}
-                  max={CUSTOM_RANGE.max}
-                  value={customWidth}
-                  onChange={(e) => setCustomWidth(Number(e.target.value))}
-                  className="generator-range w-full"
-                />
-              </div>
-              <div>
-                <div className="flex justify-between gap-4 mb-1.5">
-                  <label htmlFor="maze-height" className="text-xs font-semibold text-arch-600">Height</label>
-                  <span className="text-xs font-mono font-medium text-arch-charcoal">{customHeight} cells</span>
-                </div>
-                <input
-                  id="maze-height"
-                  type="range"
-                  min={CUSTOM_RANGE.min}
-                  max={CUSTOM_RANGE.max}
-                  value={customHeight}
-                  onChange={(e) => setCustomHeight(Number(e.target.value))}
-                  className="generator-range w-full"
-                />
-              </div>
-            </div>
-          )}
-        </fieldset>
 
         {/* Divider */}
         <div className="border-t border-arch-200" />
