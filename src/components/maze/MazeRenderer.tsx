@@ -26,6 +26,7 @@ export interface MazeRendererProps {
   showSolution?: boolean;
   hintCells?: number[];       // flat indices of hint-highlighted cells
   className?: string;
+  fillContainer?: boolean;    // scale to fill parent (any aspect ratio); uses width/height 100% + preserveAspectRatio meet
   interactive?: boolean;      // adds keyboard/touch affordances
   svgRef?: React.RefObject<SVGSVGElement>;
   onKeyDown?: (e: React.KeyboardEvent) => void;
@@ -46,6 +47,7 @@ export function MazeRenderer({
   showSolution = false,
   hintCells = [],
   className,
+  fillContainer = false,
   interactive = false,
   svgRef,
   onKeyDown,
@@ -212,7 +214,10 @@ export function MazeRenderer({
       viewBox={`0 0 ${totalW} ${totalH}`}
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ display: 'block', maxWidth: '100%', height: 'auto', overflow: 'visible' }}
+      style={fillContainer
+        ? { display: 'block', width: '100%', height: '100%', overflow: 'visible' }
+        : { display: 'block', maxWidth: '100%', height: 'auto', overflow: 'visible' }
+      }
       role={interactive ? 'application' : 'img'}
       aria-label={interactive ? `${label}. Use arrow keys to move.` : label}
       tabIndex={interactive ? 0 : undefined}

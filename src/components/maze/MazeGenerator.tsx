@@ -141,7 +141,7 @@ export function MazeGenerator() {
   }, [sizePreset]);
 
   const { w: width, h: height } = getDimensions();
-  const cellSize = Math.max(8, Math.min(28, Math.floor(480 / Math.max(width, height))));
+  const cellSize = Math.max(8, Math.min(28, Math.floor(400 / Math.max(width, height))));
 
   const btnBase = 'rounded-sm border py-2.5 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent';
   const activeBtn   = 'border-arch-charcoal bg-arch-charcoal text-white';
@@ -152,9 +152,12 @@ export function MazeGenerator() {
 
       {/* ── Maze panel — top on mobile, right on desktop ── */}
       <div className="flex-1 min-w-0 w-full">
-        <div className="maze-generator-svg rounded-sm border border-arch-200 bg-arch-surface overflow-hidden">
-          <div className="flex justify-center p-4">
-            <MazeRenderer maze={maze} cellSize={cellSize} />
+        <div
+          className="maze-generator-svg rounded-sm border border-arch-200 bg-arch-surface overflow-hidden"
+          style={{ height: 'clamp(300px, calc(100vh - 300px), 640px)' }}
+        >
+          <div className="flex justify-center items-center w-full h-full p-4">
+            <MazeRenderer maze={maze} cellSize={cellSize} fillContainer />
           </div>
         </div>
 
