@@ -6,6 +6,7 @@ import { MazeRenderer } from './MazeRenderer';
 import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
+import { renderDownloadSVG } from '../../lib/svg/renderToString';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
 
@@ -184,16 +185,15 @@ export function MazeGenerator() {
   }, [sizePreset, generate, cancelScheduledCustomPreview]);
 
   const handleDownloadSVG = useCallback(() => {
-    const svgEl = document.querySelector('.maze-generator-svg svg');
-    if (!svgEl) return;
-    const blob = new Blob([svgEl.outerHTML], { type: 'image/svg+xml' });
+    const svg = renderDownloadSVG(maze);
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
     a.download = `maze-${maze.width}x${maze.height}.svg`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [maze.height, maze.width]);
+  }, [maze]);
 
   const handlePrint = useCallback(() => {
     window.requestAnimationFrame(() => window.print());
@@ -448,7 +448,7 @@ export function MazeGenerator() {
             </button>
             <button
               onClick={handlePrint}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
+              className="hidden lg:inline-flex flex-1 items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
@@ -456,6 +456,9 @@ export function MazeGenerator() {
               Print
             </button>
           </div>
+          <p className="lg:hidden border-l-2 border-arch-200 pl-3 text-sm leading-relaxed text-arch-600">
+            For best print results, download the SVG and print from a desktop browser.
+          </p>
         </div>
 
       </div>
