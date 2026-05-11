@@ -36,6 +36,8 @@ import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { createPRNG, shuffle, randomInt } from './prng';
 import { pointToIndex, inBounds, removeWall, DIRECTIONS } from './utils';
 import { solveMaze } from './solver';
+import type { Side } from './quality';
+import { scoreMetrics, computeFullScore, computeLightScore, sameSideDepthGate } from './quality';
 
 type TierConfig = {
   newestBias: number;
@@ -69,6 +71,12 @@ export type GeneratorOptions = {
    * Use for the Maze Generator page. Do not set for Daily Maze or Library.
    */
   anyPortalSide?: boolean;
+  /**
+   * Use lighter scoring (path length + turn count only) with a lower
+   * acceptance threshold. Set for live custom-size slider preview only.
+   * Full composite scoring applies for all explicit "Generate New Maze" calls.
+   */
+  lightMode?: boolean;
 };
 
 // ── Any-side mode constants ───────────────────────────────────────────────────
@@ -82,8 +90,8 @@ const MAZE_RETRY_PRIME = 0x9e3779b9;
 const MAX_POSITION_RETRIES = 20;
 const MAX_MAZE_RETRIES = 5;
 
-/** 0=top  1=right  2=bottom  3=left */
-type Side = 0 | 1 | 2 | 3;
+/** Minimum distinct 4×4 zones the solution must visit for same-side pairs. */
+const SAME_SIDE_MIN_ZONES = 6;
 
 // ── Public entry point ────────────────────────────────────────────────────────
 
@@ -104,7 +112,10 @@ export function generateMaze(options: GeneratorOptions): MazeData {
   }
 
   if (options.anyPortalSide) {
-    return generateWithAnySidePortals(width, height, difficulty, seed, newestBias, braidFactor);
+    return generateWithAnySidePortals(
+      width, height, difficulty, seed, newestBias, braidFactor,
+      options.lightMode ?? false,
+    );
   }
 
   // ── Legacy mode: opposite-side entry/exit, no quality gate ───────────────
@@ -123,10 +134,15 @@ function generateWithAnySidePortals(
   seed: number,
   newestBias: number,
   braidFactor: number,
+  lightMode: boolean,
 ): MazeData {
   const totalCells = width * height;
-  const threshold  = Math.floor(minPathFraction(totalCells) * totalCells);
-  const sides      = validSides(width, height);
+  // Path-length hard gate: fast pre-filter before computing metrics.
+  const minPath = Math.floor(minPathFraction(totalCells) * totalCells);
+  // Composite score threshold — conservative to avoid exhausting retries.
+  const compositeThreshold = lightMode ? 0.35 : 0.45;
+
+  const sides = validSides(width, height);
 
   // Carve always starts from the maze center — decoupled from entry/exit so
   // multiple position pairs can be scored on the same structural maze.
@@ -136,9 +152,15 @@ function generateWithAnySidePortals(
   // results are deterministic, but never touches the carving RNG state.
   const entropyRng = createPRNG(seed ^ ENTROPY_XOR);
 
-  type Candidate = { grid: MazeGrid; entry: Point; exit: Point; solution: number[]; mazeSeed: number };
-  let best: Candidate | null = null;
-  let bestScore = -1;
+  type Candidate = { grid: MazeGrid; entry: Point; exit: Point; solution: number[]; mazeSeed: number; compositeScore: number };
+
+  // Primary: passed path gate + same-side gates (if applicable), ranked by composite score.
+  let bestPrimary: Candidate | null = null;
+  let bestPrimaryScore = -1;
+  // Fallback: any valid candidate, ranked by path length (used only if no primary found).
+  let bestFallback: Candidate | null = null;
+  let bestFallbackPathLen = -1;
+
   let totalAttempts = 0;
 
   outer: for (let mazeAttempt = 0; mazeAttempt <= MAX_MAZE_RETRIES; mazeAttempt++) {
@@ -171,20 +193,42 @@ function generateWithAnySidePortals(
         entry, exit, grid: baseGrid, solution: [],
         generatedAt: '',
       };
-      const sol   = solveMaze(tempMaze);
-      const score = sol.length;
+      const sol = solveMaze(tempMaze);
 
-      if (score > bestScore) {
-        best      = { grid: baseGrid, entry, exit, solution: sol, mazeSeed };
-        bestScore = score;
+      // Always track as fallback regardless of quality gates.
+      if (sol.length > bestFallbackPathLen) {
+        bestFallback = { grid: baseGrid, entry, exit, solution: sol, mazeSeed, compositeScore: 0 };
+        bestFallbackPathLen = sol.length;
       }
 
-      if (score >= threshold) break outer;
+      // Fast path-length gate: skip metric computation for very short paths.
+      if (sol.length < minPath) continue;
+
+      const isSameSide = entrySide === exitSide;
+      const metrics = scoreMetrics(sol, width, height);
+
+      // Same-side hard gates: shallow paths that never cross the maze interior
+      // or fail minimum zone coverage are rejected as primary candidates.
+      if (isSameSide) {
+        if (!sameSideDepthGate(sol, width, height, entrySide)) continue;
+        if (metrics.zoneCount < SAME_SIDE_MIN_ZONES) continue;
+      }
+
+      const compositeScore = lightMode
+        ? computeLightScore(metrics, totalCells)
+        : computeFullScore(metrics, totalCells);
+
+      if (compositeScore > bestPrimaryScore) {
+        bestPrimary = { grid: baseGrid, entry, exit, solution: sol, mazeSeed, compositeScore };
+        bestPrimaryScore = compositeScore;
+      }
+
+      if (compositeScore >= compositeThreshold) break outer;
     }
   }
 
-  // best is always set after at least one attempt (any valid maze is solvable).
-  const chosen = best!;
+  // Use best primary candidate; fall back to longest path if no primary found.
+  const chosen = (bestPrimary ?? bestFallback)!;
 
   // Clone the grid before opening perimeter gaps so the scoring grid is not mutated.
   const finalGrid = chosen.grid.slice();
@@ -204,12 +248,16 @@ function generateWithAnySidePortals(
 
   partial.solution = solveMaze(partial);
 
+  const finalMetrics = scoreMetrics(partial.solution, width, height);
   const pct = ((partial.solution.length / totalCells) * 100).toFixed(1);
   console.log(
     `[maze] ${width}×${height} ${difficulty} seed=${partial.seed} ` +
     `entry=(${partial.entry.x},${partial.entry.y}) exit=(${partial.exit.x},${partial.exit.y}) ` +
     `solution=${partial.solution.length}/${totalCells} (${pct}%) ` +
-    `threshold=${(minPathFraction(totalCells) * 100).toFixed(0)}% attempts=${totalAttempts}`,
+    `turns=${finalMetrics.turnCount} zones=${finalMetrics.zoneCount}/16 ` +
+    `border=${(finalMetrics.borderFraction * 100).toFixed(0)}% ` +
+    `score=${chosen.compositeScore.toFixed(3)} threshold=${compositeThreshold} ` +
+    `attempts=${totalAttempts}${lightMode ? ' [light]' : ''}`,
   );
 
   return partial;

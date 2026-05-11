@@ -107,11 +107,11 @@ export function MazeGenerator() {
     customPreviewRequestRef.current += 1;
   }, []);
 
-  const generate = useCallback((preset: SizePreset | null, dims: { w: number; h: number }) => {
+  const generate = useCallback((preset: SizePreset | null, dims: { w: number; h: number }, lightMode = false) => {
     const difficulty: Difficulty = preset
       ? presetDifficulty(preset)
       : difficultyForCustomSize(dims.w, dims.h);
-    const m = generateMaze({ width: dims.w, height: dims.h, difficulty, seed: nextSeed(), anyPortalSide: true });
+    const m = generateMaze({ width: dims.w, height: dims.h, difficulty, seed: nextSeed(), anyPortalSide: true, lightMode });
     setMaze(m);
     setPlaying(false);
     setSolved(false);
@@ -136,7 +136,7 @@ export function MazeGenerator() {
 
       if (customPreviewRequestRef.current !== requestId) return;
 
-      generate(null, { w: customWidth, h: customHeight });
+      generate(null, { w: customWidth, h: customHeight }, true);
     }, 220);
 
     return () => {

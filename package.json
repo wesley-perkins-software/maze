@@ -10,6 +10,7 @@
     "generate:catalog": "tsx scripts/generate-catalog.ts",
     "validate:catalog": "tsx scripts/validate-catalog.ts",
     "generate:og": "node scripts/generate-og.mjs",
+    "quality:audit": "tsx scripts/quality-audit.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
