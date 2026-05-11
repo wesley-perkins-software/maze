@@ -8,8 +8,8 @@ function getViewBox(svg: string): number[] {
   return match![1].split(/\s+/).map(Number);
 }
 
-function getAttr(svg: string, name: string): string {
-  const match = svg.match(new RegExp(`${name}="([^"]+)"`));
+function getPathD(svg: string): string {
+  const match = svg.match(/<path d="([^"]+)"/);
   expect(match).not.toBeNull();
   return match![1];
 }
@@ -23,35 +23,46 @@ describe('renderDownloadSVG', () => {
     [5, 5],
     [80, 50],
     [50, 80],
-  ])('exports a centered, padded, clean %ix%i SVG', (width, height) => {
+  ])('exports a centered, artwork-sized, clean %ix%i SVG', (width, height) => {
     const maze = generateMaze({ width, height, difficulty: 'medium', seed: 12345 });
     const svg = renderDownloadSVG(maze);
     const [minX, minY, viewBoxW, viewBoxH] = getViewBox(svg);
-    const wallPath = getAttr(svg, 'd');
+    const wallPath = getPathD(svg);
 
-    expect(minX).toBe(0);
-    expect(minY).toBe(0);
+    const cellSize = 960 / Math.max(width, height);
+    const wallThickness = Math.max(1.75, Math.min(3.5, cellSize * 0.16));
+    const halfStroke = wallThickness / 2;
+    const expectedPadding = Math.max(18, wallThickness * 6, 960 * 0.035);
+    const mazeW = width * cellSize;
+    const mazeH = height * cellSize;
+
+    expect(svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="')).toBe(true);
     expect(svg).toContain('preserveAspectRatio="xMidYMid meet"');
-    expect(svg).toContain('width="');
-    expect(svg).toContain('height="');
-    expect(svg).toContain('<rect width="');
+    expect(svg).not.toMatch(/<svg[^>]*\swidth="/);
+    expect(svg).not.toMatch(/<svg[^>]*\sheight="/);
     expect(svg).toContain('fill="#ffffff"');
     expect(svg).not.toContain('class=');
     expect(svg).not.toContain('style=');
     expect(svg).not.toContain('#3b82f6');
     expect(svg).not.toContain('#22c55e');
 
+    expect(minX).toBeCloseTo(-halfStroke - expectedPadding, 3);
+    expect(minY).toBeCloseTo(-halfStroke - expectedPadding, 3);
+    expect(viewBoxW).toBeCloseTo(mazeW + wallThickness + expectedPadding * 2, 3);
+    expect(viewBoxH).toBeCloseTo(mazeH + wallThickness + expectedPadding * 2, 3);
+
     const firstMove = wallPath.match(/^M([\d.]+),([\d.]+)/);
     expect(firstMove).not.toBeNull();
-    const leftPadding = Number(firstMove![1]);
-    const topPadding = Number(firstMove![2]);
-    const longestMazeEdge = Math.max(width, height) * (960 / Math.max(width, height));
-    const expectedPadding = Math.max(32, (960 / Math.max(width, height)) * 0.65);
+    expect(Number(firstMove![1])).toBe(0);
+    expect(Number(firstMove![2])).toBe(0);
 
-    expect(leftPadding).toBeCloseTo(expectedPadding, 6);
-    expect(topPadding).toBeCloseTo(expectedPadding, 6);
-    expect(viewBoxW).toBeCloseTo(width * (960 / Math.max(width, height)) + expectedPadding * 2, 6);
-    expect(viewBoxH).toBeCloseTo(height * (960 / Math.max(width, height)) + expectedPadding * 2, 6);
-    expect(longestMazeEdge).toBe(960);
+    const artworkAspect = mazeW / mazeH;
+    const canvasAspect = viewBoxW / viewBoxH;
+    if (width === height) {
+      expect(canvasAspect).toBeCloseTo(1, 3);
+    } else {
+      expect(canvasAspect > 1).toBe(width > height);
+      expect(Math.abs(canvasAspect - artworkAspect) / artworkAspect).toBeLessThan(0.12);
+    }
   });
 });
