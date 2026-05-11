@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import type { Difficulty } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
@@ -26,6 +26,8 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
 };
 
 const CUSTOM_RANGE = { min: 5, max: 100 };
+const PRINT_MAZE_MAX_WIDTH_IN = 7.25;
+const PRINT_MAZE_MAX_HEIGHT_IN = 9.5;
 
 function presetDifficulty(preset: SizePreset): Difficulty {
   if (preset === 'expert' || preset === 'monster') return 'large';
@@ -218,11 +220,23 @@ export function MazeGenerator() {
   const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
 
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
+  const printAspectRatio = maze.width / maze.height;
+  const printBoxAspectRatio = PRINT_MAZE_MAX_WIDTH_IN / PRINT_MAZE_MAX_HEIGHT_IN;
+  const printMazeWidthIn = maze.width === maze.height || printAspectRatio >= printBoxAspectRatio
+    ? PRINT_MAZE_MAX_WIDTH_IN
+    : PRINT_MAZE_MAX_HEIGHT_IN * printAspectRatio;
+  const printMazeHeightIn = maze.width === maze.height || printAspectRatio >= printBoxAspectRatio
+    ? PRINT_MAZE_MAX_WIDTH_IN / printAspectRatio
+    : PRINT_MAZE_MAX_HEIGHT_IN;
+  const printMazeStyle = {
+    '--print-maze-width': `${printMazeWidthIn.toFixed(3)}in`,
+    '--print-maze-height': `${printMazeHeightIn.toFixed(3)}in`,
+  } as CSSProperties;
 
   const printMaze = (
     <div className="print-only" aria-hidden="true">
       <div className="print-maze-sheet">
-        <div className="print-maze-art">
+        <div className="print-maze-art" style={printMazeStyle}>
           <MazeRenderer
             maze={maze}
             cellSize={12}
@@ -448,7 +462,7 @@ export function MazeGenerator() {
             </button>
             <button
               onClick={handlePrint}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
+              className="hidden flex-1 items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors md:inline-flex"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
@@ -456,6 +470,9 @@ export function MazeGenerator() {
               Print
             </button>
           </div>
+          <p className="rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-xs leading-snug text-arch-600 md:hidden">
+            For best print results, download the SVG or print from a desktop browser.
+          </p>
         </div>
 
       </div>
