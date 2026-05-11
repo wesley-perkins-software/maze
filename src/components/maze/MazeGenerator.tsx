@@ -84,7 +84,7 @@ export function MazeGenerator() {
     const { w, h } = SIZE_MAP['medium'];
     const seed = newSeed();
     lastSeedRef.current = seed;
-    return generateMaze({ width: w, height: h, difficulty: 'medium', seed });
+    return generateMaze({ width: w, height: h, difficulty: 'medium', seed, anyPortalSide: true });
   });
 
   const nextSeed = useCallback(() => {
@@ -111,7 +111,7 @@ export function MazeGenerator() {
     const difficulty: Difficulty = preset
       ? presetDifficulty(preset)
       : difficultyForCustomSize(dims.w, dims.h);
-    const m = generateMaze({ width: dims.w, height: dims.h, difficulty, seed: nextSeed() });
+    const m = generateMaze({ width: dims.w, height: dims.h, difficulty, seed: nextSeed(), anyPortalSide: true });
     setMaze(m);
     setPlaying(false);
     setSolved(false);
