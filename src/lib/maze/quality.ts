@@ -16,6 +16,13 @@ export type SolutionMetrics = {
   zoneCount: number;
   /** Fraction of path cells within 1 step of any maze edge. */
   borderFraction: number;
+  /**
+   * min(normalised x-span, normalised y-span) — the bottleneck axis.
+   * x-span = (maxX − minX) / (width − 1), y-span = (maxY − minY) / (height − 1).
+   * 1.0 = path reaches both edges on the narrower axis; 0 = single cell.
+   * Catches "band" paths that span one axis but stay confined on the other.
+   */
+  minSpan: number;
 };
 
 /**
@@ -39,9 +46,10 @@ export function refValues(totalCells: number): { refPath: number; refTurns: numb
 /**
  * Compute all quality metrics in a single O(n) pass over the solution path.
  *
- * - turnCount: number of direction changes (straight → straight = 0 turns)
+ * - turnCount: direction changes (straight → straight = 0 turns)
  * - zoneCount: distinct 4×4 grid zones visited out of 16 total
  * - borderFraction: fraction of cells within 1 step of any maze edge
+ * - minSpan: min(normalised x-span, normalised y-span) — catches band paths
  */
 export function scoreMetrics(
   sol: number[],
@@ -50,7 +58,7 @@ export function scoreMetrics(
 ): SolutionMetrics {
   const pathLength = sol.length;
   if (pathLength < 2) {
-    return { pathLength, turnCount: 0, zoneCount: 0, borderFraction: 1 };
+    return { pathLength, turnCount: 0, zoneCount: 0, borderFraction: 1, minSpan: 0 };
   }
 
   const ZONE_ROWS = 4;
@@ -63,11 +71,19 @@ export function scoreMetrics(
   let nearBorderCount = 0;
   let prevDx = 0;
   let prevDy = 0;
+  let minX = width,  maxX = 0;
+  let minY = height, maxY = 0;
 
   for (let i = 0; i < pathLength; i++) {
     const idx = sol[i];
     const x = idx % width;
     const y = (idx / width) | 0;
+
+    // Span tracking
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
 
     // Zone coverage (4×4 grid)
     const zx = Math.min((x / cellsPerZoneX) | 0, ZONE_COLS - 1);
@@ -96,11 +112,15 @@ export function scoreMetrics(
     if (zoneVisited[z]) zoneCount++;
   }
 
+  const xSpan = (maxX - minX) / Math.max(1, width  - 1);
+  const ySpan = (maxY - minY) / Math.max(1, height - 1);
+
   return {
     pathLength,
     turnCount: turns,
     zoneCount,
     borderFraction: nearBorderCount / pathLength,
+    minSpan: Math.min(xSpan, ySpan),
   };
 }
 
@@ -110,7 +130,8 @@ export function scoreMetrics(
  * Components (weights sum to 1.0 before penalty):
  *   path length  × 0.35  (normalised to refPath; capped at 1.5×)
  *   turn count   × 0.25  (normalised to refTurns; capped at 1.5×)
- *   zone coverage× 0.30  (zones visited / 16)
+ *   zone coverage× 0.20  (zones visited / 16)
+ *   min span     × 0.15  (min of normalised x-span and y-span; catches band paths)
  *   border penalty        (soft; only subtracts when borderFraction > 35%)
  *
  * Typical range: 0.0 – ~1.2. Conservative early-exit threshold: 0.45.
@@ -129,25 +150,27 @@ export function computeFullScore(
     : 0;
 
   return Math.max(0,
-    pathScore * 0.35 +
-    turnScore * 0.25 +
-    zoneScore * 0.30 -
-    borderExcess * 0.10,
+    pathScore      * 0.35 +
+    turnScore      * 0.25 +
+    zoneScore      * 0.20 +
+    metrics.minSpan * 0.15 -
+    borderExcess   * 0.10,
   );
 }
 
 /**
  * Light composite score for live custom-size slider preview.
- * Path length + turn count only; faster and more permissive.
- * Threshold: 0.35.
+ * Includes minSpan — it is computed in the same O(n) pass and costs nothing extra.
+ * More permissive threshold (0.35) and lower span weight than full mode.
  */
 export function computeLightScore(
   metrics: SolutionMetrics,
   totalCells: number,
 ): number {
   const { refPath, refTurns } = refValues(totalCells);
-  return Math.min(metrics.pathLength / refPath,  1.5) * 0.60
-       + Math.min(metrics.turnCount  / refTurns, 1.5) * 0.40;
+  return Math.min(metrics.pathLength / refPath,  1.5) * 0.55
+       + Math.min(metrics.turnCount  / refTurns, 1.5) * 0.30
+       + metrics.minSpan                               * 0.15;
 }
 
 /**

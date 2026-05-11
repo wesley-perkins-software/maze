@@ -139,8 +139,11 @@ function generateWithAnySidePortals(
   const totalCells = width * height;
   // Path-length hard gate: fast pre-filter before computing metrics.
   const minPath = Math.floor(minPathFraction(totalCells) * totalCells);
-  // Composite score threshold — conservative to avoid exhausting retries.
-  const compositeThreshold = lightMode ? 0.35 : 0.45;
+  // Inter-maze threshold: after exhausting all position attempts for a maze
+  // structure, break if bestPrimary already beats this score. Set high so
+  // all position candidates are compared and the minSpan component is active.
+  // Light mode uses a lower bar and exits per-position to stay fast.
+  const interMazeThreshold = lightMode ? 0.50 : 0.78;
 
   const sides = validSides(width, height);
 
@@ -223,8 +226,15 @@ function generateWithAnySidePortals(
         bestPrimaryScore = compositeScore;
       }
 
-      if (compositeScore >= compositeThreshold) break outer;
+      // Light mode: exit immediately on the first qualifying candidate to keep
+      // the live preview responsive. Full mode always compares all position
+      // candidates within a maze structure so the composite score (including
+      // minSpan) actually drives selection.
+      if (lightMode && compositeScore >= interMazeThreshold) break outer;
     }
+
+    // Full mode: break after this maze variant if we already have a quality winner.
+    if (!lightMode && bestPrimaryScore >= interMazeThreshold) break outer;
   }
 
   // Use best primary candidate; fall back to longest path if no primary found.
@@ -255,8 +265,8 @@ function generateWithAnySidePortals(
     `entry=(${partial.entry.x},${partial.entry.y}) exit=(${partial.exit.x},${partial.exit.y}) ` +
     `solution=${partial.solution.length}/${totalCells} (${pct}%) ` +
     `turns=${finalMetrics.turnCount} zones=${finalMetrics.zoneCount}/16 ` +
-    `border=${(finalMetrics.borderFraction * 100).toFixed(0)}% ` +
-    `score=${chosen.compositeScore.toFixed(3)} threshold=${compositeThreshold} ` +
+    `span=${finalMetrics.minSpan.toFixed(2)} border=${(finalMetrics.borderFraction * 100).toFixed(0)}% ` +
+    `score=${chosen.compositeScore.toFixed(3)} threshold=${interMazeThreshold} ` +
     `attempts=${totalAttempts}${lightMode ? ' [light]' : ''}`,
   );
 

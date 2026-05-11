@@ -93,49 +93,95 @@ describe('scoreMetrics', () => {
     const m = scoreMetrics(zoneCenters, width, width);
     expect(m.zoneCount).toBe(16);
   });
+
+  it('minSpan is 0 for a path shorter than 2', () => {
+    expect(scoreMetrics([], 20, 20).minSpan).toBe(0);
+    expect(scoreMetrics([10], 20, 20).minSpan).toBe(0);
+  });
+
+  it('minSpan is 0 for a straight horizontal path (no y spread)', () => {
+    // (0,0)→(5,0)→(10,0): ySpan = 0, so minSpan = 0
+    const width = 20;
+    const sol = [0, 5, 10];
+    const m = scoreMetrics(sol, width, 20);
+    expect(m.minSpan).toBe(0);
+  });
+
+  it('minSpan equals the bottleneck axis span', () => {
+    // Path: (0,0) and (19,9) in a 20×20 grid
+    // xSpan = 19/19 = 1.0, ySpan = 9/19 ≈ 0.474 → minSpan ≈ 0.474
+    const width = 20;
+    const sol = [0, 9 * width + 19]; // (0,0) and (19,9)
+    const m = scoreMetrics(sol, width, 20);
+    expect(m.minSpan).toBeCloseTo(9 / 19, 5);
+  });
+
+  it('minSpan is 1 for a path reaching all four corners', () => {
+    const width = 20;
+    const sol = [
+      0,                        // (0,0)
+      19,                       // (19,0)
+      19 * width + 0,           // (0,19)
+      19 * width + 19,          // (19,19)
+    ];
+    const m = scoreMetrics(sol, width, 20);
+    expect(m.minSpan).toBe(1);
+  });
 });
 
 describe('computeFullScore', () => {
   it('returns a positive value for a decent solution', () => {
-    const metrics: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 10, borderFraction: 0.1 };
+    const metrics: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 10, borderFraction: 0.1, minSpan: 0.8 };
     const score = computeFullScore(metrics, 400);
     expect(score).toBeGreaterThan(0);
   });
 
   it('returns higher score for better zone coverage', () => {
-    const base: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 8, borderFraction: 0.1 };
+    const base: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 8, borderFraction: 0.1, minSpan: 0.7 };
     const better: SolutionMetrics = { ...base, zoneCount: 14 };
     expect(computeFullScore(better, 400)).toBeGreaterThan(computeFullScore(base, 400));
   });
 
   it('returns higher score for more turns', () => {
-    const base: SolutionMetrics = { pathLength: 88, turnCount: 30, zoneCount: 8, borderFraction: 0.1 };
+    const base: SolutionMetrics = { pathLength: 88, turnCount: 30, zoneCount: 8, borderFraction: 0.1, minSpan: 0.7 };
     const better: SolutionMetrics = { ...base, turnCount: 80 };
     expect(computeFullScore(better, 400)).toBeGreaterThan(computeFullScore(base, 400));
   });
 
+  it('returns higher score for greater minSpan', () => {
+    const base: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 8, borderFraction: 0.1, minSpan: 0.3 };
+    const better: SolutionMetrics = { ...base, minSpan: 0.9 };
+    expect(computeFullScore(better, 400)).toBeGreaterThan(computeFullScore(base, 400));
+  });
+
   it('penalises high border fraction', () => {
-    const base: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 8, borderFraction: 0.1 };
+    const base: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 8, borderFraction: 0.1, minSpan: 0.7 };
     const worse: SolutionMetrics = { ...base, borderFraction: 0.9 };
     expect(computeFullScore(worse, 400)).toBeLessThan(computeFullScore(base, 400));
   });
 
   it('never returns a negative value', () => {
-    const worst: SolutionMetrics = { pathLength: 1, turnCount: 0, zoneCount: 0, borderFraction: 1 };
+    const worst: SolutionMetrics = { pathLength: 1, turnCount: 0, zoneCount: 0, borderFraction: 1, minSpan: 0 };
     expect(computeFullScore(worst, 400)).toBeGreaterThanOrEqual(0);
   });
 });
 
 describe('computeLightScore', () => {
   it('returns higher score for longer path', () => {
-    const short: SolutionMetrics = { pathLength: 50, turnCount: 40, zoneCount: 6, borderFraction: 0.1 };
+    const short: SolutionMetrics = { pathLength: 50, turnCount: 40, zoneCount: 6, borderFraction: 0.1, minSpan: 0.6 };
     const long:  SolutionMetrics = { ...short, pathLength: 100 };
     expect(computeLightScore(long, 400)).toBeGreaterThan(computeLightScore(short, 400));
   });
 
   it('returns a positive value for a valid path', () => {
-    const m: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 8, borderFraction: 0.2 };
+    const m: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 8, borderFraction: 0.2, minSpan: 0.7 };
     expect(computeLightScore(m, 400)).toBeGreaterThan(0);
+  });
+
+  it('returns higher score for greater minSpan', () => {
+    const base: SolutionMetrics = { pathLength: 88, turnCount: 55, zoneCount: 8, borderFraction: 0.1, minSpan: 0.3 };
+    const better: SolutionMetrics = { ...base, minSpan: 0.9 };
+    expect(computeLightScore(better, 400)).toBeGreaterThan(computeLightScore(base, 400));
   });
 });
 
@@ -208,6 +254,15 @@ describe('generateMaze with anyPortalSide — quality scoring', () => {
         const maze = generateMaze({ width: w, height: h, difficulty, seed, anyPortalSide: true });
         const metrics = scoreMetrics(maze.solution, w, h);
         expect(metrics.zoneCount).toBeGreaterThanOrEqual(4);
+      }
+    });
+
+    it(`minSpan is between 0 and 1 at ${w}×${h} (across 5 seeds)`, () => {
+      for (let seed = 1; seed <= 5; seed++) {
+        const maze = generateMaze({ width: w, height: h, difficulty, seed, anyPortalSide: true });
+        const metrics = scoreMetrics(maze.solution, w, h);
+        expect(metrics.minSpan).toBeGreaterThanOrEqual(0);
+        expect(metrics.minSpan).toBeLessThanOrEqual(1);
       }
     });
   }
