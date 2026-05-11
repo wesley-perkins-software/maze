@@ -26,8 +26,8 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
 };
 
 const CUSTOM_RANGE = { min: 5, max: 100 };
-const PRINT_MAZE_MAX_WIDTH_IN = 7.25;
-const PRINT_MAZE_MAX_HEIGHT_IN = 9.5;
+const PRINT_MAZE_MAX_WIDTH_IN = 7;
+const PRINT_MAZE_MAX_HEIGHT_IN = 9.2;
 
 function presetDifficulty(preset: SizePreset): Difficulty {
   if (preset === 'expert' || preset === 'monster') return 'large';
@@ -73,7 +73,12 @@ export function MazeGenerator() {
 
 
   useEffect(() => {
+    document.body.classList.add('maze-generator-print-page');
     setPrintRoot(document.body);
+
+    return () => {
+      document.body.classList.remove('maze-generator-print-page');
+    };
   }, []);
 
   const getDimensions = useCallback(
@@ -236,7 +241,7 @@ export function MazeGenerator() {
   const printMaze = (
     <div className="print-only" aria-hidden="true">
       <div className="print-maze-sheet">
-        <div className="print-maze-art" style={printMazeStyle}>
+        <div className="print-maze-box print-maze-art" style={printMazeStyle}>
           <MazeRenderer
             maze={maze}
             cellSize={12}
