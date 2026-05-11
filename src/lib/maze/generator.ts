@@ -258,17 +258,19 @@ function generateWithAnySidePortals(
 
   partial.solution = solveMaze(partial);
 
-  const finalMetrics = scoreMetrics(partial.solution, width, height);
-  const pct = ((partial.solution.length / totalCells) * 100).toFixed(1);
-  console.log(
-    `[maze] ${width}×${height} ${difficulty} seed=${partial.seed} ` +
-    `entry=(${partial.entry.x},${partial.entry.y}) exit=(${partial.exit.x},${partial.exit.y}) ` +
-    `solution=${partial.solution.length}/${totalCells} (${pct}%) ` +
-    `turns=${finalMetrics.turnCount} zones=${finalMetrics.zoneCount}/16 ` +
-    `span=${finalMetrics.minSpan.toFixed(2)} border=${(finalMetrics.borderFraction * 100).toFixed(0)}% ` +
-    `score=${chosen.compositeScore.toFixed(3)} threshold=${interMazeThreshold} ` +
-    `attempts=${totalAttempts}${lightMode ? ' [light]' : ''}`,
-  );
+  if (import.meta.env.DEV) {
+    const finalMetrics = scoreMetrics(partial.solution, width, height);
+    const pct = ((partial.solution.length / totalCells) * 100).toFixed(1);
+    console.log(
+      `[maze] ${width}×${height} ${difficulty} seed=${partial.seed} ` +
+      `entry=(${partial.entry.x},${partial.entry.y}) exit=(${partial.exit.x},${partial.exit.y}) ` +
+      `solution=${partial.solution.length}/${totalCells} (${pct}%) ` +
+      `turns=${finalMetrics.turnCount} zones=${finalMetrics.zoneCount}/16 ` +
+      `span=${finalMetrics.minSpan.toFixed(2)} border=${(finalMetrics.borderFraction * 100).toFixed(0)}% ` +
+      `score=${chosen.compositeScore.toFixed(3)} threshold=${interMazeThreshold} ` +
+      `attempts=${totalAttempts}${lightMode ? ' [light]' : ''}`,
+    );
+  }
 
   return partial;
 }
