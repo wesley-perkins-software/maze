@@ -20,9 +20,11 @@ export type RenderOptions = {
   entryColor?: string;
   exitColor?: string;
   markerSize?: number;     // entry/exit marker size as fraction of cellSize, default 0.4
+  width?: string;          // optional SVG width attribute, e.g. "8in"
+  height?: string;         // optional SVG height attribute, e.g. "8in"
 };
 
-const DEFAULTS: Required<RenderOptions> = {
+const DEFAULTS = {
   cellSize: 20,
   wallThickness: 2,
   padding: 4,
@@ -33,7 +35,15 @@ const DEFAULTS: Required<RenderOptions> = {
   entryColor: '#64748b',
   exitColor: '#f59e0b',
   markerSize: 0.4,
-};
+} satisfies Required<Omit<RenderOptions, 'width' | 'height'>>;
+
+function escapeAttr(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
 
 export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}): string {
   const o = { ...DEFAULTS, ...opts };
@@ -42,8 +52,6 @@ export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}):
 
   const totalW = width  * cellSize + padding * 2;
   const totalH = height * cellSize + padding * 2;
-  const half = wallThickness / 2;
-
   // ── Wall path computation ────────────────────────────────────────────────────
   const wallSegments: string[] = [];
 
@@ -112,9 +120,11 @@ export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}):
 
   // ── Assemble SVG ─────────────────────────────────────────────────────────────
   const label = `${difficulty} ${width}×${height} maze`;
+  const title = escapeAttr(slug ? slug.replace(/-/g, ' ') : label);
+  const sizeAttrs = `${o.width ? ` width="${escapeAttr(o.width)}"` : ''}${o.height ? ` height="${escapeAttr(o.height)}"` : ''}`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalW} ${totalH}" role="img" aria-label="${label}">
-  <title>${slug ? slug.replace(/-/g, ' ') : label}</title>
+  return `<svg xmlns="http://www.w3.org/2000/svg"${sizeAttrs} viewBox="0 0 ${totalW} ${totalH}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${escapeAttr(label)}">
+  <title>${title}</title>
   <desc>A printable ${label}. Print or solve online at MazeThis.</desc>
   <rect width="${totalW}" height="${totalH}" fill="${o.bgColor}"/>
   ${solutionPath}
@@ -122,6 +132,41 @@ export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}):
   <rect x="${entryPx}" y="${entryPy}" width="${ms}" height="${ms}" rx="${ms * 0.2}" fill="${o.entryColor}" opacity="0.8"/>
   <rect x="${exitPx}"  y="${exitPy}"  width="${ms}" height="${ms}" rx="${ms * 0.2}" fill="${o.exitColor}"  opacity="0.8"/>
 </svg>`;
+}
+
+/**
+ * Generate a clean, scalable SVG for user downloads.
+ *
+ * The export normalizes the longest maze edge to a stable coordinate size so
+ * small mazes do not become postage-stamp assets and dense mazes do not become
+ * unwieldy files. The padded viewBox, physical dimensions, and
+ * preserveAspectRatio attribute let the SVG open centered in browsers, desktop
+ * preview apps, and vector editors without relying on page CSS.
+ */
+export function renderDownloadSVG(maze: MazeData): string {
+  const targetMazeEdge = 960;
+  const cellSize = targetMazeEdge / Math.max(maze.width, maze.height);
+  const padding = Math.max(32, cellSize * 0.65);
+  const wallThickness = Math.max(1.75, Math.min(3.5, cellSize * 0.16));
+
+  const viewBoxW = maze.width * cellSize + padding * 2;
+  const viewBoxH = maze.height * cellSize + padding * 2;
+  const longestPrintEdge = 8;
+  const widthIn = viewBoxW >= viewBoxH
+    ? longestPrintEdge
+    : Math.max(1, (viewBoxW / viewBoxH) * longestPrintEdge);
+  const heightIn = viewBoxH >= viewBoxW
+    ? longestPrintEdge
+    : Math.max(1, (viewBoxH / viewBoxW) * longestPrintEdge);
+
+  return renderMazeToSVGString(maze, {
+    cellSize,
+    wallThickness,
+    padding,
+    showSolution: false,
+    width: `${Number(widthIn.toFixed(3))}in`,
+    height: `${Number(heightIn.toFixed(3))}in`,
+  });
 }
 
 /**
