@@ -3,38 +3,45 @@
  *
  * Generation happens in three phases:
  *
- *   1. Entry/exit placement: deterministic from seed, on opposite sides of the
- *      maze, offset from each other and away from corners. Breaks directional
- *      heuristics (no "always go right and down" shortcut).
+ *   1. Entry/exit placement: deterministic from seed. Two modes:
  *
- *   2. Growing Tree carve: seeds from the entry point. A single parameter
+ *      Legacy mode (anyPortalSide not set):
+ *        Opposite perimeter sides (left↔right or top↔bottom), offset and
+ *        away from corners. Breaks directional heuristics.
+ *
+ *      Any-side mode (anyPortalSide: true):
+ *        Entry and exit are independently drawn from all four sides. A
+ *        separate entropy RNG (derived from the same seed) handles position
+ *        selection so the carving RNG state is untouched — maze structure
+ *        stays identical for the same seed regardless of how many retry
+ *        attempts the quality gate makes. A quality gate (minimum solution
+ *        path length as a fraction of total cells) rejects poor pairs. Up
+ *        to 20 position retries on the same carved maze, then up to 5 full
+ *        maze retries, keeping the best candidate so generation never fails.
+ *
+ *   2. Growing Tree carve: seeds from a start cell. A single parameter
  *      `newestBias` (0=Prim's-like high branching, 1=DFS-like corridors)
- *      controls the structural character. Carving begins at the placed entry.
+ *      controls the structural character.
  *
  *   3. Dead-end braid pass: opens a wall at a fraction of dead ends to create
- *      loops specifically where players would get stuck (vs. random wall removal
- *      which scatters loops without regard for player experience).
+ *      loops specifically where players would get stuck.
  *
  * Tier parameters (newestBias / braidFactor):
  *   small:  0.75 / 0.02  — natural winding corridors, occasional dead ends
  *   medium: 0.80 / 0.01  — longer committed paths, sparse junctions
  *   large:  0.85 / 0.01  — deep dead ends, near-perfect, classic DFS feel
- *
- * Entry/exit placement:
- *   - Always on opposite perimeter sides (left↔right or top↔bottom)
- *   - Entry placed in one half of the side (20–50%), exit in the other (50–80%)
- *   - Which half each gets is also seed-derived
- *   - Result: entry and exit are always ≥ 30% of the dimension apart, never at corners
  */
 import type { Difficulty, MazeData, MazeGrid, Point } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { createPRNG, shuffle, randomInt } from './prng';
-import { pointToIndex, indexToPoint, inBounds, removeWall, DIRECTIONS } from './utils';
+import { pointToIndex, inBounds, removeWall, DIRECTIONS } from './utils';
 import { solveMaze } from './solver';
+import type { Side } from './quality';
+import { scoreMetrics, computeFullScore, computeLightScore, sameSideDepthGate } from './quality';
 
 type TierConfig = {
-  newestBias: number;  // 0 = Prim's-like, 1 = DFS-like
-  braidFactor: number; // fraction of dead ends to open (0–1)
+  newestBias: number;
+  braidFactor: number;
 };
 
 const TIER_CONFIG: Record<Difficulty, TierConfig> = {
@@ -56,43 +63,296 @@ export type GeneratorOptions = {
   newestBias?: number;
   /** Override braidFactor directly (for the custom-size generator). */
   braidFactor?: number;
+  /**
+   * Enable any-side entry/exit with quality gating.
+   * When true, entry and exit are independently drawn from all four perimeter
+   * sides. A separate entropy RNG (seed ^ ENTROPY_XOR) handles position
+   * selection so the carving seed state is unaffected.
+   * Use for the Maze Generator page. Do not set for Daily Maze or Library.
+   */
+  anyPortalSide?: boolean;
+  /**
+   * Use lighter scoring (path length + turn count only) with a lower
+   * acceptance threshold. Set for live custom-size slider preview only.
+   * Full composite scoring applies for all explicit "Generate New Maze" calls.
+   */
+  lightMode?: boolean;
 };
+
+// ── Any-side mode constants ───────────────────────────────────────────────────
+
+/** XOR constant for deriving the entropy RNG from the maze seed. */
+const ENTROPY_XOR = 0x9e3779b9;
+
+/** Prime multiplier for deriving retry maze seeds. */
+const MAZE_RETRY_PRIME = 0x9e3779b9;
+
+const MAX_POSITION_RETRIES = 20;
+const MAX_MAZE_RETRIES = 5;
+
+/** Minimum distinct 4×4 zones the solution must visit for same-side pairs. */
+const SAME_SIDE_MIN_ZONES = 6;
+
+// ── Public entry point ────────────────────────────────────────────────────────
 
 export function generateMaze(options: GeneratorOptions): MazeData {
   const { width, height, difficulty } = options;
   const seed = options.seed ?? (Date.now() & 0xffffffff);
-  const rng = createPRNG(seed);
 
   const cfg = TIER_CONFIG[difficulty];
   const newestBias  = options.newestBias  ?? cfg.newestBias;
   const braidFactor = options.braidFactor ?? cfg.braidFactor;
 
-  // ── Phase 1: Determine entry and exit ────────────────────────────────────────
-  //
-  // If explicit overrides are provided (tests, special cases), use them.
-  // Otherwise derive placement deterministically from the RNG so the same seed
-  // always produces the same entry/exit positions.
-  const entry = options.entry ?? undefined;
-  const exit  = options.exit  ?? undefined;
-  const { entry: placedEntry, exit: placedExit } =
-    entry !== undefined && exit !== undefined
-      ? { entry, exit }
-      : placeEntryExit(width, height, rng);
+  // Explicit entry/exit overrides bypass all placement and quality logic.
+  if (options.entry !== undefined && options.exit !== undefined) {
+    const rng = createPRNG(seed);
+    const { entry, exit } = options;
+    const grid = carveMazeGrid(entry, width, height, newestBias, braidFactor, rng);
+    return finaliseMaze(grid, entry, exit, width, height, difficulty, seed);
+  }
 
-  // ── Phase 2: Growing Tree carve (starts from entry) ──────────────────────────
-  const grid: MazeGrid = new Array(width * height).fill(
-    WALL_N | WALL_E | WALL_S | WALL_W,
-  );
+  if (options.anyPortalSide) {
+    return generateWithAnySidePortals(
+      width, height, difficulty, seed, newestBias, braidFactor,
+      options.lightMode ?? false,
+    );
+  }
+
+  // ── Legacy mode: opposite-side entry/exit, no quality gate ───────────────
+  const rng = createPRNG(seed);
+  const { entry, exit } = placeEntryExit(width, height, rng);
+  const grid = carveMazeGrid(entry, width, height, newestBias, braidFactor, rng);
+  return finaliseMaze(grid, entry, exit, width, height, difficulty, seed);
+}
+
+// ── Any-side generation ───────────────────────────────────────────────────────
+
+function generateWithAnySidePortals(
+  width: number,
+  height: number,
+  difficulty: Difficulty,
+  seed: number,
+  newestBias: number,
+  braidFactor: number,
+  lightMode: boolean,
+): MazeData {
+  const totalCells = width * height;
+  // Path-length hard gate: fast pre-filter before computing metrics.
+  const minPath = Math.floor(minPathFraction(totalCells) * totalCells);
+  // Inter-maze threshold: after exhausting all position attempts for a maze
+  // structure, break if bestPrimary already beats this score. Set high so
+  // all position candidates are compared and the minSpan component is active.
+  // Light mode uses a lower bar and exits per-position to stay fast.
+  const interMazeThreshold = lightMode ? 0.50 : 0.78;
+
+  const sides = validSides(width, height);
+
+  // Carve always starts from the maze center — decoupled from entry/exit so
+  // multiple position pairs can be scored on the same structural maze.
+  const centerCell: Point = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+
+  // Separate entropy RNG for portal selection. Derived from the same seed so
+  // results are deterministic, but never touches the carving RNG state.
+  const entropyRng = createPRNG(seed ^ ENTROPY_XOR);
+
+  type Candidate = { grid: MazeGrid; entry: Point; exit: Point; solution: number[]; mazeSeed: number; compositeScore: number };
+
+  // Primary: passed path gate + same-side gates (if applicable), ranked by composite score.
+  let bestPrimary: Candidate | null = null;
+  let bestPrimaryScore = -1;
+  // Fallback: any valid candidate, ranked by path length (used only if no primary found).
+  let bestFallback: Candidate | null = null;
+  let bestFallbackPathLen = -1;
+
+  let totalAttempts = 0;
+
+  outer: for (let mazeAttempt = 0; mazeAttempt <= MAX_MAZE_RETRIES; mazeAttempt++) {
+    const mazeSeed = mazeAttempt === 0
+      ? seed
+      : ((seed + mazeAttempt * MAZE_RETRY_PRIME) >>> 0);
+
+    const mazeRng  = createPRNG(mazeSeed);
+    const baseGrid = carveMazeGrid(centerCell, width, height, newestBias, braidFactor, mazeRng);
+
+    for (let posAttempt = 0; posAttempt < MAX_POSITION_RETRIES; posAttempt++) {
+      totalAttempts++;
+
+      const entrySide = sides[randomInt(entropyRng, sides.length)] as Side;
+      const exitSide  = sides[randomInt(entropyRng, sides.length)] as Side;
+      const entry     = pickPositionOnSide(entrySide, width, height, entropyRng);
+      const exit      = pickPositionOnSide(exitSide,  width, height, entropyRng);
+
+      // Pre-filter same-side pairs that are too close together.
+      if (entrySide === exitSide) {
+        const sep    = Math.abs(entry.x - exit.x) + Math.abs(entry.y - exit.y);
+        const minSep = Math.max(3, Math.floor(sideLength(entrySide, width, height) * 0.25));
+        if (sep < minSep) continue;
+      }
+
+      // Score by solving. Perimeter gaps are not yet open — BFS navigates
+      // through internal passages only and is unaffected.
+      const tempMaze: MazeData = {
+        id: '', slug: '', difficulty, width, height, seed: mazeSeed,
+        entry, exit, grid: baseGrid, solution: [],
+        generatedAt: '',
+      };
+      const sol = solveMaze(tempMaze);
+
+      // Always track as fallback regardless of quality gates.
+      if (sol.length > bestFallbackPathLen) {
+        bestFallback = { grid: baseGrid, entry, exit, solution: sol, mazeSeed, compositeScore: 0 };
+        bestFallbackPathLen = sol.length;
+      }
+
+      // Fast path-length gate: skip metric computation for very short paths.
+      if (sol.length < minPath) continue;
+
+      const isSameSide = entrySide === exitSide;
+      const metrics = scoreMetrics(sol, width, height);
+
+      // Same-side hard gates: shallow paths that never cross the maze interior
+      // or fail minimum zone coverage are rejected as primary candidates.
+      if (isSameSide) {
+        if (!sameSideDepthGate(sol, width, height, entrySide)) continue;
+        if (metrics.zoneCount < SAME_SIDE_MIN_ZONES) continue;
+      }
+
+      const compositeScore = lightMode
+        ? computeLightScore(metrics, totalCells)
+        : computeFullScore(metrics, totalCells);
+
+      if (compositeScore > bestPrimaryScore) {
+        bestPrimary = { grid: baseGrid, entry, exit, solution: sol, mazeSeed, compositeScore };
+        bestPrimaryScore = compositeScore;
+      }
+
+      // Light mode: exit immediately on the first qualifying candidate to keep
+      // the live preview responsive. Full mode always compares all position
+      // candidates within a maze structure so the composite score (including
+      // minSpan) actually drives selection.
+      if (lightMode && compositeScore >= interMazeThreshold) break outer;
+    }
+
+    // Full mode: break after this maze variant if we already have a quality winner.
+    if (!lightMode && bestPrimaryScore >= interMazeThreshold) break outer;
+  }
+
+  // Use best primary candidate; fall back to longest path if no primary found.
+  const chosen = (bestPrimary ?? bestFallback)!;
+
+  // Clone the grid before opening perimeter gaps so the scoring grid is not mutated.
+  const finalGrid = chosen.grid.slice();
+  finalGrid[pointToIndex(chosen.entry, width)] &= ~perimeterWall(chosen.entry, width, height);
+  finalGrid[pointToIndex(chosen.exit,  width)] &= ~perimeterWall(chosen.exit,  width, height);
+
+  const partial: MazeData = {
+    id: '', slug: '',
+    difficulty, width, height,
+    seed: chosen.mazeSeed,
+    entry: chosen.entry,
+    exit:  chosen.exit,
+    grid:  finalGrid,
+    solution: [],
+    generatedAt: new Date().toISOString(),
+  };
+
+  partial.solution = solveMaze(partial);
+
+  if (import.meta.env.DEV) {
+    const finalMetrics = scoreMetrics(partial.solution, width, height);
+    const pct = ((partial.solution.length / totalCells) * 100).toFixed(1);
+    console.log(
+      `[maze] ${width}×${height} ${difficulty} seed=${partial.seed} ` +
+      `entry=(${partial.entry.x},${partial.entry.y}) exit=(${partial.exit.x},${partial.exit.y}) ` +
+      `solution=${partial.solution.length}/${totalCells} (${pct}%) ` +
+      `turns=${finalMetrics.turnCount} zones=${finalMetrics.zoneCount}/16 ` +
+      `span=${finalMetrics.minSpan.toFixed(2)} border=${(finalMetrics.borderFraction * 100).toFixed(0)}% ` +
+      `score=${chosen.compositeScore.toFixed(3)} threshold=${interMazeThreshold} ` +
+      `attempts=${totalAttempts}${lightMode ? ' [light]' : ''}`,
+    );
+  }
+
+  return partial;
+}
+
+// ── Quality helpers ───────────────────────────────────────────────────────────
+
+/**
+ * Minimum acceptable solution path length as a fraction of total cells.
+ *
+ * These are aspirational targets: the retry loop tries to meet them, but the
+ * best candidate is used as a fallback if no pair qualifies. Thresholds are
+ * calibrated against observed outputs from the center-start Growing Tree
+ * algorithm — higher targets cause near-constant fallback exhaustion with no
+ * quality benefit.
+ */
+function minPathFraction(totalCells: number): number {
+  if (totalCells <= 400)   return 0.22; // ≤ 20×20:  ~88 cells
+  if (totalCells <= 1600)  return 0.16; // ≤ 40×40: ~256 cells
+  if (totalCells <= 3600)  return 0.11; // ≤ 60×60: ~396 cells
+  if (totalCells <= 6400)  return 0.09; // ≤ 80×80: ~576 cells
+  return 0.07;                          //   100×100+: ~700 cells
+}
+
+// ── Side / position helpers ───────────────────────────────────────────────────
+
+/** Returns which sides have at least one non-corner cell available. */
+function validSides(width: number, height: number): Side[] {
+  const out: Side[] = [];
+  if (width  >= 3) out.push(0, 2); // top, bottom
+  if (height >= 3) out.push(1, 3); // right, left
+  // Degenerate case (2×2 or smaller): accept all sides with position clamped.
+  return out.length > 0 ? out : [0, 1, 2, 3];
+}
+
+function sideLength(side: Side, width: number, height: number): number {
+  return side === 0 || side === 2 ? width : height;
+}
+
+/**
+ * Pick a non-corner boundary cell on the given side.
+ * Positions are drawn from [1, N-2] where N is the side length.
+ */
+function pickPositionOnSide(
+  side: Side,
+  width: number,
+  height: number,
+  rng: () => number,
+): Point {
+  const range = (n: number) => 1 + randomInt(rng, Math.max(1, n - 2));
+  switch (side) {
+    case 0: return { x: range(width),  y: 0           }; // top
+    case 1: return { x: width - 1,     y: range(height) }; // right
+    case 2: return { x: range(width),  y: height - 1  }; // bottom
+    default:return { x: 0,             y: range(height) }; // left
+  }
+}
+
+// ── Core maze carving ─────────────────────────────────────────────────────────
+
+/**
+ * Growing Tree carve starting from `startCell`, followed by dead-end braid.
+ * Returns the raw grid with no perimeter gaps opened.
+ */
+function carveMazeGrid(
+  startCell: Point,
+  width: number,
+  height: number,
+  newestBias: number,
+  braidFactor: number,
+  rng: () => number,
+): MazeGrid {
+  const grid: MazeGrid = new Array(width * height).fill(WALL_N | WALL_E | WALL_S | WALL_W);
 
   const visited = new Uint8Array(width * height);
-  const active: number[] = [pointToIndex(placedEntry, width)];
+  const active: number[] = [pointToIndex(startCell, width)];
   visited[active[0]] = 1;
 
   while (active.length > 0) {
     const idx =
       rng() < newestBias
-        ? active.length - 1              // newest (DFS-like)
-        : randomInt(rng, active.length); // random (Prim's-like)
+        ? active.length - 1
+        : randomInt(rng, active.length);
 
     const ci = active[idx];
     const cx = ci % width;
@@ -116,12 +376,10 @@ export function generateMaze(options: GeneratorOptions): MazeData {
       break;
     }
 
-    if (!carved) {
-      active.splice(idx, 1);
-    }
+    if (!carved) active.splice(idx, 1);
   }
 
-  // ── Phase 3: Dead-end braid pass ─────────────────────────────────────────────
+  // Dead-end braid pass
   if (braidFactor > 0) {
     const deadEnds: number[] = [];
     for (let i = 0; i < width * height; i++) {
@@ -156,42 +414,49 @@ export function generateMaze(options: GeneratorOptions): MazeData {
     }
   }
 
-  // ── Open perimeter walls at entry and exit ────────────────────────────────────
-  //
-  // Each endpoint is on a perimeter edge. Clear the wall that faces outward so
-  // the renderer shows a gap. The wall to clear depends on which edge the point
-  // sits on — the renderer is flag-driven so this is the only change needed.
-  grid[pointToIndex(placedEntry, width)] &= ~perimeterWall(placedEntry, width, height);
-  grid[pointToIndex(placedExit,  width)] &= ~perimeterWall(placedExit,  width, height);
+  return grid;
+}
 
-  // ── Build MazeData and solve ──────────────────────────────────────────────────
+// ── Maze assembly ─────────────────────────────────────────────────────────────
+
+/**
+ * Open perimeter gaps for entry/exit, build MazeData, solve, and log.
+ * Used by legacy mode and by the explicit-override path.
+ */
+function finaliseMaze(
+  grid: MazeGrid,
+  entry: Point,
+  exit: Point,
+  width: number,
+  height: number,
+  difficulty: Difficulty,
+  seed: number,
+): MazeData {
+  grid[pointToIndex(entry, width)] &= ~perimeterWall(entry, width, height);
+  grid[pointToIndex(exit,  width)] &= ~perimeterWall(exit,  width, height);
+
   const partial: MazeData = {
-    id: '',
-    slug: '',
-    difficulty,
-    width,
-    height,
-    seed,
-    entry: placedEntry,
-    exit:  placedExit,
-    grid,
+    id: '', slug: '',
+    difficulty, width, height, seed,
+    entry, exit, grid,
     solution: [],
     generatedAt: new Date().toISOString(),
   };
 
   partial.solution = solveMaze(partial);
 
-  // Log windiness for evaluation (not used for filtering yet).
-  const manhattan = Math.abs(placedExit.x - placedEntry.x) + Math.abs(placedExit.y - placedEntry.y);
-  const windiness = partial.solution.length / Math.max(1, manhattan);
+  const manhattan = Math.abs(exit.x - entry.x) + Math.abs(exit.y - entry.y);
+  const windiness  = partial.solution.length / Math.max(1, manhattan);
   console.log(
     `[maze] ${width}×${height} ${difficulty} seed=${seed} ` +
-    `entry=(${placedEntry.x},${placedEntry.y}) exit=(${placedExit.x},${placedExit.y}) ` +
+    `entry=(${entry.x},${entry.y}) exit=(${exit.x},${exit.y}) ` +
     `solution=${partial.solution.length} manhattan=${manhattan} windiness=${windiness.toFixed(2)}`,
   );
 
   return partial;
 }
+
+// ── Legacy entry/exit placement ───────────────────────────────────────────────
 
 /**
  * Place entry and exit on opposite perimeter sides, offset from each other,
@@ -205,7 +470,7 @@ export function generateMaze(options: GeneratorOptions): MazeData {
  *   - Both positions are randomised within their half
  *
  * This guarantees:
- *   - Entry and exit are always on opposite sides (no adjacent-side diagonal bias)
+ *   - Entry and exit are always on opposite sides
  *   - They are always ≥ 30% of the dimension apart
  *   - Neither is at a corner (20–80% range keeps them off the outermost cells)
  */
@@ -214,8 +479,8 @@ function placeEntryExit(
   height: number,
   rng: () => number,
 ): { entry: Point; exit: Point } {
-  const horizontal = rng() < 0.5; // true = left/right, false = top/bottom
-  const entryInLow = rng() < 0.5; // true = entry in lower-numbered half
+  const horizontal = rng() < 0.5;
+  const entryInLow = rng() < 0.5;
 
   if (horizontal) {
     const lo  = Math.floor(height * 0.2);
@@ -250,6 +515,8 @@ function placeEntryExit(
   }
 }
 
+// ── Shared helpers ────────────────────────────────────────────────────────────
+
 /**
  * Returns the wall constant that faces outward from the given perimeter cell.
  * Used to open the visual entry/exit gap in the border.
@@ -283,8 +550,9 @@ export function generateMazeFromCatalog(entry: {
     height: entry.height,
     difficulty: entry.difficulty,
     seed: entry.seed,
+    // anyPortalSide intentionally not set — catalog uses legacy opposite-side behaviour.
   });
-  maze.id = entry.slug;
+  maze.id   = entry.slug;
   maze.slug = entry.slug;
   return maze;
 }
