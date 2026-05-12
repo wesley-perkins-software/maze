@@ -29,10 +29,10 @@ const DEFAULTS = {
   wallThickness: 2,
   padding: 4,
   showSolution: false,
-  solutionColor: '#22c55e',
+  solutionColor: '#8b5cf6',
   bgColor: '#ffffff',
   wallColor: '#1e293b',
-  entryColor: '#64748b',
+  entryColor: '#0d9488',
   exitColor: '#f59e0b',
   markerSize: 0.4,
 } satisfies Required<Omit<RenderOptions, 'width' | 'height'>>;

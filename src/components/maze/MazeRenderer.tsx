@@ -290,27 +290,25 @@ export function MazeRenderer({
             />
           )}
 
-          {/* Exit marker — orange circle with flag pennant */}
+          {/* Exit marker — amber circle with star */}
           <circle cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
           {markerR >= 5 && (
-            <>
-              {/* Flag pole */}
-              <line
-                x1={exitMx - markerR * 0.08}
-                y1={exitMy + markerR * 0.52}
-                x2={exitMx - markerR * 0.08}
-                y2={exitMy - markerR * 0.62}
-                stroke="white"
-                strokeWidth={Math.max(1, markerR * 0.17)}
-                strokeLinecap="round"
-              />
-              {/* Flag pennant */}
-              <polygon
-                points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.62} ${exitMx + markerR * 0.58},${exitMy - markerR * 0.28} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.06}`}
-                fill="white"
-                opacity={0.95}
-              />
-            </>
+            <polygon
+              points={[
+                [exitMx,                    exitMy - markerR * 0.72],
+                [exitMx + markerR * 0.24,   exitMy - markerR * 0.20],
+                [exitMx + markerR * 0.69,   exitMy - markerR * 0.22],
+                [exitMx + markerR * 0.34,   exitMy + markerR * 0.17],
+                [exitMx + markerR * 0.43,   exitMy + markerR * 0.64],
+                [exitMx,                    exitMy + markerR * 0.36],
+                [exitMx - markerR * 0.43,   exitMy + markerR * 0.64],
+                [exitMx - markerR * 0.34,   exitMy + markerR * 0.17],
+                [exitMx - markerR * 0.69,   exitMy - markerR * 0.22],
+                [exitMx - markerR * 0.24,   exitMy - markerR * 0.20],
+              ].map(([x, y]) => `${x},${y}`).join(' ')}
+              fill="white"
+              opacity={0.95}
+            />
           )}
         </>
       )}
