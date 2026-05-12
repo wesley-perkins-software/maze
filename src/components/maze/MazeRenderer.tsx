@@ -9,11 +9,10 @@ import { indexToPoint } from '../../lib/maze/utils';
 
 const PLAYER_PATH_COLOR = '#3b82f6';
 const PLAYER_MARKER_COLOR = '#2563eb';
-const START_MARKER_RING_COLOR = '#64748b';
-const START_MARKER_CENTER_COLOR = '#ffffff';
+const START_MARKER_COLOR = '#0d9488';
 const FINISH_MARKER_COLOR = '#f59e0b';
-const SOLUTION_PATH_COLOR = '#22c55e';
-const HINT_PATH_COLOR = '#22c55e';
+const SOLUTION_PATH_COLOR = '#8b5cf6';
+const HINT_PATH_COLOR = '#8b5cf6';
 
 export interface MazeRendererProps {
   maze: MazeData;
@@ -238,7 +237,7 @@ export function MazeRenderer({
         fill="none"
       />
 
-      {/* Solution path — green solid guidance from the current player position */}
+      {/* Solution path — violet solid guidance from the current player position */}
       {solutionPoints && (
         <polyline
           points={solutionPoints}
@@ -251,7 +250,7 @@ export function MazeRenderer({
         />
       )}
 
-      {/* Hint path — green dashed temporary guidance from the current player position */}
+      {/* Hint path — violet dashed temporary guidance from the current player position */}
       {visibleHintCells.length >= 2 && (
         <polyline
           points={visibleHintCells.map(cellCenter).join(' ')}
@@ -281,14 +280,13 @@ export function MazeRenderer({
 
       {showEndpointMarkers && (
         <>
-          {/* Entry marker — neutral ring with directional play arrow */}
-          <circle cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_RING_COLOR} opacity={0.85} />
-          <circle cx={entryMx} cy={entryMy} r={markerR * 0.58} fill={START_MARKER_CENTER_COLOR} opacity={0.96} />
+          {/* Entry marker — teal circle with directional white arrow */}
+          <circle cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_COLOR} opacity={0.9} />
           {markerR >= 5 && (
             <polygon
               points={entryArrowPoints}
-              fill={START_MARKER_RING_COLOR}
-              opacity={0.9}
+              fill="white"
+              opacity={0.95}
             />
           )}
 
