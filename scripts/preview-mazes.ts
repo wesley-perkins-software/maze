@@ -2,6 +2,7 @@ import { writeFileSync, mkdirSync } from 'fs';
 import { generateMaze } from '../src/lib/maze/generator';
 import type { MazeData } from '../src/types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../src/types/maze';
+import { FINISH_MARKER_COLOR, START_MARKER_COLOR } from '../src/lib/maze/markerStyles';
 
 function renderSVG(maze: MazeData, cellSize = 10): string {
   const { width, height, grid, entry, exit, solution } = maze;
@@ -39,8 +40,15 @@ function renderSVG(maze: MazeData, cellSize = 10): string {
   <rect width="${W}" height="${H}" fill="white"/>
   <polyline points="${sol}" stroke="#ef4444" stroke-width="${cellSize * 0.18}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
   <path d="${walls.join(' ')}" stroke="#1e293b" stroke-width="1.5" stroke-linecap="square" fill="none"/>
-  <circle cx="${entryCx}" cy="${entryCy}" r="${r}" fill="#22c55e" opacity="0.9"/>
-  <circle cx="${exitCx}"  cy="${exitCy}"  r="${r}" fill="#f59e0b" opacity="0.9"/>
+  <circle cx="${entryCx}" cy="${entryCy}" r="${r}" fill="white"/>
+  <g transform="translate(${entryCx - r} ${entryCy - r}) scale(${r / 12})" color="${START_MARKER_COLOR}">
+    <path d="M7.5 18.5V10.5C7.5 7.8 9.5 5.75 12 5.75C14.5 5.75 16.5 7.8 16.5 10.5V18.5" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M10 18.5H14" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <circle cx="${exitCx}" cy="${exitCy}" r="${r}" fill="white"/>
+  <circle cx="${exitCx}"  cy="${exitCy}"  r="${r * 0.78}" fill="${FINISH_MARKER_COLOR}" opacity="0.92"/>
+  <line x1="${exitCx - r * 0.08}" y1="${exitCy + r * 0.46}" x2="${exitCx - r * 0.08}" y2="${exitCy - r * 0.56}" stroke="white" stroke-width="${Math.max(1, r * 0.16)}" stroke-linecap="round"/>
+  <polygon points="${exitCx - r * 0.08},${exitCy - r * 0.56} ${exitCx + r * 0.52},${exitCy - r * 0.26} ${exitCx - r * 0.08},${exitCy + r * 0.05}" fill="white" opacity="0.95"/>
 </svg>`;
 }
 
