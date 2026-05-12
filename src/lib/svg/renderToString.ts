@@ -8,6 +8,11 @@
 import type { MazeData } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { indexToPoint } from '../maze/utils';
+import {
+  FINISH_MARKER_COLOR,
+  MARKER_BADGE_COLOR,
+  START_MARKER_COLOR,
+} from '../maze/markerStyles';
 
 export type RenderOptions = {
   cellSize?: number;       // px per cell, default 20
@@ -32,8 +37,8 @@ const DEFAULTS = {
   solutionColor: '#22c55e',
   bgColor: '#ffffff',
   wallColor: '#1e293b',
-  entryColor: '#64748b',
-  exitColor: '#f59e0b',
+  entryColor: START_MARKER_COLOR,
+  exitColor: FINISH_MARKER_COLOR,
   markerSize: 0.4,
 } satisfies Required<Omit<RenderOptions, 'width' | 'height'>>;
 
@@ -43,6 +48,20 @@ function escapeAttr(value: string): string {
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+function renderStartMarker(cx: number, cy: number, r: number, color: string): string {
+  const escapedColor = escapeAttr(color);
+  return `<circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" fill="${MARKER_BADGE_COLOR}"/>
+  <path d="M${fmt(cx - r * 0.46)},${fmt(cy + r * 0.5)} L${fmt(cx - r * 0.46)},${fmt(cy - r * 0.42)} L${fmt(cx + r * 0.46)},${fmt(cy - r * 0.42)} L${fmt(cx + r * 0.46)},${fmt(cy + r * 0.5)}" fill="none" stroke="${escapedColor}" stroke-width="${fmt(Math.max(1, r * 0.18))}" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+
+function renderFinishMarker(cx: number, cy: number, r: number, color: string): string {
+  const poleX = cx - r * 0.08;
+  return `<circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" fill="${MARKER_BADGE_COLOR}"/>
+  <circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r * 0.78)}" fill="${escapeAttr(color)}" opacity="0.92"/>
+  <line x1="${fmt(poleX)}" y1="${fmt(cy + r * 0.46)}" x2="${fmt(poleX)}" y2="${fmt(cy - r * 0.56)}" stroke="white" stroke-width="${fmt(Math.max(1, r * 0.16))}" stroke-linecap="round"/>
+  <polygon points="${fmt(poleX)},${fmt(cy - r * 0.56)} ${fmt(cx + r * 0.52)},${fmt(cy - r * 0.26)} ${fmt(poleX)},${fmt(cy + r * 0.05)}" fill="white" opacity="0.95"/>`;
 }
 
 export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}): string {
@@ -96,13 +115,12 @@ export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}):
   }
 
   // ── Entry / Exit markers ─────────────────────────────────────────────────────
-  const ms = cellSize * o.markerSize;
-  const mOff = (cellSize - ms) / 2;
+  const markerR = (cellSize * o.markerSize) / 2;
 
-  const entryPx = padding + entry.x * cellSize + mOff;
-  const entryPy = padding + entry.y * cellSize + mOff;
-  const exitPx  = padding + exit.x  * cellSize + mOff;
-  const exitPy  = padding + exit.y  * cellSize + mOff;
+  const entryCx = padding + entry.x * cellSize + cellSize / 2;
+  const entryCy = padding + entry.y * cellSize + cellSize / 2;
+  const exitCx  = padding + exit.x  * cellSize + cellSize / 2;
+  const exitCy  = padding + exit.y  * cellSize + cellSize / 2;
 
   // ── Solution path ────────────────────────────────────────────────────────────
   let solutionPath = '';
@@ -129,8 +147,8 @@ export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}):
   <rect width="${totalW}" height="${totalH}" fill="${o.bgColor}"/>
   ${solutionPath}
   <path d="${wallSegments.join(' ')}" stroke="${o.wallColor}" stroke-width="${wallThickness}" stroke-linecap="square" fill="none"/>
-  <rect x="${entryPx}" y="${entryPy}" width="${ms}" height="${ms}" rx="${ms * 0.2}" fill="${o.entryColor}" opacity="0.8"/>
-  <rect x="${exitPx}"  y="${exitPy}"  width="${ms}" height="${ms}" rx="${ms * 0.2}" fill="${o.exitColor}"  opacity="0.8"/>
+  ${renderStartMarker(entryCx, entryCy, markerR, o.entryColor)}
+  ${renderFinishMarker(exitCx, exitCy, markerR, o.exitColor)}
 </svg>`;
 }
 
@@ -202,8 +220,8 @@ export function renderDownloadSVG(maze: MazeData): string {
   <desc>A clean downloadable ${label} artwork asset.</desc>
   <rect x="${fmt(viewBoxX)}" y="${fmt(viewBoxY)}" width="${fmt(viewBoxW)}" height="${fmt(viewBoxH)}" fill="${DEFAULTS.bgColor}"/>
   <path d="${wallSegments.join(' ')}" stroke="${DEFAULTS.wallColor}" stroke-width="${fmt(wallThickness)}" stroke-linecap="square" fill="none"/>
-  <rect x="${fmt(entryX)}" y="${fmt(entryY)}" width="${fmt(markerSize)}" height="${fmt(markerSize)}" rx="${fmt(markerSize * 0.2)}" fill="${DEFAULTS.entryColor}" opacity="0.8"/>
-  <rect x="${fmt(exitX)}" y="${fmt(exitY)}" width="${fmt(markerSize)}" height="${fmt(markerSize)}" rx="${fmt(markerSize * 0.2)}" fill="${DEFAULTS.exitColor}" opacity="0.8"/>
+  ${renderStartMarker(entryX + markerSize / 2, entryY + markerSize / 2, markerSize / 2, DEFAULTS.entryColor)}
+  ${renderFinishMarker(exitX + markerSize / 2, exitY + markerSize / 2, markerSize / 2, DEFAULTS.exitColor)}
 </svg>`;
 }
 

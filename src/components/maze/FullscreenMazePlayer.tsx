@@ -7,6 +7,11 @@ import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
+import {
+  FINISH_MARKER_COLOR,
+  MARKER_BADGE_COLOR,
+  START_MARKER_COLOR,
+} from '../../lib/maze/markerStyles';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -32,9 +37,6 @@ const SIDEBAR_MINIMAP_SIZE = 192;
 const SIDEBAR_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
-const START_MARKER_RING_COLOR = '#64748b';
-const START_MARKER_CENTER_COLOR = '#ffffff';
-const FINISH_MARKER_COLOR = '#f59e0b';
 
 function clamp(min: number, value: number, max: number): number {
   return Math.min(max, Math.max(min, value));
@@ -82,15 +84,6 @@ function MinimapEndpointMarkers({
     filter: 'drop-shadow(0 2px 3px rgba(15, 23, 42, 0.5)) drop-shadow(0 0 7px rgba(255, 255, 255, 0.98))',
   };
 
-  // Arrow direction based on which perimeter wall the entry is on (viewBox 0 0 24 24, circle r=8.8 at 12,12)
-  const entryArrow = (() => {
-    const { entry, width, height } = maze;
-    if (entry.y === 0)          return '6.72,8.92 17.28,8.92 12,16.84';   // top → DOWN
-    if (entry.y === height - 1) return '6.72,15.08 17.28,15.08 12,7.16';  // bottom → UP
-    if (entry.x === 0)          return '8.92,6.72 16.84,12 8.92,17.28';   // left → RIGHT
-    return '15.08,6.72 7.16,12 15.08,17.28';                              // right → LEFT
-  })();
-
   return (
     <>
       <svg
@@ -99,10 +92,8 @@ function MinimapEndpointMarkers({
         style={{ ...markerStyle, ...entryPos }}
         aria-hidden="true"
       >
-        <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_RING_COLOR} opacity="0.85" />
-        <circle cx="12" cy="12" r="5.1" fill={START_MARKER_CENTER_COLOR} opacity="0.96" />
-        <polygon points={entryArrow} fill={START_MARKER_RING_COLOR} opacity="0.9" />
+        <circle cx="12" cy="12" r="12" fill={MARKER_BADGE_COLOR} />
+        <path d="M7.9 16.8 V8.3 H16.1 V16.8" fill="none" stroke={START_MARKER_COLOR} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <svg
         viewBox="0 0 24 24"
@@ -110,8 +101,8 @@ function MinimapEndpointMarkers({
         style={{ ...markerStyle, ...exitPos }}
         aria-hidden="true"
       >
-        <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
+        <circle cx="12" cy="12" r="12" fill={MARKER_BADGE_COLOR} />
+        <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} opacity="0.92" />
         <line x1="8.8" y1="17" x2="8.8" y2="6.4" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
         <path d="M10 6.3 H16.8 L14.8 9.1 L16.8 11.9 H10 Z" fill="white" />
       </svg>

@@ -6,12 +6,14 @@
 import type { MazeData, Point } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { indexToPoint } from '../../lib/maze/utils';
+import {
+  FINISH_MARKER_COLOR,
+  MARKER_BADGE_COLOR,
+  START_MARKER_COLOR,
+} from '../../lib/maze/markerStyles';
 
 const PLAYER_PATH_COLOR = '#3b82f6';
 const PLAYER_MARKER_COLOR = '#2563eb';
-const START_MARKER_RING_COLOR = '#64748b';
-const START_MARKER_CENTER_COLOR = '#ffffff';
-const FINISH_MARKER_COLOR = '#f59e0b';
 const SOLUTION_PATH_COLOR = '#22c55e';
 const HINT_PATH_COLOR = '#22c55e';
 
@@ -109,27 +111,9 @@ export function MazeRenderer({
   const exitMx  = outsideX(exit,  exitCx);
   const exitMy  = outsideY(exit,  exitCy);
 
-  // ── Entry arrow — points INTO the maze from whichever perimeter wall ─────────
-  const entryArrowPoints = (() => {
-    const cx = entryMx;
-    const cy = entryMy;
-    const r  = markerR;
-
-    if (entry.y === 0) {
-      // Top wall → arrow points DOWN
-      return `${cx - r*0.6},${cy - r*0.35} ${cx + r*0.6},${cy - r*0.35} ${cx},${cy + r*0.55}`;
-    }
-    if (entry.y === height - 1) {
-      // Bottom wall → arrow points UP
-      return `${cx - r*0.6},${cy + r*0.35} ${cx + r*0.6},${cy + r*0.35} ${cx},${cy - r*0.55}`;
-    }
-    if (entry.x === 0) {
-      // Left wall → arrow points RIGHT
-      return `${cx - r*0.35},${cy - r*0.6} ${cx + r*0.55},${cy} ${cx - r*0.35},${cy + r*0.6}`;
-    }
-    // Right wall → arrow points LEFT
-    return `${cx + r*0.35},${cy - r*0.6} ${cx - r*0.55},${cy} ${cx + r*0.35},${cy + r*0.6}`;
-  })();
+  // ── Endpoint marker geometry ──────────────────────────────────────────────
+  const markerBadgeR = markerR;
+  const markerInnerR = markerR * 0.78;
 
   const cellCenter = (idx: number) => {
     const { x, y } = indexToPoint(idx, width);
@@ -280,41 +264,38 @@ export function MazeRenderer({
       ))}
 
       {showEndpointMarkers && (
-        <>
-          {/* Entry marker — neutral ring with directional play arrow */}
-          <circle cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_RING_COLOR} opacity={0.85} />
-          <circle cx={entryMx} cy={entryMy} r={markerR * 0.58} fill={START_MARKER_CENTER_COLOR} opacity={0.96} />
-          {markerR >= 5 && (
-            <polygon
-              points={entryArrowPoints}
-              fill={START_MARKER_RING_COLOR}
-              opacity={0.9}
-            />
-          )}
+        <g style={{ filter: 'drop-shadow(0 1px 2px rgba(15, 23, 42, 0.24))' }}>
+          {/* Entry marker — red-coral entrance gate */}
+          <circle cx={entryMx} cy={entryMy} r={markerBadgeR} fill={MARKER_BADGE_COLOR} />
+          <path
+            d={`M${entryMx - markerR * 0.46},${entryMy + markerR * 0.5} L${entryMx - markerR * 0.46},${entryMy - markerR * 0.42} L${entryMx + markerR * 0.46},${entryMy - markerR * 0.42} L${entryMx + markerR * 0.46},${entryMy + markerR * 0.5}`}
+            fill="none"
+            stroke={START_MARKER_COLOR}
+            strokeWidth={Math.max(1, markerR * 0.18)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
 
-          {/* Exit marker — orange circle with flag pennant */}
-          <circle cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
-          {markerR >= 5 && (
-            <>
-              {/* Flag pole */}
-              <line
-                x1={exitMx - markerR * 0.08}
-                y1={exitMy + markerR * 0.52}
-                x2={exitMx - markerR * 0.08}
-                y2={exitMy - markerR * 0.62}
-                stroke="white"
-                strokeWidth={Math.max(1, markerR * 0.17)}
-                strokeLinecap="round"
-              />
-              {/* Flag pennant */}
-              <polygon
-                points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.62} ${exitMx + markerR * 0.58},${exitMy - markerR * 0.28} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.06}`}
-                fill="white"
-                opacity={0.95}
-              />
-            </>
-          )}
-        </>
+          {/* Exit marker — amber circle with filled flag pennant */}
+          <circle cx={exitMx} cy={exitMy} r={markerBadgeR} fill={MARKER_BADGE_COLOR} />
+          <circle cx={exitMx} cy={exitMy} r={markerInnerR} fill={FINISH_MARKER_COLOR} opacity={0.92} />
+          {/* Flag pole */}
+          <line
+            x1={exitMx - markerR * 0.08}
+            y1={exitMy + markerR * 0.46}
+            x2={exitMx - markerR * 0.08}
+            y2={exitMy - markerR * 0.56}
+            stroke="white"
+            strokeWidth={Math.max(1, markerR * 0.16)}
+            strokeLinecap="round"
+          />
+          {/* Flag pennant */}
+          <polygon
+            points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.56} ${exitMx + markerR * 0.52},${exitMy - markerR * 0.26} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.05}`}
+            fill="white"
+            opacity={0.95}
+          />
+        </g>
       )}
 
       {/* Player */}
