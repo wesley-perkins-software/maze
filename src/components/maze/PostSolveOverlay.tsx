@@ -41,11 +41,11 @@ function formatTime(ms: number) {
 // Eight confetti particles: colors drawn from the brand palette
 const CONFETTI = [
   { color: '#3b82f6', cx: '-52px', cy: '-68px', cr: '-120deg' },
-  { color: '#22c55e', cx:  '58px', cy: '-72px', cr:  '135deg' },
+  { color: '#8b5cf6', cx:  '58px', cy: '-72px', cr:  '135deg' },
   { color: '#f59e0b', cx: '-70px', cy: '-20px', cr:  '-90deg' },
   { color: '#a855f7', cx:  '74px', cy: '-18px', cr:   '90deg' },
   { color: '#3b82f6', cx: '-44px', cy:  '62px', cr:  '160deg' },
-  { color: '#22c55e', cx:  '48px', cy:  '58px', cr: '-150deg' },
+  { color: '#60a5fa', cx:  '48px', cy:  '58px', cr: '-150deg' },
   { color: '#f59e0b', cx:   '0px', cy: '-80px', cr:   '45deg' },
   { color: '#ef4444', cx:   '0px', cy:  '70px', cr:  '-45deg' },
 ] as const;

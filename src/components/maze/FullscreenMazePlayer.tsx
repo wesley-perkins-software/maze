@@ -32,9 +32,9 @@ const SIDEBAR_MINIMAP_SIZE = 192;
 const SIDEBAR_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
-const START_MARKER_RING_COLOR = '#64748b';
-const START_MARKER_CENTER_COLOR = '#ffffff';
-const FINISH_MARKER_COLOR = '#f59e0b';
+const START_MARKER_COLOR = '#16a34a';
+const FINISH_MARKER_STROKE_COLOR = '#334155';
+const FINISH_CHECK_COLOR = '#111827';
 
 function clamp(min: number, value: number, max: number): number {
   return Math.min(max, Math.max(min, value));
@@ -82,15 +82,6 @@ function MinimapEndpointMarkers({
     filter: 'drop-shadow(0 2px 3px rgba(15, 23, 42, 0.5)) drop-shadow(0 0 7px rgba(255, 255, 255, 0.98))',
   };
 
-  // Arrow direction based on which perimeter wall the entry is on (viewBox 0 0 24 24, circle r=8.8 at 12,12)
-  const entryArrow = (() => {
-    const { entry, width, height } = maze;
-    if (entry.y === 0)          return '6.72,8.92 17.28,8.92 12,16.84';   // top → DOWN
-    if (entry.y === height - 1) return '6.72,15.08 17.28,15.08 12,7.16';  // bottom → UP
-    if (entry.x === 0)          return '8.92,6.72 16.84,12 8.92,17.28';   // left → RIGHT
-    return '15.08,6.72 7.16,12 15.08,17.28';                              // right → LEFT
-  })();
-
   return (
     <>
       <svg
@@ -100,9 +91,9 @@ function MinimapEndpointMarkers({
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_RING_COLOR} opacity="0.85" />
-        <circle cx="12" cy="12" r="5.1" fill={START_MARKER_CENTER_COLOR} opacity="0.96" />
-        <polygon points={entryArrow} fill={START_MARKER_RING_COLOR} opacity="0.9" />
+        <circle cx="12" cy="12" r="9.8" fill={START_MARKER_COLOR} opacity="0.96" />
+        <line x1="8.7" y1="17.7" x2="8.7" y2="5.5" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <path d="M9.7 5.5 H17.8 L16.1 9.3 L17.8 12.8 H9.7 Z" fill="white" />
       </svg>
       <svg
         viewBox="0 0 24 24"
@@ -111,9 +102,11 @@ function MinimapEndpointMarkers({
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
-        <line x1="8.8" y1="17" x2="8.8" y2="6.4" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-        <path d="M10 6.3 H16.8 L14.8 9.1 L16.8 11.9 H10 Z" fill="white" />
+        <circle cx="12" cy="12" r="9.8" fill="white" stroke={FINISH_MARKER_STROKE_COLOR} strokeWidth="1.35" />
+        <line x1="8" y1="18" x2="8" y2="5.2" stroke={FINISH_MARKER_STROKE_COLOR} strokeWidth="1.9" strokeLinecap="round" />
+        <rect x="9.1" y="5.2" width="8.4" height="6.2" fill="white" stroke={FINISH_MARKER_STROKE_COLOR} strokeWidth="0.85" />
+        <rect x="9.1" y="5.2" width="4.2" height="3.1" fill={FINISH_CHECK_COLOR} />
+        <rect x="13.3" y="8.3" width="4.2" height="3.1" fill={FINISH_CHECK_COLOR} />
       </svg>
     </>
   );
@@ -284,7 +277,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     const pathFromPlayer = currentSolution;
     if (pathFromPlayer.length <= 1) return;
 
-    // Include the current cell so the green hint is anchored at the player's
+    // Include the current cell so the amber hint is anchored at the player's
     // position and remains followable until completed or abandoned.
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
   }, [isHintActive, maze, currentSolution]);

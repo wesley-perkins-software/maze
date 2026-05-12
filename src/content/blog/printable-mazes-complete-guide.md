@@ -56,7 +56,7 @@ When printing 20–30 copies of the same maze, a few strategies save time and in
 
 ## Answer Keys
 
-Every maze on MazeThis has a solution built in. To access it, use the "Show Solution" button while viewing a maze online — the solution path is highlighted in green.
+Every maze on MazeThis has a solution built in. To access it, use the "Show Solution" button while viewing a maze online — the solution path is highlighted in purple.
 
 For printed mazes, you can print the solution as a teacher key:
 1. Click "Show Solution" to reveal the path
