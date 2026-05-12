@@ -265,22 +265,14 @@ export function MazeRenderer({
 
       {showEndpointMarkers && (
         <g style={{ filter: 'drop-shadow(0 1px 2px rgba(15, 23, 42, 0.24))' }}>
-          {/* Entry marker — hollow red-coral starting flag */}
+          {/* Entry marker — red-coral entrance gate */}
           <circle cx={entryMx} cy={entryMy} r={markerBadgeR} fill={MARKER_BADGE_COLOR} />
-          <line
-            x1={entryMx - markerR * 0.18}
-            y1={entryMy + markerR * 0.52}
-            x2={entryMx - markerR * 0.18}
-            y2={entryMy - markerR * 0.56}
+          <path
+            d={`M${entryMx - markerR * 0.46},${entryMy + markerR * 0.5} L${entryMx - markerR * 0.46},${entryMy - markerR * 0.42} L${entryMx + markerR * 0.46},${entryMy - markerR * 0.42} L${entryMx + markerR * 0.46},${entryMy + markerR * 0.5}`}
+            fill="none"
             stroke={START_MARKER_COLOR}
             strokeWidth={Math.max(1, markerR * 0.18)}
             strokeLinecap="round"
-          />
-          <polygon
-            points={`${entryMx - markerR * 0.18},${entryMy - markerR * 0.56} ${entryMx + markerR * 0.56},${entryMy - markerR * 0.28} ${entryMx + markerR * 0.26},${entryMy + markerR * 0.02} ${entryMx - markerR * 0.18},${entryMy + markerR * 0.02}`}
-            fill="none"
-            stroke={START_MARKER_COLOR}
-            strokeWidth={Math.max(1, markerR * 0.16)}
             strokeLinejoin="round"
           />
 

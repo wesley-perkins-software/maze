@@ -51,11 +51,9 @@ function escapeAttr(value: string): string {
 }
 
 function renderStartMarker(cx: number, cy: number, r: number, color: string): string {
-  const poleX = cx - r * 0.18;
   const escapedColor = escapeAttr(color);
   return `<circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" fill="${MARKER_BADGE_COLOR}"/>
-  <line x1="${fmt(poleX)}" y1="${fmt(cy + r * 0.52)}" x2="${fmt(poleX)}" y2="${fmt(cy - r * 0.56)}" stroke="${escapedColor}" stroke-width="${fmt(Math.max(1, r * 0.18))}" stroke-linecap="round"/>
-  <polygon points="${fmt(poleX)},${fmt(cy - r * 0.56)} ${fmt(cx + r * 0.56)},${fmt(cy - r * 0.28)} ${fmt(cx + r * 0.26)},${fmt(cy + r * 0.02)} ${fmt(poleX)},${fmt(cy + r * 0.02)}" fill="none" stroke="${escapedColor}" stroke-width="${fmt(Math.max(1, r * 0.16))}" stroke-linejoin="round"/>`;
+  <path d="M${fmt(cx - r * 0.46)},${fmt(cy + r * 0.5)} L${fmt(cx - r * 0.46)},${fmt(cy - r * 0.42)} L${fmt(cx + r * 0.46)},${fmt(cy - r * 0.42)} L${fmt(cx + r * 0.46)},${fmt(cy + r * 0.5)}" fill="none" stroke="${escapedColor}" stroke-width="${fmt(Math.max(1, r * 0.18))}" stroke-linecap="round" stroke-linejoin="round"/>`;
 }
 
 function renderFinishMarker(cx: number, cy: number, r: number, color: string): string {
