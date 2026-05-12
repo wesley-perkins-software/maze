@@ -2,6 +2,7 @@ import { writeFileSync, mkdirSync } from 'fs';
 import { generateMaze } from '../src/lib/maze/generator';
 import type { MazeData } from '../src/types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../src/types/maze';
+import { FINISH_MARKER_COLOR, START_MARKER_COLOR } from '../src/lib/maze/markerStyles';
 
 function renderSVG(maze: MazeData, cellSize = 10): string {
   const { width, height, grid, entry, exit, solution } = maze;
@@ -39,8 +40,13 @@ function renderSVG(maze: MazeData, cellSize = 10): string {
   <rect width="${W}" height="${H}" fill="white"/>
   <polyline points="${sol}" stroke="#ef4444" stroke-width="${cellSize * 0.18}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
   <path d="${walls.join(' ')}" stroke="#1e293b" stroke-width="1.5" stroke-linecap="square" fill="none"/>
-  <circle cx="${entryCx}" cy="${entryCy}" r="${r}" fill="#22c55e" opacity="0.9"/>
-  <circle cx="${exitCx}"  cy="${exitCy}"  r="${r}" fill="#f59e0b" opacity="0.9"/>
+  <circle cx="${entryCx}" cy="${entryCy}" r="${r}" fill="white"/>
+  <circle cx="${entryCx}" cy="${entryCy}" r="${r * 0.78}" fill="${START_MARKER_COLOR}" opacity="0.96"/>
+  <circle cx="${entryCx}" cy="${entryCy}" r="${r * 0.42}" fill="white"/>
+  <circle cx="${exitCx}" cy="${exitCy}" r="${r}" fill="white"/>
+  <circle cx="${exitCx}"  cy="${exitCy}"  r="${r * 0.78}" fill="${FINISH_MARKER_COLOR}" opacity="0.92"/>
+  <line x1="${exitCx - r * 0.08}" y1="${exitCy + r * 0.46}" x2="${exitCx - r * 0.08}" y2="${exitCy - r * 0.56}" stroke="white" stroke-width="${Math.max(1, r * 0.16)}" stroke-linecap="round"/>
+  <polygon points="${exitCx - r * 0.08},${exitCy - r * 0.56} ${exitCx + r * 0.52},${exitCy - r * 0.26} ${exitCx - r * 0.08},${exitCy + r * 0.05}" fill="white" opacity="0.95"/>
 </svg>`;
 }
 
