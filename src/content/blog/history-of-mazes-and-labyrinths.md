@@ -83,7 +83,7 @@ Part of it is primal. Navigation is survival. The ability to find the exit — t
 
 Part of it is the Minotaur — the monster at the center. Almost every maze-shaped story has a center to reach and a thing to confront there. The maze is the journey toward the encounter, and the encounter requires that you earn your way to it by navigating successfully.
 
-And part of it is the thread: Ariadne's thread, the pencil line on paper, the green trail on screen. The act of marking where you've been, of externalizing your memory to make the problem solvable, is a deeply human cognitive move. We extend our minds into the world to solve problems we couldn't solve in our heads alone.
+And part of it is the thread: Ariadne's thread, the pencil line on paper, the blue trail on screen. The act of marking where you've been, of externalizing your memory to make the problem solvable, is a deeply human cognitive move. We extend our minds into the world to solve problems we couldn't solve in our heads alone.
 
 That combination — ancient fear, structured journey, clever tool use — may explain why the maze has been with us for as long as we've been making things.
 

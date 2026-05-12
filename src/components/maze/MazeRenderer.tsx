@@ -9,11 +9,13 @@ import { indexToPoint } from '../../lib/maze/utils';
 
 const PLAYER_PATH_COLOR = '#3b82f6';
 const PLAYER_MARKER_COLOR = '#2563eb';
-const START_MARKER_RING_COLOR = '#64748b';
-const START_MARKER_CENTER_COLOR = '#ffffff';
-const FINISH_MARKER_COLOR = '#f59e0b';
-const SOLUTION_PATH_COLOR = '#22c55e';
-const HINT_PATH_COLOR = '#22c55e';
+const START_MARKER_COLOR = '#16a34a';
+const START_FLAG_COLOR = '#ffffff';
+const FINISH_MARKER_BADGE_COLOR = '#ffffff';
+const FINISH_MARKER_STROKE_COLOR = '#334155';
+const FINISH_CHECK_COLOR = '#111827';
+const SOLUTION_PATH_COLOR = '#8b5cf6';
+const HINT_PATH_COLOR = '#f59e0b';
 
 export interface MazeRendererProps {
   maze: MazeData;
@@ -108,28 +110,6 @@ export function MazeRenderer({
   const entryMy = outsideY(entry, entryCy);
   const exitMx  = outsideX(exit,  exitCx);
   const exitMy  = outsideY(exit,  exitCy);
-
-  // ── Entry arrow — points INTO the maze from whichever perimeter wall ─────────
-  const entryArrowPoints = (() => {
-    const cx = entryMx;
-    const cy = entryMy;
-    const r  = markerR;
-
-    if (entry.y === 0) {
-      // Top wall → arrow points DOWN
-      return `${cx - r*0.6},${cy - r*0.35} ${cx + r*0.6},${cy - r*0.35} ${cx},${cy + r*0.55}`;
-    }
-    if (entry.y === height - 1) {
-      // Bottom wall → arrow points UP
-      return `${cx - r*0.6},${cy + r*0.35} ${cx + r*0.6},${cy + r*0.35} ${cx},${cy - r*0.55}`;
-    }
-    if (entry.x === 0) {
-      // Left wall → arrow points RIGHT
-      return `${cx - r*0.35},${cy - r*0.6} ${cx + r*0.55},${cy} ${cx - r*0.35},${cy + r*0.6}`;
-    }
-    // Right wall → arrow points LEFT
-    return `${cx + r*0.35},${cy - r*0.6} ${cx - r*0.55},${cy} ${cx + r*0.35},${cy + r*0.6}`;
-  })();
 
   const cellCenter = (idx: number) => {
     const { x, y } = indexToPoint(idx, width);
@@ -238,7 +218,7 @@ export function MazeRenderer({
         fill="none"
       />
 
-      {/* Solution path — green solid guidance from the current player position */}
+      {/* Solution path — purple solid guidance from the current player position */}
       {solutionPoints && (
         <polyline
           points={solutionPoints}
@@ -251,7 +231,7 @@ export function MazeRenderer({
         />
       )}
 
-      {/* Hint path — green dashed temporary guidance from the current player position */}
+      {/* Hint path — amber dashed temporary guidance from the current player position */}
       {visibleHintCells.length >= 2 && (
         <polyline
           points={visibleHintCells.map(cellCenter).join(' ')}
@@ -281,37 +261,51 @@ export function MazeRenderer({
 
       {showEndpointMarkers && (
         <>
-          {/* Entry marker — neutral ring with directional play arrow */}
-          <circle cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_RING_COLOR} opacity={0.85} />
-          <circle cx={entryMx} cy={entryMy} r={markerR * 0.58} fill={START_MARKER_CENTER_COLOR} opacity={0.96} />
-          {markerR >= 5 && (
-            <polygon
-              points={entryArrowPoints}
-              fill={START_MARKER_RING_COLOR}
-              opacity={0.9}
-            />
-          )}
-
-          {/* Exit marker — orange circle with flag pennant */}
-          <circle cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
-          {markerR >= 5 && (
+          {/* Start marker — green go flag inside the existing badge family */}
+          <circle cx={entryMx} cy={entryMy} r={markerR} fill="white" opacity={0.98} />
+          <circle cx={entryMx} cy={entryMy} r={markerR * 0.82} fill={START_MARKER_COLOR} opacity={0.96} />
+          {markerR >= 3 && (
             <>
-              {/* Flag pole */}
               <line
-                x1={exitMx - markerR * 0.08}
-                y1={exitMy + markerR * 0.52}
-                x2={exitMx - markerR * 0.08}
-                y2={exitMy - markerR * 0.62}
-                stroke="white"
-                strokeWidth={Math.max(1, markerR * 0.17)}
+                x1={entryMx - markerR * 0.28}
+                y1={entryMy + markerR * 0.48}
+                x2={entryMx - markerR * 0.28}
+                y2={entryMy - markerR * 0.54}
+                stroke={START_FLAG_COLOR}
+                strokeWidth={Math.max(1, markerR * 0.16)}
                 strokeLinecap="round"
               />
-              {/* Flag pennant */}
-              <polygon
-                points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.62} ${exitMx + markerR * 0.58},${exitMy - markerR * 0.28} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.06}`}
-                fill="white"
-                opacity={0.95}
+              <path
+                d={`M${entryMx - markerR * 0.2},${entryMy - markerR * 0.54} H${entryMx + markerR * 0.48} L${entryMx + markerR * 0.34},${entryMy - markerR * 0.22} L${entryMx + markerR * 0.48},${entryMy + markerR * 0.08} H${entryMx - markerR * 0.2} Z`}
+                fill={START_FLAG_COLOR}
               />
+            </>
+          )}
+
+          {/* Finish marker — simplified black/white checkered flag */}
+          <circle cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_BADGE_COLOR} opacity={0.98} />
+          <circle
+            cx={exitMx}
+            cy={exitMy}
+            r={markerR * 0.82}
+            fill={FINISH_MARKER_BADGE_COLOR}
+            stroke={FINISH_MARKER_STROKE_COLOR}
+            strokeWidth={Math.max(1, markerR * 0.1)}
+          />
+          {markerR >= 3 && (
+            <>
+              <line
+                x1={exitMx - markerR * 0.34}
+                y1={exitMy + markerR * 0.5}
+                x2={exitMx - markerR * 0.34}
+                y2={exitMy - markerR * 0.56}
+                stroke={FINISH_MARKER_STROKE_COLOR}
+                strokeWidth={Math.max(1, markerR * 0.14)}
+                strokeLinecap="round"
+              />
+              <rect x={exitMx - markerR * 0.25} y={exitMy - markerR * 0.56} width={markerR * 0.7} height={markerR * 0.52} fill="white" stroke={FINISH_MARKER_STROKE_COLOR} strokeWidth={Math.max(0.6, markerR * 0.07)} />
+              <rect x={exitMx - markerR * 0.25} y={exitMy - markerR * 0.56} width={markerR * 0.35} height={markerR * 0.26} fill={FINISH_CHECK_COLOR} />
+              <rect x={exitMx + markerR * 0.1} y={exitMy - markerR * 0.3} width={markerR * 0.35} height={markerR * 0.26} fill={FINISH_CHECK_COLOR} />
             </>
           )}
         </>

@@ -136,7 +136,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
     const pathFromPlayer = currentSolution;
     if (pathFromPlayer.length <= 1) return;
 
-    // Include the current cell so the green hint is anchored at the player's
+    // Include the current cell so the amber hint is anchored at the player's
     // position and remains followable until completed or abandoned.
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
   }, [isHintActive, maze, currentSolution]);
@@ -209,7 +209,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
             onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
             className={`text-xs px-3 py-1.5 rounded-md border font-medium transition-colors ${
               state.solutionVisible
-                ? 'bg-green-50 border-green-300 text-green-700'
+                ? 'bg-violet-50 border-violet-300 text-violet-700'
                 : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'
             }`}
             aria-pressed={state.solutionVisible}

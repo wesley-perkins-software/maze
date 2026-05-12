@@ -87,7 +87,7 @@ The transition between strategies — knowing when to shift approaches — is wh
 
 ## A Note on Digital vs. Paper Mazes
 
-Digital maze-solving (like on MazeThis) adds one interesting dynamic: you can see your *trail* — the path you've already taken — visualized as a green line. This makes dead-end identification intuitive: when you can see a branch that ends in a colored trail with no exit, it's visually obvious that it's a dead end.
+Digital maze-solving (like on MazeThis) adds one interesting dynamic: you can see your *trail* — the path you've already taken — visualized as a blue line. This makes dead-end identification intuitive: when you can see a branch that ends in a colored trail with no exit, it's visually obvious that it's a dead end.
 
 On paper, you have to create this trail information yourself by marking the path with a pencil. Many experienced paper maze-solvers use two colors: one for the main attempt and one for the solution once they've found it.
 
