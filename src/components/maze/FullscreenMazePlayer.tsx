@@ -10,7 +10,6 @@ import { solveMazeFrom } from '../../lib/maze/solver';
 import {
   FINISH_MARKER_COLOR,
   MARKER_BADGE_COLOR,
-  START_MARKER_CENTER_COLOR,
   START_MARKER_COLOR,
 } from '../../lib/maze/markerStyles';
 
@@ -94,9 +93,8 @@ function MinimapEndpointMarkers({
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill={MARKER_BADGE_COLOR} />
-        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_COLOR} opacity="0.96" />
-        <circle cx="12" cy="12" r="4.8" fill={START_MARKER_CENTER_COLOR} />
-        <circle cx="12" cy="12" r="1.8" fill={START_MARKER_COLOR} opacity="0.96" />
+        <line x1="8.8" y1="17" x2="8.8" y2="6.4" stroke={START_MARKER_COLOR} strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M10 6.3 L16.8 9.1 L14 11.9 H10 Z" fill="none" stroke={START_MARKER_COLOR} strokeWidth="1.8" strokeLinejoin="round" />
       </svg>
       <svg
         viewBox="0 0 24 24"

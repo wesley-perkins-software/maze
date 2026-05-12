@@ -41,8 +41,8 @@ function renderSVG(maze: MazeData, cellSize = 10): string {
   <polyline points="${sol}" stroke="#ef4444" stroke-width="${cellSize * 0.18}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
   <path d="${walls.join(' ')}" stroke="#1e293b" stroke-width="1.5" stroke-linecap="square" fill="none"/>
   <circle cx="${entryCx}" cy="${entryCy}" r="${r}" fill="white"/>
-  <circle cx="${entryCx}" cy="${entryCy}" r="${r * 0.78}" fill="${START_MARKER_COLOR}" opacity="0.96"/>
-  <circle cx="${entryCx}" cy="${entryCy}" r="${r * 0.42}" fill="white"/>
+  <line x1="${entryCx - r * 0.18}" y1="${entryCy + r * 0.52}" x2="${entryCx - r * 0.18}" y2="${entryCy - r * 0.56}" stroke="${START_MARKER_COLOR}" stroke-width="${Math.max(1, r * 0.18)}" stroke-linecap="round"/>
+  <polygon points="${entryCx - r * 0.18},${entryCy - r * 0.56} ${entryCx + r * 0.56},${entryCy - r * 0.28} ${entryCx + r * 0.26},${entryCy + r * 0.02} ${entryCx - r * 0.18},${entryCy + r * 0.02}" fill="none" stroke="${START_MARKER_COLOR}" stroke-width="${Math.max(1, r * 0.16)}" stroke-linejoin="round"/>
   <circle cx="${exitCx}" cy="${exitCy}" r="${r}" fill="white"/>
   <circle cx="${exitCx}"  cy="${exitCy}"  r="${r * 0.78}" fill="${FINISH_MARKER_COLOR}" opacity="0.92"/>
   <line x1="${exitCx - r * 0.08}" y1="${exitCy + r * 0.46}" x2="${exitCx - r * 0.08}" y2="${exitCy - r * 0.56}" stroke="white" stroke-width="${Math.max(1, r * 0.16)}" stroke-linecap="round"/>

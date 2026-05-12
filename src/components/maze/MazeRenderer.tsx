@@ -9,7 +9,6 @@ import { indexToPoint } from '../../lib/maze/utils';
 import {
   FINISH_MARKER_COLOR,
   MARKER_BADGE_COLOR,
-  START_MARKER_CENTER_COLOR,
   START_MARKER_COLOR,
 } from '../../lib/maze/markerStyles';
 
@@ -266,35 +265,44 @@ export function MazeRenderer({
 
       {showEndpointMarkers && (
         <g style={{ filter: 'drop-shadow(0 1px 2px rgba(15, 23, 42, 0.24))' }}>
-          {/* Entry marker — red-coral origin badge */}
+          {/* Entry marker — hollow red-coral starting flag */}
           <circle cx={entryMx} cy={entryMy} r={markerBadgeR} fill={MARKER_BADGE_COLOR} />
-          <circle cx={entryMx} cy={entryMy} r={markerInnerR} fill={START_MARKER_COLOR} opacity={0.96} />
-          <circle cx={entryMx} cy={entryMy} r={markerR * 0.42} fill={START_MARKER_CENTER_COLOR} />
-          <circle cx={entryMx} cy={entryMy} r={markerR * 0.16} fill={START_MARKER_COLOR} opacity={0.96} />
+          <line
+            x1={entryMx - markerR * 0.18}
+            y1={entryMy + markerR * 0.52}
+            x2={entryMx - markerR * 0.18}
+            y2={entryMy - markerR * 0.56}
+            stroke={START_MARKER_COLOR}
+            strokeWidth={Math.max(1, markerR * 0.18)}
+            strokeLinecap="round"
+          />
+          <polygon
+            points={`${entryMx - markerR * 0.18},${entryMy - markerR * 0.56} ${entryMx + markerR * 0.56},${entryMy - markerR * 0.28} ${entryMx + markerR * 0.26},${entryMy + markerR * 0.02} ${entryMx - markerR * 0.18},${entryMy + markerR * 0.02}`}
+            fill="none"
+            stroke={START_MARKER_COLOR}
+            strokeWidth={Math.max(1, markerR * 0.16)}
+            strokeLinejoin="round"
+          />
 
-          {/* Exit marker — amber circle with flag pennant */}
+          {/* Exit marker — amber circle with filled flag pennant */}
           <circle cx={exitMx} cy={exitMy} r={markerBadgeR} fill={MARKER_BADGE_COLOR} />
           <circle cx={exitMx} cy={exitMy} r={markerInnerR} fill={FINISH_MARKER_COLOR} opacity={0.92} />
-          {markerR >= 5 && (
-            <>
-              {/* Flag pole */}
-              <line
-                x1={exitMx - markerR * 0.08}
-                y1={exitMy + markerR * 0.46}
-                x2={exitMx - markerR * 0.08}
-                y2={exitMy - markerR * 0.56}
-                stroke="white"
-                strokeWidth={Math.max(1, markerR * 0.16)}
-                strokeLinecap="round"
-              />
-              {/* Flag pennant */}
-              <polygon
-                points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.56} ${exitMx + markerR * 0.52},${exitMy - markerR * 0.26} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.05}`}
-                fill="white"
-                opacity={0.95}
-              />
-            </>
-          )}
+          {/* Flag pole */}
+          <line
+            x1={exitMx - markerR * 0.08}
+            y1={exitMy + markerR * 0.46}
+            x2={exitMx - markerR * 0.08}
+            y2={exitMy - markerR * 0.56}
+            stroke="white"
+            strokeWidth={Math.max(1, markerR * 0.16)}
+            strokeLinecap="round"
+          />
+          {/* Flag pennant */}
+          <polygon
+            points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.56} ${exitMx + markerR * 0.52},${exitMy - markerR * 0.26} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.05}`}
+            fill="white"
+            opacity={0.95}
+          />
         </g>
       )}
 
