@@ -198,7 +198,7 @@ export function MazeRenderer({
 
   const pr    = playerMarkerRadius ?? cellSize * 0.32;
   const glowR = playerMarkerRadius ? playerMarkerRadius * 1.6 : cellSize * 0.5;
-  const solutionStrokeWidth = Math.max(2, cellSize * 0.18);
+  const solutionStrokeWidth = Math.max(2, cellSize * 0.155);
   const hintStrokeWidth = Math.max(1.5, cellSize * 0.14);
   const hintDashLength = Math.max(4, cellSize * 0.28);
   const hideTrailForGuidance = Boolean(solutionPoints) || visibleHintCells.length >= 2;
@@ -237,7 +237,7 @@ export function MazeRenderer({
         fill="none"
       />
 
-      {/* Solution path — violet solid guidance from the current player position */}
+      {/* Solution path — red-orange solid guidance from the current player position */}
       {solutionPoints && (
         <polyline
           points={solutionPoints}
@@ -246,11 +246,11 @@ export function MazeRenderer({
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity={0.85}
+          opacity={0.75}
         />
       )}
 
-      {/* Hint path — violet dashed temporary guidance from the current player position */}
+      {/* Hint path — red-orange dashed temporary guidance from the current player position */}
       {visibleHintCells.length >= 2 && (
         <polyline
           points={visibleHintCells.map(cellCenter).join(' ')}
@@ -260,7 +260,7 @@ export function MazeRenderer({
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeDasharray={`${hintDashLength} ${hintDashLength}`}
-          opacity={0.85}
+          opacity={0.88}
         />
       )}
 
