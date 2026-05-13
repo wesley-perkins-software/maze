@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode, type TouchEvent } from 'react';
 import type { GameAction, Direction } from '../../lib/gameplay/types';
 
+const HOLD_DELAY_MS = 240;
+const REPEAT_INTERVAL_MS = 100;
+
 interface DPadProps {
   dispatch: (action: GameAction) => void;
   isActive: boolean;
@@ -8,28 +11,28 @@ interface DPadProps {
 
 function ChevronUp() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="18 15 12 9 6 15" />
     </svg>
   );
 }
 function ChevronDown() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }
 function ChevronLeft() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="15 18 9 12 15 6" />
     </svg>
   );
 }
 function ChevronRight() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="9 6 15 12 9 18" />
     </svg>
   );
@@ -37,20 +40,40 @@ function ChevronRight() {
 
 export function DPad({ dispatch, isActive }: DPadProps) {
   const [activeDirection, setActiveDirection] = useState<Direction | null>(null);
-  const lastDirectionRef = useRef<Direction | null>(null);
   const touchActiveRef = useRef(false);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const repeatTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const heldDirectionRef = useRef<Direction | null>(null);
 
-  // Defined as function declarations so they're hoisted and accessible inside useEffect.
-  function dispatchDirection(direction: Direction | null) {
-    if (!direction || direction === lastDirectionRef.current) return;
-    lastDirectionRef.current = direction;
-    setActiveDirection(direction);
-    dispatch({ type: 'RUN', direction });
+  function clearRepeatTimers() {
+    if (holdTimerRef.current !== null) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    if (repeatTimerRef.current !== null) {
+      clearInterval(repeatTimerRef.current);
+      repeatTimerRef.current = null;
+    }
   }
 
-  function clearInteraction() {
-    touchActiveRef.current = false;
-    lastDirectionRef.current = null;
+  function startHold(direction: Direction) {
+    heldDirectionRef.current = direction;
+    setActiveDirection(direction);
+    dispatch({ type: 'MOVE', direction });
+    clearRepeatTimers();
+    holdTimerRef.current = setTimeout(() => {
+      holdTimerRef.current = null;
+      repeatTimerRef.current = setInterval(() => {
+        if (heldDirectionRef.current) {
+          dispatch({ type: 'MOVE', direction: heldDirectionRef.current });
+        }
+      }, REPEAT_INTERVAL_MS);
+    }, HOLD_DELAY_MS);
+  }
+
+  function stopHold() {
+    clearRepeatTimers();
+    heldDirectionRef.current = null;
     setActiveDirection(null);
   }
 
@@ -66,11 +89,20 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   function handleTouchStart(e: TouchEvent<HTMLButtonElement>, direction: Direction) {
     e.preventDefault();
     touchActiveRef.current = true;
-    dispatchDirection(direction);
+    startHold(direction);
   }
 
-  // useEffect must be called unconditionally (hooks rules). When inactive the guard
-  // skips listener registration, and the cleanup is a no-op.
+  function handleMouseDown(direction: Direction) {
+    if (touchActiveRef.current) return;
+    startHold(direction);
+  }
+
+  // Unmount-only cleanup to cancel any in-flight timers.
+  useEffect(() => () => clearRepeatTimers(), []);
+
+  // Window-level event listeners. No dep array — re-registers each render,
+  // which is safe because it only runs after the DOM has committed.
+  // Timers are NOT cleared in this cleanup path (only on unmount above).
   useEffect(() => {
     if (!isActive) return;
 
@@ -79,22 +111,34 @@ export function DPad({ dispatch, isActive }: DPadProps) {
       e.preventDefault();
       const touch = e.touches[0];
       if (!touch) return;
-      dispatchDirection(getDirectionAtPoint(touch.clientX, touch.clientY));
+      const dir = getDirectionAtPoint(touch.clientX, touch.clientY);
+      if (dir && dir !== heldDirectionRef.current) {
+        startHold(dir);
+      }
     }
 
     function onTouchEnd() {
       if (!touchActiveRef.current) return;
-      clearInteraction();
+      touchActiveRef.current = false;
+      stopHold();
+    }
+
+    function onMouseUp() {
+      if (!touchActiveRef.current) {
+        stopHold();
+      }
     }
 
     window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    window.addEventListener('mouseup', onMouseUp, { passive: true });
 
     return () => {
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('touchcancel', onTouchEnd);
+      window.removeEventListener('mouseup', onMouseUp);
     };
   });
 
@@ -102,14 +146,11 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   if (!isActive) return null;
 
   const baseBtnClass =
-    'flex items-center justify-center w-10 h-10 rounded-full ' +
-    'bg-white border border-slate-200 text-slate-500 shadow-sm ' +
+    'flex items-center justify-center w-12 h-12 rounded-full ' +
+    'bg-white border border-[var(--color-border)] text-slate-500 shadow-sm ' +
     'select-none touch-none ' +
-    'transition-all duration-75 cursor-pointer';
-
-  function handleMouseDown(direction: Direction) {
-    dispatchDirection(direction);
-  }
+    'transition-all duration-75 cursor-pointer ' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1';
 
   function makeButton(dir: Direction, icon: ReactNode, label: string) {
     const isPressed = activeDirection === dir;
@@ -120,8 +161,8 @@ export function DPad({ dispatch, isActive }: DPadProps) {
         data-dir={dir}
         className={`${baseBtnClass} ${
           isPressed
-            ? 'bg-blue-500 border-blue-400 text-white shadow-inner scale-95'
-            : 'active:bg-blue-500 active:border-blue-400 active:text-white active:scale-95 active:shadow-inner'
+            ? 'bg-[#F1EFE8] border-[var(--color-border-strong)] text-slate-700 shadow-none scale-[0.97]'
+            : 'active:bg-[#F1EFE8] active:border-[var(--color-border-strong)] active:text-slate-700 active:scale-[0.97] active:shadow-none'
         }`}
         onMouseDown={() => handleMouseDown(dir)}
         onTouchStart={(e) => handleTouchStart(e, dir)}
@@ -133,14 +174,14 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   return (
     <div
-      className="flex flex-col items-center gap-1 touch-none"
+      className="flex flex-col items-center gap-3 touch-none"
       role="group"
       aria-label="Directional controls"
     >
       <div>{makeButton('N', <ChevronUp />, 'Move up')}</div>
-      <div className="flex gap-1">
+      <div className="flex gap-3">
         {makeButton('W', <ChevronLeft />, 'Move left')}
-        <div className="w-10 h-10" aria-hidden="true" />
+        <div className="w-12 h-12" aria-hidden="true" />
         {makeButton('E', <ChevronRight />, 'Move right')}
       </div>
       <div>{makeButton('S', <ChevronDown />, 'Move down')}</div>
