@@ -30,7 +30,7 @@ const CUSTOM_RANGE = { min: 5, max: 100 };
 
 const PREVIEW_PADDING = 6;
 
-function getPreviewMarkerPosition(
+export function getPreviewMarkerPosition(
   maze: MazeData,
   point: Point,
   cellSize: number,
@@ -42,14 +42,14 @@ function getPreviewMarkerPosition(
   const cellCenterY = PREVIEW_PADDING + point.y * cellSize + cellSize / 2;
 
   const markerX = point.x === 0
-    ? PREVIEW_PADDING / 2
+    ? PREVIEW_PADDING
     : point.x === maze.width - 1
-      ? totalW - PREVIEW_PADDING / 2
+      ? totalW - PREVIEW_PADDING
       : cellCenterX;
   const markerY = point.y === 0
-    ? PREVIEW_PADDING / 2
+    ? PREVIEW_PADDING
     : point.y === maze.height - 1
-      ? totalH - PREVIEW_PADDING / 2
+      ? totalH - PREVIEW_PADDING
       : cellCenterY;
 
   return {
