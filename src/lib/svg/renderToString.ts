@@ -29,7 +29,7 @@ const DEFAULTS = {
   wallThickness: 2,
   padding: 4,
   showSolution: false,
-  solutionColor: '#8b5cf6',
+  solutionColor: '#E03B24',
   bgColor: '#ffffff',
   wallColor: '#1e293b',
   entryColor: '#0d9488',

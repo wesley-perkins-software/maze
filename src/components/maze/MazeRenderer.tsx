@@ -11,8 +11,8 @@ const PLAYER_PATH_COLOR = '#3b82f6';
 const PLAYER_MARKER_COLOR = '#2563eb';
 const START_MARKER_COLOR = '#0d9488';
 const FINISH_MARKER_COLOR = '#f59e0b';
-const SOLUTION_PATH_COLOR = '#8b5cf6';
-const HINT_PATH_COLOR = '#8b5cf6';
+const SOLUTION_PATH_COLOR = '#E03B24';
+const HINT_PATH_COLOR = '#E03B24';
 
 export interface MazeRendererProps {
   maze: MazeData;
