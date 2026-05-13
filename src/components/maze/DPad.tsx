@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode, type TouchEvent } from 'react';
 import type { GameAction, Direction } from '../../lib/gameplay/types';
 
-const HOLD_DELAY_MS = 450;
-const REPEAT_INTERVAL_MS = 140;
-
 interface DPadProps {
   dispatch: (action: GameAction) => void;
   isActive: boolean;
@@ -42,36 +39,18 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   const [activeDirection, setActiveDirection] = useState<Direction | null>(null);
   const touchActiveRef = useRef(false);
   const touchResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const repeatTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const heldDirectionRef = useRef<Direction | null>(null);
+  // Tracks the last dispatched direction so touchmove doesn't re-fire for the
+  // same button while the finger is still held down.
+  const lastDirectionRef = useRef<Direction | null>(null);
 
-  function clearRepeatTimers() {
-    if (holdTimerRef.current !== null) {
-      clearTimeout(holdTimerRef.current);
-      holdTimerRef.current = null;
-    }
-    if (repeatTimerRef.current !== null) {
-      clearInterval(repeatTimerRef.current);
-      repeatTimerRef.current = null;
-    }
-  }
-
-  function startHold(direction: Direction) {
-    heldDirectionRef.current = direction;
+  function run(direction: Direction) {
+    lastDirectionRef.current = direction;
     setActiveDirection(direction);
-    dispatch({ type: 'MOVE', direction });
-    clearRepeatTimers();
-    repeatTimerRef.current = setInterval(() => {
-      if (heldDirectionRef.current) {
-        dispatch({ type: 'MOVE', direction: heldDirectionRef.current });
-      }
-    }, REPEAT_INTERVAL_MS);
+    dispatch({ type: 'RUN', direction });
   }
 
-  function stopHold() {
-    clearRepeatTimers();
-    heldDirectionRef.current = null;
+  function stopInteraction() {
+    lastDirectionRef.current = null;
     setActiveDirection(null);
   }
 
@@ -86,30 +65,26 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   function handleTouchStart(e: TouchEvent<HTMLButtonElement>, direction: Direction) {
     e.preventDefault();
-    // Cancel any pending reset from a previous touchend so rapid taps don't
-    // accidentally let a synthetic mousedown slip through.
+    // Cancel any pending reset so rapid taps don't let synthetic mousedown through.
     if (touchResetTimerRef.current !== null) {
       clearTimeout(touchResetTimerRef.current);
       touchResetTimerRef.current = null;
     }
     touchActiveRef.current = true;
-    startHold(direction);
+    run(direction);
   }
 
   function handleMouseDown(direction: Direction) {
     if (touchActiveRef.current) return;
-    startHold(direction);
+    run(direction);
   }
 
-  // Unmount-only cleanup to cancel any in-flight timers.
+  // Unmount-only cleanup.
   useEffect(() => () => {
-    clearRepeatTimers();
     if (touchResetTimerRef.current !== null) clearTimeout(touchResetTimerRef.current);
   }, []);
 
-  // Window-level event listeners. No dep array — re-registers each render,
-  // which is safe because it only runs after the DOM has committed.
-  // Timers are NOT cleared in this cleanup path (only on unmount above).
+  // Window-level listeners. No dep array — safe to re-register each render.
   useEffect(() => {
     if (!isActive) return;
 
@@ -119,15 +94,15 @@ export function DPad({ dispatch, isActive }: DPadProps) {
       const touch = e.touches[0];
       if (!touch) return;
       const dir = getDirectionAtPoint(touch.clientX, touch.clientY);
-      if (dir && dir !== heldDirectionRef.current) {
-        startHold(dir);
+      if (dir && dir !== lastDirectionRef.current) {
+        run(dir);
       }
     }
 
     function onTouchEnd() {
-      stopHold();
-      // Defer the flag reset so the synthetic mousedown/mouseup events that
-      // browsers dispatch ~0–300ms after touchend are still suppressed.
+      stopInteraction();
+      // Delay flag reset so synthetic mousedown (fired ~0–300ms after touchend)
+      // is still suppressed.
       if (touchResetTimerRef.current !== null) clearTimeout(touchResetTimerRef.current);
       touchResetTimerRef.current = setTimeout(() => {
         touchResetTimerRef.current = null;
@@ -136,9 +111,7 @@ export function DPad({ dispatch, isActive }: DPadProps) {
     }
 
     function onMouseUp() {
-      if (!touchActiveRef.current) {
-        stopHold();
-      }
+      if (!touchActiveRef.current) stopInteraction();
     }
 
     window.addEventListener('touchmove', onTouchMove, { passive: false });
@@ -184,10 +157,6 @@ export function DPad({ dispatch, isActive }: DPadProps) {
     );
   }
 
-  // Grid layout: 3×3, buttons 48px, center gap 28px → 124×124px total cluster.
-  // Up/Down sit in the narrow center column and overflow symmetrically into the
-  // empty corner cells; Left/Right do the same vertically. justifyItems/alignItems
-  // center keeps each button on the cross-axis regardless of cell size.
   return (
     <div
       role="group"
