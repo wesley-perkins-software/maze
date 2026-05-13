@@ -114,9 +114,24 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
 
   // ── Input handlers ───────────────────────────────────────────────────────────
   const isActive = state.status === 'playing' || state.status === 'idle';
-  useKeyboardInput(dispatch, isActive);
-  useTouchInput(svgRef, dispatch, isActive);
+  const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
 
+  const handleTap = useCallback((clientX: number, clientY: number) => {
+    if (!svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const padding = 6;
+    const totalW = maze.width * cellSize + padding * 2;
+    const totalH = maze.height * cellSize + padding * 2;
+    const svgX = (clientX - rect.left) * (totalW / rect.width);
+    const svgY = (clientY - rect.top) * (totalH / rect.height);
+    const cellX = Math.floor((svgX - padding) / cellSize);
+    const cellY = Math.floor((svgY - padding) / cellSize);
+    if (cellX < 0 || cellY < 0 || cellX >= maze.width || cellY >= maze.height) return;
+    dispatch({ type: 'TAP_MOVE', target: { x: cellX, y: cellY } });
+  }, [maze.width, maze.height, cellSize, dispatch]);
+
+  useKeyboardInput(dispatch, isActive);
+  useTouchInput(svgRef, dispatch, isActive, handleTap);
 
   const currentSolution = useMemo(() => {
     const startCell = getPathStartCell(maze, state.playerPosition);
@@ -141,7 +156,6 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
   }, [isHintActive, maze, currentSolution]);
 
-  const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
   const personalBest = maze.slug ? getPersonalBest(maze.slug) : null;
 
   return (
@@ -159,7 +173,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
       <div className="flex items-center justify-between w-full max-w-lg gap-3 px-1 flex-wrap">
         <div className="flex items-center gap-3">
           {state.status === 'idle' && (
-            <span className="text-sm text-slate-500">Use arrow keys, swipe, or tap controls to start</span>
+            <span className="text-sm text-slate-500">Tap the maze, swipe, or use arrow keys to start</span>
           )}
           {state.status === 'playing' && (
             <div className="flex items-center gap-2 text-slate-600 text-sm">
@@ -249,6 +263,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
           hintCells={state.hintCells}
           interactive={isActive}
           svgRef={svgRef}
+          onSvgClick={(e) => handleTap(e.clientX, e.clientY)}
         />
 
         {/* Paused overlay */}
@@ -289,7 +304,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
       <DPad dispatch={dispatch} isActive={isActive} />
 
       <p className="text-xs text-slate-400 text-center md:hidden" aria-hidden="true">
-        Tap controls or swipe to move
+        Tap maze, swipe, or use D-pad to move
       </p>
       <p className="text-xs text-slate-400 text-center hidden md:block" aria-hidden="true">
         Arrow keys or WASD to run

@@ -121,6 +121,39 @@ export function isExitStep(maze: MazeData, from: Point, direction: Direction): b
   return !(maze.grid[pointToIndex(from, maze.width)] & DIR_WALL[direction]);
 }
 
+/**
+ * Walks from `from` toward `target` in a straight line (same row or column),
+ * stopping at the first wall or when `target` is reached.
+ *
+ * Returns the cells entered (not including `from`), or an empty array if the
+ * first step is blocked. Returns null if `target` is diagonal — the caller
+ * should fall back to directional RUN behavior.
+ */
+export function computeTapPath(maze: MazeData, from: Point, target: Point): Point[] | null {
+  if (from.x === target.x && from.y === target.y) return [];
+
+  let direction: Direction;
+  if (from.y === target.y) {
+    direction = target.x > from.x ? 'E' : 'W';
+  } else if (from.x === target.x) {
+    direction = target.y > from.y ? 'S' : 'N';
+  } else {
+    return null;
+  }
+
+  const path: Point[] = [];
+  let pos = from;
+
+  while (canMove(maze, pos, direction)) {
+    pos = applyMove(pos, direction);
+    path.push({ ...pos });
+    if (pos.x === target.x && pos.y === target.y) break;
+    if (pos.x === maze.exit.x && pos.y === maze.exit.y) break;
+  }
+
+  return path;
+}
+
 const REVERSE_DIR: Record<Direction, Direction> = { N: 'S', S: 'N', E: 'W', W: 'E' };
 const ALL_DIRS: Direction[] = ['N', 'E', 'S', 'W'];
 
