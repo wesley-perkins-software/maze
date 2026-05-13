@@ -41,6 +41,7 @@ function ChevronRight() {
 export function DPad({ dispatch, isActive }: DPadProps) {
   const [activeDirection, setActiveDirection] = useState<Direction | null>(null);
   const touchActiveRef = useRef(false);
+  const touchResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const repeatTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const heldDirectionRef = useRef<Direction | null>(null);
@@ -88,6 +89,12 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   function handleTouchStart(e: TouchEvent<HTMLButtonElement>, direction: Direction) {
     e.preventDefault();
+    // Cancel any pending reset from a previous touchend so rapid taps don't
+    // accidentally let a synthetic mousedown slip through.
+    if (touchResetTimerRef.current !== null) {
+      clearTimeout(touchResetTimerRef.current);
+      touchResetTimerRef.current = null;
+    }
     touchActiveRef.current = true;
     startHold(direction);
   }
@@ -98,7 +105,10 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   }
 
   // Unmount-only cleanup to cancel any in-flight timers.
-  useEffect(() => () => clearRepeatTimers(), []);
+  useEffect(() => () => {
+    clearRepeatTimers();
+    if (touchResetTimerRef.current !== null) clearTimeout(touchResetTimerRef.current);
+  }, []);
 
   // Window-level event listeners. No dep array — re-registers each render,
   // which is safe because it only runs after the DOM has committed.
@@ -118,9 +128,14 @@ export function DPad({ dispatch, isActive }: DPadProps) {
     }
 
     function onTouchEnd() {
-      if (!touchActiveRef.current) return;
-      touchActiveRef.current = false;
       stopHold();
+      // Defer the flag reset so the synthetic mousedown/mouseup events that
+      // browsers dispatch ~0–300ms after touchend are still suppressed.
+      if (touchResetTimerRef.current !== null) clearTimeout(touchResetTimerRef.current);
+      touchResetTimerRef.current = setTimeout(() => {
+        touchResetTimerRef.current = null;
+        touchActiveRef.current = false;
+      }, 400);
     }
 
     function onMouseUp() {
