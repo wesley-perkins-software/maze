@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maze Icon & Color Design Exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #F6F5F0;
+    --surface: #FFFFFF;
+    --ink:     #1C1C1E;
+    --muted:   #6B6A66;
+    --border:  #D6D4CF;
+    --red:     #E03B24;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Cabinet Grotesk', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .page-header {
+    max-width: 900px;
+    margin: 0 auto 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 14px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.65;
+    max-width: 580px;
+  }
+
+  .section {
+    max-width: 900px;
+    margin: 0 auto 56px;
+  }
+
+  .section-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .section-body {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 660px;
+    margin-bottom: 28px;
+  }
+
+  .section-body strong { color: var(--ink); }
+  .section-body code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: #ebebeb;
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--ink);
+  }
+
+  .palette-showcase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .swatch-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 80px;
+  }
+
+  .swatch-group label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .swatch {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .swatch-hex {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .divider-note {
+    align-self: center;
+    max-width: 260px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    padding-left: 12px;
+    border-left: 3px solid var(--border);
+  }
+
+  .divider-note strong { color: var(--ink); }
+
+  .verdict {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--ink);
+    border-radius: 0 12px 12px 0;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .verdict strong { color: var(--ink); }
+
+  .verdict .tag {
+    display: inline-block;
+    background: var(--ink);
+    color: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+
+  .system-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .system-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .system-table th {
+    padding: 12px 20px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: #f9f8f4;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .system-table td {
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .system-table tr:last-child td { border-bottom: none; }
+  .system-table .role { font-weight: 600; color: var(--ink); }
+
+  .color-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #f4f3ee;
+    border-radius: 100px;
+    padding: 4px 10px 4px 4px;
+    font-size: 12px;
+  }
+
+  .chip-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .change-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-left: 6px;
+  }
+
+  .changed { background: #fff3cd; color: #92400e; }
+  .kept    { background: #d1fae5; color: #065f46; }
+  .flag    { background: #ede9fe; color: #5b21b6; }
+
+  /* Options grid */
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(256px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .option-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: box-shadow 0.18s;
+  }
+
+  .option-card:hover { box-shadow: 0 6px 32px rgba(0,0,0,0.07); }
+
+  .option-card.pick {
+    border-color: var(--ink);
+    border-width: 2px;
+  }
+
+  .card-preview {
+    padding: 24px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    background: #fafaf8;
+  }
+
+  .card-info { padding: 16px 20px 20px; }
+
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .card-name {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .card-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+
+  .pro, .con {
+    font-size: 12px;
+    line-height: 1.55;
+    margin-bottom: 2px;
+  }
+
+  .pro { color: #15803d; }
+  .con { color: #dc2626; }
+
+  .pick-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--ink);
+    color: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .legend-strip {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .legend-dot  { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
+  .legend-line { width: 20px; height: 4px; border-radius: 2px; flex-shrink: 0; }
+  .legend-dash { width: 20px; height: 0; border-top: 4px dashed; flex-shrink: 0; }
+
+  /* Final recommendation */
+  .recommendation {
+    max-width: 900px;
+    margin: 0 auto 56px;
+    background: var(--ink);
+    color: white;
+    border-radius: 20px;
+    padding: 40px;
+  }
+
+  .recommendation h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .recommendation > p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.75;
+    max-width: 640px;
+    margin-bottom: 28px;
+  }
+
+  .rec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+
+  .rec-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .rec-card h3 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .rec-card .color-preview {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+
+  .rec-card .color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+  }
+
+  .rec-card .color-hex {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .rec-card p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+  }
+
+  .rec-card.highlight {
+    background: rgba(224,59,36,0.18);
+    border-color: rgba(224,59,36,0.4);
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="eyebrow">MazeThis — Design Exploration v2</div>
+  <h1>Icon &amp; Color System</h1>
+  <p class="subtitle">Updated after implementing System A (teal start, amber star finish, violet hints). Addresses: why violet feels off, whether gameplay should match the homepage brand, and what the best alternative is.</p>
+</div>
+
+
+<!-- ══════════════════════════ SECTION 1: CURRENT STATE ══════════════════════ -->
+<div class="section">
+  <div class="section-eyebrow">What's live now</div>
+  <div class="section-title">System A — implemented</div>
+
+  <div class="system-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Color</th>
+          <th>Icon</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="role">Start marker</td>
+          <td><div class="color-chip"><div class="chip-circle" style="background:#0d9488;"></div> Teal #0d9488</div></td>
+          <td>Directional arrow</td>
+          <td><span class="change-tag changed">changed ✓</span></td>
+        </tr>
+        <tr>
+          <td class="role">Finish marker</td>
+          <td><div class="color-chip"><div class="chip-circle" style="background:#f59e0b;"></div> Amber #f59e0b</div></td>
+          <td>5-point star</td>
+          <td><span class="change-tag changed">changed ✓</span></td>
+        </tr>
+        <tr>
+          <td class="role">Player trail</td>
+          <td><div class="color-chip"><div class="chip-circle" style="background:#3b82f6;"></div> Blue #3b82f6</div></td>
+          <td>Fading polyline</td>
+          <td><span class="change-tag kept">unchanged</span></td>
+        </tr>
+        <tr>
+          <td class="role">Hint / solution path</td>
+          <td><div class="color-chip"><div class="chip-circle" style="background:#8b5cf6;"></div> Violet #8b5cf6</div></td>
+          <td>Dashed / solid polyline</td>
+          <td><span class="change-tag flag">under review</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════ SECTION 2: VIOLET PROBLEM ═════════════════════ -->
+<div class="section">
+  <div class="section-eyebrow">The violet problem</div>
+  <div class="section-title">Why it isn't sitting right</div>
+
+  <p class="section-body">
+    Your instinct is correct. <strong>Violet and blue belong to the same color family</strong> — both are cool-toned, both sit in the blue-purple range. On a dense maze with black walls on white, your brain perceptually groups them together. The player trail and the hint path end up reading as <em>two versions of the same thing</em> rather than two categorically different things.
+    <br><br>
+    There's also a rendering issue: violet at typical stroke widths tends to look <strong>slightly muddy against dark walls</strong>, especially at small maze sizes. Blue's higher chroma reads more crisply. Purple hints look uncertain; they don't feel authoritative enough to say "follow me."
+    <br><br>
+    The deeper problem is <em>temperature</em>. Both blue and violet are cool colors. What you actually need for the hint path is something <strong>warm</strong> — a color from the opposite side of the wheel that can never be confused with the blue trail even in peripheral vision.
+  </p>
+
+  <div class="verdict">
+    <div class="tag">Diagnosis</div><br>
+    <strong>The issue is color temperature, not hue.</strong> Violet ↔ Blue = same family, same feel. The hint path needs to be warm where the trail is cool — so they feel categorically different at a glance. This is not a subtle distinction; warm vs. cool is one of the most powerful separators in visual design.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════ SECTION 3: HOMEPAGE QUESTION ══════════════════ -->
+<div class="section">
+  <div class="section-eyebrow">The bigger question</div>
+  <div class="section-title">Should gameplay colors match the homepage?</div>
+
+  <p class="section-body">
+    The homepage has a clear, strong visual identity: <strong>warm cream, charcoal ink, and a bold red-orange accent</strong> (<code>#E03B24</code>). It's editorial, architectural, intentional. The gameplay palette (blue trail, teal start, amber finish, violet hints) is completely disconnected — it looks like a generic puzzle game dropped inside a beautiful site.
+    <br><br>
+    <strong>They don't need to match exactly</strong> — gameplay and marketing surfaces serve different purposes. But they should feel like they belong to the same product. Right now they don't.
+  </p>
+
+  <div class="palette-showcase">
+    <div class="swatch-group">
+      <label>Background</label>
+      <div class="swatch" style="background:#F6F5F0;"></div>
+      <div class="swatch-hex">#F6F5F0</div>
+    </div>
+    <div class="swatch-group">
+      <label>Surface</label>
+      <div class="swatch" style="background:#FFFFFF; box-shadow: inset 0 0 0 1px #D6D4CF;"></div>
+      <div class="swatch-hex">#FFFFFF</div>
+    </div>
+    <div class="swatch-group">
+      <label>Ink / Type</label>
+      <div class="swatch" style="background:#1C1C1E;"></div>
+      <div class="swatch-hex">#1C1C1E</div>
+    </div>
+    <div class="swatch-group">
+      <label>Brand Accent ★</label>
+      <div class="swatch" style="background:#E03B24;"></div>
+      <div class="swatch-hex">#E03B24</div>
+    </div>
+    <div class="divider-note">
+      <strong>#E03B24</strong> is used for the "Today's" hero headline, all CTA buttons, left-border status indicators, and accent dots. It's the one color that says <em>MazeThis</em>. Every other color on the homepage is neutral.
+    </div>
+  </div>
+
+  <p class="section-body">
+    The most natural way to stitch gameplay into the brand: <strong>use the red-orange accent for hint and solution paths</strong>. On the homepage, that color means "here's the action you should take." In the game, a hint means the same thing — the game reaching in and saying "go this way." Same color, same meaning, different context.
+    <br><br>
+    The player trail staying blue is fine — <code>--color-brand: #2563eb</code> is your legacy gameplay color and it reads well. But the hint is the place where the site's actual brand voice can enter the game.
+  </p>
+
+  <div class="verdict">
+    <div class="tag">Answer</div><br>
+    <strong>Yes, one gameplay color should connect to the homepage.</strong> The hint/solution path is the right candidate — it's the game's "voice," just like the CTA is the site's "voice." Using the same red-orange creates coherence without making the maze look like a marketing page.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════ SECTION 4: OPTIONS ════════════════════════════ -->
+<div class="section">
+  <div class="section-eyebrow">Alternatives for the hint / solution path</div>
+  <div class="section-title">Three options — all better than violet</div>
+
+  <div class="options-grid">
+
+    <!-- Option A: Brand red -->
+    <div class="option-card pick">
+      <div class="card-preview">
+        <div class="pick-badge">★ Recommended</div>
+        <svg width="158" height="158" viewBox="0 0 158 158">
+          <rect width="158" height="158" fill="white" rx="10"/>
+          <g stroke="#1e293b" stroke-width="2" stroke-linecap="square" fill="none">
+            <path d="M10,10 L10,148"/>
+            <path d="M148,10 L148,148"/>
+            <path d="M10,148 L128,148"/>
+            <path d="M10,10 L48,10"/>
+            <path d="M63,10 L148,10"/>
+            <path d="M10,44 L69,44"/>
+            <path d="M69,10 L69,44"/>
+            <path d="M39,44 L39,78"/>
+            <path d="M69,44 L69,78"/>
+            <path d="M69,78 L113,78"/>
+            <path d="M113,44 L113,78"/>
+            <path d="M113,10 L113,44"/>
+            <path d="M10,78 L39,78"/>
+            <path d="M39,78 L39,113"/>
+            <path d="M39,113 L69,113"/>
+            <path d="M69,78 L69,113"/>
+            <path d="M69,113 L69,148"/>
+            <path d="M69,148 L113,148 M113,113 L148,113 M113,148 L113,113"/>
+            <path d="M10,113 L39,113"/>
+            <path d="M39,113 L39,148"/>
+          </g>
+          <polyline points="55,10 55,27 55,44 55,61 55,78" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.2"/>
+          <polyline points="55,44 55,61 55,78 55,95 55,113" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+          <polyline points="55,78 55,95 55,113 55,130 55,148" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+          <polyline points="55,148 70,148 85,148 99,148 113,148 113,130 113,113 113,95 113,78" stroke="#E03B24" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" opacity="0.9"/>
+          <circle cx="55" cy="10" r="12" fill="#0d9488" opacity="0.9"/>
+          <polygon points="50,7 62,10 50,13" fill="white"/>
+          <circle cx="148" cy="148" r="12" fill="#f59e0b" opacity="0.9"/>
+          <polygon points="148,141 149.7,146 155,146 150.7,149 152.3,154 148,151 143.7,154 145.3,149 141,146 146.3,146" fill="white"/>
+        </svg>
+        <div class="legend-strip">
+          <div class="legend-item"><div class="legend-dot" style="background:#0d9488;"></div> Start</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> Finish</div>
+          <div class="legend-item"><div class="legend-line" style="background:#3b82f6;"></div> Trail</div>
+          <div class="legend-item"><div class="legend-dash" style="border-color:#E03B24;"></div> Hints</div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Option A</div>
+        <div class="card-name">Brand Red-Orange #E03B24</div>
+        <div class="card-desc">The site's own CTA color. Warm vs. cool split from the blue trail. Connects gameplay to the homepage brand.</div>
+        <div class="pro">✓ Warm/cool — categorically different from blue trail</div>
+        <div class="pro">✓ Same as CTA/accent — brand coherence</div>
+        <div class="pro">✓ High contrast on white, reads at all sizes</div>
+        <div class="con">✗ Red can feel urgent — though that's arguably right for hints</div>
+      </div>
+    </div>
+
+    <!-- Option B: Green -->
+    <div class="option-card">
+      <div class="card-preview">
+        <svg width="158" height="158" viewBox="0 0 158 158">
+          <rect width="158" height="158" fill="white" rx="10"/>
+          <g stroke="#1e293b" stroke-width="2" stroke-linecap="square" fill="none">
+            <path d="M10,10 L10,148"/>
+            <path d="M148,10 L148,148"/>
+            <path d="M10,148 L128,148"/>
+            <path d="M10,10 L48,10"/>
+            <path d="M63,10 L148,10"/>
+            <path d="M10,44 L69,44"/>
+            <path d="M69,10 L69,44"/>
+            <path d="M39,44 L39,78"/>
+            <path d="M69,44 L69,78"/>
+            <path d="M69,78 L113,78"/>
+            <path d="M113,44 L113,78"/>
+            <path d="M113,10 L113,44"/>
+            <path d="M10,78 L39,78"/>
+            <path d="M39,78 L39,113"/>
+            <path d="M39,113 L69,113"/>
+            <path d="M69,78 L69,113"/>
+            <path d="M69,113 L69,148"/>
+            <path d="M69,148 L113,148 M113,113 L148,113 M113,148 L113,113"/>
+            <path d="M10,113 L39,113"/>
+            <path d="M39,113 L39,148"/>
+          </g>
+          <polyline points="55,10 55,27 55,44 55,61 55,78" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.2"/>
+          <polyline points="55,44 55,61 55,78 55,95 55,113" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+          <polyline points="55,78 55,95 55,113 55,130 55,148" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+          <polyline points="55,148 70,148 85,148 99,148 113,148 113,130 113,113 113,95 113,78" stroke="#22c55e" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" opacity="0.9"/>
+          <circle cx="55" cy="10" r="12" fill="#0d9488" opacity="0.9"/>
+          <polygon points="50,7 62,10 50,13" fill="white"/>
+          <circle cx="148" cy="148" r="12" fill="#f59e0b" opacity="0.9"/>
+          <polygon points="148,141 149.7,146 155,146 150.7,149 152.3,154 148,151 143.7,154 145.3,149 141,146 146.3,146" fill="white"/>
+        </svg>
+        <div class="legend-strip">
+          <div class="legend-item"><div class="legend-dot" style="background:#0d9488;"></div> Start</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> Finish</div>
+          <div class="legend-item"><div class="legend-line" style="background:#3b82f6;"></div> Trail</div>
+          <div class="legend-item"><div class="legend-dash" style="border-color:#22c55e;"></div> Hints</div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Option B</div>
+        <div class="card-name">Original Green #22c55e</div>
+        <div class="card-desc">Revert to what you had. Teal start (blue-green) and hint green (yellow-green) are distinct enough at typical sizes.</div>
+        <div class="pro">✓ Universally understood — green = "go this way"</div>
+        <div class="pro">✓ High contrast, works at all sizes</div>
+        <div class="con">✗ Teal start and green hints are color-adjacent — could blur at small sizes</div>
+        <div class="con">✗ No brand connection — generic puzzle-game feel</div>
+      </div>
+    </div>
+
+    <!-- Option C: Orange -->
+    <div class="option-card">
+      <div class="card-preview">
+        <svg width="158" height="158" viewBox="0 0 158 158">
+          <rect width="158" height="158" fill="white" rx="10"/>
+          <g stroke="#1e293b" stroke-width="2" stroke-linecap="square" fill="none">
+            <path d="M10,10 L10,148"/>
+            <path d="M148,10 L148,148"/>
+            <path d="M10,148 L128,148"/>
+            <path d="M10,10 L48,10"/>
+            <path d="M63,10 L148,10"/>
+            <path d="M10,44 L69,44"/>
+            <path d="M69,10 L69,44"/>
+            <path d="M39,44 L39,78"/>
+            <path d="M69,44 L69,78"/>
+            <path d="M69,78 L113,78"/>
+            <path d="M113,44 L113,78"/>
+            <path d="M113,10 L113,44"/>
+            <path d="M10,78 L39,78"/>
+            <path d="M39,78 L39,113"/>
+            <path d="M39,113 L69,113"/>
+            <path d="M69,78 L69,113"/>
+            <path d="M69,113 L69,148"/>
+            <path d="M69,148 L113,148 M113,113 L148,113 M113,148 L113,113"/>
+            <path d="M10,113 L39,113"/>
+            <path d="M39,113 L39,148"/>
+          </g>
+          <polyline points="55,10 55,27 55,44 55,61 55,78" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.2"/>
+          <polyline points="55,44 55,61 55,78 55,95 55,113" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+          <polyline points="55,78 55,95 55,113 55,130 55,148" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+          <polyline points="55,148 70,148 85,148 99,148 113,148 113,130 113,113 113,95 113,78" stroke="#f97316" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" opacity="0.9"/>
+          <circle cx="55" cy="10" r="12" fill="#0d9488" opacity="0.9"/>
+          <polygon points="50,7 62,10 50,13" fill="white"/>
+          <circle cx="148" cy="148" r="12" fill="#f59e0b" opacity="0.9"/>
+          <polygon points="148,141 149.7,146 155,146 150.7,149 152.3,154 148,151 143.7,154 145.3,149 141,146 146.3,146" fill="white"/>
+        </svg>
+        <div class="legend-strip">
+          <div class="legend-item"><div class="legend-dot" style="background:#0d9488;"></div> Start</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> Finish</div>
+          <div class="legend-item"><div class="legend-line" style="background:#3b82f6;"></div> Trail</div>
+          <div class="legend-item"><div class="legend-dash" style="border-color:#f97316;"></div> Hints</div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-label">Option C</div>
+        <div class="card-name">Warm Orange #f97316</div>
+        <div class="card-desc">A brighter orange — warm, energetic, totally distinct from the blue trail. Guidance feels alive and urgent.</div>
+        <div class="pro">✓ Maximum contrast against blue — categorically warm</div>
+        <div class="pro">✓ High energy, reads "follow me" clearly</div>
+        <div class="con">✗ Too close to the amber finish marker — two warm oranges simultaneously is muddy</div>
+        <div class="con">✗ No brand connection</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════ RECOMMENDATION ════════════════════════════════ -->
+<div class="recommendation">
+  <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:10px;">Final recommendation</div>
+  <h2>Switch hints to the brand red-orange</h2>
+  <p>It solves the violet problem (warm vs. cool), it avoids the teal/green proximity issue from Option B, it avoids the orange/amber collision in Option C, and it makes the gameplay feel like it belongs to MazeThis rather than a generic puzzle app. One color doing four jobs at once.</p>
+
+  <div class="rec-grid">
+    <div class="rec-card">
+      <h3>Start marker</h3>
+      <div class="color-preview">
+        <div class="color-dot" style="background:#0d9488;"></div>
+        <span class="color-hex">#0d9488 teal</span>
+      </div>
+      <p>Keep. Solid teal with white directional arrow. Works well, no change needed.</p>
+    </div>
+    <div class="rec-card">
+      <h3>Finish marker</h3>
+      <div class="color-preview">
+        <div class="color-dot" style="background:#f59e0b;"></div>
+        <span class="color-hex">#f59e0b amber</span>
+      </div>
+      <p>Keep. Amber with white star — feels like achievement and reward.</p>
+    </div>
+    <div class="rec-card">
+      <h3>Player trail</h3>
+      <div class="color-preview">
+        <div class="color-dot" style="background:#3b82f6;"></div>
+        <span class="color-hex">#3b82f6 blue</span>
+      </div>
+      <p>Keep. Your path, your color. Cool and personal. Legacy brand color in the CSS.</p>
+    </div>
+    <div class="rec-card highlight">
+      <h3>Hint / solution path ← change</h3>
+      <div class="color-preview">
+        <div class="color-dot" style="background:#E03B24;"></div>
+        <span class="color-hex">#E03B24 brand red</span>
+      </div>
+      <p>The site's CTA color. Warm where the trail is cool. Connects the game to MazeThis.</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

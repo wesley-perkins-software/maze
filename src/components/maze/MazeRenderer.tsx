@@ -9,11 +9,10 @@ import { indexToPoint } from '../../lib/maze/utils';
 
 const PLAYER_PATH_COLOR = '#3b82f6';
 const PLAYER_MARKER_COLOR = '#2563eb';
-const START_MARKER_RING_COLOR = '#64748b';
-const START_MARKER_CENTER_COLOR = '#ffffff';
+const START_MARKER_COLOR = '#0d9488';
 const FINISH_MARKER_COLOR = '#f59e0b';
-const SOLUTION_PATH_COLOR = '#22c55e';
-const HINT_PATH_COLOR = '#22c55e';
+const SOLUTION_PATH_COLOR = '#E03B24';
+const HINT_PATH_COLOR = '#E03B24';
 
 export interface MazeRendererProps {
   maze: MazeData;
@@ -199,9 +198,10 @@ export function MazeRenderer({
 
   const pr    = playerMarkerRadius ?? cellSize * 0.32;
   const glowR = playerMarkerRadius ? playerMarkerRadius * 1.6 : cellSize * 0.5;
-  const solutionStrokeWidth = Math.max(2, cellSize * 0.18);
+  const solutionStrokeWidth = Math.max(2, cellSize * 0.155);
   const hintStrokeWidth = Math.max(1.5, cellSize * 0.14);
-  const hintDashLength = Math.max(4, cellSize * 0.28);
+  const hintDashLength = Math.max(3, cellSize * 0.20);
+  const hintDashGap    = Math.max(3, cellSize * 0.23);
   const hideTrailForGuidance = Boolean(solutionPoints) || visibleHintCells.length >= 2;
 
   const label = `${maze.difficulty} ${width}×${height} maze`;
@@ -238,7 +238,7 @@ export function MazeRenderer({
         fill="none"
       />
 
-      {/* Solution path — green solid guidance from the current player position */}
+      {/* Solution path — red-orange solid guidance from the current player position */}
       {solutionPoints && (
         <polyline
           points={solutionPoints}
@@ -247,11 +247,11 @@ export function MazeRenderer({
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity={0.85}
+          opacity={0.75}
         />
       )}
 
-      {/* Hint path — green dashed temporary guidance from the current player position */}
+      {/* Hint path — red-orange dashed temporary guidance from the current player position */}
       {visibleHintCells.length >= 2 && (
         <polyline
           points={visibleHintCells.map(cellCenter).join(' ')}
@@ -260,8 +260,8 @@ export function MazeRenderer({
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeDasharray={`${hintDashLength} ${hintDashLength}`}
-          opacity={0.85}
+          strokeDasharray={`${hintDashLength} ${hintDashGap}`}
+          opacity={0.88}
         />
       )}
 
@@ -281,38 +281,35 @@ export function MazeRenderer({
 
       {showEndpointMarkers && (
         <>
-          {/* Entry marker — neutral ring with directional play arrow */}
-          <circle cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_RING_COLOR} opacity={0.85} />
-          <circle cx={entryMx} cy={entryMy} r={markerR * 0.58} fill={START_MARKER_CENTER_COLOR} opacity={0.96} />
+          {/* Entry marker — teal circle with directional white arrow */}
+          <circle cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_COLOR} opacity={0.9} />
           {markerR >= 5 && (
             <polygon
               points={entryArrowPoints}
-              fill={START_MARKER_RING_COLOR}
-              opacity={0.9}
+              fill="white"
+              opacity={0.95}
             />
           )}
 
-          {/* Exit marker — orange circle with flag pennant */}
+          {/* Exit marker — amber circle with star */}
           <circle cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
           {markerR >= 5 && (
-            <>
-              {/* Flag pole */}
-              <line
-                x1={exitMx - markerR * 0.08}
-                y1={exitMy + markerR * 0.52}
-                x2={exitMx - markerR * 0.08}
-                y2={exitMy - markerR * 0.62}
-                stroke="white"
-                strokeWidth={Math.max(1, markerR * 0.17)}
-                strokeLinecap="round"
-              />
-              {/* Flag pennant */}
-              <polygon
-                points={`${exitMx - markerR * 0.08},${exitMy - markerR * 0.62} ${exitMx + markerR * 0.58},${exitMy - markerR * 0.28} ${exitMx - markerR * 0.08},${exitMy + markerR * 0.06}`}
-                fill="white"
-                opacity={0.95}
-              />
-            </>
+            <polygon
+              points={[
+                [exitMx,                    exitMy - markerR * 0.72],
+                [exitMx + markerR * 0.24,   exitMy - markerR * 0.20],
+                [exitMx + markerR * 0.69,   exitMy - markerR * 0.22],
+                [exitMx + markerR * 0.34,   exitMy + markerR * 0.17],
+                [exitMx + markerR * 0.43,   exitMy + markerR * 0.64],
+                [exitMx,                    exitMy + markerR * 0.36],
+                [exitMx - markerR * 0.43,   exitMy + markerR * 0.64],
+                [exitMx - markerR * 0.34,   exitMy + markerR * 0.17],
+                [exitMx - markerR * 0.69,   exitMy - markerR * 0.22],
+                [exitMx - markerR * 0.24,   exitMy - markerR * 0.20],
+              ].map(([x, y]) => `${x},${y}`).join(' ')}
+              fill="white"
+              opacity={0.95}
+            />
           )}
         </>
       )}

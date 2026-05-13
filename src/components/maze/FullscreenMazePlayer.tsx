@@ -32,8 +32,7 @@ const SIDEBAR_MINIMAP_SIZE = 192;
 const SIDEBAR_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
-const START_MARKER_RING_COLOR = '#64748b';
-const START_MARKER_CENTER_COLOR = '#ffffff';
+const START_MARKER_COLOR = '#0d9488';
 const FINISH_MARKER_COLOR = '#f59e0b';
 
 function clamp(min: number, value: number, max: number): number {
@@ -100,9 +99,8 @@ function MinimapEndpointMarkers({
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_RING_COLOR} opacity="0.85" />
-        <circle cx="12" cy="12" r="5.1" fill={START_MARKER_CENTER_COLOR} opacity="0.96" />
-        <polygon points={entryArrow} fill={START_MARKER_RING_COLOR} opacity="0.9" />
+        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_COLOR} opacity="0.9" />
+        <polygon points={entryArrow} fill="white" opacity="0.95" />
       </svg>
       <svg
         viewBox="0 0 24 24"
@@ -112,8 +110,7 @@ function MinimapEndpointMarkers({
       >
         <circle cx="12" cy="12" r="12" fill="white" />
         <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
-        <line x1="8.8" y1="17" x2="8.8" y2="6.4" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-        <path d="M10 6.3 H16.8 L14.8 9.1 L16.8 11.9 H10 Z" fill="white" />
+        <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
       </svg>
     </>
   );
