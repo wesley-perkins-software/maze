@@ -200,7 +200,8 @@ export function MazeRenderer({
   const glowR = playerMarkerRadius ? playerMarkerRadius * 1.6 : cellSize * 0.5;
   const solutionStrokeWidth = Math.max(2, cellSize * 0.155);
   const hintStrokeWidth = Math.max(1.5, cellSize * 0.14);
-  const hintDashLength = Math.max(4, cellSize * 0.28);
+  const hintDashLength = Math.max(3, cellSize * 0.20);
+  const hintDashGap    = Math.max(3, cellSize * 0.23);
   const hideTrailForGuidance = Boolean(solutionPoints) || visibleHintCells.length >= 2;
 
   const label = `${maze.difficulty} ${width}×${height} maze`;
@@ -259,7 +260,7 @@ export function MazeRenderer({
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeDasharray={`${hintDashLength} ${hintDashLength}`}
+          strokeDasharray={`${hintDashLength} ${hintDashGap}`}
           opacity={0.88}
         />
       )}
