@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode, type TouchEvent } from 'react';
 import type { GameAction, Direction } from '../../lib/gameplay/types';
 
-const HOLD_DELAY_MS = 240;
-const REPEAT_INTERVAL_MS = 100;
+const HOLD_DELAY_MS = 450;
+const REPEAT_INTERVAL_MS = 140;
 
 interface DPadProps {
   dispatch: (action: GameAction) => void;
@@ -11,28 +11,28 @@ interface DPadProps {
 
 function ChevronUp() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="18 15 12 9 6 15" />
     </svg>
   );
 }
 function ChevronDown() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }
 function ChevronLeft() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="15 18 9 12 15 6" />
     </svg>
   );
 }
 function ChevronRight() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="9 6 15 12 9 18" />
     </svg>
   );
@@ -146,8 +146,8 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   if (!isActive) return null;
 
   const baseBtnClass =
-    'flex items-center justify-center w-12 h-12 rounded-full ' +
-    'bg-white border border-[var(--color-border)] text-slate-500 shadow-sm ' +
+    'flex items-center justify-center w-14 h-14 rounded-full ' +
+    'bg-[#FDFCF8] border-2 border-[var(--color-border)] text-[#64748B] shadow ' +
     'select-none touch-none ' +
     'transition-all duration-75 cursor-pointer ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1';
@@ -183,8 +183,8 @@ export function DPad({ dispatch, isActive }: DPadProps) {
       className="touch-none"
       style={{
         display: 'grid',
-        gridTemplateColumns: '48px 28px 48px',
-        gridTemplateRows: '48px 28px 48px',
+        gridTemplateColumns: '56px 32px 56px',
+        gridTemplateRows: '56px 32px 56px',
         justifyItems: 'center',
         alignItems: 'center',
       }}
