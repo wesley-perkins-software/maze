@@ -1,7 +1,19 @@
 import type { MazeData, Point } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { pointToIndex } from '../maze/utils';
+import { findShortestPath } from '../maze/solver';
 import type { Direction } from './types';
+
+const TAP_MAX_STEPS = 5;
+
+/**
+ * BFS shortest path from `from` to `target` through maze passages, capped at
+ * TAP_MAX_STEPS traversals. Returns an ordered Point array (excluding `from`),
+ * or null if the target is not reachable within the step limit.
+ */
+export function computeBfsPath(maze: MazeData, from: Point, target: Point): Point[] | null {
+  return findShortestPath(maze, from, target, TAP_MAX_STEPS);
+}
 
 const DIR_WALL: Record<Direction, number> = {
   N: WALL_N,
@@ -119,39 +131,6 @@ export function isExitStep(maze: MazeData, from: Point, direction: Direction): b
   const destY = from.y + dy;
   if (destX >= 0 && destY >= 0 && destX < maze.width && destY < maze.height) return false;
   return !(maze.grid[pointToIndex(from, maze.width)] & DIR_WALL[direction]);
-}
-
-/**
- * Walks from `from` toward `target` in a straight line (same row or column),
- * stopping at the first wall or when `target` is reached.
- *
- * Returns the cells entered (not including `from`), or an empty array if the
- * first step is blocked. Returns null if `target` is diagonal — the caller
- * should fall back to directional RUN behavior.
- */
-export function computeTapPath(maze: MazeData, from: Point, target: Point): Point[] | null {
-  if (from.x === target.x && from.y === target.y) return [];
-
-  let direction: Direction;
-  if (from.y === target.y) {
-    direction = target.x > from.x ? 'E' : 'W';
-  } else if (from.x === target.x) {
-    direction = target.y > from.y ? 'S' : 'N';
-  } else {
-    return null;
-  }
-
-  const path: Point[] = [];
-  let pos = from;
-
-  while (canMove(maze, pos, direction)) {
-    pos = applyMove(pos, direction);
-    path.push({ ...pos });
-    if (pos.x === target.x && pos.y === target.y) break;
-    if (pos.x === maze.exit.x && pos.y === maze.exit.y) break;
-  }
-
-  return path;
 }
 
 const REVERSE_DIR: Record<Direction, Direction> = { N: 'S', S: 'N', E: 'W', W: 'E' };

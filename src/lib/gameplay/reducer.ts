@@ -1,7 +1,7 @@
-import type { MazeData, Point } from '../../types/maze';
+import type { MazeData } from '../../types/maze';
 import { inBounds, pointToIndex } from '../maze/utils';
-import { canMove, applyMove, computeRun, computeTapPath, getEntryDirection, getEntryStartPosition, getExitEndPosition, isEntryStep, isExitStep } from './movement';
-import type { GameState, GameAction, Direction } from './types';
+import { canMove, applyMove, computeRun, computeBfsPath, getEntryStartPosition, getExitEndPosition, isEntryStep, isExitStep } from './movement';
+import type { GameState, GameAction } from './types';
 
 function inMazeIndex(position: GameState['playerPosition'], maze: MazeData): number | null {
   return inBounds(position, maze.width, maze.height) ? pointToIndex(position, maze.width) : null;
@@ -152,45 +152,12 @@ export function gameReducer(
 
     case 'TAP_MOVE': {
       if (state.status === 'solved' || state.status === 'paused') return state;
+      if (!inBounds(state.playerPosition, maze.width, maze.height)) return state;
+
+      const path = computeBfsPath(maze, state.playerPosition, action.target);
+      if (!path || path.length === 0) return state;
 
       const now = Date.now();
-
-      // Player is at the entry start marker — enter the maze regardless of target
-      if (!inBounds(state.playerPosition, maze.width, maze.height)) {
-        const entryDir = getEntryDirection(maze);
-        if (!isEntryStep(maze, state.playerPosition, entryDir)) return state;
-        const entryPath = computeRun(maze, state.playerPosition, entryDir);
-        if (entryPath.length === 0) return state;
-        const finalEntryPos = entryPath[entryPath.length - 1];
-        const entryIndices = entryPath.map(p => pointToIndex(p, maze.width));
-        return {
-          ...state,
-          status: 'playing',
-          playerPosition: finalEntryPos,
-          trail: [...state.trail, ...entryIndices],
-          hintCells: updateHintCells(state.hintCells, inMazeIndex(state.playerPosition, maze), entryIndices),
-          startTime: state.startTime ?? now,
-          elapsedMs: state.startTime ? now - state.startTime : 0,
-        };
-      }
-
-      const tapResult = computeTapPath(maze, state.playerPosition, action.target);
-
-      let path: Point[];
-      if (tapResult === null) {
-        // Diagonal tap — run in the dominant axis direction
-        const dx = action.target.x - state.playerPosition.x;
-        const dy = action.target.y - state.playerPosition.y;
-        const dir: Direction = Math.abs(dx) >= Math.abs(dy)
-          ? (dx > 0 ? 'E' : 'W')
-          : (dy > 0 ? 'S' : 'N');
-        path = computeRun(maze, state.playerPosition, dir);
-      } else {
-        path = tapResult;
-      }
-
-      if (path.length === 0) return state;
-
       const finalPos = path[path.length - 1];
       const newIndices = path.map(p => pointToIndex(p, maze.width));
 
