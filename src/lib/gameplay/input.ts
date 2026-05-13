@@ -39,11 +39,13 @@ export function useKeyboardInput(dispatch: Dispatch, enabled: boolean): void {
 /**
  * Attaches touch handlers to any element for swipe-based movement.
  * Min swipe distance: 20px. Prevents scroll while swiping.
+ * When movement is below the swipe threshold, calls `onTap` with clientX/Y.
  */
 export function useTouchInput(
   ref: RefObject<HTMLElement | SVGSVGElement | null>,
   dispatch: Dispatch,
   enabled: boolean,
+  onTap?: (clientX: number, clientY: number) => void,
 ): void {
   useEffect(() => {
     if (!enabled || !ref.current) return;
@@ -67,7 +69,10 @@ export function useTouchInput(
       const dy = e.changedTouches[0].clientY - startY;
       const MIN = 20;
 
-      if (Math.abs(dx) < MIN && Math.abs(dy) < MIN) return;
+      if (Math.abs(dx) < MIN && Math.abs(dy) < MIN) {
+        onTap?.(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        return;
+      }
 
       let dir: Direction;
       if (Math.abs(dx) >= Math.abs(dy)) {
@@ -88,5 +93,5 @@ export function useTouchInput(
       el.removeEventListener('touchmove', onTouchMove);
       el.removeEventListener('touchend', onTouchEnd);
     };
-  }, [ref, dispatch, enabled]);
+  }, [ref, dispatch, enabled, onTap]);
 }

@@ -29,6 +29,7 @@ export interface MazeRendererProps {
   interactive?: boolean;      // adds keyboard/touch affordances
   svgRef?: React.RefObject<SVGSVGElement>;
   onKeyDown?: (e: React.KeyboardEvent) => void;
+  onSvgClick?: (e: React.MouseEvent<SVGSVGElement>) => void;
   playerMarkerRadius?: number; // override default radius for minimap high-contrast dot
   markerRadius?: number;       // override entry/exit marker radius
   showEndpointMarkers?: boolean; // render entry/exit markers inside the SVG
@@ -54,6 +55,7 @@ export function MazeRenderer({
   markerRadius,
   showEndpointMarkers = true,
   markersOutside = false,
+  onSvgClick,
 }: MazeRendererProps) {
   const { width, height, grid, entry, exit } = maze;
 
@@ -223,6 +225,7 @@ export function MazeRenderer({
       aria-label={interactive ? `${label}. Use arrow keys to move.` : label}
       tabIndex={interactive ? 0 : undefined}
       onKeyDown={interactive ? onKeyDown : undefined}
+      onClick={interactive ? onSvgClick : undefined}
     >
       <title>{maze.slug ? maze.slug.replace(/-/g, ' ') : label}</title>
 
