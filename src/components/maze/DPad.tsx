@@ -62,14 +62,11 @@ export function DPad({ dispatch, isActive }: DPadProps) {
     setActiveDirection(direction);
     dispatch({ type: 'MOVE', direction });
     clearRepeatTimers();
-    holdTimerRef.current = setTimeout(() => {
-      holdTimerRef.current = null;
-      repeatTimerRef.current = setInterval(() => {
-        if (heldDirectionRef.current) {
-          dispatch({ type: 'MOVE', direction: heldDirectionRef.current });
-        }
-      }, REPEAT_INTERVAL_MS);
-    }, HOLD_DELAY_MS);
+    repeatTimerRef.current = setInterval(() => {
+      if (heldDirectionRef.current) {
+        dispatch({ type: 'MOVE', direction: heldDirectionRef.current });
+      }
+    }, REPEAT_INTERVAL_MS);
   }
 
   function stopHold() {
