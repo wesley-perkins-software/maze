@@ -58,21 +58,43 @@ function getPreviewMarkerPosition(
   };
 }
 
+function getPreviewEntryArrowPoints(maze: MazeData): string {
+  const { entry, width, height } = maze;
+
+  if (entry.y === 0) return '6.72,8.92 17.28,8.92 12,16.84';
+  if (entry.y === height - 1) return '6.72,15.08 17.28,15.08 12,7.16';
+  if (entry.x === 0) return '8.92,6.72 16.84,12 8.92,17.28';
+  if (entry.x === width - 1) return '15.08,6.72 7.16,12 15.08,17.28';
+
+  return '6.72,8.92 17.28,8.92 12,16.84';
+}
+
 function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: number }) {
-  const markerBase = 'pointer-events-none absolute z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_1px_4px_rgba(15,23,42,0.24)] md:h-4 md:w-4';
+  const markerBase = 'pointer-events-none absolute z-10 h-6 w-6 -translate-x-1/2 -translate-y-1/2 overflow-visible drop-shadow-[0_2px_4px_rgba(15,23,42,0.32)] md:h-7 md:w-7';
+  const entryArrowPoints = getPreviewEntryArrowPoints(maze);
 
   return (
     <>
-      <span
-        className={`${markerBase} bg-teal-600`}
+      <svg
+        viewBox="0 0 24 24"
+        className={markerBase}
         style={getPreviewMarkerPosition(maze, maze.entry, cellSize)}
         aria-hidden="true"
-      />
-      <span
-        className={`${markerBase} bg-amber-500`}
+      >
+        <circle cx="12" cy="12" r="12" fill="white" />
+        <circle cx="12" cy="12" r="8.8" fill="#0d9488" opacity="0.9" />
+        <polygon points={entryArrowPoints} fill="white" opacity="0.95" />
+      </svg>
+      <svg
+        viewBox="0 0 24 24"
+        className={markerBase}
         style={getPreviewMarkerPosition(maze, maze.exit, cellSize)}
         aria-hidden="true"
-      />
+      >
+        <circle cx="12" cy="12" r="12" fill="white" />
+        <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
+        <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
+      </svg>
     </>
   );
 }
