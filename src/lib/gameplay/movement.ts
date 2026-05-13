@@ -124,6 +124,71 @@ export function isExitStep(maze: MazeData, from: Point, direction: Direction): b
 const REVERSE_DIR: Record<Direction, Direction> = { N: 'S', S: 'N', E: 'W', W: 'E' };
 const ALL_DIRS: Direction[] = ['N', 'E', 'S', 'W'];
 
+
+export type CorridorRunStep = {
+  position: Point;
+  direction: Direction;
+};
+
+export type CorridorRunOptions = {
+  /** Maximum number of in-maze cells to enter during the run. */
+  maxSteps?: number;
+  /** Continue through a turn when there is exactly one forward continuation. */
+  allowForcedTurns?: boolean;
+};
+
+function getForwardOptions(maze: MazeData, pos: Point, back: Direction): Direction[] {
+  return ALL_DIRS.filter(d => d !== back && canMove(maze, pos, d));
+}
+
+/**
+ * Computes a constrained tap-to-move auto-run. The tap only supplies the
+ * initial cardinal direction; after that, the player may continue through
+ * non-decision corridor space until a branch, dead end, exit, or cap.
+ *
+ * This intentionally does not pathfind to a tapped cell and never chooses
+ * between multiple forward branches.
+ */
+export function computeCorridorRun(
+  maze: MazeData,
+  startPos: Point,
+  direction: Direction,
+  options: CorridorRunOptions = {},
+): CorridorRunStep[] {
+  const maxSteps = options.maxSteps ?? 24;
+  const allowForcedTurns = options.allowForcedTurns ?? true;
+  const steps: CorridorRunStep[] = [];
+  let pos = startPos;
+  let currentDir = direction;
+
+  while (steps.length < maxSteps) {
+    if (isEntryStep(maze, pos, currentDir)) {
+      pos = { ...maze.entry };
+      steps.push({ position: { ...pos }, direction: currentDir });
+    } else if (canMove(maze, pos, currentDir)) {
+      pos = applyMove(pos, currentDir);
+      steps.push({ position: { ...pos }, direction: currentDir });
+    } else {
+      break;
+    }
+
+    if (pos.x === maze.exit.x && pos.y === maze.exit.y) break;
+
+    const back = REVERSE_DIR[currentDir];
+    const forwardOptions = getForwardOptions(maze, pos, back);
+
+    // Dead end or intersection: no automatic choice remains.
+    if (forwardOptions.length !== 1) break;
+
+    const nextDir = forwardOptions[0];
+    if (!allowForcedTurns && nextDir !== currentDir) break;
+
+    currentDir = nextDir;
+  }
+
+  return steps;
+}
+
 /**
  * Walks from `startPos` in `direction` until hitting a wall or a junction
  * (a cell where any perpendicular direction is open, giving the player a

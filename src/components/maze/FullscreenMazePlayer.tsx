@@ -1,12 +1,14 @@
 import { useReducer, useEffect, useRef, useCallback, useState, useMemo } from 'react';
-import type { MazeData } from '../../types/maze';
+import type { MazeData, Point } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
+import type { Direction, GameAction } from '../../lib/gameplay/types';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
+import { computeCorridorRun, getExitDirection } from '../../lib/gameplay/movement';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -32,11 +34,31 @@ const SIDEBAR_MINIMAP_SIZE = 192;
 const SIDEBAR_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
+const TAP_MOVE_MAX_DISTANCE_PX = 10;
+const TAP_AUTO_STEP_MS = 55;
 const START_MARKER_COLOR = '#0d9488';
 const FINISH_MARKER_COLOR = '#f59e0b';
 
 function clamp(min: number, value: number, max: number): number {
   return Math.min(max, Math.max(min, value));
+}
+
+
+function getTapRunCap(maze: MazeData): number {
+  const size = Math.max(maze.width, maze.height);
+  if (size <= 20) return 12;
+  if (size <= 40) return 18;
+  if (size <= 60) return 24;
+  return 32;
+}
+
+function getDominantDirection(from: Point, to: Point): Direction | null {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  if (dx === 0 && dy === 0) return null;
+  return Math.abs(dx) >= Math.abs(dy)
+    ? (dx > 0 ? 'E' : 'W')
+    : (dy > 0 ? 'S' : 'N');
 }
 
 function getPathStartCell(maze: MazeData, playerPosition: MazeData['entry']): MazeData['entry'] {
@@ -162,6 +184,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetConfirming, setResetConfirming] = useState(false);
   const resetConfirmTimerRef = useRef<number | null>(null);
+  const tapAutoRunTimerRef = useRef<number | null>(null);
+  const tapPointerStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null);
 
   // Left-handed mode: D-pad on left, minimap on right (persisted)
   const [leftHanded, setLeftHanded] = useState(() => {
@@ -187,6 +211,18 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     maze,
     createInitialState,
   );
+
+  const clearTapAutoRun = useCallback(() => {
+    if (tapAutoRunTimerRef.current !== null) {
+      window.clearInterval(tapAutoRunTimerRef.current);
+      tapAutoRunTimerRef.current = null;
+    }
+  }, []);
+
+  const interruptingDispatch = useCallback((action: GameAction) => {
+    if (action.type === 'MOVE' || action.type === 'RUN') clearTapAutoRun();
+    dispatch(action);
+  }, [clearTapAutoRun]);
 
   // Timer tick
   useEffect(() => {
@@ -261,8 +297,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   }, []);
 
   const isActive = state.status === 'playing' || state.status === 'idle';
-  useKeyboardInput(dispatch, isActive);
-  useTouchInput(mazeViewportRef, dispatch, isActive);
+  useKeyboardInput(interruptingDispatch, isActive);
+  useTouchInput(mazeViewportRef, interruptingDispatch, isActive);
+
+  useEffect(() => {
+    if (!isActive) clearTapAutoRun();
+  }, [clearTapAutoRun, isActive]);
 
   const currentSolution = useMemo(() => {
     const startCell = getPathStartCell(maze, state.playerPosition);
@@ -306,8 +346,9 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   useEffect(() => {
     return () => {
       if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
+      clearTapAutoRun();
     };
-  }, []);
+  }, [clearTapAutoRun]);
 
   // ── Follow-camera math ───────────────────────────────────────────────────────
   const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
@@ -436,9 +477,73 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const dpadPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
-      <DPad dispatch={dispatch} isActive={isActive} />
+      <DPad dispatch={interruptingDispatch} isActive={isActive} />
     </div>
   );
+
+  const startTapAutoRun = useCallback((direction: Direction) => {
+    if (!isActive) return;
+
+    clearTapAutoRun();
+
+    if (state.playerPosition.x === maze.exit.x && state.playerPosition.y === maze.exit.y && direction === getExitDirection(maze)) {
+      dispatch({ type: 'MOVE', direction });
+      return;
+    }
+
+    const steps = computeCorridorRun(maze, state.playerPosition, direction, {
+      maxSteps: getTapRunCap(maze),
+      allowForcedTurns: true,
+    });
+    if (steps.length === 0) return;
+
+    let index = 0;
+    const playNextStep = () => {
+      const step = steps[index];
+      if (!step) {
+        clearTapAutoRun();
+        return;
+      }
+
+      dispatch({ type: 'MOVE', direction: step.direction });
+      index += 1;
+
+      if (index >= steps.length) clearTapAutoRun();
+    };
+
+    playNextStep();
+    if (steps.length > 1) {
+      tapAutoRunTimerRef.current = window.setInterval(playNextStep, TAP_AUTO_STEP_MS);
+    }
+  }, [clearTapAutoRun, isActive, maze, state.playerPosition]);
+
+  const handleViewportPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isActive || event.button !== 0) return;
+    tapPointerStartRef.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+  }, [isActive]);
+
+  const handleViewportPointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    const start = tapPointerStartRef.current;
+    tapPointerStartRef.current = null;
+    if (!isActive || !start || start.pointerId !== event.pointerId) return;
+
+    const moved = Math.hypot(event.clientX - start.x, event.clientY - start.y);
+    if (moved > TAP_MOVE_MAX_DISTANCE_PX) return;
+
+    const viewport = mazeViewportRef.current;
+    if (!viewport) return;
+
+    const rect = viewport.getBoundingClientRect();
+    const tapPoint = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    const direction = getDominantDirection({ x: playerPx + tx, y: playerPy + ty }, tapPoint);
+    if (!direction) return;
+
+    startTapAutoRun(direction);
+  }, [isActive, playerPx, playerPy, startTapAutoRun, tx, ty]);
+
+  const handleViewportPointerCancel = useCallback(() => {
+    tapPointerStartRef.current = null;
+  }, []);
 
   return (
     <div
@@ -567,7 +672,14 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       <div className="flex flex-1 overflow-hidden">
 
         {/* Maze viewport — swipe anywhere here to move */}
-        <div ref={mazeViewportRef} className="relative flex-1 overflow-hidden bg-slate-100">
+        <div
+          ref={mazeViewportRef}
+          className="relative flex-1 overflow-hidden bg-slate-100 cursor-pointer"
+          onPointerDown={handleViewportPointerDown}
+          onPointerUp={handleViewportPointerUp}
+          onPointerCancel={handleViewportPointerCancel}
+          title="Tap in a direction to move through the corridor"
+        >
 
           {/* Follow-camera pan container */}
           <div
