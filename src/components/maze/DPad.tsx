@@ -3,7 +3,7 @@ import type { GameAction, Direction } from '../../lib/gameplay/types';
 
 // How long between repeated RUN dispatches while a button is held.
 // Longer than a single-cell repeat since each step covers more distance.
-const HOLD_REPEAT_MS = 220;
+const HOLD_REPEAT_MS = 320;
 
 interface DPadProps {
   dispatch: (action: GameAction) => void;
