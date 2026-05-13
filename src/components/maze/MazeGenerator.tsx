@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import type { Difficulty } from '../../types/maze';
+import type { Difficulty, MazeData, Point } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
 import { MazeRenderer } from './MazeRenderer';
 import { FullscreenMazePlayer } from './FullscreenMazePlayer';
@@ -27,6 +27,77 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
 };
 
 const CUSTOM_RANGE = { min: 5, max: 100 };
+
+const PREVIEW_PADDING = 6;
+
+function getPreviewMarkerPosition(
+  maze: MazeData,
+  point: Point,
+  cellSize: number,
+): { left: string; top: string } {
+  const totalW = maze.width * cellSize + PREVIEW_PADDING * 2;
+  const totalH = maze.height * cellSize + PREVIEW_PADDING * 2;
+
+  const cellCenterX = PREVIEW_PADDING + point.x * cellSize + cellSize / 2;
+  const cellCenterY = PREVIEW_PADDING + point.y * cellSize + cellSize / 2;
+
+  const markerX = point.x === 0
+    ? PREVIEW_PADDING / 2
+    : point.x === maze.width - 1
+      ? totalW - PREVIEW_PADDING / 2
+      : cellCenterX;
+  const markerY = point.y === 0
+    ? PREVIEW_PADDING / 2
+    : point.y === maze.height - 1
+      ? totalH - PREVIEW_PADDING / 2
+      : cellCenterY;
+
+  return {
+    left: `${(markerX / totalW) * 100}%`,
+    top: `${(markerY / totalH) * 100}%`,
+  };
+}
+
+function getPreviewEntryArrowPoints(maze: MazeData): string {
+  const { entry, width, height } = maze;
+
+  if (entry.y === 0) return '6.72,8.92 17.28,8.92 12,16.84';
+  if (entry.y === height - 1) return '6.72,15.08 17.28,15.08 12,7.16';
+  if (entry.x === 0) return '8.92,6.72 16.84,12 8.92,17.28';
+  if (entry.x === width - 1) return '15.08,6.72 7.16,12 15.08,17.28';
+
+  return '6.72,8.92 17.28,8.92 12,16.84';
+}
+
+function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: number }) {
+  const markerBase = 'pointer-events-none absolute z-10 h-6 w-6 -translate-x-1/2 -translate-y-1/2 overflow-visible drop-shadow-[0_2px_4px_rgba(15,23,42,0.32)] md:h-7 md:w-7';
+  const entryArrowPoints = getPreviewEntryArrowPoints(maze);
+
+  return (
+    <>
+      <svg
+        viewBox="0 0 24 24"
+        className={markerBase}
+        style={getPreviewMarkerPosition(maze, maze.entry, cellSize)}
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="12" fill="white" />
+        <circle cx="12" cy="12" r="8.8" fill="#0d9488" opacity="0.9" />
+        <polygon points={entryArrowPoints} fill="white" opacity="0.95" />
+      </svg>
+      <svg
+        viewBox="0 0 24 24"
+        className={markerBase}
+        style={getPreviewMarkerPosition(maze, maze.exit, cellSize)}
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="12" fill="white" />
+        <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
+        <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
+      </svg>
+    </>
+  );
+}
 
 function presetDifficulty(preset: SizePreset): Difficulty {
   if (preset === 'expert' || preset === 'monster') return 'large';
@@ -243,15 +314,33 @@ export function MazeGenerator() {
 
         {/* Preview card — square, viewport-fitted */}
         <div
-          className="maze-generator-svg border border-arch-400/60 bg-arch-surface overflow-hidden mx-auto"
+          className="maze-generator-svg border border-arch-400/60 bg-arch-surface overflow-visible mx-auto"
           style={{
             width: 'min(100%, calc(100vh - 140px))',
             aspectRatio: '1 / 1',
             boxShadow: 'inset 0 0 0 6px #FFFFFF, inset 0 0 0 7px #B0AEA8',
           }}
         >
-          <div className="flex justify-center items-center w-full h-full p-3">
-            <MazeRenderer maze={maze} cellSize={cellSize} fillContainer />
+          <div className="flex justify-center items-center w-full h-full overflow-visible p-3">
+            <div
+              className="relative overflow-visible"
+              style={{
+                aspectRatio: `${maze.width * cellSize + PREVIEW_PADDING * 2} / ${maze.height * cellSize + PREVIEW_PADDING * 2}`,
+                width: maze.width >= maze.height ? '100%' : 'auto',
+                height: maze.width >= maze.height ? 'auto' : '100%',
+                maxWidth: '100%',
+                maxHeight: '100%',
+              }}
+            >
+              <MazeRenderer
+                maze={maze}
+                cellSize={cellSize}
+                padding={PREVIEW_PADDING}
+                fillContainer
+                showEndpointMarkers={false}
+              />
+              <PreviewEndpointMarkers maze={maze} cellSize={cellSize} />
+            </div>
           </div>
         </div>
 
