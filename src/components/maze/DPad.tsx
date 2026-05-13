@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode, type TouchEvent } from 'react';
 import type { GameAction, Direction } from '../../lib/gameplay/types';
 
+// How long between repeated RUN dispatches while a button is held.
+// Longer than a single-cell repeat since each step covers more distance.
+const HOLD_REPEAT_MS = 220;
+
 interface DPadProps {
   dispatch: (action: GameAction) => void;
   isActive: boolean;
@@ -39,17 +43,33 @@ export function DPad({ dispatch, isActive }: DPadProps) {
   const [activeDirection, setActiveDirection] = useState<Direction | null>(null);
   const touchActiveRef = useRef(false);
   const touchResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Tracks the last dispatched direction so touchmove doesn't re-fire for the
-  // same button while the finger is still held down.
+  const repeatTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Tracks the active direction so touchmove doesn't re-fire for the same button
+  // and so the repeat interval always dispatches the current direction.
   const lastDirectionRef = useRef<Direction | null>(null);
+
+  function clearRepeat() {
+    if (repeatTimerRef.current !== null) {
+      clearInterval(repeatTimerRef.current);
+      repeatTimerRef.current = null;
+    }
+  }
 
   function run(direction: Direction) {
     lastDirectionRef.current = direction;
     setActiveDirection(direction);
     dispatch({ type: 'RUN', direction });
+    // Start (or restart) the hold-repeat interval for this direction.
+    clearRepeat();
+    repeatTimerRef.current = setInterval(() => {
+      if (lastDirectionRef.current) {
+        dispatch({ type: 'RUN', direction: lastDirectionRef.current });
+      }
+    }, HOLD_REPEAT_MS);
   }
 
   function stopInteraction() {
+    clearRepeat();
     lastDirectionRef.current = null;
     setActiveDirection(null);
   }
@@ -81,6 +101,7 @@ export function DPad({ dispatch, isActive }: DPadProps) {
 
   // Unmount-only cleanup.
   useEffect(() => () => {
+    clearRepeat();
     if (touchResetTimerRef.current !== null) clearTimeout(touchResetTimerRef.current);
   }, []);
 
