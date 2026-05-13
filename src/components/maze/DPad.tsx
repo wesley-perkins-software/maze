@@ -172,19 +172,32 @@ export function DPad({ dispatch, isActive }: DPadProps) {
     );
   }
 
+  // Grid layout: 3×3, buttons 48px, center gap 28px → 124×124px total cluster.
+  // Up/Down sit in the narrow center column and overflow symmetrically into the
+  // empty corner cells; Left/Right do the same vertically. justifyItems/alignItems
+  // center keeps each button on the cross-axis regardless of cell size.
   return (
     <div
-      className="flex flex-col items-center gap-3 touch-none"
       role="group"
       aria-label="Directional controls"
+      className="touch-none"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '48px 28px 48px',
+        gridTemplateRows: '48px 28px 48px',
+        justifyItems: 'center',
+        alignItems: 'center',
+      }}
     >
-      <div>{makeButton('N', <ChevronUp />, 'Move up')}</div>
-      <div className="flex gap-3">
-        {makeButton('W', <ChevronLeft />, 'Move left')}
-        <div className="w-12 h-12" aria-hidden="true" />
-        {makeButton('E', <ChevronRight />, 'Move right')}
-      </div>
-      <div>{makeButton('S', <ChevronDown />, 'Move down')}</div>
+      <span aria-hidden="true" />
+      {makeButton('N', <ChevronUp />, 'Move up')}
+      <span aria-hidden="true" />
+      {makeButton('W', <ChevronLeft />, 'Move left')}
+      <span aria-hidden="true" />
+      {makeButton('E', <ChevronRight />, 'Move right')}
+      <span aria-hidden="true" />
+      {makeButton('S', <ChevronDown />, 'Move down')}
+      <span aria-hidden="true" />
     </div>
   );
 }
