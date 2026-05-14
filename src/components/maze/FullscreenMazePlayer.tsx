@@ -650,7 +650,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             {/* Minimap — no label, no legend */}
             <div
               aria-label="Minimap"
-              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
+              className="relative self-center rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
               style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH }}
             >
               <MazeRenderer
