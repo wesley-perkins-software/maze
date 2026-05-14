@@ -400,25 +400,45 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const ty = viewH / 2 - camY;
 
   // ── Minimap ──────────────────────────────────────────────────────────────────
-  const minimapCell = Math.max(1, Math.ceil(MINIMAP_SIZE / Math.max(maze.width, maze.height)));
+  // Minimum cellSize of 2 ensures at least 1px corridor space (cellSize=1 makes walls fill 100% → solid black).
+  const minimapCell = Math.max(2, Math.ceil(MINIMAP_SIZE / Math.max(maze.width, maze.height)));
+  // Derive container size from actual SVG aspect ratio so non-square mazes don't get letterboxed.
+  const mmSvgW = maze.width * minimapCell + MINIMAP_PADDING * 2;
+  const mmSvgH = maze.height * minimapCell + MINIMAP_PADDING * 2;
+  const mmContainerScale = Math.min(MINIMAP_SIZE / mmSvgW, MINIMAP_SIZE / mmSvgH);
+  const minimapContainerW = Math.round(mmSvgW * mmContainerScale);
+  const minimapContainerH = Math.round(mmSvgH * mmContainerScale);
 
   // Viewport frame overlay on minimap — shows which region is currently visible
-  const mmFrameW = Math.min(MINIMAP_SIZE, (viewW / mazeW) * MINIMAP_SIZE);
-  const mmFrameH = Math.min(MINIMAP_SIZE, (viewH / mazeH) * MINIMAP_SIZE);
-  const mmFrameX = Math.max(0, Math.min(MINIMAP_SIZE - mmFrameW, (-tx / mazeW) * MINIMAP_SIZE));
-  const mmFrameY = Math.max(0, Math.min(MINIMAP_SIZE - mmFrameH, (-ty / mazeH) * MINIMAP_SIZE));
+  const mmFrameW = Math.min(minimapContainerW, (viewW / mazeW) * minimapContainerW);
+  const mmFrameH = Math.min(minimapContainerH, (viewH / mazeH) * minimapContainerH);
+  const mmFrameX = Math.max(0, Math.min(minimapContainerW - mmFrameW, (-tx / mazeW) * minimapContainerW));
+  const mmFrameY = Math.max(0, Math.min(minimapContainerH - mmFrameH, (-ty / mazeH) * minimapContainerH));
 
-  const sidebarMinimapCell = Math.max(1, Math.ceil(SIDEBAR_MINIMAP_SIZE / Math.max(maze.width, maze.height)));
-  const dmFrameW = Math.min(SIDEBAR_MINIMAP_SIZE, (viewW / mazeW) * SIDEBAR_MINIMAP_SIZE);
-  const dmFrameH = Math.min(SIDEBAR_MINIMAP_SIZE, (viewH / mazeH) * SIDEBAR_MINIMAP_SIZE);
-  const dmFrameX = Math.max(0, Math.min(SIDEBAR_MINIMAP_SIZE - dmFrameW, (-tx / mazeW) * SIDEBAR_MINIMAP_SIZE));
-  const dmFrameY = Math.max(0, Math.min(SIDEBAR_MINIMAP_SIZE - dmFrameH, (-ty / mazeH) * SIDEBAR_MINIMAP_SIZE));
+  const sidebarMinimapCell = Math.max(2, Math.ceil(SIDEBAR_MINIMAP_SIZE / Math.max(maze.width, maze.height)));
+  const dmSvgW = maze.width * sidebarMinimapCell + MINIMAP_PADDING * 2;
+  const dmSvgH = maze.height * sidebarMinimapCell + MINIMAP_PADDING * 2;
+  const dmContainerScale = Math.min(SIDEBAR_MINIMAP_SIZE / dmSvgW, SIDEBAR_MINIMAP_SIZE / dmSvgH);
+  const sidebarMinimapContainerW = Math.round(dmSvgW * dmContainerScale);
+  const sidebarMinimapContainerH = Math.round(dmSvgH * dmContainerScale);
+
+  const dmFrameW = Math.min(sidebarMinimapContainerW, (viewW / mazeW) * sidebarMinimapContainerW);
+  const dmFrameH = Math.min(sidebarMinimapContainerH, (viewH / mazeH) * sidebarMinimapContainerH);
+  const dmFrameX = Math.max(0, Math.min(sidebarMinimapContainerW - dmFrameW, (-tx / mazeW) * sidebarMinimapContainerW));
+  const dmFrameY = Math.max(0, Math.min(sidebarMinimapContainerH - dmFrameH, (-ty / mazeH) * sidebarMinimapContainerH));
+
+  // Scale endpoint markers down when the minimap's short dimension is small, so they don't
+  // overwhelm the strip for extreme aspect-ratio mazes (e.g. 100×5 or 5×100).
+  const mmShortSide = Math.min(minimapContainerW, minimapContainerH);
+  const minimapMarkerSize = Math.min(MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(12, mmShortSide));
+  const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
+  const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
 
   const minimapPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
       <div
         className="relative rounded-xl overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
-        style={{ width: MINIMAP_SIZE, height: MINIMAP_SIZE }}
+        style={{ width: minimapContainerW, height: minimapContainerH }}
         aria-hidden="true"
       >
         <MazeRenderer
@@ -426,13 +446,15 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           cellSize={minimapCell}
           wallThickness={1}
           padding={MINIMAP_PADDING}
+          fillContainer
           playerPosition={state.playerPosition}
-          playerMarkerRadius={5}
+          playerMarkerRadius={3}
+          showPlayerGlow={false}
           solution={currentSolution}
           showSolution={state.solutionVisible}
           showEndpointMarkers={false}
         />
-        <MinimapEndpointMarkers maze={maze} cellSize={minimapCell} />
+        <MinimapEndpointMarkers maze={maze} cellSize={minimapCell} markerSize={minimapMarkerSize} />
         {/* Current viewport frame */}
         <div
           className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
@@ -637,16 +659,18 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             {/* Minimap — no label, no legend */}
             <div
               aria-label="Minimap"
-              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
-              style={{ width: SIDEBAR_MINIMAP_SIZE, height: SIDEBAR_MINIMAP_SIZE }}
+              className="relative self-center rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
+              style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH }}
             >
               <MazeRenderer
                 maze={maze}
                 cellSize={sidebarMinimapCell}
                 wallThickness={1}
                 padding={MINIMAP_PADDING}
+                fillContainer
                 playerPosition={state.playerPosition}
-                playerMarkerRadius={6}
+                playerMarkerRadius={3}
+                showPlayerGlow={false}
                 solution={currentSolution}
                 showSolution={state.solutionVisible}
                 showEndpointMarkers={false}
@@ -654,7 +678,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               <MinimapEndpointMarkers
                 maze={maze}
                 cellSize={sidebarMinimapCell}
-                markerSize={DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE}
+                markerSize={sidebarMarkerSize}
               />
               <div
                 className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
