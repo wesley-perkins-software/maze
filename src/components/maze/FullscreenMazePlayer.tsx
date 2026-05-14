@@ -52,6 +52,7 @@ const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
 const MINIMAP_RAIL_ENDPOINT_MARKER_SIZE = 18;
 const MINIMAP_PLAYER_MARKER_SIZE = 8;
 const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 5;
+const MINIMAP_PLAYER_START_CLEARANCE = 2;
 const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
 const MINIMAP_RAIL_SHORT_SIDE = 56;
 const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
@@ -192,6 +193,30 @@ function getMinimapPointPosition(
   };
 }
 
+function isMinimapPlayerClearOfStart({
+  maze,
+  cellSize,
+  playerPosition,
+  bounds,
+  playerMarkerSize,
+  endpointMarkerSize,
+}: {
+  maze: MazeData;
+  cellSize: number;
+  playerPosition: MazeData['entry'];
+  bounds: MinimapRenderedBounds;
+  playerMarkerSize: number;
+  endpointMarkerSize: number;
+}) {
+  const playerPos = getMinimapPointPosition(maze, cellSize, playerPosition, bounds, playerMarkerSize);
+  const entryPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.entry, bounds);
+  const dx = playerPos.left - Number(entryPos.left);
+  const dy = playerPos.top - Number(entryPos.top);
+  const clearDistance = endpointMarkerSize / 2 + playerMarkerSize / 2 + MINIMAP_PLAYER_START_CLEARANCE;
+
+  return Math.hypot(dx, dy) >= clearDistance;
+}
+
 function MinimapPlayerMarker({
   maze,
   cellSize,
@@ -209,7 +234,7 @@ function MinimapPlayerMarker({
 
   return (
     <div
-      className="pointer-events-none absolute z-30 rounded-full border-2 border-white bg-blue-600 shadow-[0_1px_4px_rgba(15,23,42,0.45)]"
+      className="pointer-events-none absolute z-20 rounded-full border-2 border-white bg-blue-600 shadow-[0_1px_4px_rgba(15,23,42,0.45)]"
       style={{
         left: pos.left,
         top: pos.top,
@@ -255,7 +280,7 @@ function MinimapEndpointMarkers({
     <>
       <svg
         viewBox="0 0 24 24"
-        className="pointer-events-none absolute z-20 overflow-visible"
+        className="pointer-events-none absolute z-30 overflow-visible"
         style={{ ...markerStyle, ...entryPos }}
         aria-hidden="true"
       >
@@ -265,7 +290,7 @@ function MinimapEndpointMarkers({
       </svg>
       <svg
         viewBox="0 0 24 24"
-        className="pointer-events-none absolute z-20 overflow-visible"
+        className="pointer-events-none absolute z-30 overflow-visible"
         style={{ ...markerStyle, ...exitPos }}
         aria-hidden="true"
       >
@@ -604,12 +629,20 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     : playerOnExitMarker
       ? maze.exit
       : state.playerPosition;
+  const showMinimapPlayerMarker = isMinimapPlayerClearOfStart({
+    maze,
+    cellSize: minimapCell,
+    playerPosition: minimapPlayerPosition,
+    bounds: minimapRenderedBounds,
+    playerMarkerSize: minimapPlayerMarkerSize,
+    endpointMarkerSize: minimapMarkerSize,
+  });
   const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
   const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
 
   const minimapViewportFrameClass = isRailMinimap
-    ? 'absolute rounded border border-stone-900/65 pointer-events-none'
-    : 'absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none';
+    ? 'absolute z-10 rounded border border-stone-900/65 pointer-events-none'
+    : 'absolute z-10 rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none';
   const minimapViewportFrameOpacity = isRailMinimap ? 0.45 : 0.65;
 
   const minimapPanel = (
@@ -634,19 +667,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           hintCells={state.hintCells}
           showEndpointMarkers={false}
         />
-        <MinimapEndpointMarkers
-          maze={maze}
-          cellSize={minimapCell}
-          markerSize={minimapMarkerSize}
-          bounds={minimapRenderedBounds}
-        />
-        <MinimapPlayerMarker
-          maze={maze}
-          cellSize={minimapCell}
-          playerPosition={minimapPlayerPosition}
-          bounds={minimapRenderedBounds}
-          markerSize={minimapPlayerMarkerSize}
-        />
         {/* Current viewport frame */}
         <div
           className={minimapViewportFrameClass}
@@ -657,6 +677,21 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             height: mmFrameH,
             opacity: minimapViewportFrameOpacity,
           }}
+        />
+        {showMinimapPlayerMarker && (
+          <MinimapPlayerMarker
+            maze={maze}
+            cellSize={minimapCell}
+            playerPosition={minimapPlayerPosition}
+            bounds={minimapRenderedBounds}
+            markerSize={minimapPlayerMarkerSize}
+          />
+        )}
+        <MinimapEndpointMarkers
+          maze={maze}
+          cellSize={minimapCell}
+          markerSize={minimapMarkerSize}
+          bounds={minimapRenderedBounds}
         />
       </div>
     </div>
