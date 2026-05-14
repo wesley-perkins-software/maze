@@ -446,6 +446,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           cellSize={minimapCell}
           wallThickness={1}
           padding={MINIMAP_PADDING}
+          fillContainer
           playerPosition={state.playerPosition}
           playerMarkerRadius={3}
           showPlayerGlow={false}
@@ -666,6 +667,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 cellSize={sidebarMinimapCell}
                 wallThickness={1}
                 padding={MINIMAP_PADDING}
+                fillContainer
                 playerPosition={state.playerPosition}
                 playerMarkerRadius={3}
                 showPlayerGlow={false}
