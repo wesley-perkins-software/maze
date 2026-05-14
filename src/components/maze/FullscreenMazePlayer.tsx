@@ -51,7 +51,7 @@ const MINIMAP_PADDING = 2;
 const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
 const MINIMAP_RAIL_ENDPOINT_MARKER_SIZE = 18;
 const MINIMAP_PLAYER_MARKER_SIZE = 8;
-const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 6;
+const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 5;
 const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
 const MINIMAP_RAIL_SHORT_SIDE = 56;
 const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
@@ -151,21 +151,21 @@ function getMinimapEndpointMarkerPosition(
   let x = MINIMAP_PADDING + point.x * cellSize + cellSize / 2;
   let y = MINIMAP_PADDING + point.y * cellSize + cellSize / 2;
 
+  // Anchor endpoint badges to the maze perimeter wall instead of the cell
+  // center, so the badge center sits on the rendered maze boundary and the
+  // badge straddles the rail rather than floating outside it.
+  if (point.y === 0) y = MINIMAP_PADDING;
+  else if (point.y === maze.height - 1) y = totalH - MINIMAP_PADDING;
+
+  if (point.x === 0) x = MINIMAP_PADDING;
+  else if (point.x === maze.width - 1) x = totalW - MINIMAP_PADDING;
+
   if (!bounds) {
     return {
       left: `${(x / totalW) * 100}%`,
       top: `${(y / totalH) * 100}%`,
     };
   }
-
-  // Mobile overlays anchor endpoint badges to the maze perimeter wall instead of
-  // the cell center, so the marker feels mounted on the wall while still
-  // remaining partly outside it. The no-bounds path above preserves desktop.
-  if (point.y === 0) y = MINIMAP_PADDING;
-  else if (point.y === maze.height - 1) y = totalH - MINIMAP_PADDING;
-
-  if (point.x === 0) x = MINIMAP_PADDING;
-  else if (point.x === maze.width - 1) x = totalW - MINIMAP_PADDING;
 
   return {
     left: bounds.x + (x / totalW) * bounds.width,
@@ -227,15 +227,11 @@ function MinimapEndpointMarkers({
   cellSize,
   markerSize = MINIMAP_ENDPOINT_MARKER_SIZE,
   bounds,
-  hideEntry = false,
-  hideExit = false,
 }: {
   maze: MazeData;
   cellSize: number;
   markerSize?: number;
   bounds?: MinimapRenderedBounds;
-  hideEntry?: boolean;
-  hideExit?: boolean;
 }) {
   const entryPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.entry, bounds);
   const exitPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.exit, bounds);
@@ -257,30 +253,26 @@ function MinimapEndpointMarkers({
 
   return (
     <>
-      {!hideEntry && (
-        <svg
-          viewBox="0 0 24 24"
-          className="pointer-events-none absolute z-20 overflow-visible"
-          style={{ ...markerStyle, ...entryPos }}
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="12" fill="white" />
-          <circle cx="12" cy="12" r="8.8" fill={START_MARKER_COLOR} opacity="0.9" />
-          <polygon points={entryArrow} fill="white" opacity="0.95" />
-        </svg>
-      )}
-      {!hideExit && (
-        <svg
-          viewBox="0 0 24 24"
-          className="pointer-events-none absolute z-20 overflow-visible"
-          style={{ ...markerStyle, ...exitPos }}
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="12" fill="white" />
-          <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
-          <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
-        </svg>
-      )}
+      <svg
+        viewBox="0 0 24 24"
+        className="pointer-events-none absolute z-20 overflow-visible"
+        style={{ ...markerStyle, ...entryPos }}
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="12" fill="white" />
+        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_COLOR} opacity="0.9" />
+        <polygon points={entryArrow} fill="white" opacity="0.95" />
+      </svg>
+      <svg
+        viewBox="0 0 24 24"
+        className="pointer-events-none absolute z-20 overflow-visible"
+        style={{ ...markerStyle, ...exitPos }}
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="12" fill="white" />
+        <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
+        <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
+      </svg>
     </>
   );
 }
@@ -607,12 +599,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // dominate compact horizontal/vertical navigation aids.
   const minimapMarkerSize = isRailMinimap ? MINIMAP_RAIL_ENDPOINT_MARKER_SIZE : MINIMAP_ENDPOINT_MARKER_SIZE;
   const minimapPlayerMarkerSize = isRailMinimap ? MINIMAP_RAIL_PLAYER_MARKER_SIZE : MINIMAP_PLAYER_MARKER_SIZE;
-  const playerOnStart = playerOnEntryMarker || (
-    state.playerPosition.x === maze.entry.x && state.playerPosition.y === maze.entry.y
-  );
-  const playerOnFinish = playerOnExitMarker || (
-    state.playerPosition.x === maze.exit.x && state.playerPosition.y === maze.exit.y
-  );
   const minimapPlayerPosition = playerOnEntryMarker
     ? maze.entry
     : playerOnExitMarker
@@ -653,8 +639,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           cellSize={minimapCell}
           markerSize={minimapMarkerSize}
           bounds={minimapRenderedBounds}
-          hideEntry={playerOnStart}
-          hideExit={playerOnFinish}
         />
         <MinimapPlayerMarker
           maze={maze}
