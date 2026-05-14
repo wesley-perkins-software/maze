@@ -447,7 +447,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           wallThickness={1}
           padding={MINIMAP_PADDING}
           playerPosition={state.playerPosition}
-          playerMarkerRadius={5}
+          playerMarkerRadius={3}
+          showPlayerGlow={false}
           solution={currentSolution}
           showSolution={state.solutionVisible}
           showEndpointMarkers={false}
@@ -666,7 +667,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 wallThickness={1}
                 padding={MINIMAP_PADDING}
                 playerPosition={state.playerPosition}
-                playerMarkerRadius={6}
+                playerMarkerRadius={3}
+                showPlayerGlow={false}
                 solution={currentSolution}
                 showSolution={state.solutionVisible}
                 showEndpointMarkers={false}

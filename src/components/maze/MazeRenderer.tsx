@@ -34,6 +34,7 @@ export interface MazeRendererProps {
   markerRadius?: number;       // override entry/exit marker radius
   showEndpointMarkers?: boolean; // render entry/exit markers inside the SVG
   markersOutside?: boolean;    // place entry/exit icons outside the perimeter wall
+  showPlayerGlow?: boolean;    // render the animated glow ring around the player dot (default true)
 }
 
 export function MazeRenderer({
@@ -56,6 +57,7 @@ export function MazeRenderer({
   showEndpointMarkers = true,
   markersOutside = false,
   onSvgClick,
+  showPlayerGlow = true,
 }: MazeRendererProps) {
   const { width, height, grid, entry, exit } = maze;
 
@@ -320,14 +322,15 @@ export function MazeRenderer({
       {/* Player */}
       {playerCx !== null && playerCy !== null && (
         <>
-          {/* Animated glow ring */}
-          <circle
-            cx={playerCx}
-            cy={playerCy}
-            r={glowR}
-            fill={PLAYER_MARKER_COLOR}
-            className="maze-player-glow"
-          />
+          {showPlayerGlow && (
+            <circle
+              cx={playerCx}
+              cy={playerCy}
+              r={glowR}
+              fill={PLAYER_MARKER_COLOR}
+              className="maze-player-glow"
+            />
+          )}
           {/* Solid player dot */}
           <circle
             cx={playerCx}
