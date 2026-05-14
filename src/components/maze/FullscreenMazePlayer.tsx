@@ -427,6 +427,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const dmFrameX = Math.max(0, Math.min(sidebarMinimapContainerW - dmFrameW, (-tx / mazeW) * sidebarMinimapContainerW));
   const dmFrameY = Math.max(0, Math.min(sidebarMinimapContainerH - dmFrameH, (-ty / mazeH) * sidebarMinimapContainerH));
 
+  // Scale endpoint markers down when the minimap's short dimension is small, so they don't
+  // overwhelm the strip for extreme aspect-ratio mazes (e.g. 100×5 or 5×100).
+  const mmShortSide = Math.min(minimapContainerW, minimapContainerH);
+  const minimapMarkerSize = Math.min(MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(12, mmShortSide * 2));
+  const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
+  const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide * 2));
+
   const minimapPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
       <div
@@ -445,7 +452,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           showSolution={state.solutionVisible}
           showEndpointMarkers={false}
         />
-        <MinimapEndpointMarkers maze={maze} cellSize={minimapCell} />
+        <MinimapEndpointMarkers maze={maze} cellSize={minimapCell} markerSize={minimapMarkerSize} />
         {/* Current viewport frame */}
         <div
           className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
@@ -667,7 +674,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               <MinimapEndpointMarkers
                 maze={maze}
                 cellSize={sidebarMinimapCell}
-                markerSize={DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE}
+                markerSize={sidebarMarkerSize}
               />
               <div
                 className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
