@@ -430,14 +430,14 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Scale endpoint markers down when the minimap's short dimension is small, so they don't
   // overwhelm the strip for extreme aspect-ratio mazes (e.g. 100×5 or 5×100).
   const mmShortSide = Math.min(minimapContainerW, minimapContainerH);
-  const minimapMarkerSize = Math.min(MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(12, mmShortSide * 2));
+  const minimapMarkerSize = Math.min(MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(12, mmShortSide));
   const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
-  const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide * 2));
+  const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
 
   const minimapPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
       <div
-        className="relative rounded-xl overflow-hidden border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
+        className="relative rounded-xl overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
         style={{ width: minimapContainerW, height: minimapContainerH }}
         aria-hidden="true"
       >
@@ -659,7 +659,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             {/* Minimap — no label, no legend */}
             <div
               aria-label="Minimap"
-              className="relative self-center rounded-xl overflow-hidden border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
+              className="relative self-center rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
               style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH }}
             >
               <MazeRenderer
