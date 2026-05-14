@@ -51,29 +51,149 @@ const MINIMAP_PADDING = 2;
 const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
 
-function getMinimapMarkerPosition(maze: MazeData, cellSize: number, point: MazeData['entry']) {
+interface MinimapRenderedBounds {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  svgWidth: number;
+  svgHeight: number;
+  containerWidth: number;
+  containerHeight: number;
+}
+
+function getContainedMinimapBounds({
+  containerWidth,
+  containerHeight,
+  svgWidth,
+  svgHeight,
+}: {
+  containerWidth: number;
+  containerHeight: number;
+  svgWidth: number;
+  svgHeight: number;
+}): MinimapRenderedBounds {
+  const mazeAspect = svgWidth / svgHeight;
+  const containerAspect = containerWidth / containerHeight;
+
+  if (mazeAspect > containerAspect) {
+    const renderedHeight = containerWidth / mazeAspect;
+
+    return {
+      x: 0,
+      y: (containerHeight - renderedHeight) / 2,
+      width: containerWidth,
+      height: renderedHeight,
+      svgWidth,
+      svgHeight,
+      containerWidth,
+      containerHeight,
+    };
+  }
+
+  const renderedWidth = containerHeight * mazeAspect;
+
+  return {
+    x: (containerWidth - renderedWidth) / 2,
+    y: 0,
+    width: renderedWidth,
+    height: containerHeight,
+    svgWidth,
+    svgHeight,
+    containerWidth,
+    containerHeight,
+  };
+}
+
+function getMinimapMarkerPosition(
+  maze: MazeData,
+  cellSize: number,
+  point: MazeData['entry'],
+  bounds?: MinimapRenderedBounds,
+  markerSize = MINIMAP_ENDPOINT_MARKER_SIZE,
+) {
   const totalW = maze.width * cellSize + MINIMAP_PADDING * 2;
   const totalH = maze.height * cellSize + MINIMAP_PADDING * 2;
   const x = MINIMAP_PADDING + point.x * cellSize + cellSize / 2;
   const y = MINIMAP_PADDING + point.y * cellSize + cellSize / 2;
 
+  if (!bounds) {
+    return {
+      left: `${(x / totalW) * 100}%`,
+      top: `${(y / totalH) * 100}%`,
+    };
+  }
+
+  const markerPadding = markerSize / 2;
+  const left = clamp(markerPadding, bounds.x + (x / totalW) * bounds.width, bounds.containerWidth - markerPadding);
+  const top = clamp(markerPadding, bounds.y + (y / totalH) * bounds.height, bounds.containerHeight - markerPadding);
+
+  return { left, top };
+}
+
+
+function getMinimapPointPosition(
+  maze: MazeData,
+  cellSize: number,
+  point: MazeData['entry'],
+  bounds: MinimapRenderedBounds,
+  markerSize: number,
+) {
+  const totalW = maze.width * cellSize + MINIMAP_PADDING * 2;
+  const totalH = maze.height * cellSize + MINIMAP_PADDING * 2;
+  const x = MINIMAP_PADDING + point.x * cellSize + cellSize / 2;
+  const y = MINIMAP_PADDING + point.y * cellSize + cellSize / 2;
+  const markerPadding = markerSize / 2;
+
   return {
-    left: `${(x / totalW) * 100}%`,
-    top: `${(y / totalH) * 100}%`,
+    left: clamp(markerPadding, bounds.x + (x / totalW) * bounds.width, bounds.containerWidth - markerPadding),
+    top: clamp(markerPadding, bounds.y + (y / totalH) * bounds.height, bounds.containerHeight - markerPadding),
   };
+}
+
+function MinimapPlayerMarker({
+  maze,
+  cellSize,
+  playerPosition,
+  bounds,
+  markerSize,
+}: {
+  maze: MazeData;
+  cellSize: number;
+  playerPosition: MazeData['entry'];
+  bounds: MinimapRenderedBounds;
+  markerSize: number;
+}) {
+  const pos = getMinimapPointPosition(maze, cellSize, playerPosition, bounds, markerSize);
+
+  return (
+    <div
+      className="pointer-events-none absolute z-30 rounded-full border-2 border-white bg-blue-600 shadow-[0_1px_4px_rgba(15,23,42,0.45)]"
+      style={{
+        left: pos.left,
+        top: pos.top,
+        width: markerSize,
+        height: markerSize,
+        transform: 'translate(-50%, -50%)',
+      }}
+      aria-hidden="true"
+    />
+  );
 }
 
 function MinimapEndpointMarkers({
   maze,
   cellSize,
   markerSize = MINIMAP_ENDPOINT_MARKER_SIZE,
+  bounds,
 }: {
   maze: MazeData;
   cellSize: number;
   markerSize?: number;
+  bounds?: MinimapRenderedBounds;
 }) {
-  const entryPos = getMinimapMarkerPosition(maze, cellSize, maze.entry);
-  const exitPos = getMinimapMarkerPosition(maze, cellSize, maze.exit);
+  const entryPos = getMinimapMarkerPosition(maze, cellSize, maze.entry, bounds, markerSize);
+  const exitPos = getMinimapMarkerPosition(maze, cellSize, maze.exit, bounds, markerSize);
   const markerStyle = {
     width: markerSize,
     height: markerSize,
@@ -402,18 +522,24 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // ── Minimap ──────────────────────────────────────────────────────────────────
   // Minimum cellSize of 2 ensures at least 1px corridor space (cellSize=1 makes walls fill 100% → solid black).
   const minimapCell = Math.max(2, Math.ceil(MINIMAP_SIZE / Math.max(maze.width, maze.height)));
-  // Derive container size from actual SVG aspect ratio so non-square mazes don't get letterboxed.
   const mmSvgW = maze.width * minimapCell + MINIMAP_PADDING * 2;
   const mmSvgH = maze.height * minimapCell + MINIMAP_PADDING * 2;
-  const mmContainerScale = Math.min(MINIMAP_SIZE / mmSvgW, MINIMAP_SIZE / mmSvgH);
-  const minimapContainerW = Math.round(mmSvgW * mmContainerScale);
-  const minimapContainerH = Math.round(mmSvgH * mmContainerScale);
+  // Mobile fullscreen minimap: keep a stable square card and contain-fit the maze inside it.
+  const minimapContainerW = MINIMAP_SIZE;
+  const minimapContainerH = MINIMAP_SIZE;
+  const minimapRenderedBounds = getContainedMinimapBounds({
+    containerWidth: minimapContainerW,
+    containerHeight: minimapContainerH,
+    svgWidth: mmSvgW,
+    svgHeight: mmSvgH,
+  });
 
-  // Viewport frame overlay on minimap — shows which region is currently visible
-  const mmFrameW = Math.min(minimapContainerW, (viewW / mazeW) * minimapContainerW);
-  const mmFrameH = Math.min(minimapContainerH, (viewH / mazeH) * minimapContainerH);
-  const mmFrameX = Math.max(0, Math.min(minimapContainerW - mmFrameW, (-tx / mazeW) * minimapContainerW));
-  const mmFrameY = Math.max(0, Math.min(minimapContainerH - mmFrameH, (-ty / mazeH) * minimapContainerH));
+  // Viewport frame overlay on minimap — shows which region is currently visible.
+  // The frame is positioned against the rendered maze bounds, not the square card bounds.
+  const mmFrameW = Math.min(minimapRenderedBounds.width, (viewW / mazeW) * minimapRenderedBounds.width);
+  const mmFrameH = Math.min(minimapRenderedBounds.height, (viewH / mazeH) * minimapRenderedBounds.height);
+  const mmFrameX = minimapRenderedBounds.x + Math.max(0, Math.min(minimapRenderedBounds.width - mmFrameW, (-tx / mazeW) * minimapRenderedBounds.width));
+  const mmFrameY = minimapRenderedBounds.y + Math.max(0, Math.min(minimapRenderedBounds.height - mmFrameH, (-ty / mazeH) * minimapRenderedBounds.height));
 
   const sidebarMinimapCell = Math.max(2, Math.ceil(SIDEBAR_MINIMAP_SIZE / Math.max(maze.width, maze.height)));
   const dmSvgW = maze.width * sidebarMinimapCell + MINIMAP_PADDING * 2;
@@ -427,10 +553,17 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const dmFrameX = Math.max(0, Math.min(sidebarMinimapContainerW - dmFrameW, (-tx / mazeW) * sidebarMinimapContainerW));
   const dmFrameY = Math.max(0, Math.min(sidebarMinimapContainerH - dmFrameH, (-ty / mazeH) * sidebarMinimapContainerH));
 
-  // Scale endpoint markers down when the minimap's short dimension is small, so they don't
-  // overwhelm the strip for extreme aspect-ratio mazes (e.g. 100×5 or 5×100).
-  const mmShortSide = Math.min(minimapContainerW, minimapContainerH);
-  const minimapMarkerSize = Math.min(MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(12, mmShortSide));
+  // Scale fixed screen-space markers down slightly for extreme aspect-ratio mazes so they
+  // remain readable without overwhelming a letterboxed/pillarboxed strip.
+  const minimapAspectRatio = Math.max(maze.width / maze.height, maze.height / maze.width);
+  const isExtremeMinimapAspectRatio = minimapAspectRatio > 3;
+  const minimapMarkerSize = isExtremeMinimapAspectRatio ? 20 : MINIMAP_ENDPOINT_MARKER_SIZE;
+  const minimapPlayerMarkerSize = isExtremeMinimapAspectRatio ? 7 : 8;
+  const minimapPlayerPosition = playerOnEntryMarker
+    ? maze.entry
+    : playerOnExitMarker
+      ? maze.exit
+      : state.playerPosition;
   const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
   const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
 
@@ -447,14 +580,24 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           wallThickness={1}
           padding={MINIMAP_PADDING}
           fillContainer
-          playerPosition={state.playerPosition}
-          playerMarkerRadius={3}
-          showPlayerGlow={false}
           solution={currentSolution}
           showSolution={state.solutionVisible}
+          hintCells={state.hintCells}
           showEndpointMarkers={false}
         />
-        <MinimapEndpointMarkers maze={maze} cellSize={minimapCell} markerSize={minimapMarkerSize} />
+        <MinimapEndpointMarkers
+          maze={maze}
+          cellSize={minimapCell}
+          markerSize={minimapMarkerSize}
+          bounds={minimapRenderedBounds}
+        />
+        <MinimapPlayerMarker
+          maze={maze}
+          cellSize={minimapCell}
+          playerPosition={minimapPlayerPosition}
+          bounds={minimapRenderedBounds}
+          markerSize={minimapPlayerMarkerSize}
+        />
         {/* Current viewport frame */}
         <div
           className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
