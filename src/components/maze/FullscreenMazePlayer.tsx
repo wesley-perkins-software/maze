@@ -430,9 +430,9 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Scale endpoint markers down when the minimap's short dimension is small, so they don't
   // overwhelm the strip for extreme aspect-ratio mazes (e.g. 100×5 or 5×100).
   const mmShortSide = Math.min(minimapContainerW, minimapContainerH);
-  const minimapMarkerSize = Math.min(MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(12, mmShortSide * 2));
+  const minimapMarkerSize = Math.min(MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(12, mmShortSide));
   const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
-  const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide * 2));
+  const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
 
   const minimapPanel = (
     <div className="flex flex-1 items-center justify-center py-2.5">
