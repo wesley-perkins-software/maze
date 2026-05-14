@@ -49,7 +49,18 @@ function getHintStepCount(maze: MazeData): number {
 
 const MINIMAP_PADDING = 2;
 const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
+const MINIMAP_RAIL_ENDPOINT_MARKER_SIZE = 18;
+const MINIMAP_PLAYER_MARKER_SIZE = 8;
+const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 6;
+const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
+const MINIMAP_RAIL_SHORT_SIDE = 56;
+const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
+const MINIMAP_RAIL_MIN_LONG_SIDE = 140;
+const MINIMAP_VERTICAL_RAIL_LONG_SIDE = 176;
+const MINIMAP_MOBILE_CENTER_GUTTER = 36;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
+
+type MinimapLayout = 'square' | 'horizontal-rail' | 'vertical-rail';
 
 interface MinimapRenderedBounds {
   x: number;
@@ -60,6 +71,30 @@ interface MinimapRenderedBounds {
   svgHeight: number;
   containerWidth: number;
   containerHeight: number;
+}
+
+function getMobileMinimapLayout(maze: MazeData): MinimapLayout {
+  const widthRatio = maze.width / maze.height;
+  const heightRatio = maze.height / maze.width;
+
+  if (widthRatio > MINIMAP_RAIL_ASPECT_THRESHOLD) return 'horizontal-rail';
+  if (heightRatio > MINIMAP_RAIL_ASPECT_THRESHOLD) return 'vertical-rail';
+  return 'square';
+}
+
+function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: number) {
+  if (layout === 'square') {
+    return { width: MINIMAP_SIZE, height: MINIMAP_SIZE };
+  }
+
+  const availablePanelWidth = Math.floor((viewportWidth - MINIMAP_MOBILE_CENTER_GUTTER) / 2);
+  const horizontalLongSide = clamp(MINIMAP_RAIL_MIN_LONG_SIDE, availablePanelWidth, MINIMAP_RAIL_MAX_LONG_SIDE);
+
+  if (layout === 'horizontal-rail') {
+    return { width: horizontalLongSide, height: MINIMAP_RAIL_SHORT_SIDE };
+  }
+
+  return { width: MINIMAP_RAIL_SHORT_SIDE, height: MINIMAP_VERTICAL_RAIL_LONG_SIDE };
 }
 
 function getContainedMinimapBounds({
@@ -524,9 +559,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const minimapCell = Math.max(2, Math.ceil(MINIMAP_SIZE / Math.max(maze.width, maze.height)));
   const mmSvgW = maze.width * minimapCell + MINIMAP_PADDING * 2;
   const mmSvgH = maze.height * minimapCell + MINIMAP_PADDING * 2;
-  // Mobile fullscreen minimap: keep a stable square card and contain-fit the maze inside it.
-  const minimapContainerW = MINIMAP_SIZE;
-  const minimapContainerH = MINIMAP_SIZE;
+  // Mobile fullscreen minimap: square for normal mazes, compact rails for extreme rectangles.
+  const minimapLayout = getMobileMinimapLayout(maze);
+  const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, vpSize.w);
+  const isRailMinimap = minimapLayout !== 'square';
   const minimapRenderedBounds = getContainedMinimapBounds({
     containerWidth: minimapContainerW,
     containerHeight: minimapContainerH,
@@ -553,12 +589,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const dmFrameX = Math.max(0, Math.min(sidebarMinimapContainerW - dmFrameW, (-tx / mazeW) * sidebarMinimapContainerW));
   const dmFrameY = Math.max(0, Math.min(sidebarMinimapContainerH - dmFrameH, (-ty / mazeH) * sidebarMinimapContainerH));
 
-  // Scale fixed screen-space markers down slightly for extreme aspect-ratio mazes so they
-  // remain readable without overwhelming a letterboxed/pillarboxed strip.
-  const minimapAspectRatio = Math.max(maze.width / maze.height, maze.height / maze.width);
-  const isExtremeMinimapAspectRatio = minimapAspectRatio > 3;
-  const minimapMarkerSize = isExtremeMinimapAspectRatio ? 20 : MINIMAP_ENDPOINT_MARKER_SIZE;
-  const minimapPlayerMarkerSize = isExtremeMinimapAspectRatio ? 7 : 8;
+  // Keep markers in screen-space. Rail minimaps get smaller markers so they don't
+  // dominate compact horizontal/vertical navigation aids.
+  const minimapMarkerSize = isRailMinimap ? MINIMAP_RAIL_ENDPOINT_MARKER_SIZE : MINIMAP_ENDPOINT_MARKER_SIZE;
+  const minimapPlayerMarkerSize = isRailMinimap ? MINIMAP_RAIL_PLAYER_MARKER_SIZE : MINIMAP_PLAYER_MARKER_SIZE;
   const minimapPlayerPosition = playerOnEntryMarker
     ? maze.entry
     : playerOnExitMarker
@@ -567,11 +601,20 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
   const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
 
+  const minimapViewportFrameClass = isRailMinimap
+    ? 'absolute rounded border border-stone-900/65 pointer-events-none'
+    : 'absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none';
+  const minimapViewportFrameOpacity = isRailMinimap ? 0.45 : 0.65;
+
   const minimapPanel = (
-    <div className="flex flex-1 items-center justify-center py-2.5">
+    <div className="flex flex-1 items-center justify-center px-1 py-2.5">
       <div
-        className="relative rounded-xl overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
-        style={{ width: minimapContainerW, height: minimapContainerH }}
+        className="relative overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
+        style={{
+          width: minimapContainerW,
+          height: minimapContainerH,
+          borderRadius: isRailMinimap ? 16 : 12,
+        }}
         aria-hidden="true"
       >
         <MazeRenderer
@@ -600,13 +643,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         />
         {/* Current viewport frame */}
         <div
-          className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
+          className={minimapViewportFrameClass}
           style={{
             left: mmFrameX,
             top: mmFrameY,
             width: mmFrameW,
             height: mmFrameH,
-            opacity: 0.65,
+            opacity: minimapViewportFrameOpacity,
           }}
         />
       </div>
