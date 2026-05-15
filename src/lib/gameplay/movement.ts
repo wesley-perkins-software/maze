@@ -168,6 +168,11 @@ export function computeRun(maze: MazeData, startPos: Point, direction: Direction
     // Always stop at the exit
     if (pos.x === maze.exit.x && pos.y === maze.exit.y) break;
 
+    // Treat the start portal's in-bounds entry cell as a semantic junction for
+    // corridor auto-run movement, even when it is geometrically straight. This
+    // keeps runs from carrying the player past the entrance marker alignment.
+    if (pos.x === maze.entry.x && pos.y === maze.entry.y) break;
+
     // Stop at a junction: any direction other than forward and back is open
     const isJunction = ALL_DIRS
       .filter(d => d !== direction && d !== back)
