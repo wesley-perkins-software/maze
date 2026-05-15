@@ -52,8 +52,6 @@ const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
 const MINIMAP_RAIL_ENDPOINT_MARKER_SIZE = 18;
 const MINIMAP_PLAYER_MARKER_SIZE = 10;
 const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 8;
-const MINIMAP_ENDPOINT_PLAYER_BEAD_SIZE = 9;
-const MINIMAP_RAIL_ENDPOINT_PLAYER_BEAD_SIZE = 7;
 const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
 const MINIMAP_RAIL_SHORT_SIDE = 56;
 const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
@@ -200,18 +198,14 @@ function MinimapPlayerMarker({
   playerPosition,
   bounds,
   markerSize,
-  endpointAnchor,
 }: {
   maze: MazeData;
   cellSize: number;
   playerPosition: MazeData['entry'];
   bounds: MinimapRenderedBounds;
   markerSize: number;
-  endpointAnchor?: MazeData['entry'];
 }) {
-  const pos = endpointAnchor
-    ? getMinimapEndpointMarkerPosition(maze, cellSize, endpointAnchor, bounds)
-    : getMinimapPointPosition(maze, cellSize, playerPosition, bounds, markerSize);
+  const pos = getMinimapPointPosition(maze, cellSize, playerPosition, bounds, markerSize);
 
   return (
     <div
@@ -605,19 +599,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Keep markers in screen-space. Rail minimaps get smaller markers so they don't
   // dominate compact horizontal/vertical navigation aids.
   const minimapMarkerSize = isRailMinimap ? MINIMAP_RAIL_ENDPOINT_MARKER_SIZE : MINIMAP_ENDPOINT_MARKER_SIZE;
-  const playerOnEntryCell = state.playerPosition.x === maze.entry.x && state.playerPosition.y === maze.entry.y;
-  const playerOnExitCell = state.playerPosition.x === maze.exit.x && state.playerPosition.y === maze.exit.y;
-  const minimapEndpointAnchor = playerOnEntryMarker || playerOnEntryCell
-    ? maze.entry
-    : playerOnExitMarker || playerOnExitCell
-      ? maze.exit
-      : undefined;
-  // When the player is on an endpoint, render a compact bead centered on the
-  // endpoint badge so the player remains visible without destabilizing anchors.
-  const minimapPlayerMarkerSize = minimapEndpointAnchor
-    ? (isRailMinimap ? MINIMAP_RAIL_ENDPOINT_PLAYER_BEAD_SIZE : MINIMAP_ENDPOINT_PLAYER_BEAD_SIZE)
-    : (isRailMinimap ? MINIMAP_RAIL_PLAYER_MARKER_SIZE : MINIMAP_PLAYER_MARKER_SIZE);
-  const minimapPlayerPosition = minimapEndpointAnchor ?? state.playerPosition;
+  const minimapPlayerMarkerSize = isRailMinimap ? MINIMAP_RAIL_PLAYER_MARKER_SIZE : MINIMAP_PLAYER_MARKER_SIZE;
+  const minimapPlayerInBounds = inBounds(state.playerPosition, maze.width, maze.height);
   const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
   const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
 
@@ -654,14 +637,15 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           markerSize={minimapMarkerSize}
           bounds={minimapRenderedBounds}
         />
-        <MinimapPlayerMarker
-          maze={maze}
-          cellSize={minimapCell}
-          playerPosition={minimapPlayerPosition}
-          bounds={minimapRenderedBounds}
-          markerSize={minimapPlayerMarkerSize}
-          endpointAnchor={minimapEndpointAnchor}
-        />
+        {minimapPlayerInBounds && (
+          <MinimapPlayerMarker
+            maze={maze}
+            cellSize={minimapCell}
+            playerPosition={state.playerPosition}
+            bounds={minimapRenderedBounds}
+            markerSize={minimapPlayerMarkerSize}
+          />
+        )}
         {/* Current viewport frame */}
         <div
           className={minimapViewportFrameClass}
@@ -875,7 +859,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 wallThickness={1}
                 padding={MINIMAP_PADDING}
                 fillContainer
-                playerPosition={state.playerPosition}
+                playerPosition={inBounds(state.playerPosition, maze.width, maze.height) ? state.playerPosition : undefined}
                 playerMarkerRadius={3}
                 showPlayerGlow={false}
                 solution={currentSolution}
