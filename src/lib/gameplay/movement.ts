@@ -153,12 +153,19 @@ export function computeRun(maze: MazeData, startPos: Point, direction: Direction
     pos = { ...maze.entry };
     path.push({ ...pos });
 
-    if (pos.x === maze.exit.x && pos.y === maze.exit.y) return path;
+    // The entry gap is an intentional decision point. Stop as soon as the
+    // marker enters the entry cell so the first move never carries the player
+    // past the maze entrance.
+    return path;
+  }
 
-    const isJunction = ALL_DIRS
-      .filter(d => d !== direction && d !== back)
-      .some(d => canMove(maze, pos, d));
-    if (isJunction) return path;
+  if (pos.x === maze.entry.x && pos.y === maze.entry.y) {
+    if (!canMove(maze, pos, direction)) return path;
+
+    // Treat the starting entrance cell as a junction even when it only has a
+    // straight corridor ahead, so d-pad/swipe movement from the entrance takes
+    // exactly one cell before normal run-to-junction behavior resumes.
+    return [applyMove(pos, direction)];
   }
 
   while (canMove(maze, pos, direction)) {
