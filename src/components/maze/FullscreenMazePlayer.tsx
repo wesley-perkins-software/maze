@@ -652,7 +652,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         }}
       >
         <div
-          className="relative overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
+          className="relative overflow-visible border-2 border-stone-800 bg-white shadow-sm"
           style={{
             width: minimapContainerW,
             height: minimapContainerH,
@@ -1051,17 +1051,17 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       {/* Mobile control strip — equal halves: minimap + D-pad with left-handed swap */}
       <div
         ref={controlStripRef}
-        className="md:hidden bg-[#f7f1e8] border-t border-stone-300 shrink-0 flex items-stretch overflow-visible"
+        className="md:hidden bg-[#F6F5F0] border-t border-[#DDD8CF] shrink-0 flex items-stretch overflow-visible pb-[env(safe-area-inset-bottom,0px)]"
         style={{ height: MOBILE_CONTROL_DOCK_H }}
       >
         {leftHanded ? dpadPanel : minimapPanel}
 
         {/* Center divider with swap toggle */}
         <div className="flex flex-col items-center justify-center px-1 gap-1">
-          <div className="w-px flex-1 bg-slate-200" />
+          <div className="w-px flex-1 bg-stone-200" />
           <button
             onClick={toggleLeftHanded}
-            className="w-7 h-7 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-colors shrink-0 shadow-sm"
+            className="w-7 h-7 flex items-center justify-center rounded-full bg-white border border-stone-200 text-stone-400 hover:text-stone-600 hover:border-stone-300 transition-colors shrink-0 shadow-sm"
             aria-label={leftHanded ? 'Switch to right-handed layout' : 'Switch to left-handed layout'}
             title={leftHanded ? 'Right-handed layout' : 'Left-handed layout'}
           >
@@ -1069,7 +1069,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               <path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/>
             </svg>
           </button>
-          <div className="w-px flex-1 bg-slate-200" />
+          <div className="w-px flex-1 bg-stone-200" />
         </div>
 
         {leftHanded ? minimapPanel : dpadPanel}
