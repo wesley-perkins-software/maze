@@ -27,6 +27,9 @@ const TOP_BAR_H = 44;
 const AD_SLOT_H = 0;
 const SAFE_PAD = 32;
 const MINIMAP_SIZE = 96;
+const MOBILE_CONTROL_DOCK_H = 168;
+const MOBILE_CONTROL_DOCK_Y_PADDING = 10;
+const MOBILE_MINIMAP_SLOT_H = MOBILE_CONTROL_DOCK_H - MOBILE_CONTROL_DOCK_Y_PADDING * 2;
 const SIDEBAR_W = 224;
 const SIDEBAR_MINIMAP_SIZE = 192;
 const SIDEBAR_AD_ENABLED = false;
@@ -56,7 +59,8 @@ const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
 const MINIMAP_RAIL_SHORT_SIDE = 56;
 const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
 const MINIMAP_RAIL_MIN_LONG_SIDE = 140;
-const MINIMAP_VERTICAL_RAIL_LONG_SIDE = 176;
+const MINIMAP_RAIL_MARKER_OVERHANG = Math.ceil(MINIMAP_RAIL_ENDPOINT_MARKER_SIZE / 2);
+const MINIMAP_VERTICAL_RAIL_MAX_LONG_SIDE = MOBILE_MINIMAP_SLOT_H - MINIMAP_RAIL_MARKER_OVERHANG * 2;
 const MINIMAP_MOBILE_CENTER_GUTTER = 36;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
 const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
@@ -84,19 +88,33 @@ function getMobileMinimapLayout(maze: MazeData): MinimapLayout {
   return 'square';
 }
 
+function getMobileMinimapSlotWidth(viewportWidth: number) {
+  return Math.max(0, Math.floor((viewportWidth - MINIMAP_MOBILE_CENTER_GUTTER) / 2));
+}
+
 function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: number) {
+  const slotWidth = getMobileMinimapSlotWidth(viewportWidth);
+  const squareSide = Math.min(MINIMAP_SIZE, slotWidth, MOBILE_MINIMAP_SLOT_H);
+
   if (layout === 'square') {
-    return { width: MINIMAP_SIZE, height: MINIMAP_SIZE };
+    return { width: squareSide, height: squareSide };
   }
 
-  const availablePanelWidth = Math.floor((viewportWidth - MINIMAP_MOBILE_CENTER_GUTTER) / 2);
-  const horizontalLongSide = clamp(MINIMAP_RAIL_MIN_LONG_SIDE, availablePanelWidth, MINIMAP_RAIL_MAX_LONG_SIDE);
+  const horizontalMaxSide = Math.min(MINIMAP_RAIL_MAX_LONG_SIDE, slotWidth);
+  const horizontalMinSide = Math.min(MINIMAP_RAIL_MIN_LONG_SIDE, horizontalMaxSide);
+  const horizontalLongSide = clamp(horizontalMinSide, slotWidth, horizontalMaxSide);
 
   if (layout === 'horizontal-rail') {
-    return { width: horizontalLongSide, height: MINIMAP_RAIL_SHORT_SIDE };
+    return {
+      width: horizontalLongSide,
+      height: Math.min(MINIMAP_RAIL_SHORT_SIDE, MOBILE_MINIMAP_SLOT_H),
+    };
   }
 
-  return { width: MINIMAP_RAIL_SHORT_SIDE, height: MINIMAP_VERTICAL_RAIL_LONG_SIDE };
+  return {
+    width: Math.min(MINIMAP_RAIL_SHORT_SIDE, slotWidth),
+    height: Math.min(MINIMAP_VERTICAL_RAIL_MAX_LONG_SIDE, MOBILE_MINIMAP_SLOT_H),
+  };
 }
 
 function getContainedMinimapBounds({
@@ -328,7 +346,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const camYRef = useRef<number | null>(null);
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
   const controlStripRef = useRef<HTMLDivElement>(null);
-  const [controlStripH, setControlStripH] = useState(128);
+  const [controlStripH, setControlStripH] = useState(MOBILE_CONTROL_DOCK_H);
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetConfirming, setResetConfirming] = useState(false);
   const resetConfirmTimerRef = useRef<number | null>(null);
@@ -576,6 +594,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const mmSvgH = maze.height * minimapCell + MINIMAP_PADDING * 2;
   // Mobile fullscreen minimap: square for normal mazes, compact rails for extreme rectangles.
   const minimapLayout = getMobileMinimapLayout(maze);
+  const minimapSlotW = getMobileMinimapSlotWidth(vpSize.w);
   const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, vpSize.w);
   const isRailMinimap = minimapLayout !== 'square';
   const minimapRenderedBounds = getContainedMinimapBounds({
@@ -624,59 +643,67 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const minimapViewportFrameOpacity = isRailMinimap ? 0.45 : 0.65;
 
   const minimapPanel = (
-    <div className="flex flex-1 items-center justify-center px-1 py-2.5">
+    <div className="flex h-full flex-1 items-center justify-center px-1">
       <div
-        className="relative overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
+        className="flex items-center justify-center"
         style={{
-          width: minimapContainerW,
-          height: minimapContainerH,
-          borderRadius: isRailMinimap ? 16 : 12,
+          width: minimapSlotW,
+          height: MOBILE_MINIMAP_SLOT_H,
         }}
-        aria-hidden="true"
       >
-        <MazeRenderer
-          maze={maze}
-          cellSize={minimapCell}
-          wallThickness={1}
-          padding={MINIMAP_PADDING}
-          fillContainer
-          solution={currentSolution}
-          showSolution={state.solutionVisible}
-          hintCells={state.hintCells}
-          showEndpointMarkers={false}
-        />
-        <MinimapEndpointMarkers
-          maze={maze}
-          cellSize={minimapCell}
-          markerSize={minimapMarkerSize}
-          bounds={minimapRenderedBounds}
-        />
-        {/* Current viewport frame */}
         <div
-          className={minimapViewportFrameClass}
+          className="relative overflow-visible border-2 border-stone-800 bg-white shadow-[0_2px_0_rgba(41,37,36,0.18)]"
           style={{
-            left: mmFrameX,
-            top: mmFrameY,
-            width: mmFrameW,
-            height: mmFrameH,
-            opacity: minimapViewportFrameOpacity,
+            width: minimapContainerW,
+            height: minimapContainerH,
+            borderRadius: isRailMinimap ? 16 : 12,
           }}
-        />
-        {showMinimapPlayerMarker && (
-          <MinimapPlayerMarker
+          aria-hidden="true"
+        >
+          <MazeRenderer
             maze={maze}
             cellSize={minimapCell}
-            playerPosition={state.playerPosition}
-            bounds={minimapRenderedBounds}
-            markerSize={minimapPlayerMarkerSize}
+            wallThickness={1}
+            padding={MINIMAP_PADDING}
+            fillContainer
+            solution={currentSolution}
+            showSolution={state.solutionVisible}
+            hintCells={state.hintCells}
+            showEndpointMarkers={false}
           />
-        )}
+          <MinimapEndpointMarkers
+            maze={maze}
+            cellSize={minimapCell}
+            markerSize={minimapMarkerSize}
+            bounds={minimapRenderedBounds}
+          />
+          {/* Current viewport frame */}
+          <div
+            className={minimapViewportFrameClass}
+            style={{
+              left: mmFrameX,
+              top: mmFrameY,
+              width: mmFrameW,
+              height: mmFrameH,
+              opacity: minimapViewportFrameOpacity,
+            }}
+          />
+          {showMinimapPlayerMarker && (
+            <MinimapPlayerMarker
+              maze={maze}
+              cellSize={minimapCell}
+              playerPosition={state.playerPosition}
+              bounds={minimapRenderedBounds}
+              markerSize={minimapPlayerMarkerSize}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
 
   const dpadPanel = (
-    <div className="flex flex-1 items-center justify-center py-2.5">
+    <div className="flex h-full flex-1 items-center justify-center">
       <DPad dispatch={dispatch} isActive={isActive} />
     </div>
   );
@@ -1024,7 +1051,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       {/* Mobile control strip — equal halves: minimap + D-pad with left-handed swap */}
       <div
         ref={controlStripRef}
-        className="md:hidden bg-[#f7f1e8] border-t border-stone-300 shrink-0 flex items-stretch"
+        className="md:hidden bg-[#f7f1e8] border-t border-stone-300 shrink-0 flex items-stretch overflow-visible"
+        style={{ height: MOBILE_CONTROL_DOCK_H }}
       >
         {leftHanded ? dpadPanel : minimapPanel}
 
