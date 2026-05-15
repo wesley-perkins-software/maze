@@ -26,7 +26,11 @@ const TOP_BAR_H = 44;
 // To activate banner: set AD_SLOT_H = 50 and un-comment the ad div below the maze viewport.
 const AD_SLOT_H = 0;
 const SAFE_PAD = 32;
-const MINIMAP_SIZE = 96;
+function getMobileMinimapMaxSize(dockH: number): number {
+  if (dockH >= 192) return 112;
+  if (dockH >= 168) return 96;
+  return 90;
+}
 const MOBILE_CONTROL_DOCK_Y_PADDING = 10;
 
 function getMobileDockHeight(viewportH: number): number {
@@ -95,9 +99,9 @@ function getMobileMinimapSlotWidth(viewportWidth: number) {
   return Math.max(0, Math.floor((viewportWidth - MINIMAP_MOBILE_CENTER_GUTTER) / 2));
 }
 
-function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: number, slotH: number) {
+function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: number, slotH: number, minimapMaxSize: number) {
   const slotWidth = getMobileMinimapSlotWidth(viewportWidth);
-  const squareSide = Math.min(MINIMAP_SIZE, slotWidth, slotH);
+  const squareSide = Math.min(minimapMaxSize, slotWidth, slotH);
   const verticalRailMaxLongSide = slotH - MINIMAP_RAIL_MARKER_OVERHANG * 2;
 
   if (layout === 'square') {
@@ -594,16 +598,17 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // ── Mobile dock sizing (responsive to viewport height) ───────────────────────
   const mobileDockH = getMobileDockHeight(vpSize.h);
   const mobileMiniMapSlotH = mobileDockH - MOBILE_CONTROL_DOCK_Y_PADDING * 2;
+  const mobileMinimapMaxSize = getMobileMinimapMaxSize(mobileDockH);
 
   // ── Minimap ──────────────────────────────────────────────────────────────────
   // Minimum cellSize of 2 ensures at least 1px corridor space (cellSize=1 makes walls fill 100% → solid black).
-  const minimapCell = Math.max(2, Math.ceil(MINIMAP_SIZE / Math.max(maze.width, maze.height)));
+  const minimapCell = Math.max(2, Math.ceil(mobileMinimapMaxSize / Math.max(maze.width, maze.height)));
   const mmSvgW = maze.width * minimapCell + MINIMAP_PADDING * 2;
   const mmSvgH = maze.height * minimapCell + MINIMAP_PADDING * 2;
   // Mobile fullscreen minimap: square for normal mazes, compact rails for extreme rectangles.
   const minimapLayout = getMobileMinimapLayout(maze);
   const minimapSlotW = getMobileMinimapSlotWidth(vpSize.w);
-  const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, vpSize.w, mobileMiniMapSlotH);
+  const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, vpSize.w, mobileMiniMapSlotH, mobileMinimapMaxSize);
   const isRailMinimap = minimapLayout !== 'square';
   const minimapRenderedBounds = getContainedMinimapBounds({
     containerWidth: minimapContainerW,
