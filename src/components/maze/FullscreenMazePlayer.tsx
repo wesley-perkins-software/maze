@@ -50,8 +50,9 @@ function getHintStepCount(maze: MazeData): number {
 const MINIMAP_PADDING = 2;
 const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
 const MINIMAP_RAIL_ENDPOINT_MARKER_SIZE = 18;
-const MINIMAP_PLAYER_MARKER_SIZE = 10;
-const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 8;
+const MINIMAP_PLAYER_MARKER_SIZE = 8;
+const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 5;
+const MINIMAP_PLAYER_START_CLEARANCE = 2;
 const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
 const MINIMAP_RAIL_SHORT_SIDE = 56;
 const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
@@ -184,7 +185,7 @@ function getMinimapPointPosition(
   const totalH = maze.height * cellSize + MINIMAP_PADDING * 2;
   const x = MINIMAP_PADDING + point.x * cellSize + cellSize / 2;
   const y = MINIMAP_PADDING + point.y * cellSize + cellSize / 2;
-  const markerPadding = markerSize / 2;
+  const markerPadding = markerSize / 2 + MINIMAP_PLAYER_START_CLEARANCE;
 
   return {
     left: clamp(markerPadding, bounds.x + (x / totalW) * bounds.width, bounds.containerWidth - markerPadding),
