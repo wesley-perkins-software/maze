@@ -185,12 +185,36 @@ function getMinimapPointPosition(
   const totalH = maze.height * cellSize + MINIMAP_PADDING * 2;
   const x = MINIMAP_PADDING + point.x * cellSize + cellSize / 2;
   const y = MINIMAP_PADDING + point.y * cellSize + cellSize / 2;
-  const markerPadding = markerSize / 2 + MINIMAP_PLAYER_START_CLEARANCE;
+  const markerPadding = markerSize / 2;
 
   return {
     left: clamp(markerPadding, bounds.x + (x / totalW) * bounds.width, bounds.containerWidth - markerPadding),
     top: clamp(markerPadding, bounds.y + (y / totalH) * bounds.height, bounds.containerHeight - markerPadding),
   };
+}
+
+function isMinimapPlayerClearOfStart({
+  maze,
+  cellSize,
+  playerPosition,
+  bounds,
+  playerMarkerSize,
+  endpointMarkerSize,
+}: {
+  maze: MazeData;
+  cellSize: number;
+  playerPosition: MazeData['entry'];
+  bounds: MinimapRenderedBounds;
+  playerMarkerSize: number;
+  endpointMarkerSize: number;
+}) {
+  const playerPos = getMinimapPointPosition(maze, cellSize, playerPosition, bounds, playerMarkerSize);
+  const entryPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.entry, bounds);
+  const dx = playerPos.left - Number(entryPos.left);
+  const dy = playerPos.top - Number(entryPos.top);
+  const clearDistance = endpointMarkerSize / 2 + playerMarkerSize / 2 + MINIMAP_PLAYER_START_CLEARANCE;
+
+  return Math.hypot(dx, dy) >= clearDistance;
 }
 
 function MinimapPlayerMarker({
@@ -601,13 +625,18 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // dominate compact horizontal/vertical navigation aids.
   const minimapMarkerSize = isRailMinimap ? MINIMAP_RAIL_ENDPOINT_MARKER_SIZE : MINIMAP_ENDPOINT_MARKER_SIZE;
   const minimapPlayerMarkerSize = isRailMinimap ? MINIMAP_RAIL_PLAYER_MARKER_SIZE : MINIMAP_PLAYER_MARKER_SIZE;
-  const minimapPlayerInBounds = inBounds(state.playerPosition, maze.width, maze.height);
+  const minimapPlayerPosition = playerOnEntryMarker
+    ? maze.entry
+    : playerOnExitMarker
+      ? maze.exit
+      : state.playerPosition;
+  const showMinimapPlayerMarker = inBounds(state.playerPosition, maze.width, maze.height);
   const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
   const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
 
   const minimapViewportFrameClass = isRailMinimap
-    ? 'absolute rounded border border-stone-900/65 pointer-events-none'
-    : 'absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none';
+    ? 'absolute z-10 rounded border border-stone-900/65 pointer-events-none'
+    : 'absolute z-10 rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none';
   const minimapViewportFrameOpacity = isRailMinimap ? 0.45 : 0.65;
 
   const minimapPanel = (
@@ -638,15 +667,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           markerSize={minimapMarkerSize}
           bounds={minimapRenderedBounds}
         />
-        {minimapPlayerInBounds && (
-          <MinimapPlayerMarker
-            maze={maze}
-            cellSize={minimapCell}
-            playerPosition={state.playerPosition}
-            bounds={minimapRenderedBounds}
-            markerSize={minimapPlayerMarkerSize}
-          />
-        )}
         {/* Current viewport frame */}
         <div
           className={minimapViewportFrameClass}
@@ -658,6 +678,15 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             opacity: minimapViewportFrameOpacity,
           }}
         />
+        {showMinimapPlayerMarker && (
+          <MinimapPlayerMarker
+            maze={maze}
+            cellSize={minimapCell}
+            playerPosition={minimapPlayerPosition}
+            bounds={minimapRenderedBounds}
+            markerSize={minimapPlayerMarkerSize}
+          />
+        )}
       </div>
     </div>
   );
