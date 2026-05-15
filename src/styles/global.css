@@ -287,13 +287,11 @@
 @media print {
   @page {
     size: letter portrait;
-    margin: 10mm;
+    margin: 0.35in;
   }
 
   html,
   body {
-    width: 100% !important;
-    height: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden !important;
@@ -306,6 +304,7 @@
     print-color-adjust: exact;
   }
 
+  body.maze-generator-print-page > :not(.print-only),
   .screen-only,
   header,
   footer,
@@ -315,59 +314,82 @@
   }
 
   .print-only {
-    display: flex !important;
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 2147483647 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    margin: 0 !important;
+    display: block !important;
+    position: static !important;
+    width: 7.5in !important;
+    height: 10in !important;
+    margin: 0 auto !important;
     padding: 0 !important;
     overflow: hidden !important;
     background: #fff !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-before: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
+    transform: none !important;
   }
 
   .print-maze-sheet {
     box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    display: flex;
+    width: 7.5in !important;
+    height: 10in !important;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-before: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
+    transform: none !important;
   }
 
+  .print-maze-box,
   .print-maze-art {
-    /* Fixed physical print box: grid size changes cell density, not footprint. */
-    display: flex;
+    /* Fixed physical print footprint: grid size changes cell density, not page size. */
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    width: 7.25in;
-    height: 9.25in;
-    max-width: 100%;
-    max-height: 100%;
+    width: var(--print-maze-width, 7in) !important;
+    height: var(--print-maze-height, 7in) !important;
+    max-width: none !important;
+    max-height: none !important;
+    flex: 0 0 auto;
+    margin: 0 auto !important;
+    overflow: hidden !important;
     background: #fff !important;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-before: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
+    transform: none !important;
   }
 
+  .print-maze-box svg,
   .print-maze-art svg {
     display: block !important;
     width: 100% !important;
     height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    overflow: visible !important;
+    max-width: none !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    transform: none !important;
   }
 
+  .print-maze-box svg rect,
   .print-maze-art svg rect {
     fill: #fff !important;
   }
 
+  .print-maze-box svg path,
   .print-maze-art svg path {
     stroke: #000 !important;
   }
