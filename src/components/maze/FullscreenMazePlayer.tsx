@@ -27,7 +27,7 @@ const TOP_BAR_H = 44;
 const AD_SLOT_H = 0;
 const SAFE_PAD = 32;
 function getMobileMinimapMaxSize(dockH: number): number {
-  if (dockH >= 192) return 112;
+  if (dockH >= 192) return 120;
   if (dockH >= 168) return 96;
   return 90;
 }
