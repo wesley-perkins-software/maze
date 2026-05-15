@@ -33,6 +33,30 @@ function getMobileMinimapMaxSize(dockH: number): number {
 }
 const MOBILE_CONTROL_DOCK_Y_PADDING = 10;
 
+interface ViewportSize {
+  w: number;
+  h: number;
+}
+
+function getWindowViewportSize(): ViewportSize {
+  if (typeof window === 'undefined') return { w: 390, h: 844 };
+
+  return {
+    w: Math.round(window.visualViewport?.width ?? window.innerWidth),
+    h: Math.round(window.visualViewport?.height ?? window.innerHeight),
+  };
+}
+
+function getElementSize(el: HTMLElement | null): ViewportSize | null {
+  if (!el) return null;
+  const rect = el.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return null;
+  return { w: Math.round(rect.width), h: Math.round(rect.height) };
+}
+
+function sizesEqual(a: ViewportSize, b: ViewportSize): boolean {
+  return a.w === b.w && a.h === b.h;
+}
 function getMobileDockHeight(viewportH: number): number {
   if (viewportH >= 700) return 192;
   if (viewportH >= 580) return 168;
@@ -72,6 +96,7 @@ const MINIMAP_MOBILE_CENTER_GUTTER = 36;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
 const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
 const MINIMAP_PLAYER_MARKER_COLOR = '#2563eb';
+const PLAYER_MARKER_COLOR = '#2563eb';
 
 type MinimapLayout = 'square' | 'horizontal-rail' | 'vertical-rail';
 
@@ -372,10 +397,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     });
   };
 
-  const [vpSize, setVpSize] = useState(() => ({
-    w: typeof window !== 'undefined' ? window.innerWidth : 390,
-    h: typeof window !== 'undefined' ? window.innerHeight : 844,
-  }));
+  const [vpSize, setVpSize] = useState(getWindowViewportSize);
+  const [mazeViewportSize, setMazeViewportSize] = useState<ViewportSize | null>(null);
 
   const [state, dispatch] = useReducer(
     (s: ReturnType<typeof createInitialState>, a: Parameters<typeof gameReducer>[1]) =>
@@ -415,11 +438,85 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     }
   }, [state.status]);
 
-  // Track viewport size for camera math
+  // Track browser viewport changes for responsive chrome and dock sizing.
+  // Chrome mobile can report a different visual viewport after first paint as the
+  // address bar expands/collapses, so listen to visualViewport and re-check after
+  // one and two animation frames during mount/resize settling.
   useEffect(() => {
-    const update = () => setVpSize({ w: window.innerWidth, h: window.innerHeight });
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
+    const visualViewport = window.visualViewport;
+    const rafIds = new Set<number>();
+
+    const update = () => {
+      setVpSize(prev => {
+        const next = getWindowViewportSize();
+        return sizesEqual(prev, next) ? prev : next;
+      });
+    };
+
+    const scheduleUpdate = () => {
+      update();
+      const first = window.requestAnimationFrame(() => {
+        rafIds.delete(first);
+        update();
+        const second = window.requestAnimationFrame(() => {
+          rafIds.delete(second);
+          update();
+        });
+        rafIds.add(second);
+      });
+      rafIds.add(first);
+    };
+
+    scheduleUpdate();
+    window.addEventListener('resize', scheduleUpdate);
+    window.addEventListener('orientationchange', scheduleUpdate);
+    visualViewport?.addEventListener('resize', scheduleUpdate);
+    visualViewport?.addEventListener('scroll', scheduleUpdate);
+
+    return () => {
+      window.removeEventListener('resize', scheduleUpdate);
+      window.removeEventListener('orientationchange', scheduleUpdate);
+      visualViewport?.removeEventListener('resize', scheduleUpdate);
+      visualViewport?.removeEventListener('scroll', scheduleUpdate);
+      rafIds.forEach(id => window.cancelAnimationFrame(id));
+    };
+  }, []);
+
+  // Measure the actual maze play viewport. This is the authoritative camera size:
+  // it already excludes the top bar, mobile control dock, and safe-area padding.
+  useEffect(() => {
+    const el = mazeViewportRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const next = getElementSize(el);
+      if (!next) return;
+      setMazeViewportSize(prev => (prev && sizesEqual(prev, next) ? prev : next));
+    };
+
+    const rafIds = new Set<number>();
+    const scheduleUpdate = () => {
+      update();
+      const first = window.requestAnimationFrame(() => {
+        rafIds.delete(first);
+        update();
+        const second = window.requestAnimationFrame(() => {
+          rafIds.delete(second);
+          update();
+        });
+        rafIds.add(second);
+      });
+      rafIds.add(first);
+    };
+
+    const ro = new ResizeObserver(scheduleUpdate);
+    ro.observe(el);
+    scheduleUpdate();
+
+    return () => {
+      ro.disconnect();
+      rafIds.forEach(id => window.cancelAnimationFrame(id));
+    };
   }, []);
 
   // Measure control strip height for accurate camera math
@@ -552,8 +649,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const stripH = vpSize.w < 768 ? controlStripH : 0;
   const sidebarW = vpSize.w >= 768 ? SIDEBAR_W : 0;
-  const viewW = vpSize.w - sidebarW;
-  const viewH = vpSize.h - TOP_BAR_H - AD_SLOT_H - stripH;
+  const fallbackViewW = Math.max(1, vpSize.w - sidebarW);
+  const fallbackViewH = Math.max(1, vpSize.h - TOP_BAR_H - AD_SLOT_H - stripH);
+  const viewW = Math.max(1, mazeViewportSize?.w ?? fallbackViewW);
+  const viewH = Math.max(1, mazeViewportSize?.h ?? fallbackViewH);
 
   // Reset camera when game resets
   if (prevStatusRef.current !== 'idle' && state.status === 'idle') {
@@ -594,6 +693,14 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const tx = viewW / 2 - camX;
   const ty = viewH / 2 - camY;
+  const playerScreenX = playerPx + tx;
+  const playerScreenY = playerPy + ty;
+  const playerMarkerRadius = PLAY_CELL_SIZE * 0.32;
+  const playerGlowRadius = PLAY_CELL_SIZE * 0.5;
+  const showBottomStartPlayerOverlay = vpSize.w < 768
+    && state.status !== 'paused'
+    && playerOnEntryMarker
+    && maze.entry.y === maze.height - 1;
 
   // ── Mobile dock sizing (responsive to viewport height) ───────────────────────
   const mobileDockH = getMobileDockHeight(vpSize.h);
@@ -723,8 +830,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col bg-white"
-      style={{ touchAction: 'none' }}
+      className="fixed inset-x-0 top-0 z-50 flex flex-col bg-white"
+      style={{ width: vpSize.w, height: vpSize.h, touchAction: 'none' }}
     >
       <div ref={announcerRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />
 
@@ -865,7 +972,9 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               maze={maze}
               cellSize={PLAY_CELL_SIZE}
               padding={MAZE_PADDING}
-              playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
+              playerPosition={state.status !== 'paused' && !showBottomStartPlayerOverlay
+                ? state.playerPosition
+                : undefined}
               trail={state.trail}
               solution={currentSolution}
               showSolution={state.solutionVisible}
@@ -1087,6 +1196,33 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
         {leftHanded ? minimapPanel : dpadPanel}
       </div>
+
+      {showBottomStartPlayerOverlay && (
+        <svg
+          className="pointer-events-none absolute left-0 top-0 z-20 overflow-visible md:hidden"
+          style={{ transform: `translate(${playerScreenX}px, ${TOP_BAR_H + playerScreenY}px)` }}
+          width="1"
+          height="1"
+          viewBox="0 0 1 1"
+          aria-hidden="true"
+        >
+          <circle
+            cx={0}
+            cy={0}
+            r={playerGlowRadius}
+            fill={PLAYER_MARKER_COLOR}
+            className="maze-player-glow"
+          />
+          <circle
+            cx={0}
+            cy={0}
+            r={playerMarkerRadius}
+            fill={PLAYER_MARKER_COLOR}
+            stroke="white"
+            strokeWidth={2}
+          />
+        </svg>
+      )}
     </div>
   );
 }
