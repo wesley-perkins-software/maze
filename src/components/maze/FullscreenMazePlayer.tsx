@@ -27,9 +27,13 @@ const TOP_BAR_H = 44;
 const AD_SLOT_H = 0;
 const SAFE_PAD = 32;
 const MINIMAP_SIZE = 96;
-const MOBILE_CONTROL_DOCK_H = 168;
 const MOBILE_CONTROL_DOCK_Y_PADDING = 10;
-const MOBILE_MINIMAP_SLOT_H = MOBILE_CONTROL_DOCK_H - MOBILE_CONTROL_DOCK_Y_PADDING * 2;
+
+function getMobileDockHeight(viewportH: number): number {
+  if (viewportH >= 700) return 192;
+  if (viewportH >= 580) return 168;
+  return 148;
+}
 const SIDEBAR_W = 224;
 const SIDEBAR_MINIMAP_SIZE = 192;
 const SIDEBAR_AD_ENABLED = false;
@@ -60,7 +64,6 @@ const MINIMAP_RAIL_SHORT_SIDE = 56;
 const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
 const MINIMAP_RAIL_MIN_LONG_SIDE = 140;
 const MINIMAP_RAIL_MARKER_OVERHANG = Math.ceil(MINIMAP_RAIL_ENDPOINT_MARKER_SIZE / 2);
-const MINIMAP_VERTICAL_RAIL_MAX_LONG_SIDE = MOBILE_MINIMAP_SLOT_H - MINIMAP_RAIL_MARKER_OVERHANG * 2;
 const MINIMAP_MOBILE_CENTER_GUTTER = 36;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
 const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
@@ -92,9 +95,10 @@ function getMobileMinimapSlotWidth(viewportWidth: number) {
   return Math.max(0, Math.floor((viewportWidth - MINIMAP_MOBILE_CENTER_GUTTER) / 2));
 }
 
-function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: number) {
+function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: number, slotH: number) {
   const slotWidth = getMobileMinimapSlotWidth(viewportWidth);
-  const squareSide = Math.min(MINIMAP_SIZE, slotWidth, MOBILE_MINIMAP_SLOT_H);
+  const squareSide = Math.min(MINIMAP_SIZE, slotWidth, slotH);
+  const verticalRailMaxLongSide = slotH - MINIMAP_RAIL_MARKER_OVERHANG * 2;
 
   if (layout === 'square') {
     return { width: squareSide, height: squareSide };
@@ -107,13 +111,13 @@ function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: num
   if (layout === 'horizontal-rail') {
     return {
       width: horizontalLongSide,
-      height: Math.min(MINIMAP_RAIL_SHORT_SIDE, MOBILE_MINIMAP_SLOT_H),
+      height: Math.min(MINIMAP_RAIL_SHORT_SIDE, slotH),
     };
   }
 
   return {
     width: Math.min(MINIMAP_RAIL_SHORT_SIDE, slotWidth),
-    height: Math.min(MINIMAP_VERTICAL_RAIL_MAX_LONG_SIDE, MOBILE_MINIMAP_SLOT_H),
+    height: Math.min(verticalRailMaxLongSide, slotH),
   };
 }
 
@@ -346,7 +350,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const camYRef = useRef<number | null>(null);
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
   const controlStripRef = useRef<HTMLDivElement>(null);
-  const [controlStripH, setControlStripH] = useState(MOBILE_CONTROL_DOCK_H);
+  const [controlStripH, setControlStripH] = useState(168);
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetConfirming, setResetConfirming] = useState(false);
   const resetConfirmTimerRef = useRef<number | null>(null);
@@ -587,6 +591,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const tx = viewW / 2 - camX;
   const ty = viewH / 2 - camY;
 
+  // ── Mobile dock sizing (responsive to viewport height) ───────────────────────
+  const mobileDockH = getMobileDockHeight(vpSize.h);
+  const mobileMiniMapSlotH = mobileDockH - MOBILE_CONTROL_DOCK_Y_PADDING * 2;
+
   // ── Minimap ──────────────────────────────────────────────────────────────────
   // Minimum cellSize of 2 ensures at least 1px corridor space (cellSize=1 makes walls fill 100% → solid black).
   const minimapCell = Math.max(2, Math.ceil(MINIMAP_SIZE / Math.max(maze.width, maze.height)));
@@ -595,7 +603,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Mobile fullscreen minimap: square for normal mazes, compact rails for extreme rectangles.
   const minimapLayout = getMobileMinimapLayout(maze);
   const minimapSlotW = getMobileMinimapSlotWidth(vpSize.w);
-  const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, vpSize.w);
+  const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, vpSize.w, mobileMiniMapSlotH);
   const isRailMinimap = minimapLayout !== 'square';
   const minimapRenderedBounds = getContainedMinimapBounds({
     containerWidth: minimapContainerW,
@@ -648,7 +656,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         className="flex items-center justify-center"
         style={{
           width: minimapSlotW,
-          height: MOBILE_MINIMAP_SLOT_H,
+          height: mobileMiniMapSlotH,
         }}
       >
         <div
@@ -704,7 +712,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const dpadPanel = (
     <div className="flex h-full flex-1 items-center justify-center">
-      <DPad dispatch={dispatch} isActive={isActive} />
+      <DPad dispatch={dispatch} isActive={isActive} compact={mobileDockH <= 148} />
     </div>
   );
 
@@ -1052,7 +1060,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       <div
         ref={controlStripRef}
         className="md:hidden bg-[#F6F5F0] border-t border-[#DDD8CF] shrink-0 flex items-stretch overflow-visible pb-[env(safe-area-inset-bottom,0px)]"
-        style={{ height: MOBILE_CONTROL_DOCK_H }}
+        style={{ height: mobileDockH }}
       >
         {leftHanded ? dpadPanel : minimapPanel}
 
