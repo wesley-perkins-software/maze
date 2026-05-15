@@ -50,8 +50,8 @@ function getHintStepCount(maze: MazeData): number {
 const MINIMAP_PADDING = 2;
 const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
 const MINIMAP_RAIL_ENDPOINT_MARKER_SIZE = 18;
-const MINIMAP_PLAYER_MARKER_SIZE = 8;
-const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 5;
+const MINIMAP_PLAYER_MARKER_SIZE = 12;
+const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 10;
 const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
 const MINIMAP_RAIL_SHORT_SIDE = 56;
 const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
@@ -59,6 +59,8 @@ const MINIMAP_RAIL_MIN_LONG_SIDE = 140;
 const MINIMAP_VERTICAL_RAIL_LONG_SIDE = 176;
 const MINIMAP_MOBILE_CENTER_GUTTER = 36;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
+const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
+const MINIMAP_PLAYER_MARKER_COLOR = '#2563eb';
 
 type MinimapLayout = 'square' | 'horizontal-rail' | 'vertical-rail';
 
@@ -208,8 +210,9 @@ function MinimapPlayerMarker({
   const pos = getMinimapPointPosition(maze, cellSize, playerPosition, bounds, markerSize);
 
   return (
-    <div
-      className="pointer-events-none absolute z-30 rounded-full border-2 border-white bg-blue-600 shadow-[0_1px_2px_rgba(15,23,42,0.4)]"
+    <svg
+      viewBox="0 0 24 24"
+      className="minimap-player-marker pointer-events-none absolute z-30 overflow-visible"
       style={{
         left: pos.left,
         top: pos.top,
@@ -217,9 +220,14 @@ function MinimapPlayerMarker({
         height: markerSize,
         transform: 'translate(-50%, -50%)',
         transition: 'left 120ms ease-out, top 120ms ease-out',
+        filter: 'drop-shadow(0 1px 2px rgba(15, 23, 42, 0.4))',
       }}
+      data-marker-type="player"
       aria-hidden="true"
-    />
+    >
+      <circle cx="12" cy="12" r="11" fill="white" />
+      <circle cx="12" cy="12" r="7.25" fill={MINIMAP_PLAYER_MARKER_COLOR} />
+    </svg>
   );
 }
 
@@ -591,6 +599,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const sidebarMinimapContainerW = Math.round(dmSvgW * dmContainerScale);
   const sidebarMinimapContainerH = Math.round(dmSvgH * dmContainerScale);
 
+  const sidebarMinimapRenderedBounds = getContainedMinimapBounds({
+    containerWidth: sidebarMinimapContainerW,
+    containerHeight: sidebarMinimapContainerH,
+    svgWidth: dmSvgW,
+    svgHeight: dmSvgH,
+  });
   const dmFrameW = Math.min(sidebarMinimapContainerW, (viewW / mazeW) * sidebarMinimapContainerW);
   const dmFrameH = Math.min(sidebarMinimapContainerH, (viewH / mazeH) * sidebarMinimapContainerH);
   const dmFrameX = Math.max(0, Math.min(sidebarMinimapContainerW - dmFrameW, (-tx / mazeW) * sidebarMinimapContainerW));
@@ -859,13 +873,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 wallThickness={1}
                 padding={MINIMAP_PADDING}
                 fillContainer
-                playerPosition={
-                  inBounds(state.playerPosition, maze.width, maze.height)
-                    ? state.playerPosition
-                    : undefined
-                }
-                playerMarkerRadius={3}
-                showPlayerGlow={false}
                 solution={currentSolution}
                 showSolution={state.solutionVisible}
                 showEndpointMarkers={false}
@@ -874,7 +881,17 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 maze={maze}
                 cellSize={sidebarMinimapCell}
                 markerSize={sidebarMarkerSize}
+                bounds={sidebarMinimapRenderedBounds}
               />
+              {inBounds(state.playerPosition, maze.width, maze.height) && (
+                <MinimapPlayerMarker
+                  maze={maze}
+                  cellSize={sidebarMinimapCell}
+                  playerPosition={state.playerPosition}
+                  bounds={sidebarMinimapRenderedBounds}
+                  markerSize={DESKTOP_MINIMAP_PLAYER_MARKER_SIZE}
+                />
+              )}
               <div
                 className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
                 style={{
