@@ -96,6 +96,7 @@ const MINIMAP_MOBILE_CENTER_GUTTER = 36;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
 const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
 const MINIMAP_PLAYER_MARKER_COLOR = '#2563eb';
+const PLAYER_MARKER_COLOR = '#2563eb';
 
 type MinimapLayout = 'square' | 'horizontal-rail' | 'vertical-rail';
 
@@ -676,19 +677,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   if (playerPy > camY + safeH) camY = playerPy - safeH;
   else if (playerPy < camY - safeH) camY = playerPy + safeH;
 
-  const playerMarkerSafePad = PLAY_CELL_SIZE * 0.5 + 10;
-  const topMarkerOverpan = playerOnEntryMarker && maze.entry.y === 0 ? Math.max(0, playerMarkerSafePad - playerPy) : 0;
-  const bottomMarkerOverpan = playerOnEntryMarker && maze.entry.y === maze.height - 1 ? Math.max(0, playerMarkerSafePad - (mazeH - playerPy)) : 0;
-  const leftMarkerOverpan = playerOnEntryMarker && maze.entry.x === 0 ? Math.max(0, playerMarkerSafePad - playerPx) : 0;
-  const rightMarkerOverpan = playerOnEntryMarker && maze.entry.x === maze.width - 1 ? Math.max(0, playerMarkerSafePad - (mazeW - playerPx)) : 0;
-
   if (mazeW > viewW) {
-    camX = Math.max(viewW / 2 - leftMarkerOverpan, Math.min(mazeW - viewW / 2 + rightMarkerOverpan, camX));
+    camX = Math.max(viewW / 2, Math.min(mazeW - viewW / 2, camX));
   } else {
     camX = mazeW / 2;
   }
   if (mazeH > viewH) {
-    camY = Math.max(viewH / 2 - topMarkerOverpan, Math.min(mazeH - viewH / 2 + bottomMarkerOverpan, camY));
+    camY = Math.max(viewH / 2, Math.min(mazeH - viewH / 2, camY));
   } else {
     camY = mazeH / 2;
   }
@@ -698,6 +693,14 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const tx = viewW / 2 - camX;
   const ty = viewH / 2 - camY;
+  const playerScreenX = playerPx + tx;
+  const playerScreenY = playerPy + ty;
+  const playerMarkerRadius = PLAY_CELL_SIZE * 0.32;
+  const playerGlowRadius = PLAY_CELL_SIZE * 0.5;
+  const showBottomStartPlayerOverlay = vpSize.w < 768
+    && state.status !== 'paused'
+    && playerOnEntryMarker
+    && maze.entry.y === maze.height - 1;
 
   // ── Mobile dock sizing (responsive to viewport height) ───────────────────────
   const mobileDockH = getMobileDockHeight(vpSize.h);
@@ -969,7 +972,9 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               maze={maze}
               cellSize={PLAY_CELL_SIZE}
               padding={MAZE_PADDING}
-              playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
+              playerPosition={state.status !== 'paused' && !showBottomStartPlayerOverlay
+                ? state.playerPosition
+                : undefined}
               trail={state.trail}
               solution={currentSolution}
               showSolution={state.solutionVisible}
@@ -1191,6 +1196,33 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
         {leftHanded ? minimapPanel : dpadPanel}
       </div>
+
+      {showBottomStartPlayerOverlay && (
+        <svg
+          className="pointer-events-none absolute left-0 top-0 z-20 overflow-visible md:hidden"
+          style={{ transform: `translate(${playerScreenX}px, ${TOP_BAR_H + playerScreenY}px)` }}
+          width="1"
+          height="1"
+          viewBox="0 0 1 1"
+          aria-hidden="true"
+        >
+          <circle
+            cx={0}
+            cy={0}
+            r={playerGlowRadius}
+            fill={PLAYER_MARKER_COLOR}
+            className="maze-player-glow"
+          />
+          <circle
+            cx={0}
+            cy={0}
+            r={playerMarkerRadius}
+            fill={PLAYER_MARKER_COLOR}
+            stroke="white"
+            strokeWidth={2}
+          />
+        </svg>
+      )}
     </div>
   );
 }
