@@ -385,6 +385,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // suppress the CSS transition so the camera snaps to the player rather than
   // animating back with non-integer intermediate positions.
   const justExitedLookModeRef = useRef(false);
+  // Stores the camera center that was active just before entering look mode.
+  // Only written on first entry; repeated minimap taps preserve the original.
+  // Cleared by exitLookMode so all exit paths restore the same position.
+  const previousCameraRef = useRef<{ x: number; y: number } | null>(null);
   const controlStripRef = useRef<HTMLDivElement>(null);
   const [controlStripH, setControlStripH] = useState(168);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -439,6 +443,15 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   // Exits look mode and returns to follow-camera. Stable reference (empty deps).
   const exitLookMode = useCallback(() => {
+    // Restore the camera refs to the saved pre-look position so the follow
+    // algorithm resumes from exactly where the user was before tapping the
+    // minimap. Since movement is disabled during look mode the player has not
+    // moved, so these saved coordinates are still within the safe zone.
+    if (previousCameraRef.current !== null) {
+      camXRef.current = previousCameraRef.current.x;
+      camYRef.current = previousCameraRef.current.y;
+      previousCameraRef.current = null;
+    }
     setCameraMode('follow');
     setLookTargetPx(null);
     setIsMinimapDragging(false);
@@ -901,6 +914,15 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsMinimapDragging(true);
+    if (cameraMode !== 'look') {
+      // First entry into look mode: save current camera so Return can restore it.
+      // Guard ensures repeated minimap taps while already in look mode never
+      // overwrite the original return position.
+      previousCameraRef.current =
+        camXRef.current !== null && camYRef.current !== null
+          ? { x: camXRef.current, y: camYRef.current }
+          : null;
+    }
     setLookTargetPx(minimapPointerToLookTarget(e, bounds));
     setCameraMode('look');
   }
@@ -1128,7 +1150,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       <div className="flex flex-1 overflow-hidden">
 
         {/* Maze viewport — swipe anywhere here to move */}
-        <div ref={mazeViewportRef} className="relative flex-1 overflow-hidden bg-slate-100">
+        <div
+          ref={mazeViewportRef}
+          className="relative flex-1 overflow-hidden bg-slate-100"
+          style={cameraMode === 'look'
+            ? { boxShadow: 'inset 0 0 0 2px rgba(13, 148, 136, 0.42)' }
+            : undefined}
+        >
 
           {/* Follow-camera pan container */}
           <div
@@ -1172,20 +1200,39 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 transform: 'translateX(-50%)',
                 zIndex: 20,
                 whiteSpace: 'nowrap',
-                backgroundColor: 'rgba(15, 23, 42, 0.82)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                backgroundColor: 'rgba(15, 23, 42, 0.90)',
                 color: 'white',
                 fontSize: 13,
                 fontWeight: 600,
-                padding: '6px 16px',
+                padding: '6px 13px 6px 10px',
                 borderRadius: 20,
-                border: 'none',
+                border: '1px solid rgba(13, 148, 136, 0.55)',
                 cursor: 'pointer',
                 letterSpacing: '0.01em',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.22)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.05)',
               }}
               aria-label="Return camera to player"
             >
-              Viewing map · Return
+              {/* Camera icon — stroke style matching the project icon set */}
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#14b8a6"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                style={{ flexShrink: 0 }}
+              >
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+              Camera view · Return
             </button>
           )}
 
