@@ -1043,7 +1043,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         {/* Center: status / timer */}
         <div className="flex-1 flex justify-center items-center gap-1.5 text-sm">
           {cameraMode === 'look' ? (
-            <span className="font-semibold text-xs" style={{ color: '#0d9488' }}>
+            <span className="font-semibold text-xs sm:text-sm" style={{ color: '#4f46e5' }}>
               Camera view — movement paused
             </span>
           ) : (
@@ -1211,8 +1211,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 // Crisp 3px teal ring + soft 80px inner vignette that fades to
                 // nothing at the centre so maze readability is unaffected.
                 boxShadow:
-                  'inset 0 0 0 3px rgba(13, 148, 136, 0.72), ' +
-                  'inset 0 0 80px rgba(13, 148, 136, 0.14)',
+                  'inset 0 0 0 3px rgba(99, 102, 241, 0.65), ' +
+                  'inset 0 0 80px rgba(99, 102, 241, 0.11)',
               }}
             />
           )}
@@ -1237,7 +1237,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 fontWeight: 600,
                 padding: '6px 13px 6px 10px',
                 borderRadius: 20,
-                border: '1px solid rgba(13, 148, 136, 0.55)',
+                border: '1px solid rgba(79, 70, 229, 0.55)',
                 cursor: 'pointer',
                 letterSpacing: '0.01em',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.05)',
@@ -1250,7 +1250,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 height="13"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#14b8a6"
+                stroke="#818cf8"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -1260,7 +1260,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                 <circle cx="12" cy="13" r="4" />
               </svg>
-              Camera view · Return to play
+              Return to play
             </button>
           )}
 
