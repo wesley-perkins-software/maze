@@ -383,6 +383,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetConfirming, setResetConfirming] = useState(false);
   const resetConfirmTimerRef = useRef<number | null>(null);
+  const initialCameraReadyMazeKeyRef = useRef<string | null>(null);
 
   // Left-handed mode: D-pad on left, minimap on right (persisted)
   const [leftHanded, setLeftHanded] = useState(() => {
@@ -399,6 +400,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const [vpSize, setVpSize] = useState(getWindowViewportSize);
   const [mazeViewportSize, setMazeViewportSize] = useState<ViewportSize | null>(null);
+  const [initialCameraReady, setInitialCameraReady] = useState(() => getWindowViewportSize().w >= 768);
 
   const [state, dispatch] = useReducer(
     (s: ReturnType<typeof createInitialState>, a: Parameters<typeof gameReducer>[1]) =>
@@ -530,6 +532,49 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  const mazeKey = `${maze.slug ?? 'maze'}:${maze.width}x${maze.height}:${maze.entry.x},${maze.entry.y}:${maze.exit.x},${maze.exit.y}`;
+
+  // Mobile browsers can settle visualViewport and flex measurements shortly after
+  // fullscreen play mounts. Keep the playfield hidden until the measured viewport
+  // has driven one render of the initial camera transform, then reveal on the
+  // following double-rAF so the first visible frame is already correctly framed.
+  useEffect(() => {
+    const isMobileFullscreen = vpSize.w < 768;
+
+    if (!isMobileFullscreen) {
+      initialCameraReadyMazeKeyRef.current = mazeKey;
+      setInitialCameraReady(true);
+      return;
+    }
+
+    if (initialCameraReadyMazeKeyRef.current === mazeKey) return;
+
+    setInitialCameraReady(false);
+    camXRef.current = null;
+    camYRef.current = null;
+
+    if (!mazeViewportSize) return;
+
+    let cancelled = false;
+    const rafIds: number[] = [];
+    const first = window.requestAnimationFrame(() => {
+      const second = window.requestAnimationFrame(() => {
+        if (!cancelled) {
+          initialCameraReadyMazeKeyRef.current = mazeKey;
+          setInitialCameraReady(true);
+        }
+      });
+
+      rafIds.push(second);
+    });
+    rafIds.push(first);
+
+    return () => {
+      cancelled = true;
+      rafIds.forEach(id => window.cancelAnimationFrame(id));
+    };
+  }, [mazeKey, mazeViewportSize?.w, mazeViewportSize?.h, vpSize.w, vpSize.h]);
 
   // Close overflow menu on outside tap/click
   useEffect(() => {
@@ -668,8 +713,11 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const safeW = Math.max(0, viewW / 2 - SAFE_PAD - PAN_LOOKAHEAD);
   const safeH = Math.max(0, viewH / 2 - SAFE_PAD - PAN_LOOKAHEAD);
 
-  let camX = camXRef.current ?? playerPx;
-  let camY = camYRef.current ?? playerPy;
+  const isMobileFullscreen = vpSize.w < 768;
+  const isInitializingMobileCamera = isMobileFullscreen && !initialCameraReady;
+
+  let camX = isInitializingMobileCamera ? playerPx : (camXRef.current ?? playerPx);
+  let camY = isInitializingMobileCamera ? playerPy : (camYRef.current ?? playerPy);
 
   if (playerPx > camX + safeW) camX = playerPx - safeW;
   else if (playerPx < camX - safeW) camX = playerPx + safeW;
@@ -963,8 +1011,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               position: 'absolute',
               width: mazeW,
               height: mazeH,
+              opacity: initialCameraReady ? 1 : 0,
+              pointerEvents: initialCameraReady ? 'auto' : 'none',
               transform: `translate(${tx}px, ${ty}px)`,
-              transition: 'transform 0.12s ease-out',
+              transition: initialCameraReady ? 'transform 0.12s ease-out' : 'none',
               willChange: 'transform',
             }}
           >
@@ -1197,7 +1247,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         {leftHanded ? minimapPanel : dpadPanel}
       </div>
 
-      {showBottomStartPlayerOverlay && (
+      {initialCameraReady && showBottomStartPlayerOverlay && (
         <svg
           className="pointer-events-none absolute left-0 top-0 z-20 overflow-visible md:hidden"
           style={{ transform: `translate(${playerScreenX}px, ${TOP_BAR_H + playerScreenY}px)` }}
