@@ -4,6 +4,7 @@ import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
+import type { GameAction } from '../../lib/gameplay/types';
 import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
@@ -378,6 +379,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const camXRef = useRef<number | null>(null);
   const camYRef = useRef<number | null>(null);
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
+  // Mirrors cameraMode state so dispatchWithLookExit can read it without a dep.
+  const cameraModeRef = useRef<'follow' | 'look'>('follow');
+  // Set by exitLookMode; read once during the immediately-following render to
+  // suppress the CSS transition so the camera snaps to the player rather than
+  // animating back with non-integer intermediate positions.
+  const justExitedLookModeRef = useRef(false);
   const controlStripRef = useRef<HTMLDivElement>(null);
   const [controlStripH, setControlStripH] = useState(168);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -414,12 +421,40 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const [mazeViewportSize, setMazeViewportSize] = useState<ViewportSize | null>(null);
   const [initialCameraReady, setInitialCameraReady] = useState(() => getWindowViewportSize().w >= 768);
 
+  // ── Look-mode camera state ───────────────────────────────────────────────────
+  // Isolated: remove these two lines + related code blocks to fully revert the feature.
+  const [cameraMode, setCameraMode] = useState<'follow' | 'look'>('follow');
+  const [lookTargetPx, setLookTargetPx] = useState<{ x: number; y: number } | null>(null);
+  // True only while a pointer is actively held on the minimap. Suppresses the
+  // CSS transition so the camera snaps to the finger with no mid-interpolation
+  // blur on high-DPR mobile screens.
+  const [isMinimapDragging, setIsMinimapDragging] = useState(false);
+
   const [state, dispatch] = useReducer(
     (s: ReturnType<typeof createInitialState>, a: Parameters<typeof gameReducer>[1]) =>
       gameReducer(s, a, maze),
     maze,
     createInitialState,
   );
+
+  // Exits look mode and returns to follow-camera. Stable reference (empty deps).
+  const exitLookMode = useCallback(() => {
+    setCameraMode('follow');
+    setLookTargetPx(null);
+    setIsMinimapDragging(false);
+    justExitedLookModeRef.current = true;
+  }, []);
+
+  // Wrapper passed to all movement inputs. When in look mode, the first RUN
+  // only exits look mode (returns camera to player) without applying the move.
+  // Uses cameraModeRef so the callback stays stable across mode changes.
+  const dispatchWithLookExit = useCallback((action: GameAction) => {
+    if (action.type === 'RUN' && cameraModeRef.current === 'look') {
+      exitLookMode();
+      return;
+    }
+    dispatch(action);
+  }, [dispatch, exitLookMode]);
 
   // Timer tick
   useEffect(() => {
@@ -610,10 +645,17 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     return () => { document.body.style.overflow = ''; };
   }, []);
 
+  // Clear look mode when the active maze changes or the game resets/solves.
+  useEffect(() => { exitLookMode(); }, [mazeKey, exitLookMode]);
+  useEffect(() => {
+    if (state.status === 'idle' || state.status === 'solved') exitLookMode();
+  }, [state.status, exitLookMode]);
+
   const isActive = state.status === 'playing' || state.status === 'idle';
 
-  useKeyboardInput(dispatch, isActive);
-  useTouchInput(mazeViewportRef, dispatch, isActive);
+  // Pass dispatchWithLookExit to all movement inputs so any RUN action exits look mode.
+  useKeyboardInput(dispatchWithLookExit, isActive);
+  useTouchInput(mazeViewportRef, dispatchWithLookExit, isActive);
 
   const currentSolution = useMemo(() => {
     const startCell = getPathStartCell(maze, state.playerPosition);
@@ -705,25 +747,38 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   }
   prevStatusRef.current = state.status;
 
-  // ── Safe-zone camera ─────────────────────────────────────────────────────────
-  // The safe zone is shrunk by PAN_LOOKAHEAD so the camera starts to pan
-  // earlier — giving the player a preview of what's ahead before they reach
-  // the viewport edge and have to commit to moving that way.
+  // Keep ref in sync with state so dispatchWithLookExit can read it without
+  // adding cameraMode as a dep (which would re-register all input listeners).
+  cameraModeRef.current = cameraMode;
+
+  // ── Camera computation ───────────────────────────────────────────────────────
+  // Safe zone is shrunk by PAN_LOOKAHEAD so the camera previews what's ahead.
   const safeW = Math.max(0, viewW / 2 - SAFE_PAD - PAN_LOOKAHEAD);
   const safeH = Math.max(0, viewH / 2 - SAFE_PAD - PAN_LOOKAHEAD);
 
   const isMobileFullscreen = vpSize.w < 768;
   const isInitializingMobileCamera = isMobileFullscreen && !initialCameraReady;
 
-  let camX = isInitializingMobileCamera ? playerPx : (camXRef.current ?? playerPx);
-  let camY = isInitializingMobileCamera ? playerPy : (camYRef.current ?? playerPy);
+  let camX: number;
+  let camY: number;
 
-  if (playerPx > camX + safeW) camX = playerPx - safeW;
-  else if (playerPx < camX - safeW) camX = playerPx + safeW;
+  if (cameraMode === 'look' && lookTargetPx !== null) {
+    // Look mode: bypass safe-zone algorithm entirely, point at the look target.
+    camX = lookTargetPx.x;
+    camY = lookTargetPx.y;
+  } else {
+    // Follow mode: existing safe-zone algorithm, unchanged.
+    camX = isInitializingMobileCamera ? playerPx : (camXRef.current ?? playerPx);
+    camY = isInitializingMobileCamera ? playerPy : (camYRef.current ?? playerPy);
 
-  if (playerPy > camY + safeH) camY = playerPy - safeH;
-  else if (playerPy < camY - safeH) camY = playerPy + safeH;
+    if (playerPx > camX + safeW) camX = playerPx - safeW;
+    else if (playerPx < camX - safeW) camX = playerPx + safeW;
 
+    if (playerPy > camY + safeH) camY = playerPy - safeH;
+    else if (playerPy < camY - safeH) camY = playerPy + safeH;
+  }
+
+  // Clamp to maze bounds — applied in both modes.
   if (mazeW > viewW) {
     camX = Math.max(viewW / 2, Math.min(mazeW - viewW / 2, camX));
   } else {
@@ -738,8 +793,23 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   camXRef.current = camX;
   camYRef.current = camY;
 
-  const tx = viewW / 2 - camX;
-  const ty = viewH / 2 - camY;
+  // Round to integers so the maze always lands on pixel-aligned boundaries.
+  // Fractional translate values cause blurriness on high-DPR mobile screens.
+  const tx = Math.round(viewW / 2 - camX);
+  const ty = Math.round(viewH / 2 - camY);
+
+  // Compute CSS transition for the camera container. Look mode uses no
+  // transition at all — CSS ease-out interpolates through non-integer
+  // sub-pixel positions on each frame, which looks blurry on high-DPR
+  // screens. Tap-to-look snaps instantly; drag already snaps (isMinimapDragging).
+  // justExitedLookModeRef is read and immediately reset so the one render
+  // immediately after exiting look mode also snaps (no return-to-player blur).
+  const snapThisFrame = justExitedLookModeRef.current;
+  justExitedLookModeRef.current = false;
+  const lookModeTransition =
+    (cameraMode === 'look' || isMinimapDragging || snapThisFrame)
+      ? 'none'
+      : 'transform 0.12s ease-out';
   const playerScreenX = playerPx + tx;
   const playerScreenY = playerPy + ty;
   const playerMarkerRadius = PLAY_CELL_SIZE * 0.32;
@@ -809,6 +879,47 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     : 'absolute z-10 rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none';
   const minimapViewportFrameOpacity = isRailMinimap ? 0.45 : 0.65;
 
+  // Converts pointer event coordinates (relative to the minimap container) into
+  // maze-pixel coordinates using the letterbox-aware rendered bounds. Works for
+  // square, horizontal-rail, and vertical-rail layouts including 100×10 / 10×100.
+  function minimapPointerToLookTarget(
+    e: React.PointerEvent<HTMLDivElement>,
+    bounds: MinimapRenderedBounds,
+  ): { x: number; y: number } {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relX = e.clientX - rect.left;
+    const relY = e.clientY - rect.top;
+    const fracX = Math.max(0, Math.min(1, (relX - bounds.x) / bounds.width));
+    const fracY = Math.max(0, Math.min(1, (relY - bounds.y) / bounds.height));
+    return { x: fracX * mazeW, y: fracY * mazeH };
+  }
+
+  function handleMinimapPointerDown(
+    e: React.PointerEvent<HTMLDivElement>,
+    bounds: MinimapRenderedBounds,
+  ) {
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsMinimapDragging(true);
+    setLookTargetPx(minimapPointerToLookTarget(e, bounds));
+    setCameraMode('look');
+  }
+
+  // Drag: update look target while the pointer is held down (capture active).
+  function handleMinimapPointerMove(
+    e: React.PointerEvent<HTMLDivElement>,
+    bounds: MinimapRenderedBounds,
+  ) {
+    if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+    e.stopPropagation();
+    setLookTargetPx(minimapPointerToLookTarget(e, bounds));
+  }
+
+  // Drag end: restore transition so tap-to-look still animates smoothly.
+  function handleMinimapPointerUp() {
+    setIsMinimapDragging(false);
+  }
+
   const minimapPanel = (
     <div className="flex h-full flex-1 items-center justify-center px-1">
       <div
@@ -824,8 +935,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             width: minimapContainerW,
             height: minimapContainerH,
             borderRadius: isRailMinimap ? 16 : 12,
+            cursor: 'crosshair',
           }}
-          aria-hidden="true"
+          aria-label="Minimap — tap or drag to pan view"
+          onPointerDown={(e) => handleMinimapPointerDown(e, minimapRenderedBounds)}
+          onPointerMove={(e) => handleMinimapPointerMove(e, minimapRenderedBounds)}
+          onPointerUp={handleMinimapPointerUp}
+          onPointerCancel={handleMinimapPointerUp}
         >
           <MazeRenderer
             maze={maze}
@@ -871,7 +987,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const dpadPanel = (
     <div className="flex h-full flex-1 items-center justify-center">
-      <DPad dispatch={dispatch} isActive={isActive} compact={mobileDockH <= 148} />
+      <DPad dispatch={dispatchWithLookExit} isActive={isActive} compact={mobileDockH <= 148} />
     </div>
   );
 
@@ -1022,8 +1138,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               height: mazeH,
               opacity: initialCameraReady ? 1 : 0,
               pointerEvents: initialCameraReady ? 'auto' : 'none',
-              transform: `translate(${tx}px, ${ty}px)`,
-              transition: initialCameraReady ? 'transform 0.12s ease-out' : 'none',
+              transform: `translate3d(${tx}px, ${ty}px, 0)`,
+              transition: initialCameraReady ? lookModeTransition : 'none',
               willChange: 'transform',
             }}
           >
@@ -1044,6 +1160,34 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               markersOutside
             />
           </div>
+
+          {/* Look-mode pill — shown when camera is panned away from the player */}
+          {cameraMode === 'look' && (
+            <button
+              onClick={exitLookMode}
+              style={{
+                position: 'absolute',
+                top: 12,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 20,
+                whiteSpace: 'nowrap',
+                backgroundColor: 'rgba(15, 23, 42, 0.82)',
+                color: 'white',
+                fontSize: 13,
+                fontWeight: 600,
+                padding: '6px 16px',
+                borderRadius: 20,
+                border: 'none',
+                cursor: 'pointer',
+                letterSpacing: '0.01em',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.22)',
+              }}
+              aria-label="Return camera to player"
+            >
+              Viewing map · Return
+            </button>
+          )}
 
           {/* Paused overlay */}
           {state.status === 'paused' && (
@@ -1071,9 +1215,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
             {/* Minimap — no label, no legend */}
             <div
-              aria-label="Minimap"
+              aria-label="Minimap — click or drag to pan view"
               className="relative self-center rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
-              style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH }}
+              style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH, cursor: 'crosshair' }}
+              onPointerDown={(e) => handleMinimapPointerDown(e, sidebarMinimapRenderedBounds)}
+              onPointerMove={(e) => handleMinimapPointerMove(e, sidebarMinimapRenderedBounds)}
+              onPointerUp={handleMinimapPointerUp}
+              onPointerCancel={handleMinimapPointerUp}
             >
               <MazeRenderer
                 maze={maze}
