@@ -65,6 +65,10 @@ function getMobileDockHeight(viewportH: number): number {
 }
 const SIDEBAR_W = 224;
 const SIDEBAR_MINIMAP_SIZE = 192;
+// Fixed stage height for the desktop minimap regardless of maze aspect ratio.
+// 240px = 192px max minimap + ~24px breathing room on each side so endpoint
+// badge artwork (radius 13px) sits fully inside the stage for square mazes.
+const SIDEBAR_MINIMAP_STAGE_H = 240;
 const SIDEBAR_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
@@ -885,9 +889,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const sidebarMinimapCell = Math.max(2, Math.ceil(SIDEBAR_MINIMAP_SIZE / Math.max(maze.width, maze.height)));
   const dmSvgW = maze.width * sidebarMinimapCell + MINIMAP_PADDING * 2;
   const dmSvgH = maze.height * sidebarMinimapCell + MINIMAP_PADDING * 2;
-  const dmContainerScale = Math.min(SIDEBAR_MINIMAP_SIZE / dmSvgW, SIDEBAR_MINIMAP_SIZE / dmSvgH);
-  const sidebarMinimapContainerW = Math.round(dmSvgW * dmContainerScale);
-  const sidebarMinimapContainerH = Math.round(dmSvgH * dmContainerScale);
+  // Desktop: always a fixed square card so the sidebar never collapses into a
+  // tiny rail strip for wide/tall mazes. Maze content is letterboxed inside.
+  const sidebarMinimapContainerW = SIDEBAR_MINIMAP_SIZE;
+  const sidebarMinimapContainerH = SIDEBAR_MINIMAP_SIZE;
 
   const sidebarMinimapRenderedBounds = getContainedMinimapBounds({
     containerWidth: sidebarMinimapContainerW,
@@ -895,18 +900,19 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     svgWidth: dmSvgW,
     svgHeight: dmSvgH,
   });
-  const dmFrameW = Math.min(sidebarMinimapContainerW, (viewW / mazeW) * sidebarMinimapContainerW);
-  const dmFrameH = Math.min(sidebarMinimapContainerH, (viewH / mazeH) * sidebarMinimapContainerH);
-  const dmFrameX = Math.max(0, Math.min(sidebarMinimapContainerW - dmFrameW, (-tx / mazeW) * sidebarMinimapContainerW));
-  const dmFrameY = Math.max(0, Math.min(sidebarMinimapContainerH - dmFrameH, (-ty / mazeH) * sidebarMinimapContainerH));
+  // Frame anchored to the letterbox-aware rendered region (same pattern as mobile).
+  const dmFrameW = Math.min(sidebarMinimapRenderedBounds.width, (viewW / mazeW) * sidebarMinimapRenderedBounds.width);
+  const dmFrameH = Math.min(sidebarMinimapRenderedBounds.height, (viewH / mazeH) * sidebarMinimapRenderedBounds.height);
+  const dmFrameX = sidebarMinimapRenderedBounds.x + Math.max(0, Math.min(sidebarMinimapRenderedBounds.width - dmFrameW, (-tx / mazeW) * sidebarMinimapRenderedBounds.width));
+  const dmFrameY = sidebarMinimapRenderedBounds.y + Math.max(0, Math.min(sidebarMinimapRenderedBounds.height - dmFrameH, (-ty / mazeH) * sidebarMinimapRenderedBounds.height));
 
   // Keep markers in screen-space. Rail minimaps get smaller markers so they don't
   // dominate compact horizontal/vertical navigation aids.
   const minimapMarkerSize = isRailMinimap ? MINIMAP_RAIL_ENDPOINT_MARKER_SIZE : MINIMAP_ENDPOINT_MARKER_SIZE;
   const minimapPlayerMarkerSize = isRailMinimap ? MINIMAP_RAIL_PLAYER_MARKER_SIZE : MINIMAP_PLAYER_MARKER_SIZE;
   const showMinimapPlayerMarker = inBounds(state.playerPosition, maze.width, maze.height);
-  const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
-  const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
+  // Fixed square card always has room for full-size desktop markers.
+  const sidebarMarkerSize = DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE;
 
   const minimapViewportFrameClass = isRailMinimap
     ? 'absolute z-10 rounded border border-stone-900/65 pointer-events-none'
@@ -1327,10 +1333,15 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         >
           <div className="flex flex-col p-4">
 
-            {/* Minimap — no label, no legend */}
+            {/* Minimap stage — fixed height so buttons never shift with maze aspect ratio */}
+            <div
+              className="flex items-center justify-center overflow-visible"
+              style={{ height: SIDEBAR_MINIMAP_STAGE_H }}
+            >
+            {/* Minimap card — sized to maze aspect ratio, centered inside stage */}
             <div
               aria-label="Minimap — click or drag to pan view"
-              className="relative self-center rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
+              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
               style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH, cursor: 'crosshair' }}
               onPointerDown={(e) => handleMinimapPointerDown(e, sidebarMinimapRenderedBounds)}
               onPointerMove={(e) => handleMinimapPointerMove(e, sidebarMinimapRenderedBounds)}
@@ -1373,9 +1384,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 }}
               />
             </div>
+            </div>{/* end minimap stage */}
 
             {/* Divider */}
-            <div className="h-px mt-4 mb-3" style={{ backgroundColor: 'var(--color-border)' }} />
+            <div className="h-px mb-3" style={{ backgroundColor: 'var(--color-border)' }} />
 
             {/* Group 1: Assist */}
             <div className="space-y-2">
