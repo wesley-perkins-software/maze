@@ -1153,9 +1153,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         <div
           ref={mazeViewportRef}
           className="relative flex-1 overflow-hidden bg-slate-100"
-          style={cameraMode === 'look'
-            ? { boxShadow: 'inset 0 0 0 2px rgba(13, 148, 136, 0.42)' }
-            : undefined}
         >
 
           {/* Follow-camera pan container */}
@@ -1188,6 +1185,26 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               markersOutside
             />
           </div>
+
+          {/* Look-mode viewport overlay — sits above the maze, below the pill.
+              An overlay div is required because box-shadow on the viewport div
+              itself is hidden behind the absolutely-positioned pan container. */}
+          {cameraMode === 'look' && (
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                pointerEvents: 'none',
+                zIndex: 15,
+                // Crisp 3px teal ring + soft 80px inner vignette that fades to
+                // nothing at the centre so maze readability is unaffected.
+                boxShadow:
+                  'inset 0 0 0 3px rgba(13, 148, 136, 0.72), ' +
+                  'inset 0 0 80px rgba(13, 148, 136, 0.14)',
+              }}
+            />
+          )}
 
           {/* Look-mode pill — shown when camera is panned away from the player */}
           {cameraMode === 'look' && (
