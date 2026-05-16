@@ -398,6 +398,18 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     });
   };
 
+  const [showTrail, setShowTrail] = useState(() => {
+    try { return localStorage.getItem('maze:show-trail') !== 'false'; } catch { return true; }
+  });
+
+  const toggleShowTrail = () => {
+    setShowTrail(v => {
+      const next = !v;
+      try { localStorage.setItem('maze:show-trail', next ? 'true' : 'false'); } catch {}
+      return next;
+    });
+  };
+
   const [vpSize, setVpSize] = useState(getWindowViewportSize);
   const [mazeViewportSize, setMazeViewportSize] = useState<ViewportSize | null>(null);
   const [initialCameraReady, setInitialCameraReady] = useState(() => getWindowViewportSize().w >= 768);
@@ -600,21 +612,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const isActive = state.status === 'playing' || state.status === 'idle';
 
-  const handleTap = useCallback((clientX: number, clientY: number) => {
-    if (!svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const totalW = maze.width * PLAY_CELL_SIZE + MAZE_PADDING * 2;
-    const totalH = maze.height * PLAY_CELL_SIZE + MAZE_PADDING * 2;
-    const svgX = (clientX - rect.left) * (totalW / rect.width);
-    const svgY = (clientY - rect.top) * (totalH / rect.height);
-    const cellX = Math.floor((svgX - MAZE_PADDING) / PLAY_CELL_SIZE);
-    const cellY = Math.floor((svgY - MAZE_PADDING) / PLAY_CELL_SIZE);
-    if (cellX < 0 || cellY < 0 || cellX >= maze.width || cellY >= maze.height) return;
-    dispatch({ type: 'TAP_MOVE', target: { x: cellX, y: cellY } });
-  }, [maze.width, maze.height, dispatch]);
-
   useKeyboardInput(dispatch, isActive);
-  useTouchInput(mazeViewportRef, dispatch, isActive, handleTap);
+  useTouchInput(mazeViewportRef, dispatch, isActive);
 
   const currentSolution = useMemo(() => {
     const startCell = getPathStartCell(maze, state.playerPosition);
@@ -921,7 +920,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
             : (
               <>
-                <span className="md:hidden text-slate-400 text-xs">Tap, swipe, or use D-pad to move</span>
+                <span className="md:hidden text-slate-400 text-xs">Swipe or use D-pad to move</span>
                 <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
               </>
             )
@@ -981,7 +980,17 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                     </svg>
                   )}
-                  {state.solutionVisible ? 'Hide solution' : 'Show solution'}
+                  {state.solutionVisible ? 'Hide Solution' : 'Show Solution'}
+                </button>
+                <button
+                  onClick={() => { toggleShowTrail(); setMenuOpen(false); }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                  aria-pressed={showTrail}
+                >
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                  </svg>
+                  {showTrail ? 'Hide path traveled' : 'Show path traveled'}
                 </button>
                 <div className="h-px bg-slate-100" />
                 <button
@@ -1026,13 +1035,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 ? state.playerPosition
                 : undefined}
               trail={state.trail}
+              showTrail={showTrail}
               solution={currentSolution}
               showSolution={state.solutionVisible}
               hintCells={state.hintCells}
               interactive={isActive}
               svgRef={svgRef}
               markersOutside
-              onSvgClick={(e) => handleTap(e.clientX, e.clientY)}
             />
           </div>
 
@@ -1139,7 +1148,17 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                   </svg>
                 )}
-                <span>{state.solutionVisible ? 'Hide solution' : 'Show solution'}</span>
+                <span>{state.solutionVisible ? 'Hide Solution' : 'Show Solution'}</span>
+              </button>
+              <button
+                onClick={toggleShowTrail}
+                className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                aria-pressed={showTrail}
+              >
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <span>{showTrail ? 'Hide path traveled' : 'Show path traveled'}</span>
               </button>
             </div>
 

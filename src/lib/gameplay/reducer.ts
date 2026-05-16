@@ -1,6 +1,6 @@
 import type { MazeData } from '../../types/maze';
 import { inBounds, pointToIndex } from '../maze/utils';
-import { canMove, applyMove, computeRun, computeBfsPath, getEntryStartPosition, getExitEndPosition, isEntryStep, isExitStep } from './movement';
+import { canMove, applyMove, computeRun, getEntryStartPosition, getExitEndPosition, isEntryStep, isExitStep } from './movement';
 import type { GameState, GameAction } from './types';
 
 function inMazeIndex(position: GameState['playerPosition'], maze: MazeData): number | null {
@@ -145,28 +145,6 @@ export function gameReducer(
           inMazeIndex(state.playerPosition, maze),
           newIndices,
         ),
-        startTime: state.startTime ?? now,
-        elapsedMs: state.startTime ? now - state.startTime : 0,
-      };
-    }
-
-    case 'TAP_MOVE': {
-      if (state.status === 'solved' || state.status === 'paused') return state;
-      if (!inBounds(state.playerPosition, maze.width, maze.height)) return state;
-
-      const path = computeBfsPath(maze, state.playerPosition, action.target);
-      if (!path || path.length === 0) return state;
-
-      const now = Date.now();
-      const finalPos = path[path.length - 1];
-      const newIndices = path.map(p => pointToIndex(p, maze.width));
-
-      return {
-        ...state,
-        status: 'playing',
-        playerPosition: finalPos,
-        trail: [...state.trail, ...newIndices],
-        hintCells: updateHintCells(state.hintCells, inMazeIndex(state.playerPosition, maze), newIndices),
         startTime: state.startTime ?? now,
         elapsedMs: state.startTime ? now - state.startTime : 0,
       };

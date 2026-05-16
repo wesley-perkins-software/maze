@@ -116,22 +116,20 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
   const isActive = state.status === 'playing' || state.status === 'idle';
   const cellSize = Math.max(8, Math.min(32, Math.floor(560 / Math.max(maze.width, maze.height))));
 
-  const handleTap = useCallback((clientX: number, clientY: number) => {
-    if (!svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const padding = 6;
-    const totalW = maze.width * cellSize + padding * 2;
-    const totalH = maze.height * cellSize + padding * 2;
-    const svgX = (clientX - rect.left) * (totalW / rect.width);
-    const svgY = (clientY - rect.top) * (totalH / rect.height);
-    const cellX = Math.floor((svgX - padding) / cellSize);
-    const cellY = Math.floor((svgY - padding) / cellSize);
-    if (cellX < 0 || cellY < 0 || cellX >= maze.width || cellY >= maze.height) return;
-    dispatch({ type: 'TAP_MOVE', target: { x: cellX, y: cellY } });
-  }, [maze.width, maze.height, cellSize, dispatch]);
-
   useKeyboardInput(dispatch, isActive);
-  useTouchInput(svgRef, dispatch, isActive, handleTap);
+  useTouchInput(svgRef, dispatch, isActive);
+
+  // ── Trail visibility preference (persisted) ──────────────────────────────────
+  const [showTrail, setShowTrail] = useState(() => {
+    try { return localStorage.getItem('maze:show-trail') !== 'false'; } catch { return true; }
+  });
+  const toggleShowTrail = () => {
+    setShowTrail(v => {
+      const next = !v;
+      try { localStorage.setItem('maze:show-trail', next ? 'true' : 'false'); } catch {}
+      return next;
+    });
+  };
 
   const currentSolution = useMemo(() => {
     const startCell = getPathStartCell(maze, state.playerPosition);
@@ -173,7 +171,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
       <div className="flex items-center justify-between w-full max-w-lg gap-3 px-1 flex-wrap">
         <div className="flex items-center gap-3">
           {state.status === 'idle' && (
-            <span className="text-sm text-slate-500">Tap the maze, swipe, or use arrow keys to start</span>
+            <span className="text-sm text-slate-500">Swipe or use arrow keys to start</span>
           )}
           {state.status === 'playing' && (
             <div className="flex items-center gap-2 text-slate-600 text-sm">
@@ -231,6 +229,15 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
             {state.solutionVisible ? 'Hide Solution' : 'Show Solution'}
           </button>
 
+          {/* Path traveled toggle */}
+          <button
+            onClick={toggleShowTrail}
+            className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
+            aria-pressed={showTrail}
+          >
+            {showTrail ? 'Hide path' : 'Show path'}
+          </button>
+
           {/* Reset */}
           <button
             onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}            className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
@@ -258,12 +265,12 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
           cellSize={cellSize}
           playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
           trail={state.trail}
+          showTrail={showTrail}
           solution={currentSolution}
           showSolution={state.solutionVisible}
           hintCells={state.hintCells}
           interactive={isActive}
           svgRef={svgRef}
-          onSvgClick={(e) => handleTap(e.clientX, e.clientY)}
         />
 
         {/* Paused overlay */}
@@ -304,7 +311,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
       <DPad dispatch={dispatch} isActive={isActive} />
 
       <p className="text-xs text-slate-400 text-center md:hidden" aria-hidden="true">
-        Tap maze, swipe, or use D-pad to move
+        Swipe or use D-pad to move
       </p>
       <p className="text-xs text-slate-400 text-center hidden md:block" aria-hidden="true">
         Arrow keys or WASD to run

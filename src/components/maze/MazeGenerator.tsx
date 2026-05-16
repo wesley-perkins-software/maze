@@ -26,7 +26,7 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
   monster: { w: 100, h: 100 },
 };
 
-const CUSTOM_RANGE = { min: 5, max: 100 };
+export const CUSTOM_RANGE = { min: 10, max: 100 };
 
 const PREVIEW_PADDING = 6;
 

@@ -18,7 +18,6 @@ export type Direction = 'N' | 'E' | 'S' | 'W';
 export type GameAction =
   | { type: 'MOVE'; direction: Direction }
   | { type: 'RUN'; direction: Direction }
-  | { type: 'TAP_MOVE'; target: Point }
   | { type: 'SHOW_SOLUTION' }
   | { type: 'HIDE_SOLUTION' }
   | { type: 'TOGGLE_SOLUTION' }
