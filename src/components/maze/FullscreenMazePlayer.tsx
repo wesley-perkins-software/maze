@@ -94,6 +94,8 @@ const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
 const MINIMAP_RAIL_MIN_LONG_SIDE = 140;
 const MINIMAP_RAIL_MARKER_OVERHANG = Math.ceil(MINIMAP_RAIL_ENDPOINT_MARKER_SIZE / 2);
 const MINIMAP_MOBILE_CENTER_GUTTER = 36;
+const MINIMAP_MOBILE_PANEL_EDGE_PADDING = 8;
+const MINIMAP_MOBILE_RAIL_SAFETY_GAP = 4;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
 const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
 const MINIMAP_PLAYER_MARKER_COLOR = '#2563eb';
@@ -126,8 +128,17 @@ function getMobileDockPanelWidth(viewportWidth: number) {
 }
 
 function getMobileMinimapSlotWidth(panelWidth: number, layout: MinimapLayout) {
-  const centerGutter = layout === 'horizontal-rail' ? MINIMAP_MOBILE_CENTER_GUTTER : 0;
-  return Math.max(0, Math.floor(panelWidth - centerGutter));
+  if (layout !== 'horizontal-rail') {
+    return Math.max(0, Math.floor(panelWidth));
+  }
+
+  const markerSafeInset = MINIMAP_RAIL_MARKER_OVERHANG + MINIMAP_MOBILE_RAIL_SAFETY_GAP;
+  const availableRailWidth = panelWidth
+    - MINIMAP_MOBILE_CENTER_GUTTER
+    - MINIMAP_MOBILE_PANEL_EDGE_PADDING * 2
+    - markerSafeInset * 2;
+
+  return Math.max(0, Math.floor(availableRailWidth));
 }
 
 function getMobileMinimapContainerSize(layout: MinimapLayout, panelWidth: number, slotH: number, minimapMaxSize: number) {
@@ -948,10 +959,18 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     setIsMinimapDragging(false);
   }
 
+  const horizontalRailMarkerSafeInset = MINIMAP_RAIL_MARKER_OVERHANG + MINIMAP_MOBILE_RAIL_SAFETY_GAP;
+  const horizontalRailOuterInset = MINIMAP_MOBILE_PANEL_EDGE_PADDING + horizontalRailMarkerSafeInset;
   const minimapCenterGutterStyle = minimapLayout === 'horizontal-rail'
     ? leftHanded
-      ? { paddingLeft: MINIMAP_MOBILE_CENTER_GUTTER }
-      : { paddingRight: MINIMAP_MOBILE_CENTER_GUTTER }
+      ? {
+          paddingLeft: horizontalRailOuterInset + MINIMAP_MOBILE_CENTER_GUTTER,
+          paddingRight: horizontalRailOuterInset,
+        }
+      : {
+          paddingLeft: horizontalRailOuterInset,
+          paddingRight: horizontalRailOuterInset + MINIMAP_MOBILE_CENTER_GUTTER,
+        }
     : undefined;
 
   const minimapPanel = (
