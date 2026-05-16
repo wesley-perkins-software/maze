@@ -94,6 +94,8 @@ const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
 const MINIMAP_RAIL_MIN_LONG_SIDE = 140;
 const MINIMAP_RAIL_MARKER_OVERHANG = Math.ceil(MINIMAP_RAIL_ENDPOINT_MARKER_SIZE / 2);
 const MINIMAP_MOBILE_CENTER_GUTTER = 36;
+const MINIMAP_MOBILE_PANEL_EDGE_PADDING = 8;
+const MINIMAP_MOBILE_RAIL_SAFETY_GAP = 4;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
 const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
 const MINIMAP_PLAYER_MARKER_COLOR = '#2563eb';
@@ -121,12 +123,26 @@ function getMobileMinimapLayout(maze: MazeData): MinimapLayout {
   return 'square';
 }
 
-function getMobileMinimapSlotWidth(viewportWidth: number) {
-  return Math.max(0, Math.floor((viewportWidth - MINIMAP_MOBILE_CENTER_GUTTER) / 2));
+function getMobileDockPanelWidth(viewportWidth: number) {
+  return Math.max(0, viewportWidth / 2);
 }
 
-function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: number, slotH: number, minimapMaxSize: number) {
-  const slotWidth = getMobileMinimapSlotWidth(viewportWidth);
+function getMobileMinimapSlotWidth(panelWidth: number, layout: MinimapLayout) {
+  if (layout !== 'horizontal-rail') {
+    return Math.max(0, Math.floor(panelWidth));
+  }
+
+  const markerSafeInset = MINIMAP_RAIL_MARKER_OVERHANG + MINIMAP_MOBILE_RAIL_SAFETY_GAP;
+  const availableRailWidth = panelWidth
+    - MINIMAP_MOBILE_CENTER_GUTTER
+    - MINIMAP_MOBILE_PANEL_EDGE_PADDING * 2
+    - markerSafeInset * 2;
+
+  return Math.max(0, Math.floor(availableRailWidth));
+}
+
+function getMobileMinimapContainerSize(layout: MinimapLayout, panelWidth: number, slotH: number, minimapMaxSize: number) {
+  const slotWidth = getMobileMinimapSlotWidth(panelWidth, layout);
   const squareSide = Math.min(minimapMaxSize, slotWidth, slotH);
   const verticalRailMaxLongSide = slotH - MINIMAP_RAIL_MARKER_OVERHANG * 2;
 
@@ -844,8 +860,9 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const mmSvgH = maze.height * minimapCell + MINIMAP_PADDING * 2;
   // Mobile fullscreen minimap: square for normal mazes, compact rails for extreme rectangles.
   const minimapLayout = getMobileMinimapLayout(maze);
-  const minimapSlotW = getMobileMinimapSlotWidth(vpSize.w);
-  const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, vpSize.w, mobileMiniMapSlotH, mobileMinimapMaxSize);
+  const mobileDockPanelW = getMobileDockPanelWidth(vpSize.w);
+  const minimapSlotW = getMobileMinimapSlotWidth(mobileDockPanelW, minimapLayout);
+  const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, mobileDockPanelW, mobileMiniMapSlotH, mobileMinimapMaxSize);
   const isRailMinimap = minimapLayout !== 'square';
   const minimapRenderedBounds = getContainedMinimapBounds({
     containerWidth: minimapContainerW,
@@ -942,12 +959,30 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     setIsMinimapDragging(false);
   }
 
+  const horizontalRailMarkerSafeInset = MINIMAP_RAIL_MARKER_OVERHANG + MINIMAP_MOBILE_RAIL_SAFETY_GAP;
+  const horizontalRailOuterInset = MINIMAP_MOBILE_PANEL_EDGE_PADDING + horizontalRailMarkerSafeInset;
+  const minimapCenterGutterStyle = minimapLayout === 'horizontal-rail'
+    ? leftHanded
+      ? {
+          paddingLeft: horizontalRailOuterInset + MINIMAP_MOBILE_CENTER_GUTTER,
+          paddingRight: horizontalRailOuterInset,
+        }
+      : {
+          paddingLeft: horizontalRailOuterInset,
+          paddingRight: horizontalRailOuterInset + MINIMAP_MOBILE_CENTER_GUTTER,
+        }
+    : undefined;
+
   const minimapPanel = (
-    <div className="flex h-full flex-1 items-center justify-center px-1">
+    <div
+      className="flex h-full min-w-0 items-center justify-center overflow-visible box-border"
+      style={minimapCenterGutterStyle}
+    >
       <div
-        className="flex items-center justify-center"
+        className="flex min-w-0 items-center justify-center"
         style={{
           width: minimapSlotW,
+          maxWidth: '100%',
           height: mobileMiniMapSlotH,
         }}
       >
@@ -1009,7 +1044,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const dpadPanel = (
     <div
-      className="flex h-full flex-1 items-center justify-center"
+      className="flex h-full min-w-0 items-center justify-center"
       style={cameraMode === 'look' ? { opacity: 0.38 } : undefined}
     >
       <DPad dispatch={dispatchWithLookExit} isActive={isActive} compact={mobileDockH <= 148} />
@@ -1462,20 +1497,23 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         </div>
       )}
 
-      {/* Mobile control strip — equal halves: minimap + D-pad with left-handed swap */}
+      {/* Mobile control strip — fixed 50/50 panels with left-handed content swap */}
       <div
         ref={controlStripRef}
-        className="md:hidden bg-[#F6F5F0] border-t border-[#DDD8CF] shrink-0 flex items-stretch overflow-visible pb-[env(safe-area-inset-bottom,0px)]"
+        className="md:hidden relative bg-[#F6F5F0] border-t border-[#DDD8CF] shrink-0 overflow-visible pb-[env(safe-area-inset-bottom,0px)]"
         style={{ height: mobileDockH }}
       >
-        {leftHanded ? dpadPanel : minimapPanel}
+        <div className="grid h-full w-full grid-cols-2 items-stretch overflow-visible">
+          {leftHanded ? dpadPanel : minimapPanel}
+          {leftHanded ? minimapPanel : dpadPanel}
+        </div>
 
         {/* Center divider with swap toggle */}
-        <div className="flex flex-col items-center justify-center px-1 gap-1">
+        <div className="pointer-events-none absolute inset-y-0 left-1/2 flex -translate-x-1/2 flex-col items-center justify-center gap-1">
           <div className="w-px flex-1 bg-stone-200" />
           <button
             onClick={toggleLeftHanded}
-            className="w-7 h-7 flex items-center justify-center rounded-full bg-white border border-stone-200 text-stone-400 hover:text-stone-600 hover:border-stone-300 transition-colors shrink-0 shadow-sm"
+            className="pointer-events-auto w-7 h-7 flex items-center justify-center rounded-full bg-white border border-stone-200 text-stone-400 hover:text-stone-600 hover:border-stone-300 transition-colors shrink-0 shadow-sm"
             aria-label={leftHanded ? 'Switch to right-handed layout' : 'Switch to left-handed layout'}
             title={leftHanded ? 'Right-handed layout' : 'Left-handed layout'}
           >
@@ -1485,8 +1523,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           </button>
           <div className="w-px flex-1 bg-stone-200" />
         </div>
-
-        {leftHanded ? minimapPanel : dpadPanel}
       </div>
 
       {initialCameraReady && showBottomStartPlayerOverlay && (
