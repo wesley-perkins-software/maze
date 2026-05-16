@@ -186,8 +186,8 @@ export function DPad({ dispatch, isActive, compact = false }: DPadProps) {
       className="touch-none"
       style={{
         display: 'grid',
-        gridTemplateColumns: compact ? '56px 24px 56px' : '56px 32px 56px',
-        gridTemplateRows: compact ? '56px 24px 56px' : '56px 32px 56px',
+        gridTemplateColumns: '56px 24px 56px',
+        gridTemplateRows: '56px 24px 56px',
         justifyItems: 'center',
         alignItems: 'center',
       }}
