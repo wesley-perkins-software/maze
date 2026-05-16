@@ -1,4 +1,5 @@
 import { useReducer, useEffect, useRef, useCallback, useState, useMemo } from 'react';
+import type { CSSProperties } from 'react';
 import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
@@ -94,6 +95,9 @@ const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
 const MINIMAP_RAIL_MIN_LONG_SIDE = 140;
 const MINIMAP_RAIL_MARKER_OVERHANG = Math.ceil(MINIMAP_RAIL_ENDPOINT_MARKER_SIZE / 2);
 const MINIMAP_MOBILE_CENTER_GUTTER = 36;
+// Extra center-side slack for horizontal rails: marker overhang plus the desired
+// visual gap from the swap button edge. Square and vertical minimaps do not use it.
+const MINIMAP_HORIZONTAL_RAIL_SWAP_CLEARANCE = MINIMAP_RAIL_MARKER_OVERHANG + 16;
 const DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE = 26;
 const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
 const MINIMAP_PLAYER_MARKER_COLOR = '#2563eb';
@@ -125,7 +129,13 @@ function getMobileMinimapSlotWidth(viewportWidth: number) {
   return Math.max(0, Math.floor((viewportWidth - MINIMAP_MOBILE_CENTER_GUTTER) / 2));
 }
 
-function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: number, slotH: number, minimapMaxSize: number) {
+function getMobileMinimapContainerSize(
+  layout: MinimapLayout,
+  viewportWidth: number,
+  slotH: number,
+  minimapMaxSize: number,
+  centerSideGutter = 0,
+) {
   const slotWidth = getMobileMinimapSlotWidth(viewportWidth);
   const squareSide = Math.min(minimapMaxSize, slotWidth, slotH);
   const verticalRailMaxLongSide = slotH - MINIMAP_RAIL_MARKER_OVERHANG * 2;
@@ -134,9 +144,10 @@ function getMobileMinimapContainerSize(layout: MinimapLayout, viewportWidth: num
     return { width: squareSide, height: squareSide };
   }
 
-  const horizontalMaxSide = Math.min(MINIMAP_RAIL_MAX_LONG_SIDE, slotWidth);
+  const horizontalSafeSlotWidth = Math.max(0, slotWidth - centerSideGutter);
+  const horizontalMaxSide = Math.min(MINIMAP_RAIL_MAX_LONG_SIDE, horizontalSafeSlotWidth);
   const horizontalMinSide = Math.min(MINIMAP_RAIL_MIN_LONG_SIDE, horizontalMaxSide);
-  const horizontalLongSide = clamp(horizontalMinSide, slotWidth, horizontalMaxSide);
+  const horizontalLongSide = clamp(horizontalMinSide, horizontalSafeSlotWidth, horizontalMaxSide);
 
   if (layout === 'horizontal-rail') {
     return {
@@ -845,7 +856,15 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Mobile fullscreen minimap: square for normal mazes, compact rails for extreme rectangles.
   const minimapLayout = getMobileMinimapLayout(maze);
   const minimapSlotW = getMobileMinimapSlotWidth(vpSize.w);
-  const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, vpSize.w, mobileMiniMapSlotH, mobileMinimapMaxSize);
+  const isHorizontalRailMinimap = minimapLayout === 'horizontal-rail';
+  const minimapCenterSideGutter = isHorizontalRailMinimap ? MINIMAP_HORIZONTAL_RAIL_SWAP_CLEARANCE : 0;
+  const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(
+    minimapLayout,
+    vpSize.w,
+    mobileMiniMapSlotH,
+    mobileMinimapMaxSize,
+    minimapCenterSideGutter,
+  );
   const isRailMinimap = minimapLayout !== 'square';
   const minimapRenderedBounds = getContainedMinimapBounds({
     containerWidth: minimapContainerW,
@@ -942,13 +961,18 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     setIsMinimapDragging(false);
   }
 
+  const minimapJustifyContent: CSSProperties['justifyContent'] = isHorizontalRailMinimap
+    ? (leftHanded ? 'flex-end' : 'flex-start')
+    : 'center';
+
   const minimapPanel = (
     <div className="flex h-full flex-1 items-center justify-center px-1">
       <div
-        className="flex items-center justify-center"
+        className="flex items-center"
         style={{
           width: minimapSlotW,
           height: mobileMiniMapSlotH,
+          justifyContent: minimapJustifyContent,
         }}
       >
         <div
