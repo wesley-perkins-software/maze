@@ -600,21 +600,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const isActive = state.status === 'playing' || state.status === 'idle';
 
-  const handleTap = useCallback((clientX: number, clientY: number) => {
-    if (!svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const totalW = maze.width * PLAY_CELL_SIZE + MAZE_PADDING * 2;
-    const totalH = maze.height * PLAY_CELL_SIZE + MAZE_PADDING * 2;
-    const svgX = (clientX - rect.left) * (totalW / rect.width);
-    const svgY = (clientY - rect.top) * (totalH / rect.height);
-    const cellX = Math.floor((svgX - MAZE_PADDING) / PLAY_CELL_SIZE);
-    const cellY = Math.floor((svgY - MAZE_PADDING) / PLAY_CELL_SIZE);
-    if (cellX < 0 || cellY < 0 || cellX >= maze.width || cellY >= maze.height) return;
-    dispatch({ type: 'TAP_MOVE', target: { x: cellX, y: cellY } });
-  }, [maze.width, maze.height, dispatch]);
-
   useKeyboardInput(dispatch, isActive);
-  useTouchInput(mazeViewportRef, dispatch, isActive, handleTap);
+  useTouchInput(mazeViewportRef, dispatch, isActive);
 
   const currentSolution = useMemo(() => {
     const startCell = getPathStartCell(maze, state.playerPosition);
@@ -921,7 +908,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
             : (
               <>
-                <span className="md:hidden text-slate-400 text-xs">Tap, swipe, or use D-pad to move</span>
+                <span className="md:hidden text-slate-400 text-xs">Swipe or use D-pad to move</span>
                 <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
               </>
             )
@@ -1032,7 +1019,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               interactive={isActive}
               svgRef={svgRef}
               markersOutside
-              onSvgClick={(e) => handleTap(e.clientX, e.clientY)}
             />
           </div>
 

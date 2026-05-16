@@ -1,19 +1,7 @@
 import type { MazeData, Point } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { pointToIndex } from '../maze/utils';
-import { findShortestPath } from '../maze/solver';
 import type { Direction } from './types';
-
-const TAP_MAX_STEPS = 5;
-
-/**
- * BFS shortest path from `from` to `target` through maze passages, capped at
- * TAP_MAX_STEPS traversals. Returns an ordered Point array (excluding `from`),
- * or null if the target is not reachable within the step limit.
- */
-export function computeBfsPath(maze: MazeData, from: Point, target: Point): Point[] | null {
-  return findShortestPath(maze, from, target, TAP_MAX_STEPS);
-}
 
 const DIR_WALL: Record<Direction, number> = {
   N: WALL_N,
