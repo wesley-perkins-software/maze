@@ -889,9 +889,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const sidebarMinimapCell = Math.max(2, Math.ceil(SIDEBAR_MINIMAP_SIZE / Math.max(maze.width, maze.height)));
   const dmSvgW = maze.width * sidebarMinimapCell + MINIMAP_PADDING * 2;
   const dmSvgH = maze.height * sidebarMinimapCell + MINIMAP_PADDING * 2;
-  const dmContainerScale = Math.min(SIDEBAR_MINIMAP_SIZE / dmSvgW, SIDEBAR_MINIMAP_SIZE / dmSvgH);
-  const sidebarMinimapContainerW = Math.round(dmSvgW * dmContainerScale);
-  const sidebarMinimapContainerH = Math.round(dmSvgH * dmContainerScale);
+  // Desktop: always a fixed square card so the sidebar never collapses into a
+  // tiny rail strip for wide/tall mazes. Maze content is letterboxed inside.
+  const sidebarMinimapContainerW = SIDEBAR_MINIMAP_SIZE;
+  const sidebarMinimapContainerH = SIDEBAR_MINIMAP_SIZE;
 
   const sidebarMinimapRenderedBounds = getContainedMinimapBounds({
     containerWidth: sidebarMinimapContainerW,
@@ -899,18 +900,19 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     svgWidth: dmSvgW,
     svgHeight: dmSvgH,
   });
-  const dmFrameW = Math.min(sidebarMinimapContainerW, (viewW / mazeW) * sidebarMinimapContainerW);
-  const dmFrameH = Math.min(sidebarMinimapContainerH, (viewH / mazeH) * sidebarMinimapContainerH);
-  const dmFrameX = Math.max(0, Math.min(sidebarMinimapContainerW - dmFrameW, (-tx / mazeW) * sidebarMinimapContainerW));
-  const dmFrameY = Math.max(0, Math.min(sidebarMinimapContainerH - dmFrameH, (-ty / mazeH) * sidebarMinimapContainerH));
+  // Frame anchored to the letterbox-aware rendered region (same pattern as mobile).
+  const dmFrameW = Math.min(sidebarMinimapRenderedBounds.width, (viewW / mazeW) * sidebarMinimapRenderedBounds.width);
+  const dmFrameH = Math.min(sidebarMinimapRenderedBounds.height, (viewH / mazeH) * sidebarMinimapRenderedBounds.height);
+  const dmFrameX = sidebarMinimapRenderedBounds.x + Math.max(0, Math.min(sidebarMinimapRenderedBounds.width - dmFrameW, (-tx / mazeW) * sidebarMinimapRenderedBounds.width));
+  const dmFrameY = sidebarMinimapRenderedBounds.y + Math.max(0, Math.min(sidebarMinimapRenderedBounds.height - dmFrameH, (-ty / mazeH) * sidebarMinimapRenderedBounds.height));
 
   // Keep markers in screen-space. Rail minimaps get smaller markers so they don't
   // dominate compact horizontal/vertical navigation aids.
   const minimapMarkerSize = isRailMinimap ? MINIMAP_RAIL_ENDPOINT_MARKER_SIZE : MINIMAP_ENDPOINT_MARKER_SIZE;
   const minimapPlayerMarkerSize = isRailMinimap ? MINIMAP_RAIL_PLAYER_MARKER_SIZE : MINIMAP_PLAYER_MARKER_SIZE;
   const showMinimapPlayerMarker = inBounds(state.playerPosition, maze.width, maze.height);
-  const dmShortSide = Math.min(sidebarMinimapContainerW, sidebarMinimapContainerH);
-  const sidebarMarkerSize = Math.min(DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE, Math.max(14, dmShortSide));
+  // Fixed square card always has room for full-size desktop markers.
+  const sidebarMarkerSize = DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE;
 
   const minimapViewportFrameClass = isRailMinimap
     ? 'absolute z-10 rounded border border-stone-900/65 pointer-events-none'
