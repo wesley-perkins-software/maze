@@ -371,4 +371,13 @@
   .print-maze-art svg path {
     stroke: #000 !important;
   }
+
+  /* Backup guard: printable sheets should only include clean maze geometry. */
+  .print-maze-art .maze-endpoint-marker,
+  .print-maze-art .maze-player-cursor,
+  .print-maze-art .maze-traversal-path,
+  .print-maze-art .maze-hint-path,
+  .print-maze-art .maze-solution-path {
+    display: none !important;
+  }
 }

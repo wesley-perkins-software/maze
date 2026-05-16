@@ -14,6 +14,7 @@ export type RenderOptions = {
   wallThickness?: number;  // stroke width, default 2
   padding?: number;        // extra space around maze, default 4
   showSolution?: boolean;
+  showEndpointMarkers?: boolean;
   solutionColor?: string;
   bgColor?: string;
   wallColor?: string;
@@ -29,6 +30,7 @@ const DEFAULTS = {
   wallThickness: 2,
   padding: 4,
   showSolution: false,
+  showEndpointMarkers: true,
   solutionColor: '#E03B24',
   bgColor: '#ffffff',
   wallColor: '#1e293b',
@@ -48,7 +50,7 @@ function escapeAttr(value: string): string {
 export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}): string {
   const o = { ...DEFAULTS, ...opts };
   const { width, height, grid, entry, exit, solution, difficulty, slug } = maze;
-  const { cellSize, wallThickness, padding, showSolution } = o;
+  const { cellSize, wallThickness, padding, showSolution, showEndpointMarkers } = o;
 
   const totalW = width  * cellSize + padding * 2;
   const totalH = height * cellSize + padding * 2;
@@ -103,6 +105,10 @@ export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}):
   const entryPy = padding + entry.y * cellSize + mOff;
   const exitPx  = padding + exit.x  * cellSize + mOff;
   const exitPy  = padding + exit.y  * cellSize + mOff;
+  const endpointMarkers = showEndpointMarkers
+    ? `<rect class="maze-endpoint-marker maze-entry-marker" x="${entryPx}" y="${entryPy}" width="${ms}" height="${ms}" rx="${ms * 0.2}" fill="${o.entryColor}" opacity="0.8"/>
+  <rect class="maze-endpoint-marker maze-exit-marker" x="${exitPx}"  y="${exitPy}"  width="${ms}" height="${ms}" rx="${ms * 0.2}" fill="${o.exitColor}"  opacity="0.8"/>`
+    : '';
 
   // ── Solution path ────────────────────────────────────────────────────────────
   let solutionPath = '';
@@ -129,8 +135,7 @@ export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}):
   <rect width="${totalW}" height="${totalH}" fill="${o.bgColor}"/>
   ${solutionPath}
   <path d="${wallSegments.join(' ')}" stroke="${o.wallColor}" stroke-width="${wallThickness}" stroke-linecap="square" fill="none"/>
-  <rect x="${entryPx}" y="${entryPy}" width="${ms}" height="${ms}" rx="${ms * 0.2}" fill="${o.entryColor}" opacity="0.8"/>
-  <rect x="${exitPx}"  y="${exitPy}"  width="${ms}" height="${ms}" rx="${ms * 0.2}" fill="${o.exitColor}"  opacity="0.8"/>
+  ${endpointMarkers}
 </svg>`;
 }
 
@@ -142,18 +147,16 @@ function fmt(value: number): string {
  * Generate a clean, scalable SVG artwork asset for user downloads.
  *
  * Unlike the browser print view, this is not a page-sized layout. It measures
- * the maze artwork itself, includes stroke/marker extents, then adds a modest
+ * the maze artwork itself, includes stroke extents, then adds a modest
  * equal pad around those bounds so Quick Look, desktop previews, vector editors,
  * and print dialogs all open the file as centered maze artwork rather than as a
  * small object on a tall page canvas.
  */
 export function renderDownloadSVG(maze: MazeData): string {
-  const { width, height, grid, entry, exit, difficulty, slug } = maze;
+  const { width, height, grid, difficulty, slug } = maze;
   const targetMazeEdge = 960;
   const cellSize = targetMazeEdge / Math.max(width, height);
   const wallThickness = Math.max(1.75, Math.min(3.5, cellSize * 0.16));
-  const markerSize = cellSize * DEFAULTS.markerSize;
-  const markerOffset = (cellSize - markerSize) / 2;
   const halfStroke = wallThickness / 2;
   const exportPadding = Math.max(18, wallThickness * 6, targetMazeEdge * 0.035);
 
@@ -180,15 +183,10 @@ export function renderDownloadSVG(maze: MazeData): string {
     }
   }
 
-  const entryX = entry.x * cellSize + markerOffset;
-  const entryY = entry.y * cellSize + markerOffset;
-  const exitX = exit.x * cellSize + markerOffset;
-  const exitY = exit.y * cellSize + markerOffset;
-
-  const artworkMinX = Math.min(-halfStroke, entryX, exitX);
-  const artworkMinY = Math.min(-halfStroke, entryY, exitY);
-  const artworkMaxX = Math.max(mazeW + halfStroke, entryX + markerSize, exitX + markerSize);
-  const artworkMaxY = Math.max(mazeH + halfStroke, entryY + markerSize, exitY + markerSize);
+  const artworkMinX = -halfStroke;
+  const artworkMinY = -halfStroke;
+  const artworkMaxX = mazeW + halfStroke;
+  const artworkMaxY = mazeH + halfStroke;
   const viewBoxX = artworkMinX - exportPadding;
   const viewBoxY = artworkMinY - exportPadding;
   const viewBoxW = artworkMaxX - artworkMinX + exportPadding * 2;
@@ -202,8 +200,6 @@ export function renderDownloadSVG(maze: MazeData): string {
   <desc>A clean downloadable ${label} artwork asset.</desc>
   <rect x="${fmt(viewBoxX)}" y="${fmt(viewBoxY)}" width="${fmt(viewBoxW)}" height="${fmt(viewBoxH)}" fill="${DEFAULTS.bgColor}"/>
   <path d="${wallSegments.join(' ')}" stroke="${DEFAULTS.wallColor}" stroke-width="${fmt(wallThickness)}" stroke-linecap="square" fill="none"/>
-  <rect x="${fmt(entryX)}" y="${fmt(entryY)}" width="${fmt(markerSize)}" height="${fmt(markerSize)}" rx="${fmt(markerSize * 0.2)}" fill="${DEFAULTS.entryColor}" opacity="0.8"/>
-  <rect x="${fmt(exitX)}" y="${fmt(exitY)}" width="${fmt(markerSize)}" height="${fmt(markerSize)}" rx="${fmt(markerSize * 0.2)}" fill="${DEFAULTS.exitColor}" opacity="0.8"/>
 </svg>`;
 }
 
@@ -230,5 +226,6 @@ export function renderPrint(maze: MazeData): string {
     wallThickness: 2,
     padding: 20,
     showSolution: false,
+    showEndpointMarkers: false,
   });
 }
