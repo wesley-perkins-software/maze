@@ -421,6 +421,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Isolated: remove these two lines + related code blocks to fully revert the feature.
   const [cameraMode, setCameraMode] = useState<'follow' | 'look'>('follow');
   const [lookTargetPx, setLookTargetPx] = useState<{ x: number; y: number } | null>(null);
+  // True only while a pointer is actively held on the minimap. Suppresses the
+  // CSS transition so the camera snaps to the finger with no mid-interpolation
+  // blur on high-DPR mobile screens.
+  const [isMinimapDragging, setIsMinimapDragging] = useState(false);
 
   const [state, dispatch] = useReducer(
     (s: ReturnType<typeof createInitialState>, a: Parameters<typeof gameReducer>[1]) =>
@@ -433,6 +437,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const exitLookMode = useCallback(() => {
     setCameraMode('follow');
     setLookTargetPx(null);
+    setIsMinimapDragging(false);
   }, []);
 
   // Wrapper passed to all movement inputs. When in look mode, the first RUN
@@ -783,8 +788,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   camXRef.current = camX;
   camYRef.current = camY;
 
-  const tx = viewW / 2 - camX;
-  const ty = viewH / 2 - camY;
+  // Round to integers so the maze always lands on pixel-aligned boundaries.
+  // Fractional translate values cause blurriness on high-DPR mobile screens.
+  const tx = Math.round(viewW / 2 - camX);
+  const ty = Math.round(viewH / 2 - camY);
   const playerScreenX = playerPx + tx;
   const playerScreenY = playerPy + ty;
   const playerMarkerRadius = PLAY_CELL_SIZE * 0.32;
@@ -875,6 +882,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   ) {
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
+    setIsMinimapDragging(true);
     setLookTargetPx(minimapPointerToLookTarget(e, bounds));
     setCameraMode('look');
   }
@@ -887,6 +895,11 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
     e.stopPropagation();
     setLookTargetPx(minimapPointerToLookTarget(e, bounds));
+  }
+
+  // Drag end: restore transition so tap-to-look still animates smoothly.
+  function handleMinimapPointerUp() {
+    setIsMinimapDragging(false);
   }
 
   const minimapPanel = (
@@ -909,6 +922,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           aria-label="Minimap — tap or drag to pan view"
           onPointerDown={(e) => handleMinimapPointerDown(e, minimapRenderedBounds)}
           onPointerMove={(e) => handleMinimapPointerMove(e, minimapRenderedBounds)}
+          onPointerUp={handleMinimapPointerUp}
+          onPointerCancel={handleMinimapPointerUp}
         >
           <MazeRenderer
             maze={maze}
@@ -1107,7 +1122,11 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               pointerEvents: initialCameraReady ? 'auto' : 'none',
               transform: `translate(${tx}px, ${ty}px)`,
               transition: initialCameraReady
-                ? (cameraMode === 'look' ? 'transform 0.25s ease-out' : 'transform 0.12s ease-out')
+                ? (isMinimapDragging
+                    ? 'none'
+                    : cameraMode === 'look'
+                      ? 'transform 0.25s ease-out'
+                      : 'transform 0.12s ease-out')
                 : 'none',
               willChange: 'transform',
             }}
@@ -1189,6 +1208,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH, cursor: 'crosshair' }}
               onPointerDown={(e) => handleMinimapPointerDown(e, sidebarMinimapRenderedBounds)}
               onPointerMove={(e) => handleMinimapPointerMove(e, sidebarMinimapRenderedBounds)}
+              onPointerUp={handleMinimapPointerUp}
+              onPointerCancel={handleMinimapPointerUp}
             >
               <MazeRenderer
                 maze={maze}
