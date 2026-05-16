@@ -299,6 +299,12 @@ export function MazeGenerator() {
             cellSize={12}
             wallThickness={2}
             padding={6}
+            showEndpointMarkers={false}
+            showPlayer={false}
+            showTrail={false}
+            showHintPath={false}
+            showSolution={false}
+            showPlayerGlow={false}
           />
         </div>
       </div>

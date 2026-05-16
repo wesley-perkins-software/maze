@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { generateMaze } from '../../src/lib/maze/generator';
-import { renderDownloadSVG } from '../../src/lib/svg/renderToString';
+import { renderDownloadSVG, renderMazeToSVGString, renderPrint } from '../../src/lib/svg/renderToString';
 
 function getViewBox(svg: string): number[] {
   const match = svg.match(/viewBox="([^"]+)"/);
@@ -12,6 +12,18 @@ function getPathD(svg: string): string {
   const match = svg.match(/<path d="([^"]+)"/);
   expect(match).not.toBeNull();
   return match![1];
+}
+
+function expectNoInteractiveOrEndpointArtifacts(svg: string) {
+  expect(svg).not.toContain('#0d9488');
+  expect(svg).not.toContain('#f59e0b');
+  expect(svg).not.toContain('#3b82f6');
+  expect(svg).not.toContain('#2563eb');
+  expect(svg).not.toContain('maze-endpoint-marker');
+  expect(svg).not.toContain('maze-player');
+  expect(svg).not.toContain('maze-traversal-path');
+  expect(svg).not.toContain('maze-hint-path');
+  expect(svg).not.toContain('maze-solution-path');
 }
 
 describe('renderDownloadSVG', () => {
@@ -43,8 +55,7 @@ describe('renderDownloadSVG', () => {
     expect(svg).toContain('fill="#ffffff"');
     expect(svg).not.toContain('class=');
     expect(svg).not.toContain('style=');
-    expect(svg).not.toContain('#3b82f6');
-    expect(svg).not.toContain('#22c55e');
+    expectNoInteractiveOrEndpointArtifacts(svg);
 
     expect(minX).toBeCloseTo(-halfStroke - expectedPadding, 3);
     expect(minY).toBeCloseTo(-halfStroke - expectedPadding, 3);
@@ -64,5 +75,36 @@ describe('renderDownloadSVG', () => {
       expect(canvasAspect > 1).toBe(width > height);
       expect(Math.abs(canvasAspect - artworkAspect) / artworkAspect).toBeLessThan(0.12);
     }
+  });
+});
+
+describe('print/export endpoint marker controls', () => {
+  it('omits endpoint markers from print SVG output', () => {
+    const maze = generateMaze({ width: 20, height: 20, difficulty: 'medium', seed: 6789 });
+    const svg = renderPrint(maze);
+
+    expectNoInteractiveOrEndpointArtifacts(svg);
+    expect(svg).toContain('<path d="');
+  });
+
+  it('can explicitly omit endpoint markers in the shared string renderer', () => {
+    const maze = generateMaze({ width: 10, height: 10, difficulty: 'small', seed: 2468 });
+    const cleanSvg = renderMazeToSVGString(maze, { showEndpointMarkers: false });
+    const defaultSvg = renderMazeToSVGString(maze);
+
+    expectNoInteractiveOrEndpointArtifacts(cleanSvg);
+    expect(defaultSvg).toContain('maze-endpoint-marker');
+    expect(defaultSvg).toContain('#0d9488');
+    expect(defaultSvg).toContain('#f59e0b');
+  });
+
+  it('only includes solution paths when explicitly requested', () => {
+    const maze = generateMaze({ width: 10, height: 10, difficulty: 'small', seed: 1357 });
+    const cleanSvg = renderMazeToSVGString(maze, { showEndpointMarkers: false });
+    const solutionSvg = renderMazeToSVGString(maze, { showEndpointMarkers: false, showSolution: true });
+
+    expect(cleanSvg).not.toContain('<polyline');
+    expect(solutionSvg).toContain('<polyline');
+    expect(solutionSvg).toContain('#E03B24');
   });
 });

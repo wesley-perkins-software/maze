@@ -23,6 +23,7 @@ export interface MazeRendererProps {
   trail?: number[];           // flat indices of visited cells
   solution?: number[];        // flat indices of solution path
   showSolution?: boolean;
+  showHintPath?: boolean;     // render temporary hint path (default true)
   hintCells?: number[];       // flat indices of hint-highlighted cells
   className?: string;
   fillContainer?: boolean;    // scale to fill parent (any aspect ratio); uses width/height 100% + preserveAspectRatio meet
@@ -30,6 +31,7 @@ export interface MazeRendererProps {
   svgRef?: React.RefObject<SVGSVGElement>;
   onKeyDown?: (e: React.KeyboardEvent) => void;
   showTrail?: boolean;         // render the traversal path (default true)
+  showPlayer?: boolean;        // render the player cursor when playerPosition is provided (default true)
   playerMarkerRadius?: number; // override default radius for minimap high-contrast dot
   markerRadius?: number;       // override entry/exit marker radius
   showEndpointMarkers?: boolean; // render entry/exit markers inside the SVG
@@ -46,6 +48,7 @@ export function MazeRenderer({
   trail = [],
   solution = [],
   showSolution = false,
+  showHintPath = true,
   hintCells = [],
   className,
   fillContainer = false,
@@ -53,6 +56,7 @@ export function MazeRenderer({
   svgRef,
   onKeyDown,
   showTrail = true,
+  showPlayer = true,
   playerMarkerRadius,
   markerRadius,
   showEndpointMarkers = true,
@@ -142,7 +146,7 @@ export function MazeRenderer({
   // ── Solution polyline ────────────────────────────────────────────────────────
   const solutionStartsAtEntry = solution[0] === entry.y * width + entry.x;
   const solutionEndsAtExit = solution[solution.length - 1] === exit.y * width + exit.x;
-  const visibleHintCells = showSolution ? [] : hintCells;
+  const visibleHintCells = showSolution || !showHintPath ? [] : hintCells;
 
   const solutionPoints = showSolution && solution.length > 0
     ? [
@@ -245,6 +249,7 @@ export function MazeRenderer({
       {/* Solution path — red-orange solid guidance from the current player position */}
       {solutionPoints && (
         <polyline
+          className="maze-solution-path"
           points={solutionPoints}
           stroke={SOLUTION_PATH_COLOR}
           strokeWidth={solutionStrokeWidth}
@@ -258,6 +263,7 @@ export function MazeRenderer({
       {/* Hint path — red-orange dashed temporary guidance from the current player position */}
       {visibleHintCells.length >= 2 && (
         <polyline
+          className="maze-hint-path"
           points={visibleHintCells.map(cellCenter).join(' ')}
           stroke={HINT_PATH_COLOR}
           strokeWidth={hintStrokeWidth}
@@ -273,6 +279,7 @@ export function MazeRenderer({
       {!hideTrail && trailSegments.map((seg, i) => (
         <polyline
           key={`trail-${i}`}
+          className="maze-traversal-path"
           points={seg.pts}
           stroke={PLAYER_PATH_COLOR}
           strokeWidth={cellSize * seg.width}
@@ -286,9 +293,10 @@ export function MazeRenderer({
       {showEndpointMarkers && (
         <>
           {/* Entry marker — teal circle with directional white arrow */}
-          <circle cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_COLOR} opacity={0.9} />
+          <circle className="maze-endpoint-marker maze-entry-marker" cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_COLOR} opacity={0.9} />
           {markerR >= 5 && (
             <polygon
+              className="maze-endpoint-marker maze-entry-marker"
               points={entryArrowPoints}
               fill="white"
               opacity={0.95}
@@ -296,9 +304,10 @@ export function MazeRenderer({
           )}
 
           {/* Exit marker — amber circle with star */}
-          <circle cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
+          <circle className="maze-endpoint-marker maze-exit-marker" cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
           {markerR >= 5 && (
             <polygon
+              className="maze-endpoint-marker maze-exit-marker"
               points={[
                 [exitMx,                    exitMy - markerR * 0.72],
                 [exitMx + markerR * 0.24,   exitMy - markerR * 0.20],
@@ -319,19 +328,20 @@ export function MazeRenderer({
       )}
 
       {/* Player */}
-      {playerCx !== null && playerCy !== null && (
+      {showPlayer && playerCx !== null && playerCy !== null && (
         <>
           {showPlayerGlow && (
             <circle
+              className="maze-player-cursor maze-player-glow"
               cx={playerCx}
               cy={playerCy}
               r={glowR}
               fill={PLAYER_MARKER_COLOR}
-              className="maze-player-glow"
             />
           )}
           {/* Solid player dot */}
           <circle
+            className="maze-player-cursor"
             cx={playerCx}
             cy={playerCy}
             r={pr}
