@@ -1008,7 +1008,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   );
 
   const dpadPanel = (
-    <div className="flex h-full flex-1 items-center justify-center">
+    <div
+      className="flex h-full flex-1 items-center justify-center"
+      style={cameraMode === 'look' ? { opacity: 0.38 } : undefined}
+    >
       <DPad dispatch={dispatchWithLookExit} isActive={isActive} compact={mobileDockH <= 148} />
     </div>
   );
@@ -1039,31 +1042,39 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
         {/* Center: status / timer */}
         <div className="flex-1 flex justify-center items-center gap-1.5 text-sm">
-          {state.status === 'playing' && (
-            <span className="flex items-center gap-1.5 font-mono font-medium text-slate-700">
-              {label && (
-                <span className="hidden sm:inline text-xs font-sans font-medium text-slate-400 mr-0.5">
-                  {label} ·
+          {cameraMode === 'look' ? (
+            <span className="font-semibold text-xs" style={{ color: '#0d9488' }}>
+              Camera view — movement paused
+            </span>
+          ) : (
+            <>
+              {state.status === 'playing' && (
+                <span className="flex items-center gap-1.5 font-mono font-medium text-slate-700">
+                  {label && (
+                    <span className="hidden sm:inline text-xs font-sans font-medium text-slate-400 mr-0.5">
+                      {label} ·
+                    </span>
+                  )}
+                  <svg className="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+                    <polyline points="12 6 12 12 16 14" strokeWidth="2"/>
+                  </svg>
+                  <Timer elapsedMs={state.elapsedMs} />
                 </span>
               )}
-              <svg className="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" strokeWidth="2"/>
-                <polyline points="12 6 12 12 16 14" strokeWidth="2"/>
-              </svg>
-              <Timer elapsedMs={state.elapsedMs} />
-            </span>
+              {state.status === 'paused' && <span className="text-amber-500 font-medium text-xs">Paused</span>}
+              {state.status === 'idle' && (label
+                ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
+                : (
+                  <>
+                    <span className="md:hidden text-slate-400 text-xs">Swipe or use D-pad to move</span>
+                    <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
+                  </>
+                )
+              )}
+              {state.status === 'solved' && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
+            </>
           )}
-          {state.status === 'paused' && <span className="text-amber-500 font-medium text-xs">Paused</span>}
-          {state.status === 'idle' && (label
-            ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
-            : (
-              <>
-                <span className="md:hidden text-slate-400 text-xs">Swipe or use D-pad to move</span>
-                <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
-              </>
-            )
-          )}
-          {state.status === 'solved' && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
         </div>
 
         {/* Right: pause + overflow menu */}
@@ -1249,7 +1260,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                 <circle cx="12" cy="13" r="4" />
               </svg>
-              Camera view · Return
+              Camera view · Return to play
             </button>
           )}
 
