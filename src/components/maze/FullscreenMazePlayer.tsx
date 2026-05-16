@@ -381,6 +381,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
   // Mirrors cameraMode state so dispatchWithLookExit can read it without a dep.
   const cameraModeRef = useRef<'follow' | 'look'>('follow');
+  // Set by exitLookMode; read once during the immediately-following render to
+  // suppress the CSS transition so the camera snaps to the player rather than
+  // animating back with non-integer intermediate positions.
+  const justExitedLookModeRef = useRef(false);
   const controlStripRef = useRef<HTMLDivElement>(null);
   const [controlStripH, setControlStripH] = useState(168);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -438,6 +442,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     setCameraMode('follow');
     setLookTargetPx(null);
     setIsMinimapDragging(false);
+    justExitedLookModeRef.current = true;
   }, []);
 
   // Wrapper passed to all movement inputs. When in look mode, the first RUN
@@ -792,6 +797,19 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Fractional translate values cause blurriness on high-DPR mobile screens.
   const tx = Math.round(viewW / 2 - camX);
   const ty = Math.round(viewH / 2 - camY);
+
+  // Compute CSS transition for the camera container. Look mode uses no
+  // transition at all — CSS ease-out interpolates through non-integer
+  // sub-pixel positions on each frame, which looks blurry on high-DPR
+  // screens. Tap-to-look snaps instantly; drag already snaps (isMinimapDragging).
+  // justExitedLookModeRef is read and immediately reset so the one render
+  // immediately after exiting look mode also snaps (no return-to-player blur).
+  const snapThisFrame = justExitedLookModeRef.current;
+  justExitedLookModeRef.current = false;
+  const lookModeTransition =
+    (cameraMode === 'look' || isMinimapDragging || snapThisFrame)
+      ? 'none'
+      : 'transform 0.12s ease-out';
   const playerScreenX = playerPx + tx;
   const playerScreenY = playerPy + ty;
   const playerMarkerRadius = PLAY_CELL_SIZE * 0.32;
@@ -1120,14 +1138,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               height: mazeH,
               opacity: initialCameraReady ? 1 : 0,
               pointerEvents: initialCameraReady ? 'auto' : 'none',
-              transform: `translate(${tx}px, ${ty}px)`,
-              transition: initialCameraReady
-                ? (isMinimapDragging
-                    ? 'none'
-                    : cameraMode === 'look'
-                      ? 'transform 0.25s ease-out'
-                      : 'transform 0.12s ease-out')
-                : 'none',
+              transform: `translate3d(${tx}px, ${ty}px, 0)`,
+              transition: initialCameraReady ? lookModeTransition : 'none',
               willChange: 'transform',
             }}
           >
