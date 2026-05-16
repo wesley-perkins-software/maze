@@ -379,6 +379,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const camXRef = useRef<number | null>(null);
   const camYRef = useRef<number | null>(null);
   const prevStatusRef = useRef<ReturnType<typeof createInitialState>['status']>('idle');
+  // Mirrors cameraMode state so dispatchWithLookExit can read it without a dep.
+  const cameraModeRef = useRef<'follow' | 'look'>('follow');
   const controlStripRef = useRef<HTMLDivElement>(null);
   const [controlStripH, setControlStripH] = useState(168);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -433,10 +435,14 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     setLookTargetPx(null);
   }, []);
 
-  // Wrapper passed to all movement inputs: any RUN action exits look mode first,
-  // then the move still applies. All other actions pass through unchanged.
+  // Wrapper passed to all movement inputs. When in look mode, the first RUN
+  // only exits look mode (returns camera to player) without applying the move.
+  // Uses cameraModeRef so the callback stays stable across mode changes.
   const dispatchWithLookExit = useCallback((action: GameAction) => {
-    if (action.type === 'RUN') exitLookMode();
+    if (action.type === 'RUN' && cameraModeRef.current === 'look') {
+      exitLookMode();
+      return;
+    }
     dispatch(action);
   }, [dispatch, exitLookMode]);
 
@@ -731,6 +737,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   }
   prevStatusRef.current = state.status;
 
+  // Keep ref in sync with state so dispatchWithLookExit can read it without
+  // adding cameraMode as a dep (which would re-register all input listeners).
+  cameraModeRef.current = cameraMode;
+
   // ── Camera computation ───────────────────────────────────────────────────────
   // Safe zone is shrunk by PAN_LOOKAHEAD so the camera previews what's ahead.
   const safeW = Math.max(0, viewW / 2 - SAFE_PAD - PAN_LOOKAHEAD);
@@ -844,21 +854,39 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     : 'absolute z-10 rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none';
   const minimapViewportFrameOpacity = isRailMinimap ? 0.45 : 0.65;
 
-  // Converts a pointer event on a minimap container into maze-pixel coordinates
-  // and enters look mode. Uses the letterbox-aware rendered bounds so coordinate
-  // conversion is correct for square, horizontal-rail, and vertical-rail layouts.
-  function handleMinimapClick(
+  // Converts pointer event coordinates (relative to the minimap container) into
+  // maze-pixel coordinates using the letterbox-aware rendered bounds. Works for
+  // square, horizontal-rail, and vertical-rail layouts including 100×10 / 10×100.
+  function minimapPointerToLookTarget(
     e: React.PointerEvent<HTMLDivElement>,
     bounds: MinimapRenderedBounds,
-  ) {
-    e.stopPropagation();
+  ): { x: number; y: number } {
     const rect = e.currentTarget.getBoundingClientRect();
     const relX = e.clientX - rect.left;
     const relY = e.clientY - rect.top;
     const fracX = Math.max(0, Math.min(1, (relX - bounds.x) / bounds.width));
     const fracY = Math.max(0, Math.min(1, (relY - bounds.y) / bounds.height));
-    setLookTargetPx({ x: fracX * mazeW, y: fracY * mazeH });
+    return { x: fracX * mazeW, y: fracY * mazeH };
+  }
+
+  function handleMinimapPointerDown(
+    e: React.PointerEvent<HTMLDivElement>,
+    bounds: MinimapRenderedBounds,
+  ) {
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setLookTargetPx(minimapPointerToLookTarget(e, bounds));
     setCameraMode('look');
+  }
+
+  // Drag: update look target while the pointer is held down (capture active).
+  function handleMinimapPointerMove(
+    e: React.PointerEvent<HTMLDivElement>,
+    bounds: MinimapRenderedBounds,
+  ) {
+    if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+    e.stopPropagation();
+    setLookTargetPx(minimapPointerToLookTarget(e, bounds));
   }
 
   const minimapPanel = (
@@ -878,8 +906,9 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             borderRadius: isRailMinimap ? 16 : 12,
             cursor: 'crosshair',
           }}
-          aria-label="Minimap — tap to pan view"
-          onPointerDown={(e) => handleMinimapClick(e, minimapRenderedBounds)}
+          aria-label="Minimap — tap or drag to pan view"
+          onPointerDown={(e) => handleMinimapPointerDown(e, minimapRenderedBounds)}
+          onPointerMove={(e) => handleMinimapPointerMove(e, minimapRenderedBounds)}
         >
           <MazeRenderer
             maze={maze}
@@ -1155,10 +1184,11 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
             {/* Minimap — no label, no legend */}
             <div
-              aria-label="Minimap — click to pan view"
+              aria-label="Minimap — click or drag to pan view"
               className="relative self-center rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
               style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH, cursor: 'crosshair' }}
-              onPointerDown={(e) => handleMinimapClick(e, sidebarMinimapRenderedBounds)}
+              onPointerDown={(e) => handleMinimapPointerDown(e, sidebarMinimapRenderedBounds)}
+              onPointerMove={(e) => handleMinimapPointerMove(e, sidebarMinimapRenderedBounds)}
             >
               <MazeRenderer
                 maze={maze}
