@@ -29,6 +29,7 @@ export interface MazeRendererProps {
   interactive?: boolean;      // adds keyboard/touch affordances
   svgRef?: React.RefObject<SVGSVGElement>;
   onKeyDown?: (e: React.KeyboardEvent) => void;
+  showTrail?: boolean;         // render the traversal path (default true)
   playerMarkerRadius?: number; // override default radius for minimap high-contrast dot
   markerRadius?: number;       // override entry/exit marker radius
   showEndpointMarkers?: boolean; // render entry/exit markers inside the SVG
@@ -51,6 +52,7 @@ export function MazeRenderer({
   interactive = false,
   svgRef,
   onKeyDown,
+  showTrail = true,
   playerMarkerRadius,
   markerRadius,
   showEndpointMarkers = true,
@@ -204,7 +206,7 @@ export function MazeRenderer({
   const hintStrokeWidth = Math.max(1.5, cellSize * 0.14);
   const hintDashLength = Math.max(3, cellSize * 0.20);
   const hintDashGap    = Math.max(3, cellSize * 0.23);
-  const hideTrailForGuidance = Boolean(solutionPoints) || visibleHintCells.length >= 2;
+  const hideTrail = !showTrail || Boolean(solutionPoints) || visibleHintCells.length >= 2;
 
   const label = `${maze.difficulty} ${width}×${height} maze`;
 
@@ -268,7 +270,7 @@ export function MazeRenderer({
       )}
 
       {/* Fading trail — rendered oldest to newest so recent segment is on top */}
-      {!hideTrailForGuidance && trailSegments.map((seg, i) => (
+      {!hideTrail && trailSegments.map((seg, i) => (
         <polyline
           key={`trail-${i}`}
           points={seg.pts}

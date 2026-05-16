@@ -119,6 +119,18 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
   useKeyboardInput(dispatch, isActive);
   useTouchInput(svgRef, dispatch, isActive);
 
+  // ── Trail visibility preference (persisted) ──────────────────────────────────
+  const [showTrail, setShowTrail] = useState(() => {
+    try { return localStorage.getItem('maze:show-trail') !== 'false'; } catch { return true; }
+  });
+  const toggleShowTrail = () => {
+    setShowTrail(v => {
+      const next = !v;
+      try { localStorage.setItem('maze:show-trail', next ? 'true' : 'false'); } catch {}
+      return next;
+    });
+  };
+
   const currentSolution = useMemo(() => {
     const startCell = getPathStartCell(maze, state.playerPosition);
     return solveMazeFrom(maze, startCell);
@@ -217,6 +229,15 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
             {state.solutionVisible ? 'Hide Solution' : 'Show Solution'}
           </button>
 
+          {/* Path traveled toggle */}
+          <button
+            onClick={toggleShowTrail}
+            className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
+            aria-pressed={showTrail}
+          >
+            {showTrail ? 'Hide path' : 'Show path'}
+          </button>
+
           {/* Reset */}
           <button
             onClick={() => dispatch({ type: 'RESET', startPosition: maze.entry })}            className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
@@ -244,6 +265,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
           cellSize={cellSize}
           playerPosition={state.status !== 'paused' ? state.playerPosition : undefined}
           trail={state.trail}
+          showTrail={showTrail}
           solution={currentSolution}
           showSolution={state.solutionVisible}
           hintCells={state.hintCells}
