@@ -7,11 +7,10 @@ import type { MazeData, Point } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { indexToPoint } from '../../lib/maze/utils';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import { FINISH_MARKER_COLOR, PositionedFinishFlagGlyph, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 
 const PLAYER_PATH_COLOR = '#3b82f6';
 const PLAYER_MARKER_COLOR = '#2563eb';
-const START_MARKER_COLOR = '#0d9488';
-const FINISH_MARKER_COLOR = '#f59e0b';
 const SOLUTION_PATH_COLOR = '#E03B24';
 const HINT_PATH_COLOR = '#E03B24';
 
@@ -331,27 +330,16 @@ export function MazeRenderer({
             </>
           )}
 
-          {/* Exit marker — amber circle with star */}
+          {/* Exit marker — amber circle with finish flag */}
           {exitMarker && (
             <>
               <circle className="maze-endpoint-marker maze-exit-marker" cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
               {markerR >= 5 && (
-                <polygon
+                <PositionedFinishFlagGlyph
                   className="maze-endpoint-marker maze-exit-marker"
-                  points={[
-                    [exitMx,                    exitMy - markerR * 0.72],
-                    [exitMx + markerR * 0.24,   exitMy - markerR * 0.20],
-                    [exitMx + markerR * 0.69,   exitMy - markerR * 0.22],
-                    [exitMx + markerR * 0.34,   exitMy + markerR * 0.17],
-                    [exitMx + markerR * 0.43,   exitMy + markerR * 0.64],
-                    [exitMx,                    exitMy + markerR * 0.36],
-                    [exitMx - markerR * 0.43,   exitMy + markerR * 0.64],
-                    [exitMx - markerR * 0.34,   exitMy + markerR * 0.17],
-                    [exitMx - markerR * 0.69,   exitMy - markerR * 0.22],
-                    [exitMx - markerR * 0.24,   exitMy - markerR * 0.20],
-                  ].map(([x, y]) => `${x},${y}`).join(' ')}
-                  fill="white"
-                  opacity={0.95}
+                  cx={exitMx}
+                  cy={exitMy}
+                  r={markerR}
                 />
               )}
             </>
