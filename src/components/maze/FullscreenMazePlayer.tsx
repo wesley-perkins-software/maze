@@ -8,7 +8,8 @@ import type { GameAction } from '../../lib/gameplay/types';
 import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
-import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide, FINISH_CHECKER_PATH } from '../../lib/maze/endpointMarkers';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import { FinishFlagGlyph } from '../../lib/maze/endpointIcons';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -389,7 +390,7 @@ function MinimapEndpointMarkers({
       >
         <circle cx="12" cy="12" r="12" fill="white" />
         <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
-        <path d={FINISH_CHECKER_PATH} fill="white" opacity="0.95" />
+        <FinishFlagGlyph />
       </svg>
       )}
     </>

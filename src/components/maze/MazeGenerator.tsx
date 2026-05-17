@@ -8,8 +8,9 @@ import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
-import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide, FINISH_CHECKER_PATH } from '../../lib/maze/endpointMarkers';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 import type { PortalSide } from '../../lib/maze/endpointMarkers';
+import { FinishFlagGlyph } from '../../lib/maze/endpointIcons';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
 
@@ -145,7 +146,7 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
       >
         <circle cx="12" cy="12" r="12" fill="white" />
         <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
-        <path d={FINISH_CHECKER_PATH} fill="white" opacity="0.95" />
+        <FinishFlagGlyph />
       </svg>
       )}
     </>
