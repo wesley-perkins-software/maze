@@ -9,7 +9,7 @@ import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
-import { ENDPOINT_MARKER_OUTSIDE_GAP_PX, getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 import type { PortalSide } from '../../lib/maze/endpointMarkers';
 
@@ -36,7 +36,8 @@ export const CUSTOM_RANGE = { min: 10, max: 100 };
 const PREVIEW_PADDING = 6;
 const PREVIEW_ENDPOINT_MARKER_SIZE_PX = 28;
 const PREVIEW_ENDPOINT_MARKER_RADIUS_PX = PREVIEW_ENDPOINT_MARKER_SIZE_PX / 2;
-const PREVIEW_MARKER_OUTSIDE_OFFSET_PX = PREVIEW_ENDPOINT_MARKER_RADIUS_PX;
+export const GENERATOR_PREVIEW_ENDPOINT_GAP_PX = -1;
+const PREVIEW_MARKER_OUTSIDE_OFFSET_PX = PREVIEW_ENDPOINT_MARKER_RADIUS_PX + GENERATOR_PREVIEW_ENDPOINT_GAP_PX;
 
 function formatPercent(value: number, total: number): string {
   return `${(value / total) * 100}%`;
@@ -67,6 +68,8 @@ export function getPreviewMarkerPosition(
   // the scaled maze SVG. Use the shared geometry helper to find the portal's
   // border anchor in maze coordinates, then apply the perpendicular outside
   // projection in CSS pixels so large mazes do not cover the marker visually.
+  // The generator preview intentionally uses a slightly tighter, preview-only
+  // gap than shared playable/minimap marker placement.
   const borderAnchor = getEndpointMarkerCenter({
     mazeWidth: maze.width,
     mazeHeight: maze.height,
