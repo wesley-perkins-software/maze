@@ -8,7 +8,7 @@ import type { GameAction } from '../../lib/gameplay/types';
 import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
-import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import { inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 import { getMazeDebugSummary, shouldLogMazeStateDebug } from '../../lib/maze/fingerprint';
 import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 
@@ -90,7 +90,9 @@ function getHintStepCount(maze: MazeData): number {
 
 const MINIMAP_PADDING = 2;
 const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
+export const MINIMAP_ENDPOINT_MARKER_RADIUS_PX = MINIMAP_ENDPOINT_MARKER_SIZE / 2;
 const MINIMAP_RAIL_ENDPOINT_MARKER_SIZE = 18;
+export const MINIMAP_ENDPOINT_MARKER_EDGE_OVERLAP_PX = 4;
 const MINIMAP_PLAYER_MARKER_SIZE = 12;
 const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 10;
 const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
@@ -219,6 +221,81 @@ function getContainedMinimapBounds({
   };
 }
 
+type MinimapEndpointContentBounds = {
+  contentX: number;
+  contentY: number;
+  contentW: number;
+  contentH: number;
+};
+
+type MinimapEndpointPlacementMode = 'inset' | 'inside';
+
+type MinimapEndpointMarkerCenterOptions = {
+  maze: MazeData;
+  portal: MazeData['entry'];
+  portalSide: NonNullable<ReturnType<typeof inferPortalSide>>;
+  contentBounds: MinimapEndpointContentBounds;
+  markerRadius: number;
+  placementMode?: MinimapEndpointPlacementMode;
+};
+
+function getFallbackMinimapRenderedBounds(maze: MazeData, cellSize: number): MinimapRenderedBounds {
+  const svgWidth = maze.width * cellSize + MINIMAP_PADDING * 2;
+  const svgHeight = maze.height * cellSize + MINIMAP_PADDING * 2;
+
+  return {
+    x: 0,
+    y: 0,
+    width: svgWidth,
+    height: svgHeight,
+    svgWidth,
+    svgHeight,
+    containerWidth: svgWidth,
+    containerHeight: svgHeight,
+  };
+}
+
+function getMinimapEndpointContentBounds(renderedBounds: MinimapRenderedBounds): MinimapEndpointContentBounds {
+  const contentX = renderedBounds.x + (MINIMAP_PADDING / renderedBounds.svgWidth) * renderedBounds.width;
+  const contentY = renderedBounds.y + (MINIMAP_PADDING / renderedBounds.svgHeight) * renderedBounds.height;
+  const contentW = ((renderedBounds.svgWidth - MINIMAP_PADDING * 2) / renderedBounds.svgWidth) * renderedBounds.width;
+  const contentH = ((renderedBounds.svgHeight - MINIMAP_PADDING * 2) / renderedBounds.svgHeight) * renderedBounds.height;
+
+  return { contentX, contentY, contentW, contentH };
+}
+
+function getMinimapEndpointMarkerCenter({
+  maze,
+  portal,
+  portalSide,
+  contentBounds,
+  markerRadius,
+  placementMode = 'inset',
+}: MinimapEndpointMarkerCenterOptions) {
+  const { contentX, contentY, contentW, contentH } = contentBounds;
+  const edgeOffset = placementMode === 'inset'
+    ? markerRadius - MINIMAP_ENDPOINT_MARKER_EDGE_OVERLAP_PX
+    : markerRadius;
+
+  if (portalSide === 'top' || portalSide === 'bottom') {
+    const t = (Math.min(Math.max(portal.x, 0), maze.width - 1) + 0.5) / maze.width;
+    const centerX = contentX + t * contentW;
+    const centerY = portalSide === 'top'
+      ? contentY + edgeOffset
+      : contentY + contentH - edgeOffset;
+
+    return { x: centerX, y: centerY, t };
+  }
+
+  const t = (Math.min(Math.max(portal.y, 0), maze.height - 1) + 0.5) / maze.height;
+  const centerX = portalSide === 'left'
+    ? contentX + edgeOffset
+    : contentX + contentW - edgeOffset;
+  const centerY = contentY + t * contentH;
+
+  return { x: centerX, y: centerY, t };
+}
+
 export function getMinimapEndpointMarkerPosition(
   maze: MazeData,
   cellSize: number,
@@ -226,8 +303,7 @@ export function getMinimapEndpointMarkerPosition(
   markerSize: number,
   bounds?: MinimapRenderedBounds,
 ) {
-  const totalW = maze.width * cellSize + MINIMAP_PADDING * 2;
-  const totalH = maze.height * cellSize + MINIMAP_PADDING * 2;
+  const renderedBounds = bounds ?? getFallbackMinimapRenderedBounds(maze, cellSize);
   const side = inferPortalSide(maze, point);
 
   if (!side) {
@@ -235,43 +311,34 @@ export function getMinimapEndpointMarkerPosition(
     return null;
   }
 
-  if (!bounds) {
-    const markerRadius = markerSize / 2;
-    const marker = getEndpointMarkerCenter({
-      mazeWidth: maze.width,
-      mazeHeight: maze.height,
-      cellSize,
-      bounds: getMazeBodyBounds(maze.width, maze.height, cellSize, MINIMAP_PADDING),
-      portal: point,
-      portalSide: side,
-      markerRadius,
-      placementMode: 'inside',
-    });
-
-    return {
-      left: `${(marker.x / totalW) * 100}%`,
-      top: `${(marker.y / totalH) * 100}%`,
-    };
-  }
-
-  const renderedMazeWidth = (maze.width * cellSize / totalW) * bounds.width;
-  const renderedCellSize = renderedMazeWidth / maze.width;
-  const markerRadius = markerSize / 2;
-  const marker = getEndpointMarkerCenter({
-    mazeWidth: maze.width,
-    mazeHeight: maze.height,
-    cellSize: renderedCellSize,
-    bounds: {
-      x: bounds.x + (MINIMAP_PADDING / totalW) * bounds.width,
-      y: bounds.y + (MINIMAP_PADDING / totalH) * bounds.height,
-      width: (maze.width * cellSize / totalW) * bounds.width,
-      height: (maze.height * cellSize / totalH) * bounds.height,
-    },
+  const contentBounds = getMinimapEndpointContentBounds(renderedBounds);
+  const marker = getMinimapEndpointMarkerCenter({
+    maze,
     portal: point,
     portalSide: side,
-    markerRadius,
-    placementMode: 'inside',
+    contentBounds,
+    markerRadius: markerSize / 2,
+    placementMode: 'inset',
   });
+
+  if (import.meta.env.DEV && typeof window !== 'undefined' && window.localStorage.getItem('maze:endpoint-debug') === '1') {
+    console.debug('[maze:endpoint-marker] minimap marker', {
+      point,
+      side,
+      normalizedSidePosition: marker.t,
+      renderedBounds,
+      contentBounds,
+      markerCenter: { x: marker.x, y: marker.y },
+      maze: { slug: maze.slug, width: maze.width, height: maze.height, seed: maze.seed },
+    });
+  }
+
+  if (!bounds) {
+    return {
+      left: `${(marker.x / renderedBounds.width) * 100}%`,
+      top: `${(marker.y / renderedBounds.height) * 100}%`,
+    };
+  }
 
   return {
     left: marker.x,
@@ -338,7 +405,7 @@ function MinimapPlayerMarker({
 function MinimapEndpointMarkers({
   maze,
   cellSize,
-  markerSize = MINIMAP_ENDPOINT_MARKER_SIZE,
+  markerSize = MINIMAP_ENDPOINT_MARKER_RADIUS_PX * 2,
   bounds,
 }: {
   maze: MazeData;
