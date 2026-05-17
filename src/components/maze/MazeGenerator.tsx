@@ -10,7 +10,7 @@ import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
-import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
+import { DEFAULT_START_ARROW_POINTS, FinishMarkerIcon, StartMarkerIcon } from './EndpointMarkerGlyphs';
 import type { PortalSide } from '../../lib/maze/endpointMarkers';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
@@ -110,15 +110,15 @@ function getPreviewEntryArrowPoints(maze: MazeData): string {
 
   if (!side) {
     warnInvalidPortalSide(maze, entry, 'entry');
-    return '6.72,8.92 17.28,8.92 12,16.84';
+    return DEFAULT_START_ARROW_POINTS;
   }
 
-  if (side === 'top') return '6.72,8.92 17.28,8.92 12,16.84';
+  if (side === 'top') return DEFAULT_START_ARROW_POINTS;
   if (side === 'bottom') return '6.72,15.08 17.28,15.08 12,7.16';
   if (side === 'left') return '8.92,6.72 16.84,12 8.92,17.28';
   if (side === 'right') return '15.08,6.72 7.16,12 15.08,17.28';
 
-  return '6.72,8.92 17.28,8.92 12,16.84';
+  return DEFAULT_START_ARROW_POINTS;
 }
 
 function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: number }) {
@@ -136,9 +136,7 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
         style={entryStyle}
         aria-hidden="true"
       >
-        <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_COLOR} opacity="0.9" />
-        <polygon points={entryArrowPoints} fill="white" opacity="0.95" />
+        <StartMarkerIcon arrowPoints={entryArrowPoints} />
       </svg>
       )}
       {exitStyle && (
@@ -152,6 +150,40 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
       </svg>
       )}
     </>
+  );
+}
+
+function PreviewStartLegendIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 overflow-visible" aria-hidden="true">
+      <StartMarkerIcon />
+    </svg>
+  );
+}
+
+function PreviewFinishLegendIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 overflow-visible" aria-hidden="true">
+      <FinishMarkerIcon />
+    </svg>
+  );
+}
+
+function PreviewEndpointLegend() {
+  return (
+    <div
+      className="order-3 flex w-full items-center justify-center gap-3 text-xs font-medium text-arch-400 sm:order-2 sm:w-auto sm:gap-4"
+      aria-label="Maze endpoint legend"
+    >
+      <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+        <PreviewStartLegendIcon />
+        Start
+      </span>
+      <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+        <PreviewFinishLegendIcon />
+        Finish
+      </span>
+    </div>
   );
 }
 
@@ -425,11 +457,12 @@ export function MazeGenerator() {
 
         {/* Identity caption — below card, flush with card edges */}
         <div
-          className="flex justify-between items-center pt-2 pb-1 mx-auto"
+          className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 pt-2 pb-1 mx-auto"
           style={{ width: 'min(100%, calc(100vh - 140px))' }}
         >
-          <span className="text-sm font-mono font-medium text-arch-600">{width} × {height}</span>
-          <span className="text-sm font-mono font-medium text-arch-600">{presetLabel}</span>
+          <span className="order-1 text-sm font-mono font-medium text-arch-600">{width} × {height}</span>
+          <PreviewEndpointLegend />
+          <span className="order-2 text-sm font-mono font-medium text-arch-600 sm:order-3">{presetLabel}</span>
         </div>
 
         {playing && (
