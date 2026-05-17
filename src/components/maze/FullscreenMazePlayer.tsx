@@ -9,6 +9,7 @@ import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import { getMazeDebugSummary, shouldLogMazeStateDebug } from '../../lib/maze/fingerprint';
 import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 
 export interface SolveStats {
@@ -488,6 +489,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // CSS transition so the camera snaps to the finger with no mid-interpolation
   // blur on high-DPR mobile screens.
   const [isMinimapDragging, setIsMinimapDragging] = useState(false);
+
+  useEffect(() => {
+    if (!shouldLogMazeStateDebug()) return;
+
+    console.debug('[maze:state] fullscreen player initialization', getMazeDebugSummary(maze));
+  }, [maze]);
 
   const [state, dispatch] = useReducer(
     (s: ReturnType<typeof createInitialState>, a: Parameters<typeof gameReducer>[1]) =>

@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import type { Difficulty, MazeData, Point } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
+import { getMazeDebugSummary, shouldLogMazeStateDebug } from '../../lib/maze/fingerprint';
 import { MazeRenderer } from './MazeRenderer';
 import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 import type { SolveStats } from './FullscreenMazePlayer';
@@ -156,6 +157,19 @@ function presetDifficulty(preset: SizePreset): Difficulty {
   return preset;
 }
 
+function createInitialMaze() {
+  const { w, h } = SIZE_MAP.medium;
+  const seed = newSeed();
+
+  return generateMaze({ width: w, height: h, difficulty: 'medium', seed, anyPortalSide: true });
+}
+
+function logMazeStateDebug(label: string, maze: MazeData) {
+  if (!shouldLogMazeStateDebug()) return;
+
+  console.debug(`[maze:state] ${label}`, getMazeDebugSummary(maze));
+}
+
 function newSeed() {
   if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
     return crypto.getRandomValues(new Uint32Array(1))[0];
@@ -204,10 +218,9 @@ export function MazeGenerator() {
   );
 
   const [maze, setMaze] = useState(() => {
-    const { w, h } = SIZE_MAP['medium'];
-    const seed = newSeed();
-    lastSeedRef.current = seed;
-    return generateMaze({ width: w, height: h, difficulty: 'medium', seed, anyPortalSide: true });
+    const initialMaze = createInitialMaze();
+    lastSeedRef.current = initialMaze.seed;
+    return initialMaze;
   });
 
   const nextSeed = useCallback(() => {
@@ -229,6 +242,10 @@ export function MazeGenerator() {
 
     customPreviewRequestRef.current += 1;
   }, []);
+
+  useEffect(() => {
+    logMazeStateDebug('preview render', maze);
+  }, [maze]);
 
   const generate = useCallback((preset: SizePreset | null, dims: { w: number; h: number }, lightMode = false) => {
     const difficulty: Difficulty = preset
@@ -288,10 +305,11 @@ export function MazeGenerator() {
   }, [showCustom, customWidth, customHeight, sizePreset, generate, cancelScheduledCustomPreview]);
 
   const handlePlay = useCallback(() => {
+    logMazeStateDebug('play click', maze);
     hasPlayedRef.current = true;
     setPlaying(true);
     setSolved(false);
-  }, []);
+  }, [maze]);
 
   const handleSolve = useCallback((stats: SolveStats) => {
     setSolveStats(stats);
