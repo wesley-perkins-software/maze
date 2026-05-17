@@ -25,7 +25,7 @@ const FLAG_POLE = {
   x: 7.7,
   y: 6.55,
   width: 1.75,
-  height: 10.8,
+  height: 12,
   rx: 0.875,
 } as const;
 const FLAG_PENNANT_PATH = 'M9.15 6.9 L18.05 9.95 L9.15 13 Z';
