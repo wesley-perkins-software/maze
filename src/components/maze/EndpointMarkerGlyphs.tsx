@@ -12,12 +12,12 @@ interface PositionedGlyphProps extends SvgGlyphProps {
   r: number;
 }
 
-const FLAG_PENNANT_PATH = 'M8.45 7.15 L17.35 10.2 L8.45 13.25 Z';
+const FLAG_PENNANT_PATH = 'M9.15 6.9 L18.05 9.95 L9.15 13 Z';
 
 export function FinishFlagGlyph({ className, opacity = 0.95 }: SvgGlyphProps) {
   return (
     <g className={className} opacity={opacity}>
-      <rect x="7" y="6.35" width="1.75" height="11.3" rx="0.875" fill="white" />
+      <rect x="7.7" y="6.55" width="1.75" height="10.8" rx="0.875" fill="white" />
       <path d={FLAG_PENNANT_PATH} fill="white" />
     </g>
   );
