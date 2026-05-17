@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { MazeData, Point } from '../../src/types/maze';
 import { WALL_E, WALL_N, WALL_S, WALL_W } from '../../src/types/maze';
-import { getPreviewMarkerPosition } from '../../src/components/maze/MazeGenerator';
+import { GENERATOR_PREVIEW_ENDPOINT_GAP_PX, getPreviewMarkerPosition } from '../../src/components/maze/MazeGenerator';
 import { getMinimapEndpointMarkerPosition } from '../../src/components/maze/FullscreenMazePlayer';
 import { ENDPOINT_MARKER_OUTSIDE_GAP_PX, getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, type PortalSide } from '../../src/lib/maze/endpointMarkers';
 
@@ -12,8 +12,9 @@ const MARKER_RADIUS = CELL_SIZE * 0.9;
 const PREVIEW_BADGE_RADIUS = 14;
 const MINIMAP_BADGE_RADIUS = 14;
 const OUTSIDE_OFFSET = MARKER_RADIUS + ENDPOINT_MARKER_OUTSIDE_GAP_PX;
-// Preview markers use zero gap (badge edge touches the wall).
-const PREVIEW_OUTSIDE_OFFSET = PREVIEW_BADGE_RADIUS;
+// Preview markers use a generator-preview-specific tighter gap than shared endpoint defaults.
+const PREVIEW_OUTSIDE_OFFSET = PREVIEW_BADGE_RADIUS + GENERATOR_PREVIEW_ENDPOINT_GAP_PX;
+if (PREVIEW_OUTSIDE_OFFSET <= 0) throw new Error('Preview endpoint markers must remain outside the maze border.');
 // Minimap markers use a small inset so the center straddles the wall edge.
 const MINIMAP_EDGE_INSET = 2;
 
@@ -257,6 +258,42 @@ describe('getPreviewMarkerPosition', () => {
     expect(exitPosition).not.toBeNull();
     expectOutsideCorrectSide(entryPoint, entrySide, previewCoordinates(entryPosition!, width, height), width, height, PREVIEW_PADDING, PREVIEW_OUTSIDE_OFFSET);
     expectOutsideCorrectSide(exitPoint, exitSide, previewCoordinates(exitPosition!, width, height), width, height, PREVIEW_PADDING, PREVIEW_OUTSIDE_OFFSET);
+  });
+
+  it('uses the preview-specific gap to pull badges closer without changing side or along-edge alignment', () => {
+    const width = 60;
+    const height = 60;
+    const cases: PortalSide[] = ['top', 'bottom', 'left', 'right'];
+
+    for (const side of cases) {
+      const point = pointOnSide(width, height, side);
+      const maze = mazeWithPoint(width, height, point, side);
+      const coords = previewCoordinates(getPreviewMarkerPosition(maze, point, CELL_SIZE, side)!, width, height);
+      const left = PREVIEW_PADDING;
+      const top = PREVIEW_PADDING;
+      const right = PREVIEW_PADDING + width * CELL_SIZE;
+      const bottom = PREVIEW_PADDING + height * CELL_SIZE;
+      const expectedAlongX = PREVIEW_PADDING + point.x * CELL_SIZE + CELL_SIZE / 2;
+      const expectedAlongY = PREVIEW_PADDING + point.y * CELL_SIZE + CELL_SIZE / 2;
+
+      if (side === 'top') {
+        expect(coords.y).toBeCloseTo(top - PREVIEW_OUTSIDE_OFFSET, 8);
+        expect(coords.y).toBeGreaterThan(top - PREVIEW_BADGE_RADIUS);
+        expect(coords.x).toBeCloseTo(expectedAlongX, 8);
+      } else if (side === 'bottom') {
+        expect(coords.y).toBeCloseTo(bottom + PREVIEW_OUTSIDE_OFFSET, 8);
+        expect(coords.y).toBeLessThan(bottom + PREVIEW_BADGE_RADIUS);
+        expect(coords.x).toBeCloseTo(expectedAlongX, 8);
+      } else if (side === 'left') {
+        expect(coords.x).toBeCloseTo(left - PREVIEW_OUTSIDE_OFFSET, 8);
+        expect(coords.x).toBeGreaterThan(left - PREVIEW_BADGE_RADIUS);
+        expect(coords.y).toBeCloseTo(expectedAlongY, 8);
+      } else {
+        expect(coords.x).toBeCloseTo(right + PREVIEW_OUTSIDE_OFFSET, 8);
+        expect(coords.x).toBeLessThan(right + PREVIEW_BADGE_RADIUS);
+        expect(coords.y).toBeCloseTo(expectedAlongY, 8);
+      }
+    }
   });
 
   it('fails safe instead of returning an inside-maze preview position when side inference fails', () => {
