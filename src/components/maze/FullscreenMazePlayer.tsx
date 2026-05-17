@@ -8,6 +8,7 @@ import type { GameAction } from '../../lib/gameplay/types';
 import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide } from '../../lib/maze/endpointMarkers';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -222,32 +223,54 @@ function getMinimapEndpointMarkerPosition(
   maze: MazeData,
   cellSize: number,
   point: MazeData['entry'],
+  markerSize: number,
   bounds?: MinimapRenderedBounds,
 ) {
   const totalW = maze.width * cellSize + MINIMAP_PADDING * 2;
   const totalH = maze.height * cellSize + MINIMAP_PADDING * 2;
-  let x = MINIMAP_PADDING + point.x * cellSize + cellSize / 2;
-  let y = MINIMAP_PADDING + point.y * cellSize + cellSize / 2;
-
-  // Anchor endpoint badges to the maze perimeter wall instead of the cell
-  // center, so the badge center sits on the rendered maze boundary and the
-  // badge straddles the rail rather than floating outside it.
-  if (point.y === 0) y = MINIMAP_PADDING;
-  else if (point.y === maze.height - 1) y = totalH - MINIMAP_PADDING;
-
-  if (point.x === 0) x = MINIMAP_PADDING;
-  else if (point.x === maze.width - 1) x = totalW - MINIMAP_PADDING;
+  const side = inferPortalSide(maze, point);
 
   if (!bounds) {
+    const markerRadius = cellSize * 0.45;
+    const marker = getEndpointMarkerCenter({
+      mazeWidth: maze.width,
+      mazeHeight: maze.height,
+      cellSize,
+      bounds: getMazeBodyBounds(maze.width, maze.height, cellSize, MINIMAP_PADDING),
+      portal: point,
+      portalSide: side,
+      markerRadius,
+      overhangAmount: markerRadius * 0.6,
+    });
+
     return {
-      left: `${(x / totalW) * 100}%`,
-      top: `${(y / totalH) * 100}%`,
+      left: `${(marker.x / totalW) * 100}%`,
+      top: `${(marker.y / totalH) * 100}%`,
     };
   }
 
+  const renderedMazeWidth = (maze.width * cellSize / totalW) * bounds.width;
+  const renderedCellSize = renderedMazeWidth / maze.width;
+  const markerRadius = markerSize / 2;
+  const marker = getEndpointMarkerCenter({
+    mazeWidth: maze.width,
+    mazeHeight: maze.height,
+    cellSize: renderedCellSize,
+    bounds: {
+      x: bounds.x + (MINIMAP_PADDING / totalW) * bounds.width,
+      y: bounds.y + (MINIMAP_PADDING / totalH) * bounds.height,
+      width: (maze.width * cellSize / totalW) * bounds.width,
+      height: (maze.height * cellSize / totalH) * bounds.height,
+    },
+    portal: point,
+    portalSide: side,
+    markerRadius,
+    overhangAmount: markerRadius * 0.6,
+  });
+
   return {
-    left: bounds.x + (x / totalW) * bounds.width,
-    top: bounds.y + (y / totalH) * bounds.height,
+    left: marker.x,
+    top: marker.y,
   };
 }
 
@@ -318,8 +341,8 @@ function MinimapEndpointMarkers({
   markerSize?: number;
   bounds?: MinimapRenderedBounds;
 }) {
-  const entryPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.entry, bounds);
-  const exitPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.exit, bounds);
+  const entryPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.entry, markerSize, bounds);
+  const exitPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.exit, markerSize, bounds);
   const markerStyle = {
     width: markerSize,
     height: markerSize,
@@ -329,11 +352,11 @@ function MinimapEndpointMarkers({
 
   // Arrow direction based on which perimeter wall the entry is on (viewBox 0 0 24 24, circle r=8.8 at 12,12)
   const entryArrow = (() => {
-    const { entry, width, height } = maze;
-    if (entry.y === 0)          return '6.72,8.92 17.28,8.92 12,16.84';   // top → DOWN
-    if (entry.y === height - 1) return '6.72,15.08 17.28,15.08 12,7.16';  // bottom → UP
-    if (entry.x === 0)          return '8.92,6.72 16.84,12 8.92,17.28';   // left → RIGHT
-    return '15.08,6.72 7.16,12 15.08,17.28';                              // right → LEFT
+    const side = inferPortalSide(maze, maze.entry);
+    if (side === 'top')    return '6.72,8.92 17.28,8.92 12,16.84';   // top → DOWN
+    if (side === 'bottom') return '6.72,15.08 17.28,15.08 12,7.16';  // bottom → UP
+    if (side === 'left')   return '8.92,6.72 16.84,12 8.92,17.28';   // left → RIGHT
+    return '15.08,6.72 7.16,12 15.08,17.28';                         // right → LEFT
   })();
 
   return (

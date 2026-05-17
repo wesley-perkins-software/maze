@@ -7,6 +7,7 @@ import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide } from '../../lib/maze/endpointMarkers';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
 
@@ -38,19 +39,20 @@ export function getPreviewMarkerPosition(
   const totalW = maze.width * cellSize + PREVIEW_PADDING * 2;
   const totalH = maze.height * cellSize + PREVIEW_PADDING * 2;
 
-  const cellCenterX = PREVIEW_PADDING + point.x * cellSize + cellSize / 2;
-  const cellCenterY = PREVIEW_PADDING + point.y * cellSize + cellSize / 2;
+  const markerRadius = cellSize * 0.9;
+  const marker = getEndpointMarkerCenter({
+    mazeWidth: maze.width,
+    mazeHeight: maze.height,
+    cellSize,
+    bounds: getMazeBodyBounds(maze.width, maze.height, cellSize, PREVIEW_PADDING),
+    portal: point,
+    portalSide: inferPortalSide(maze, point),
+    markerRadius,
+    overhangAmount: markerRadius * 0.6,
+  });
 
-  const markerX = point.x === 0
-    ? PREVIEW_PADDING
-    : point.x === maze.width - 1
-      ? totalW - PREVIEW_PADDING
-      : cellCenterX;
-  const markerY = point.y === 0
-    ? PREVIEW_PADDING
-    : point.y === maze.height - 1
-      ? totalH - PREVIEW_PADDING
-      : cellCenterY;
+  const markerX = marker.x;
+  const markerY = marker.y;
 
   return {
     left: `${(markerX / totalW) * 100}%`,
@@ -59,12 +61,14 @@ export function getPreviewMarkerPosition(
 }
 
 function getPreviewEntryArrowPoints(maze: MazeData): string {
-  const { entry, width, height } = maze;
+  const { entry } = maze;
 
-  if (entry.y === 0) return '6.72,8.92 17.28,8.92 12,16.84';
-  if (entry.y === height - 1) return '6.72,15.08 17.28,15.08 12,7.16';
-  if (entry.x === 0) return '8.92,6.72 16.84,12 8.92,17.28';
-  if (entry.x === width - 1) return '15.08,6.72 7.16,12 15.08,17.28';
+  const side = inferPortalSide(maze, entry);
+
+  if (side === 'top') return '6.72,8.92 17.28,8.92 12,16.84';
+  if (side === 'bottom') return '6.72,15.08 17.28,15.08 12,7.16';
+  if (side === 'left') return '8.92,6.72 16.84,12 8.92,17.28';
+  if (side === 'right') return '15.08,6.72 7.16,12 15.08,17.28';
 
   return '6.72,8.92 17.28,8.92 12,16.84';
 }

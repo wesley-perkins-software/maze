@@ -6,6 +6,7 @@
 import type { MazeData, Point } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { indexToPoint } from '../../lib/maze/utils';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide } from '../../lib/maze/endpointMarkers';
 
 const PLAYER_PATH_COLOR = '#3b82f6';
 const PLAYER_MARKER_COLOR = '#2563eb';
@@ -90,31 +91,45 @@ export function MazeRenderer({
     }
   }
 
-  // ── Entry / exit centers (cell-interior positions) ───────────────────────────
+  // ── Entry / exit centers ───────────────────────────────────────────────────
   const entryCx = padding + entry.x * cellSize + cellSize / 2;
   const entryCy = padding + entry.y * cellSize + cellSize / 2;
   const exitCx  = padding + exit.x  * cellSize + cellSize / 2;
   const exitCy  = padding + exit.y  * cellSize + cellSize / 2;
   const markerR = markerRadius ?? cellSize * 0.38;
+  const markerOverhang = markerR * 0.6;
+  const mazeBounds = getMazeBodyBounds(width, height, cellSize, padding);
+  const entrySide = inferPortalSide(maze, entry);
+  const exitSide = inferPortalSide(maze, exit);
+  const entryMarker = markersOutside
+    ? getEndpointMarkerCenter({
+        mazeWidth: width,
+        mazeHeight: height,
+        cellSize,
+        bounds: mazeBounds,
+        portal: entry,
+        portalSide: entrySide,
+        markerRadius: markerR,
+        overhangAmount: markerOverhang,
+      })
+    : { x: entryCx, y: entryCy };
+  const exitMarker = markersOutside
+    ? getEndpointMarkerCenter({
+        mazeWidth: width,
+        mazeHeight: height,
+        cellSize,
+        bounds: mazeBounds,
+        portal: exit,
+        portalSide: exitSide,
+        markerRadius: markerR,
+        overhangAmount: markerOverhang,
+      })
+    : { x: exitCx, y: exitCy };
 
-  // ── Shift markers outside the perimeter wall when requested ─────────────────
-  const outsideX = (pt: Point, defaultX: number) => {
-    if (!markersOutside) return defaultX;
-    if (pt.x === 0)         return padding / 2;
-    if (pt.x === width - 1) return totalW - padding / 2;
-    return defaultX;
-  };
-  const outsideY = (pt: Point, defaultY: number) => {
-    if (!markersOutside) return defaultY;
-    if (pt.y === 0)          return padding / 2;
-    if (pt.y === height - 1) return totalH - padding / 2;
-    return defaultY;
-  };
-
-  const entryMx = outsideX(entry, entryCx);
-  const entryMy = outsideY(entry, entryCy);
-  const exitMx  = outsideX(exit,  exitCx);
-  const exitMy  = outsideY(exit,  exitCy);
+  const entryMx = entryMarker.x;
+  const entryMy = entryMarker.y;
+  const exitMx  = exitMarker.x;
+  const exitMy  = exitMarker.y;
 
   // ── Entry arrow — points INTO the maze from whichever perimeter wall ─────────
   const entryArrowPoints = (() => {
@@ -122,15 +137,15 @@ export function MazeRenderer({
     const cy = entryMy;
     const r  = markerR;
 
-    if (entry.y === 0) {
+    if (entrySide === 'top') {
       // Top wall → arrow points DOWN
       return `${cx - r*0.6},${cy - r*0.35} ${cx + r*0.6},${cy - r*0.35} ${cx},${cy + r*0.55}`;
     }
-    if (entry.y === height - 1) {
+    if (entrySide === 'bottom') {
       // Bottom wall → arrow points UP
       return `${cx - r*0.6},${cy + r*0.35} ${cx + r*0.6},${cy + r*0.35} ${cx},${cy - r*0.55}`;
     }
-    if (entry.x === 0) {
+    if (entrySide === 'left') {
       // Left wall → arrow points RIGHT
       return `${cx - r*0.35},${cy - r*0.6} ${cx + r*0.55},${cy} ${cx - r*0.35},${cy + r*0.6}`;
     }
