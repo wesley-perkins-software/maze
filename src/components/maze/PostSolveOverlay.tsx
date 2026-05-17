@@ -88,11 +88,11 @@ function ConfettiParticles() {
 function CheckIcon() {
   return (
     <svg
-      className="w-7 h-7 text-emerald-600"
+      className="w-7 h-7"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
-      strokeWidth={2.5}
+      stroke="#047857"
+      strokeWidth={3}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -244,7 +244,7 @@ export function PostSolveOverlay({
         )}
 
         {/* Success icon */}
-        <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: '#D1FAE5', border: '1.5px solid #6EE7B7' }}>
           <CheckIcon />
         </div>
 
