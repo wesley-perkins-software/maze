@@ -10,6 +10,7 @@ import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 import type { PortalSide } from '../../lib/maze/endpointMarkers';
+import { FinishFlagGlyph } from '../../lib/maze/endpointIcons';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
 
@@ -145,7 +146,7 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
       >
         <circle cx="12" cy="12" r="12" fill="white" />
         <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
-        <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
+        <FinishFlagGlyph />
       </svg>
       )}
     </>

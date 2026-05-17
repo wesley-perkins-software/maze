@@ -331,28 +331,28 @@ export function MazeRenderer({
             </>
           )}
 
-          {/* Exit marker — amber circle with star */}
+          {/* Exit marker — amber circle with pole-and-flag checkered finish glyph */}
           {exitMarker && (
             <>
               <circle className="maze-endpoint-marker maze-exit-marker" cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
               {markerR >= 5 && (
-                <polygon
-                  className="maze-endpoint-marker maze-exit-marker"
-                  points={[
-                    [exitMx,                    exitMy - markerR * 0.72],
-                    [exitMx + markerR * 0.24,   exitMy - markerR * 0.20],
-                    [exitMx + markerR * 0.69,   exitMy - markerR * 0.22],
-                    [exitMx + markerR * 0.34,   exitMy + markerR * 0.17],
-                    [exitMx + markerR * 0.43,   exitMy + markerR * 0.64],
-                    [exitMx,                    exitMy + markerR * 0.36],
-                    [exitMx - markerR * 0.43,   exitMy + markerR * 0.64],
-                    [exitMx - markerR * 0.34,   exitMy + markerR * 0.17],
-                    [exitMx - markerR * 0.69,   exitMy - markerR * 0.22],
-                    [exitMx - markerR * 0.24,   exitMy - markerR * 0.20],
-                  ].map(([x, y]) => `${x},${y}`).join(' ')}
-                  fill="white"
-                  opacity={0.95}
-                />
+                <>
+                  {/*
+                    Parametric equivalent of FinishFlagGlyph (endpointIcons.tsx).
+                    All multipliers derived from the 24×24 / r=8.8 reference geometry:
+                      pole:  x−0.625r, y−0.625r, w=0.170r, h=1.364r
+                      flag:  x−0.455r, y−0.511r, w=0.966r, h=0.625r
+                      2×2 checker cells (amber): top-right and bottom-left
+                  */}
+                  {/* Pole */}
+                  <rect className="maze-endpoint-marker maze-exit-marker" x={exitMx - markerR * 0.625} y={exitMy - markerR * 0.625} width={markerR * 0.170} height={markerR * 1.364} fill="white" opacity={0.95} />
+                  {/* Flag body */}
+                  <rect className="maze-endpoint-marker maze-exit-marker" x={exitMx - markerR * 0.455} y={exitMy - markerR * 0.511} width={markerR * 0.966} height={markerR * 0.625} fill="white" opacity={0.95} />
+                  {/* Amber cell — top-right */}
+                  <rect className="maze-endpoint-marker maze-exit-marker" x={exitMx + markerR * 0.028} y={exitMy - markerR * 0.511} width={markerR * 0.483} height={markerR * 0.313} fill={FINISH_MARKER_COLOR} />
+                  {/* Amber cell — bottom-left */}
+                  <rect className="maze-endpoint-marker maze-exit-marker" x={exitMx - markerR * 0.455} y={exitMy - markerR * 0.199} width={markerR * 0.483} height={markerR * 0.313} fill={FINISH_MARKER_COLOR} />
+                </>
               )}
             </>
           )}
