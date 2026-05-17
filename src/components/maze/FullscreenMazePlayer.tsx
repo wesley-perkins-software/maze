@@ -8,7 +8,7 @@ import type { GameAction } from '../../lib/gameplay/types';
 import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
-import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import { inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 import { getMazeDebugSummary, shouldLogMazeStateDebug } from '../../lib/maze/fingerprint';
 import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 
@@ -91,6 +91,8 @@ function getHintStepCount(maze: MazeData): number {
 const MINIMAP_PADDING = 2;
 const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
 const MINIMAP_RAIL_ENDPOINT_MARKER_SIZE = 18;
+export const MINIMAP_ENDPOINT_MARKER_INSET_PX = 2;
+export const MINIMAP_ENDPOINT_MARKER_EDGE_OVERLAP_PX = 4;
 const MINIMAP_PLAYER_MARKER_SIZE = 12;
 const MINIMAP_RAIL_PLAYER_MARKER_SIZE = 10;
 const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
@@ -235,43 +237,47 @@ export function getMinimapEndpointMarkerPosition(
     return null;
   }
 
-  if (!bounds) {
-    const markerRadius = markerSize / 2;
-    const marker = getEndpointMarkerCenter({
-      mazeWidth: maze.width,
-      mazeHeight: maze.height,
-      cellSize,
-      bounds: getMazeBodyBounds(maze.width, maze.height, cellSize, MINIMAP_PADDING),
-      portal: point,
-      portalSide: side,
-      markerRadius,
-      placementMode: 'inside',
-    });
+  const markerRadius = markerSize / 2;
+  const edgeInset = Math.max(
+    MINIMAP_ENDPOINT_MARKER_INSET_PX,
+    markerRadius - MINIMAP_ENDPOINT_MARKER_EDGE_OVERLAP_PX,
+  );
+  const renderedBounds = bounds ?? {
+    x: 0,
+    y: 0,
+    width: totalW,
+    height: totalH,
+    svgWidth: totalW,
+    svgHeight: totalH,
+    containerWidth: totalW,
+    containerHeight: totalH,
+  };
+  const contentX = renderedBounds.x + (MINIMAP_PADDING / totalW) * renderedBounds.width;
+  const contentY = renderedBounds.y + (MINIMAP_PADDING / totalH) * renderedBounds.height;
+  const contentW = (maze.width * cellSize / totalW) * renderedBounds.width;
+  const contentH = (maze.height * cellSize / totalH) * renderedBounds.height;
+  const normalizedX = (Math.min(Math.max(point.x, 0), maze.width - 1) + 0.5) / maze.width;
+  const normalizedY = (Math.min(Math.max(point.y, 0), maze.height - 1) + 0.5) / maze.height;
 
+  const marker = (() => {
+    switch (side) {
+      case 'top':
+        return { x: contentX + normalizedX * contentW, y: contentY + edgeInset };
+      case 'bottom':
+        return { x: contentX + normalizedX * contentW, y: contentY + contentH - edgeInset };
+      case 'left':
+        return { x: contentX + edgeInset, y: contentY + normalizedY * contentH };
+      case 'right':
+        return { x: contentX + contentW - edgeInset, y: contentY + normalizedY * contentH };
+    }
+  })();
+
+  if (!bounds) {
     return {
       left: `${(marker.x / totalW) * 100}%`,
       top: `${(marker.y / totalH) * 100}%`,
     };
   }
-
-  const renderedMazeWidth = (maze.width * cellSize / totalW) * bounds.width;
-  const renderedCellSize = renderedMazeWidth / maze.width;
-  const markerRadius = markerSize / 2;
-  const marker = getEndpointMarkerCenter({
-    mazeWidth: maze.width,
-    mazeHeight: maze.height,
-    cellSize: renderedCellSize,
-    bounds: {
-      x: bounds.x + (MINIMAP_PADDING / totalW) * bounds.width,
-      y: bounds.y + (MINIMAP_PADDING / totalH) * bounds.height,
-      width: (maze.width * cellSize / totalW) * bounds.width,
-      height: (maze.height * cellSize / totalH) * bounds.height,
-    },
-    portal: point,
-    portalSide: side,
-    markerRadius,
-    placementMode: 'inside',
-  });
 
   return {
     left: marker.x,
