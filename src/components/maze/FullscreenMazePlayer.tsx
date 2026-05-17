@@ -89,6 +89,11 @@ function getHintStepCount(maze: MazeData): number {
 }
 
 const MINIMAP_PADDING = 2;
+// Both mobile and desktop minimap containers use border-2 (2px each side = 4px total).
+// The SVG fills the content area (containerSize - 4px), so all bounds must be computed
+// against the content area, not the outer box, to keep marker positions pixel-aligned
+// with the rendered maze walls.
+const MINIMAP_BORDER_WIDTH = 2;
 const MINIMAP_ENDPOINT_MARKER_SIZE = 24;
 const MINIMAP_RAIL_ENDPOINT_MARKER_SIZE = 18;
 const MINIMAP_PLAYER_MARKER_SIZE = 12;
@@ -910,9 +915,11 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const minimapSlotW = getMobileMinimapSlotWidth(mobileDockPanelW, minimapLayout);
   const { width: minimapContainerW, height: minimapContainerH } = getMobileMinimapContainerSize(minimapLayout, mobileDockPanelW, mobileMiniMapSlotH, mobileMinimapMaxSize);
   const isRailMinimap = minimapLayout !== 'square';
+  // Use content-area dimensions (subtract the 2px border on each side) so that the
+  // computed scale matches the actual scale of the SVG, which fills the content area.
   const minimapRenderedBounds = getContainedMinimapBounds({
-    containerWidth: minimapContainerW,
-    containerHeight: minimapContainerH,
+    containerWidth: minimapContainerW - MINIMAP_BORDER_WIDTH * 2,
+    containerHeight: minimapContainerH - MINIMAP_BORDER_WIDTH * 2,
     svgWidth: mmSvgW,
     svgHeight: mmSvgH,
   });
@@ -933,8 +940,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const sidebarMinimapContainerH = SIDEBAR_MINIMAP_SIZE;
 
   const sidebarMinimapRenderedBounds = getContainedMinimapBounds({
-    containerWidth: sidebarMinimapContainerW,
-    containerHeight: sidebarMinimapContainerH,
+    containerWidth: sidebarMinimapContainerW - MINIMAP_BORDER_WIDTH * 2,
+    containerHeight: sidebarMinimapContainerH - MINIMAP_BORDER_WIDTH * 2,
     svgWidth: dmSvgW,
     svgHeight: dmSvgH,
   });
@@ -965,8 +972,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     bounds: MinimapRenderedBounds,
   ): { x: number; y: number } {
     const rect = e.currentTarget.getBoundingClientRect();
-    const relX = e.clientX - rect.left;
-    const relY = e.clientY - rect.top;
+    // getBoundingClientRect() is relative to the outer box edge (includes border).
+    // Subtract the border so coords are relative to the content area, matching bounds.
+    const relX = e.clientX - rect.left - MINIMAP_BORDER_WIDTH;
+    const relY = e.clientY - rect.top - MINIMAP_BORDER_WIDTH;
     const fracX = Math.max(0, Math.min(1, (relX - bounds.x) / bounds.width));
     const fracY = Math.max(0, Math.min(1, (relY - bounds.y) / bounds.height));
     return { x: fracX * mazeW, y: fracY * mazeH };

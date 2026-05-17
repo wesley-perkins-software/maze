@@ -115,6 +115,10 @@ function expectOutsideCorrectSide(point: Point, side: PortalSide, coords: Point,
   expect(coords.x > left && coords.x < right && coords.y > top && coords.y < bottom).toBe(false);
 }
 
+// Tolerance for floating-point round-trips through CSS percentage strings.
+// The no-bounds path converts pixel → % → pixel, which can drift by ~1e-12.
+const FP_EPSILON = 1e-9;
+
 function expectInsideCorrectSide(point: Point, side: PortalSide, coords: Point, width: number, height: number, padding = MINIMAP_PADDING, markerRadius = MINIMAP_BADGE_RADIUS) {
   const left = padding;
   const top = padding;
@@ -122,19 +126,19 @@ function expectInsideCorrectSide(point: Point, side: PortalSide, coords: Point, 
   const bottom = padding + height * CELL_SIZE;
 
   if (side === 'top') {
-    expect(coords.y).toBeGreaterThanOrEqual(top + markerRadius);
+    expect(coords.y).toBeGreaterThanOrEqual(top + markerRadius - FP_EPSILON);
     expect(coords.y).toBeLessThan(bottom);
     expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
   } else if (side === 'bottom') {
-    expect(coords.y).toBeLessThanOrEqual(bottom - markerRadius);
+    expect(coords.y).toBeLessThanOrEqual(bottom - markerRadius + FP_EPSILON);
     expect(coords.y).toBeGreaterThan(top);
     expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
   } else if (side === 'left') {
-    expect(coords.x).toBeGreaterThanOrEqual(left + markerRadius);
+    expect(coords.x).toBeGreaterThanOrEqual(left + markerRadius - FP_EPSILON);
     expect(coords.x).toBeLessThan(right);
     expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
   } else {
-    expect(coords.x).toBeLessThanOrEqual(right - markerRadius);
+    expect(coords.x).toBeLessThanOrEqual(right - markerRadius + FP_EPSILON);
     expect(coords.x).toBeGreaterThan(left);
     expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
   }
@@ -302,6 +306,134 @@ describe('getPreviewMarkerPosition', () => {
     expect(previewEntry.y).toBeGreaterThanOrEqual(PREVIEW_PADDING + height * CELL_SIZE + PREVIEW_OUTSIDE_OFFSET);
     expect(minimapEntry.y).toBeLessThanOrEqual(MINIMAP_PADDING + height * CELL_SIZE - MINIMAP_BADGE_RADIUS);
     expect(previewExit.x).toBeGreaterThanOrEqual(PREVIEW_PADDING + width * CELL_SIZE + PREVIEW_OUTSIDE_OFFSET);
-    expect(minimapExit.x).toBeLessThanOrEqual(MINIMAP_PADDING + width * CELL_SIZE - MINIMAP_BADGE_RADIUS);
+    expect(minimapExit.x).toBeLessThanOrEqual(MINIMAP_PADDING + width * CELL_SIZE - MINIMAP_BADGE_RADIUS + FP_EPSILON);
+  });
+
+  it('with-bounds: along-edge normalized position t matches the no-bounds path for all sides', () => {
+    // The "with bounds" path is what runs in the actual app (bounds are always passed).
+    // It must produce the same normalized along-edge position t = (portal + 0.5) / dimension
+    // as the no-bounds path (used as a reference here), regardless of container size.
+    const containerSizes = [
+      { w: 80, h: 80 },   // square container, square maze
+      { w: 150, h: 40 },  // wide container, square maze (letterboxed top/bottom)
+      { w: 40, h: 150 },  // tall container, square maze (letterboxed left/right)
+      { w: 90, h: 20 },   // wide container, rail maze
+    ];
+    const mazeSize = { width: 40, height: 40 };
+    const sides: PortalSide[] = ['top', 'bottom', 'left', 'right'];
+
+    for (const { w, h } of containerSizes) {
+      for (const side of sides) {
+        const point = pointOnSide(mazeSize.width, mazeSize.height, side, 3);
+        const maze = mazeWithPortals(
+          mazeSize.width, mazeSize.height,
+          { point, side },
+          { point, side },
+        );
+        const markerSize = MINIMAP_BADGE_RADIUS * 2;
+        const totalW = mazeSize.width * CELL_SIZE + MINIMAP_PADDING * 2;
+        const totalH = mazeSize.height * CELL_SIZE + MINIMAP_PADDING * 2;
+
+        // Compute bounds that would be used by getContainedMinimapBounds.
+        // Replicate the letterbox logic directly so the test has no extra deps.
+        const mazeAspect = totalW / totalH;
+        const containerAspect = w / h;
+        let bounds;
+        if (mazeAspect > containerAspect) {
+          const rh = w / mazeAspect;
+          bounds = { x: 0, y: (h - rh) / 2, width: w, height: rh, svgWidth: totalW, svgHeight: totalH, containerWidth: w, containerHeight: h };
+        } else {
+          const rw = h * mazeAspect;
+          bounds = { x: (w - rw) / 2, y: 0, width: rw, height: h, svgWidth: totalW, svgHeight: totalH, containerWidth: w, containerHeight: h };
+        }
+
+        const withBoundsPos = getMinimapEndpointMarkerPosition(maze, CELL_SIZE, point, markerSize, bounds as import('../../src/components/maze/FullscreenMazePlayer').MinimapRenderedBounds);
+        const noBoundsPos = getMinimapEndpointMarkerPosition(maze, CELL_SIZE, point, markerSize);
+
+        expect(withBoundsPos, `${side} ${w}x${h}`).not.toBeNull();
+        expect(noBoundsPos).not.toBeNull();
+
+        // The no-bounds path uses the SVG coordinate space (totalW × totalH).
+        // Convert both to normalized maze-body fraction to compare t.
+        const mazeBodyW = mazeSize.width * CELL_SIZE;
+        const mazeBodyH = mazeSize.height * CELL_SIZE;
+
+        // No-bounds: convert % back to SVG pixels, then subtract padding to get maze-body offset.
+        const nbX = evaluateCssLength(noBoundsPos!.left, totalW) - MINIMAP_PADDING;
+        const nbY = evaluateCssLength(noBoundsPos!.top, totalH) - MINIMAP_PADDING;
+
+        // With-bounds: convert pixel back to SVG scale using the same scale factor.
+        const scale = bounds.width / totalW;
+        const wbX = (Number(withBoundsPos!.left) - bounds.x - (MINIMAP_PADDING * scale)) / scale;
+        const wbY = (Number(withBoundsPos!.top) - bounds.y - (MINIMAP_PADDING * scale)) / scale;
+
+        // Along-edge coordinate: both must produce the same t = (portal + 0.5) / dimension.
+        if (side === 'top' || side === 'bottom') {
+          const tNo = nbX / mazeBodyW;
+          const tWith = wbX / mazeBodyW;
+          expect(tWith).toBeCloseTo(tNo, 6);
+        } else {
+          const tNo = nbY / mazeBodyH;
+          const tWith = wbY / mazeBodyH;
+          expect(tWith).toBeCloseTo(tNo, 6);
+        }
+      }
+    }
+  });
+
+  it('with-bounds: along-edge position matches portal cell center and perpendicular is inside maze', () => {
+    const testCases = [
+      { mw: 20,  mh: 20,  cw: 80,  ch: 80  },
+      { mw: 40,  mh: 40,  cw: 90,  ch: 90  },
+      { mw: 60,  mh: 60,  cw: 150, ch: 150 },
+      { mw: 100, mh: 10,  cw: 150, ch: 40  },
+      { mw: 10,  mh: 100, cw: 40,  ch: 150 },
+    ];
+    const sides: PortalSide[] = ['top', 'bottom', 'left', 'right'];
+
+    for (const { mw, mh, cw, ch } of testCases) {
+      for (const side of sides) {
+        const point = pointOnSide(mw, mh, side);
+        const maze = mazeWithPortals(mw, mh, { point, side }, { point, side });
+        const markerSize = MINIMAP_BADGE_RADIUS * 2;
+        const totalW = mw * CELL_SIZE + MINIMAP_PADDING * 2;
+        const totalH = mh * CELL_SIZE + MINIMAP_PADDING * 2;
+        const mazeAspect = totalW / totalH;
+        const containerAspect = cw / ch;
+        let bounds;
+        if (mazeAspect > containerAspect) {
+          const rh = cw / mazeAspect;
+          bounds = { x: 0, y: (ch - rh) / 2, width: cw, height: rh, svgWidth: totalW, svgHeight: totalH, containerWidth: cw, containerHeight: ch };
+        } else {
+          const rw = ch * mazeAspect;
+          bounds = { x: (cw - rw) / 2, y: 0, width: rw, height: ch, svgWidth: totalW, svgHeight: totalH, containerWidth: cw, containerHeight: ch };
+        }
+
+        const pos = getMinimapEndpointMarkerPosition(maze, CELL_SIZE, point, markerSize, bounds as import('../../src/components/maze/FullscreenMazePlayer').MinimapRenderedBounds);
+        expect(pos, `${side} ${mw}x${mh} in ${cw}x${ch}`).not.toBeNull();
+
+        const px = Number(pos!.left);
+        const py = Number(pos!.top);
+        const scale = bounds.width / totalW;
+        const mazeLeft   = bounds.x + MINIMAP_PADDING * scale;
+        const mazeTop    = bounds.y + MINIMAP_PADDING * scale;
+        const mazeRight  = mazeLeft + mw * CELL_SIZE * scale;
+        const mazeBottom = mazeTop  + mh * CELL_SIZE * scale;
+
+        // Along-edge: marker center must align with the portal cell center (t = (portal + 0.5) / dim).
+        // Perpendicular: marker must be within the maze content rect (not outside walls).
+        if (side === 'top' || side === 'bottom') {
+          const expectedX = mazeLeft + (point.x + 0.5) * CELL_SIZE * scale;
+          expect(px).toBeCloseTo(expectedX, 5);
+          expect(py).toBeGreaterThanOrEqual(mazeTop - FP_EPSILON);
+          expect(py).toBeLessThanOrEqual(mazeBottom + FP_EPSILON);
+        } else {
+          const expectedY = mazeTop + (point.y + 0.5) * CELL_SIZE * scale;
+          expect(py).toBeCloseTo(expectedY, 5);
+          expect(px).toBeGreaterThanOrEqual(mazeLeft - FP_EPSILON);
+          expect(px).toBeLessThanOrEqual(mazeRight + FP_EPSILON);
+        }
+      }
+    }
   });
 });
