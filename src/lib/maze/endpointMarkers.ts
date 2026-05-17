@@ -126,3 +126,13 @@ export function getMazeBodyBounds(width: number, height: number, cellSize: numbe
     height: height * cellSize,
   };
 }
+
+/**
+ * SVG path data for the finish (exit) marker glyph — a simplified 3×2 checkered flag,
+ * no pole, designed for a 24×24 viewBox with the amber circle at r=8.8 centered at 12,12.
+ *
+ * White cells occupy positions (col0,row0), (col2,row0), (col1,row1) of a 3-column × 2-row
+ * grid spanning x=[6.5,17.5], y=[8,15]. The amber badge background fills the alternate cells.
+ */
+export const FINISH_CHECKER_PATH =
+  'M6.5,8h3.67v3.5h-3.67ZM13.84,8h3.67v3.5h-3.67ZM10.17,11.5h3.67v3.5h-3.67Z';

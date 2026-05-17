@@ -331,28 +331,18 @@ export function MazeRenderer({
             </>
           )}
 
-          {/* Exit marker — amber circle with star */}
+          {/* Exit marker — amber circle with 3×2 checkered flag (no pole) */}
           {exitMarker && (
             <>
               <circle className="maze-endpoint-marker maze-exit-marker" cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
               {markerR >= 5 && (
-                <polygon
-                  className="maze-endpoint-marker maze-exit-marker"
-                  points={[
-                    [exitMx,                    exitMy - markerR * 0.72],
-                    [exitMx + markerR * 0.24,   exitMy - markerR * 0.20],
-                    [exitMx + markerR * 0.69,   exitMy - markerR * 0.22],
-                    [exitMx + markerR * 0.34,   exitMy + markerR * 0.17],
-                    [exitMx + markerR * 0.43,   exitMy + markerR * 0.64],
-                    [exitMx,                    exitMy + markerR * 0.36],
-                    [exitMx - markerR * 0.43,   exitMy + markerR * 0.64],
-                    [exitMx - markerR * 0.34,   exitMy + markerR * 0.17],
-                    [exitMx - markerR * 0.69,   exitMy - markerR * 0.22],
-                    [exitMx - markerR * 0.24,   exitMy - markerR * 0.20],
-                  ].map(([x, y]) => `${x},${y}`).join(' ')}
-                  fill="white"
-                  opacity={0.95}
-                />
+                <>
+                  {/* 3×2 checker: col width = markerR*1.25/3, row height = markerR*0.8/2 */}
+                  {/* White cells: (col0,row0), (col2,row0), (col1,row1) */}
+                  <rect className="maze-endpoint-marker maze-exit-marker" x={exitMx - markerR * 0.625} y={exitMy - markerR * 0.4} width={markerR * 0.4167} height={markerR * 0.4} fill="white" opacity={0.95} />
+                  <rect className="maze-endpoint-marker maze-exit-marker" x={exitMx + markerR * 0.2083} y={exitMy - markerR * 0.4} width={markerR * 0.4167} height={markerR * 0.4} fill="white" opacity={0.95} />
+                  <rect className="maze-endpoint-marker maze-exit-marker" x={exitMx - markerR * 0.2083} y={exitMy} width={markerR * 0.4167} height={markerR * 0.4} fill="white" opacity={0.95} />
+                </>
               )}
             </>
           )}
