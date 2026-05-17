@@ -121,6 +121,8 @@ function getPreviewEntryArrowPoints(maze: MazeData): string {
   return DEFAULT_START_ARROW_POINTS;
 }
 
+const LEGEND_START_ARROW_POINTS = '8.92,6.72 16.84,12 8.92,17.28';
+
 function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: number }) {
   const markerBase = 'pointer-events-none absolute z-10 h-6 w-6 -translate-x-1/2 -translate-y-1/2 overflow-visible drop-shadow-[0_2px_4px_rgba(15,23,42,0.32)] md:h-7 md:w-7';
   const entryArrowPoints = getPreviewEntryArrowPoints(maze);
@@ -155,15 +157,15 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
 
 function PreviewStartLegendIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 overflow-visible" aria-hidden="true">
-      <StartMarkerIcon />
+    <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0 overflow-visible" aria-hidden="true">
+      <StartMarkerIcon arrowPoints={LEGEND_START_ARROW_POINTS} />
     </svg>
   );
 }
 
 function PreviewFinishLegendIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 overflow-visible" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0 overflow-visible" aria-hidden="true">
       <FinishMarkerIcon />
     </svg>
   );
@@ -172,7 +174,7 @@ function PreviewFinishLegendIcon() {
 function PreviewEndpointLegend() {
   return (
     <div
-      className="order-3 flex w-full items-center justify-center gap-3 text-xs font-medium text-arch-400 sm:order-2 sm:w-auto sm:gap-4"
+      className="order-3 flex w-full items-center justify-center gap-5 text-[13px] font-medium leading-none text-arch-400 sm:order-2 sm:w-auto sm:gap-6"
       aria-label="Maze endpoint legend"
     >
       <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
