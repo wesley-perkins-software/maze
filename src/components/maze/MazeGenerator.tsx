@@ -32,8 +32,10 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
 export const CUSTOM_RANGE = { min: 10, max: 100 };
 
 const PREVIEW_PADDING = 6;
-const PREVIEW_MARKER_SIZE_PX = 28;
+const PREVIEW_ENDPOINT_MARKER_SIZE_PX = 28;
+const PREVIEW_ENDPOINT_MARKER_RADIUS_PX = PREVIEW_ENDPOINT_MARKER_SIZE_PX / 2;
 const PREVIEW_MARKER_BORDER_OVERLAP_PX = 4;
+const PREVIEW_MARKER_OUTSIDE_OFFSET_PX = PREVIEW_ENDPOINT_MARKER_RADIUS_PX - PREVIEW_MARKER_BORDER_OVERLAP_PX;
 
 function formatPercent(value: number, total: number): string {
   return `${(value / total) * 100}%`;
@@ -74,12 +76,11 @@ export function getPreviewMarkerPosition(
     markerRadius: 0,
     overhangAmount: 0,
   });
-  const outsideOffsetPx = PREVIEW_MARKER_SIZE_PX / 2 - PREVIEW_MARKER_BORDER_OVERLAP_PX;
   const left = formatPercent(borderAnchor.x, totalW);
   const top = formatPercent(borderAnchor.y, totalH);
   const position = {
-    left: side === 'left' || side === 'right' ? offsetFromEdge(left, side, outsideOffsetPx) : left,
-    top: side === 'top' || side === 'bottom' ? offsetFromEdge(top, side, outsideOffsetPx) : top,
+    left: side === 'left' || side === 'right' ? offsetFromEdge(left, side, PREVIEW_MARKER_OUTSIDE_OFFSET_PX) : left,
+    top: side === 'top' || side === 'bottom' ? offsetFromEdge(top, side, PREVIEW_MARKER_OUTSIDE_OFFSET_PX) : top,
   } satisfies CSSProperties;
 
   if (import.meta.env.DEV && typeof window !== 'undefined' && window.localStorage.getItem('maze:endpoint-debug') === '1') {
