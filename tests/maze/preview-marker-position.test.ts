@@ -3,12 +3,16 @@ import type { MazeData, Point } from '../../src/types/maze';
 import { WALL_E, WALL_N, WALL_S, WALL_W } from '../../src/types/maze';
 import { getPreviewMarkerPosition } from '../../src/components/maze/MazeGenerator';
 import { getMinimapEndpointMarkerPosition } from '../../src/components/maze/FullscreenMazePlayer';
-import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, type PortalSide } from '../../src/lib/maze/endpointMarkers';
+import { ENDPOINT_MARKER_OUTSIDE_GAP_PX, getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, type PortalSide } from '../../src/lib/maze/endpointMarkers';
 
 const PREVIEW_PADDING = 6;
+const MINIMAP_PADDING = 2;
 const CELL_SIZE = 8;
 const MARKER_RADIUS = CELL_SIZE * 0.9;
-const OUTSIDE_OFFSET = MARKER_RADIUS - MARKER_RADIUS * 0.6;
+const PREVIEW_BADGE_RADIUS = 14;
+const MINIMAP_BADGE_RADIUS = 14;
+const OUTSIDE_OFFSET = MARKER_RADIUS + ENDPOINT_MARKER_OUTSIDE_GAP_PX;
+const PREVIEW_OUTSIDE_OFFSET = PREVIEW_BADGE_RADIUS + ENDPOINT_MARKER_OUTSIDE_GAP_PX;
 
 const SIDE_WALL: Record<PortalSide, number> = {
   top: WALL_N,
@@ -83,32 +87,57 @@ function previewCoordinates(position: NonNullable<ReturnType<typeof getPreviewMa
 
 function minimapCoordinates(position: NonNullable<ReturnType<typeof getMinimapEndpointMarkerPosition>>, width: number, height: number) {
   return {
-    x: evaluateCssLength(position.left, width * CELL_SIZE + 2 * 2),
-    y: evaluateCssLength(position.top, height * CELL_SIZE + 2 * 2),
+    x: evaluateCssLength(position.left, width * CELL_SIZE + MINIMAP_PADDING * 2),
+    y: evaluateCssLength(position.top, height * CELL_SIZE + MINIMAP_PADDING * 2),
   };
 }
 
-function expectOutsideCorrectSide(point: Point, side: PortalSide, coords: Point, width: number, height: number, padding = PREVIEW_PADDING) {
+function expectOutsideCorrectSide(point: Point, side: PortalSide, coords: Point, width: number, height: number, padding = PREVIEW_PADDING, edgeOffset = OUTSIDE_OFFSET) {
   const left = padding;
   const top = padding;
   const right = padding + width * CELL_SIZE;
   const bottom = padding + height * CELL_SIZE;
 
   if (side === 'top') {
-    expect(coords.y).toBeLessThanOrEqual(top);
+    expect(coords.y).toBeLessThanOrEqual(top - edgeOffset);
     expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
   } else if (side === 'bottom') {
-    expect(coords.y).toBeGreaterThanOrEqual(bottom);
+    expect(coords.y).toBeGreaterThanOrEqual(bottom + edgeOffset);
     expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
   } else if (side === 'left') {
-    expect(coords.x).toBeLessThanOrEqual(left);
+    expect(coords.x).toBeLessThanOrEqual(left - edgeOffset);
     expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
   } else {
-    expect(coords.x).toBeGreaterThanOrEqual(right);
+    expect(coords.x).toBeGreaterThanOrEqual(right + edgeOffset);
     expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
   }
 
   expect(coords.x > left && coords.x < right && coords.y > top && coords.y < bottom).toBe(false);
+}
+
+function expectInsideCorrectSide(point: Point, side: PortalSide, coords: Point, width: number, height: number, padding = MINIMAP_PADDING, markerRadius = MINIMAP_BADGE_RADIUS) {
+  const left = padding;
+  const top = padding;
+  const right = padding + width * CELL_SIZE;
+  const bottom = padding + height * CELL_SIZE;
+
+  if (side === 'top') {
+    expect(coords.y).toBeGreaterThanOrEqual(top + markerRadius);
+    expect(coords.y).toBeLessThan(bottom);
+    expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
+  } else if (side === 'bottom') {
+    expect(coords.y).toBeLessThanOrEqual(bottom - markerRadius);
+    expect(coords.y).toBeGreaterThan(top);
+    expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
+  } else if (side === 'left') {
+    expect(coords.x).toBeGreaterThanOrEqual(left + markerRadius);
+    expect(coords.x).toBeLessThan(right);
+    expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
+  } else {
+    expect(coords.x).toBeLessThanOrEqual(right - markerRadius);
+    expect(coords.x).toBeGreaterThan(left);
+    expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
+  }
 }
 
 describe('getEndpointMarkerCenter', () => {
@@ -132,7 +161,34 @@ describe('getEndpointMarkerCenter', () => {
         portal: point,
         portalSide: side,
         markerRadius: MARKER_RADIUS,
-        overhangAmount: MARKER_RADIUS * 0.6,
+      });
+
+      if (expected.x !== undefined) expect(marker.x).toBeCloseTo(expected.x, 8);
+      if (expected.y !== undefined) expect(marker.y).toBeCloseTo(expected.y, 8);
+    }
+  });
+
+  it('insets minimap markers inside the rendered maze body when requested', () => {
+    const width = 100;
+    const height = 10;
+    const bounds = getMazeBodyBounds(width, height, CELL_SIZE, PREVIEW_PADDING);
+    const cases: Array<{ side: PortalSide; point: Point; expected: Partial<Point> }> = [
+      { side: 'top', point: { x: 50, y: 0 }, expected: { y: PREVIEW_PADDING + MARKER_RADIUS } },
+      { side: 'bottom', point: { x: 50, y: height - 1 }, expected: { y: PREVIEW_PADDING + height * CELL_SIZE - MARKER_RADIUS } },
+      { side: 'left', point: { x: 0, y: 5 }, expected: { x: PREVIEW_PADDING + MARKER_RADIUS } },
+      { side: 'right', point: { x: width - 1, y: 5 }, expected: { x: PREVIEW_PADDING + width * CELL_SIZE - MARKER_RADIUS } },
+    ];
+
+    for (const { side, point, expected } of cases) {
+      const marker = getEndpointMarkerCenter({
+        mazeWidth: width,
+        mazeHeight: height,
+        cellSize: CELL_SIZE,
+        bounds,
+        portal: point,
+        portalSide: side,
+        markerRadius: MARKER_RADIUS,
+        placementMode: 'inside',
       });
 
       if (expected.x !== undefined) expect(marker.x).toBeCloseTo(expected.x, 8);
@@ -150,7 +206,7 @@ describe('getEndpointMarkerCenter', () => {
 });
 
 describe('getPreviewMarkerPosition', () => {
-  const sizes = [40, 60, 100] as const;
+  const sizes = [20, 40, 60, 100] as const;
   const aspectSizes = [
     { width: 100, height: 10 },
     { width: 10, height: 100 },
@@ -175,8 +231,8 @@ describe('getPreviewMarkerPosition', () => {
 
       expect(entryPosition, `${label} entry`).not.toBeNull();
       expect(exitPosition, `${label} exit`).not.toBeNull();
-      expectOutsideCorrectSide(entryPoint, entrySide, previewCoordinates(entryPosition!, size, size), size, size);
-      expectOutsideCorrectSide(exitPoint, exitSide, previewCoordinates(exitPosition!, size, size), size, size);
+      expectOutsideCorrectSide(entryPoint, entrySide, previewCoordinates(entryPosition!, size, size), size, size, PREVIEW_PADDING, PREVIEW_OUTSIDE_OFFSET);
+      expectOutsideCorrectSide(exitPoint, exitSide, previewCoordinates(exitPosition!, size, size), size, size, PREVIEW_PADDING, PREVIEW_OUTSIDE_OFFSET);
     }
   });
 
@@ -192,8 +248,8 @@ describe('getPreviewMarkerPosition', () => {
 
     expect(entryPosition).not.toBeNull();
     expect(exitPosition).not.toBeNull();
-    expectOutsideCorrectSide(entryPoint, entrySide, previewCoordinates(entryPosition!, width, height), width, height);
-    expectOutsideCorrectSide(exitPoint, exitSide, previewCoordinates(exitPosition!, width, height), width, height);
+    expectOutsideCorrectSide(entryPoint, entrySide, previewCoordinates(entryPosition!, width, height), width, height, PREVIEW_PADDING, PREVIEW_OUTSIDE_OFFSET);
+    expectOutsideCorrectSide(exitPoint, exitSide, previewCoordinates(exitPosition!, width, height), width, height, PREVIEW_PADDING, PREVIEW_OUTSIDE_OFFSET);
   });
 
   it('fails safe instead of returning an inside-maze preview position when side inference fails', () => {
@@ -206,7 +262,30 @@ describe('getPreviewMarkerPosition', () => {
     warnSpy.mockRestore();
   });
 
-  it('preview and minimap agree on endpoint sides for the same maze', () => {
+
+  it('keeps minimap markers inset inside square and rail minimap footprints', () => {
+    const minimapSizes = [
+      ...sizes.map((size) => ({ width: size, height: size })),
+      ...aspectSizes,
+    ];
+
+    for (const { width, height } of minimapSizes) {
+      for (const { entrySide, exitSide, label } of portalPairs) {
+        const entryPoint = pointOnSide(width, height, entrySide, -2);
+        const exitPoint = pointOnSide(width, height, exitSide, 2);
+        const maze = mazeWithPortals(width, height, { point: entryPoint, side: entrySide }, { point: exitPoint, side: exitSide });
+        const entryPosition = getMinimapEndpointMarkerPosition(maze, CELL_SIZE, maze.entry, MINIMAP_BADGE_RADIUS * 2);
+        const exitPosition = getMinimapEndpointMarkerPosition(maze, CELL_SIZE, maze.exit, MINIMAP_BADGE_RADIUS * 2);
+
+        expect(entryPosition, `${label} entry ${width}x${height}`).not.toBeNull();
+        expect(exitPosition, `${label} exit ${width}x${height}`).not.toBeNull();
+        expectInsideCorrectSide(entryPoint, entrySide, minimapCoordinates(entryPosition!, width, height), width, height);
+        expectInsideCorrectSide(exitPoint, exitSide, minimapCoordinates(exitPosition!, width, height), width, height);
+      }
+    }
+  });
+
+  it('places preview outside while minimap stays inset for the same portal sides', () => {
     const width = 60;
     const height = 60;
     const entrySide: PortalSide = 'bottom';
@@ -220,9 +299,9 @@ describe('getPreviewMarkerPosition', () => {
     const minimapEntry = minimapCoordinates(getMinimapEndpointMarkerPosition(maze, CELL_SIZE, maze.entry, 28)!, width, height);
     const minimapExit = minimapCoordinates(getMinimapEndpointMarkerPosition(maze, CELL_SIZE, maze.exit, 28)!, width, height);
 
-    expect(previewEntry.y).toBeGreaterThan(PREVIEW_PADDING + height * CELL_SIZE);
-    expect(minimapEntry.y).toBeGreaterThan(2 + height * CELL_SIZE);
-    expect(previewExit.x).toBeGreaterThan(PREVIEW_PADDING + width * CELL_SIZE);
-    expect(minimapExit.x).toBeGreaterThan(2 + width * CELL_SIZE);
+    expect(previewEntry.y).toBeGreaterThanOrEqual(PREVIEW_PADDING + height * CELL_SIZE + PREVIEW_OUTSIDE_OFFSET);
+    expect(minimapEntry.y).toBeLessThanOrEqual(MINIMAP_PADDING + height * CELL_SIZE - MINIMAP_BADGE_RADIUS);
+    expect(previewExit.x).toBeGreaterThanOrEqual(PREVIEW_PADDING + width * CELL_SIZE + PREVIEW_OUTSIDE_OFFSET);
+    expect(minimapExit.x).toBeLessThanOrEqual(MINIMAP_PADDING + width * CELL_SIZE - MINIMAP_BADGE_RADIUS);
   });
 });

@@ -9,7 +9,7 @@ import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
-import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import { ENDPOINT_MARKER_OUTSIDE_GAP_PX, getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 import type { PortalSide } from '../../lib/maze/endpointMarkers';
 
@@ -36,8 +36,7 @@ export const CUSTOM_RANGE = { min: 10, max: 100 };
 const PREVIEW_PADDING = 6;
 const PREVIEW_ENDPOINT_MARKER_SIZE_PX = 28;
 const PREVIEW_ENDPOINT_MARKER_RADIUS_PX = PREVIEW_ENDPOINT_MARKER_SIZE_PX / 2;
-const PREVIEW_MARKER_BORDER_OVERLAP_PX = 4;
-const PREVIEW_MARKER_OUTSIDE_OFFSET_PX = PREVIEW_ENDPOINT_MARKER_RADIUS_PX - PREVIEW_MARKER_BORDER_OVERLAP_PX;
+const PREVIEW_MARKER_OUTSIDE_OFFSET_PX = PREVIEW_ENDPOINT_MARKER_RADIUS_PX + ENDPOINT_MARKER_OUTSIDE_GAP_PX;
 
 function formatPercent(value: number, total: number): string {
   return `${(value / total) * 100}%`;
@@ -67,7 +66,7 @@ export function getPreviewMarkerPosition(
   // The preview marker artwork is a fixed-size HTML/SVG overlay, not part of
   // the scaled maze SVG. Use the shared geometry helper to find the portal's
   // border anchor in maze coordinates, then apply the perpendicular outside
-  // projection in CSS pixels so large mazes do not swallow the marker visually.
+  // projection in CSS pixels so large mazes do not cover the marker visually.
   const borderAnchor = getEndpointMarkerCenter({
     mazeWidth: maze.width,
     mazeHeight: maze.height,
@@ -76,7 +75,8 @@ export function getPreviewMarkerPosition(
     portal: point,
     portalSide: side,
     markerRadius: 0,
-    overhangAmount: 0,
+    placementMode: 'outside',
+    outsideGap: 0,
   });
   const left = formatPercent(borderAnchor.x, totalW);
   const top = formatPercent(borderAnchor.y, totalH);

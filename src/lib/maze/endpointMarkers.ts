@@ -14,6 +14,8 @@ export type RenderedMazeBounds = {
   height: number;
 };
 
+export type EndpointMarkerPlacementMode = 'outside' | 'inside';
+
 export type EndpointMarkerPositionOptions = {
   mazeWidth: number;
   mazeHeight: number;
@@ -22,15 +24,18 @@ export type EndpointMarkerPositionOptions = {
   portal: Point;
   portalSide: PortalSide;
   markerRadius: number;
-  /**
-   * How much of the marker radius should extend back over the maze border.
-   * The marker center remains outside the maze whenever this is less than the
-   * marker radius.
-   */
-  overhangAmount: number;
+  /** Whether to place the badge outside the maze body or inset it inside compact surfaces. */
+  placementMode?: EndpointMarkerPlacementMode;
+  /** Optional gap between the marker badge edge and the maze body for outside placement. */
+  outsideGap?: number;
+  /** Optional inset gap beyond the marker radius for inside placement. */
+  insideGap?: number;
 };
 
 export type EndpointMarkerCenter = { x: number; y: number };
+
+export const ENDPOINT_MARKER_OUTSIDE_GAP_PX = 2;
+export const ENDPOINT_MARKER_INSIDE_GAP_PX = 0;
 
 const SIDE_TO_WALL: Record<PortalSide, number> = {
   top: WALL_N,
@@ -84,8 +89,9 @@ export function warnInvalidPortalSide(maze: MazeData, portal: Point, label: stri
 
 /**
  * Compute an endpoint marker center from rendered maze geometry and portal side.
- * The marker aligns with the portal opening along the edge axis and projects
- * outside the matching maze border on the perpendicular axis.
+ * The marker aligns with the portal opening along the edge axis. Outside mode
+ * projects away from the matching maze border; inside mode insets the marker
+ * into the maze body for compact surfaces such as minimaps.
  */
 export function getEndpointMarkerCenter({
   mazeWidth,
@@ -95,26 +101,27 @@ export function getEndpointMarkerCenter({
   portal,
   portalSide,
   markerRadius,
-  overhangAmount,
+  placementMode = 'outside',
+  outsideGap = ENDPOINT_MARKER_OUTSIDE_GAP_PX,
+  insideGap = ENDPOINT_MARKER_INSIDE_GAP_PX,
 }: EndpointMarkerPositionOptions): EndpointMarkerCenter {
   const left = bounds.x;
   const top = bounds.y;
   const right = bounds.x + bounds.width;
   const bottom = bounds.y + bounds.height;
-  const clampedOverhang = Math.min(Math.max(0, overhangAmount), markerRadius);
-  const outsideOffset = markerRadius - clampedOverhang;
+  const edgeOffset = markerRadius + Math.max(0, placementMode === 'inside' ? insideGap : outsideGap);
   const portalCenterX = left + (Math.min(Math.max(portal.x, 0), mazeWidth - 1) + 0.5) * cellSize;
   const portalCenterY = top + (Math.min(Math.max(portal.y, 0), mazeHeight - 1) + 0.5) * cellSize;
 
   switch (portalSide) {
     case 'top':
-      return { x: portalCenterX, y: top - outsideOffset };
+      return { x: portalCenterX, y: placementMode === 'inside' ? top + edgeOffset : top - edgeOffset };
     case 'bottom':
-      return { x: portalCenterX, y: bottom + outsideOffset };
+      return { x: portalCenterX, y: placementMode === 'inside' ? bottom - edgeOffset : bottom + edgeOffset };
     case 'left':
-      return { x: left - outsideOffset, y: portalCenterY };
+      return { x: placementMode === 'inside' ? left + edgeOffset : left - edgeOffset, y: portalCenterY };
     case 'right':
-      return { x: right + outsideOffset, y: portalCenterY };
+      return { x: placementMode === 'inside' ? right - edgeOffset : right + edgeOffset, y: portalCenterY };
   }
 }
 

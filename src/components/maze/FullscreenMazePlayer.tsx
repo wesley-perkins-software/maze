@@ -97,7 +97,7 @@ const MINIMAP_RAIL_ASPECT_THRESHOLD = 3;
 const MINIMAP_RAIL_SHORT_SIDE = 56;
 const MINIMAP_RAIL_MAX_LONG_SIDE = 184;
 const MINIMAP_RAIL_MIN_LONG_SIDE = 140;
-const MINIMAP_RAIL_MARKER_OVERHANG = Math.ceil(MINIMAP_RAIL_ENDPOINT_MARKER_SIZE / 2);
+const MINIMAP_RAIL_MARKER_EDGE_RESERVE = Math.ceil(MINIMAP_RAIL_ENDPOINT_MARKER_SIZE / 2);
 const MINIMAP_MOBILE_CENTER_GUTTER = 36;
 const MINIMAP_MOBILE_PANEL_EDGE_PADDING = 8;
 const MINIMAP_MOBILE_RAIL_SAFETY_GAP = 4;
@@ -137,7 +137,7 @@ function getMobileMinimapSlotWidth(panelWidth: number, layout: MinimapLayout) {
     return Math.max(0, Math.floor(panelWidth));
   }
 
-  // Endpoint badges can straddle the rail edge and have visible shadows, so use
+  // Endpoint badges sit outside the rail edge and have visible shadows, so use
   // the full badge diameter as a conservative safe inset rather than only the
   // mathematical center-to-edge radius. This keeps the complete marker artwork
   // inside the fixed 50% dock panel on narrow mobile screens.
@@ -153,7 +153,7 @@ function getMobileMinimapSlotWidth(panelWidth: number, layout: MinimapLayout) {
 function getMobileMinimapContainerSize(layout: MinimapLayout, panelWidth: number, slotH: number, minimapMaxSize: number) {
   const slotWidth = getMobileMinimapSlotWidth(panelWidth, layout);
   const squareSide = Math.min(minimapMaxSize, slotWidth, slotH);
-  const verticalRailMaxLongSide = slotH - MINIMAP_RAIL_MARKER_OVERHANG * 2;
+  const verticalRailMaxLongSide = slotH - MINIMAP_RAIL_MARKER_EDGE_RESERVE * 2;
 
   if (layout === 'square') {
     return { width: squareSide, height: squareSide };
@@ -236,7 +236,7 @@ export function getMinimapEndpointMarkerPosition(
   }
 
   if (!bounds) {
-    const markerRadius = cellSize * 0.45;
+    const markerRadius = markerSize / 2;
     const marker = getEndpointMarkerCenter({
       mazeWidth: maze.width,
       mazeHeight: maze.height,
@@ -245,7 +245,7 @@ export function getMinimapEndpointMarkerPosition(
       portal: point,
       portalSide: side,
       markerRadius,
-      overhangAmount: markerRadius * 0.6,
+      placementMode: 'inside',
     });
 
     return {
@@ -270,7 +270,7 @@ export function getMinimapEndpointMarkerPosition(
     portal: point,
     portalSide: side,
     markerRadius,
-    overhangAmount: markerRadius * 0.6,
+    placementMode: 'inside',
   });
 
   return {
