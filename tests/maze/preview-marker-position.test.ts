@@ -12,7 +12,10 @@ const MARKER_RADIUS = CELL_SIZE * 0.9;
 const PREVIEW_BADGE_RADIUS = 14;
 const MINIMAP_BADGE_RADIUS = 14;
 const OUTSIDE_OFFSET = MARKER_RADIUS + ENDPOINT_MARKER_OUTSIDE_GAP_PX;
-const PREVIEW_OUTSIDE_OFFSET = PREVIEW_BADGE_RADIUS + ENDPOINT_MARKER_OUTSIDE_GAP_PX;
+// Preview markers use zero gap (badge edge touches the wall).
+const PREVIEW_OUTSIDE_OFFSET = PREVIEW_BADGE_RADIUS;
+// Minimap markers use a small inset so the center straddles the wall edge.
+const MINIMAP_EDGE_INSET = 2;
 
 const SIDE_WALL: Record<PortalSide, number> = {
   top: WALL_N,
@@ -119,27 +122,27 @@ function expectOutsideCorrectSide(point: Point, side: PortalSide, coords: Point,
 // The no-bounds path converts pixel → % → pixel, which can drift by ~1e-12.
 const FP_EPSILON = 1e-9;
 
-function expectInsideCorrectSide(point: Point, side: PortalSide, coords: Point, width: number, height: number, padding = MINIMAP_PADDING, markerRadius = MINIMAP_BADGE_RADIUS) {
+function expectInsideCorrectSide(point: Point, side: PortalSide, coords: Point, width: number, height: number, padding = MINIMAP_PADDING, edgeInset = MINIMAP_EDGE_INSET) {
   const left = padding;
   const top = padding;
   const right = padding + width * CELL_SIZE;
   const bottom = padding + height * CELL_SIZE;
 
   if (side === 'top') {
-    expect(coords.y).toBeGreaterThanOrEqual(top + markerRadius - FP_EPSILON);
-    expect(coords.y).toBeLessThan(bottom);
+    expect(coords.y).toBeGreaterThanOrEqual(top - FP_EPSILON);
+    expect(coords.y).toBeLessThanOrEqual(top + edgeInset + FP_EPSILON);
     expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
   } else if (side === 'bottom') {
-    expect(coords.y).toBeLessThanOrEqual(bottom - markerRadius + FP_EPSILON);
-    expect(coords.y).toBeGreaterThan(top);
+    expect(coords.y).toBeGreaterThanOrEqual(bottom - edgeInset - FP_EPSILON);
+    expect(coords.y).toBeLessThanOrEqual(bottom + FP_EPSILON);
     expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
   } else if (side === 'left') {
-    expect(coords.x).toBeGreaterThanOrEqual(left + markerRadius - FP_EPSILON);
-    expect(coords.x).toBeLessThan(right);
+    expect(coords.x).toBeGreaterThanOrEqual(left - FP_EPSILON);
+    expect(coords.x).toBeLessThanOrEqual(left + edgeInset + FP_EPSILON);
     expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
   } else {
-    expect(coords.x).toBeLessThanOrEqual(right - markerRadius + FP_EPSILON);
-    expect(coords.x).toBeGreaterThan(left);
+    expect(coords.x).toBeGreaterThanOrEqual(right - edgeInset - FP_EPSILON);
+    expect(coords.x).toBeLessThanOrEqual(right + FP_EPSILON);
     expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
   }
 }
@@ -304,9 +307,11 @@ describe('getPreviewMarkerPosition', () => {
     const minimapExit = minimapCoordinates(getMinimapEndpointMarkerPosition(maze, CELL_SIZE, maze.exit, 28)!, width, height);
 
     expect(previewEntry.y).toBeGreaterThanOrEqual(PREVIEW_PADDING + height * CELL_SIZE + PREVIEW_OUTSIDE_OFFSET);
-    expect(minimapEntry.y).toBeLessThanOrEqual(MINIMAP_PADDING + height * CELL_SIZE - MINIMAP_BADGE_RADIUS);
+    expect(minimapEntry.y).toBeGreaterThanOrEqual(MINIMAP_PADDING + height * CELL_SIZE - MINIMAP_EDGE_INSET - FP_EPSILON);
+    expect(minimapEntry.y).toBeLessThanOrEqual(MINIMAP_PADDING + height * CELL_SIZE + FP_EPSILON);
     expect(previewExit.x).toBeGreaterThanOrEqual(PREVIEW_PADDING + width * CELL_SIZE + PREVIEW_OUTSIDE_OFFSET);
-    expect(minimapExit.x).toBeLessThanOrEqual(MINIMAP_PADDING + width * CELL_SIZE - MINIMAP_BADGE_RADIUS + FP_EPSILON);
+    expect(minimapExit.x).toBeGreaterThanOrEqual(MINIMAP_PADDING + width * CELL_SIZE - MINIMAP_EDGE_INSET - FP_EPSILON);
+    expect(minimapExit.x).toBeLessThanOrEqual(MINIMAP_PADDING + width * CELL_SIZE + FP_EPSILON);
   });
 
   it('with-bounds: along-edge normalized position t matches the no-bounds path for all sides', () => {

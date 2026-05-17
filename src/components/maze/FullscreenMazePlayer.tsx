@@ -89,6 +89,10 @@ function getHintStepCount(maze: MazeData): number {
 }
 
 const MINIMAP_PADDING = 2;
+// How many px the minimap endpoint marker center is inset from the perimeter wall.
+// A small value places the marker straddling the wall edge (half-inside, half-outside)
+// rather than fully inside the maze body.
+const MINIMAP_MARKER_EDGE_INSET_PX = 2;
 // Both mobile and desktop minimap containers use border-2 (2px each side = 4px total).
 // The SVG fills the content area (containerSize - 4px), so all bounds must be computed
 // against the content area, not the outer box, to keep marker positions pixel-aligned
@@ -241,7 +245,6 @@ export function getMinimapEndpointMarkerPosition(
   }
 
   if (!bounds) {
-    const markerRadius = markerSize / 2;
     const marker = getEndpointMarkerCenter({
       mazeWidth: maze.width,
       mazeHeight: maze.height,
@@ -249,7 +252,7 @@ export function getMinimapEndpointMarkerPosition(
       bounds: getMazeBodyBounds(maze.width, maze.height, cellSize, MINIMAP_PADDING),
       portal: point,
       portalSide: side,
-      markerRadius,
+      markerRadius: MINIMAP_MARKER_EDGE_INSET_PX,
       placementMode: 'inside',
     });
 
@@ -261,7 +264,6 @@ export function getMinimapEndpointMarkerPosition(
 
   const renderedMazeWidth = (maze.width * cellSize / totalW) * bounds.width;
   const renderedCellSize = renderedMazeWidth / maze.width;
-  const markerRadius = markerSize / 2;
   const marker = getEndpointMarkerCenter({
     mazeWidth: maze.width,
     mazeHeight: maze.height,
@@ -274,7 +276,7 @@ export function getMinimapEndpointMarkerPosition(
     },
     portal: point,
     portalSide: side,
-    markerRadius,
+    markerRadius: MINIMAP_MARKER_EDGE_INSET_PX,
     placementMode: 'inside',
   });
 
