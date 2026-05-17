@@ -8,7 +8,7 @@ import type { GameAction } from '../../lib/gameplay/types';
 import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
-import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide } from '../../lib/maze/endpointMarkers';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -108,7 +108,7 @@ const PLAYER_MARKER_COLOR = '#2563eb';
 
 type MinimapLayout = 'square' | 'horizontal-rail' | 'vertical-rail';
 
-interface MinimapRenderedBounds {
+export interface MinimapRenderedBounds {
   x: number;
   y: number;
   width: number;
@@ -219,7 +219,7 @@ function getContainedMinimapBounds({
   };
 }
 
-function getMinimapEndpointMarkerPosition(
+export function getMinimapEndpointMarkerPosition(
   maze: MazeData,
   cellSize: number,
   point: MazeData['entry'],
@@ -229,6 +229,11 @@ function getMinimapEndpointMarkerPosition(
   const totalW = maze.width * cellSize + MINIMAP_PADDING * 2;
   const totalH = maze.height * cellSize + MINIMAP_PADDING * 2;
   const side = inferPortalSide(maze, point);
+
+  if (!side) {
+    warnInvalidPortalSide(maze, point, 'minimap endpoint');
+    return null;
+  }
 
   if (!bounds) {
     const markerRadius = cellSize * 0.45;
@@ -343,6 +348,7 @@ function MinimapEndpointMarkers({
 }) {
   const entryPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.entry, markerSize, bounds);
   const exitPos = getMinimapEndpointMarkerPosition(maze, cellSize, maze.exit, markerSize, bounds);
+  const entrySide = inferPortalSide(maze, maze.entry);
   const markerStyle = {
     width: markerSize,
     height: markerSize,
@@ -352,7 +358,8 @@ function MinimapEndpointMarkers({
 
   // Arrow direction based on which perimeter wall the entry is on (viewBox 0 0 24 24, circle r=8.8 at 12,12)
   const entryArrow = (() => {
-    const side = inferPortalSide(maze, maze.entry);
+    const side = entrySide;
+    if (!side) return '';
     if (side === 'top')    return '6.72,8.92 17.28,8.92 12,16.84';   // top → DOWN
     if (side === 'bottom') return '6.72,15.08 17.28,15.08 12,7.16';  // bottom → UP
     if (side === 'left')   return '8.92,6.72 16.84,12 8.92,17.28';   // left → RIGHT
@@ -361,6 +368,7 @@ function MinimapEndpointMarkers({
 
   return (
     <>
+      {entryPos && (
       <svg
         viewBox="0 0 24 24"
         className="pointer-events-none absolute z-20 overflow-visible"
@@ -369,8 +377,10 @@ function MinimapEndpointMarkers({
       >
         <circle cx="12" cy="12" r="12" fill="white" />
         <circle cx="12" cy="12" r="8.8" fill={START_MARKER_COLOR} opacity="0.9" />
-        <polygon points={entryArrow} fill="white" opacity="0.95" />
+        {entryArrow && <polygon points={entryArrow} fill="white" opacity="0.95" />}
       </svg>
+      )}
+      {exitPos && (
       <svg
         viewBox="0 0 24 24"
         className="pointer-events-none absolute z-20 overflow-visible"
@@ -381,6 +391,7 @@ function MinimapEndpointMarkers({
         <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
         <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
       </svg>
+      )}
     </>
   );
 }

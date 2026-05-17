@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import type { CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import type { Difficulty, MazeData, Point } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
@@ -7,7 +8,8 @@ import { FullscreenMazePlayer } from './FullscreenMazePlayer';
 import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
-import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide } from '../../lib/maze/endpointMarkers';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import type { PortalSide } from '../../lib/maze/endpointMarkers';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
 
@@ -30,40 +32,80 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
 export const CUSTOM_RANGE = { min: 10, max: 100 };
 
 const PREVIEW_PADDING = 6;
+const PREVIEW_MARKER_SIZE_PX = 28;
+const PREVIEW_MARKER_BORDER_OVERLAP_PX = 4;
+
+function formatPercent(value: number, total: number): string {
+  return `${(value / total) * 100}%`;
+}
+
+function offsetFromEdge(value: string, side: PortalSide, offsetPx: number): string {
+  if (side === 'top' || side === 'left') return `calc(${value} - ${offsetPx}px)`;
+  if (side === 'bottom' || side === 'right') return `calc(${value} + ${offsetPx}px)`;
+  return value;
+}
 
 export function getPreviewMarkerPosition(
   maze: MazeData,
   point: Point,
   cellSize: number,
-): { left: string; top: string } {
+  label = 'endpoint',
+): CSSProperties | null {
   const totalW = maze.width * cellSize + PREVIEW_PADDING * 2;
   const totalH = maze.height * cellSize + PREVIEW_PADDING * 2;
+  const side = inferPortalSide(maze, point);
 
-  const markerRadius = cellSize * 0.9;
-  const marker = getEndpointMarkerCenter({
+  if (!side) {
+    warnInvalidPortalSide(maze, point, label);
+    return null;
+  }
+
+  // The preview marker artwork is a fixed-size HTML/SVG overlay, not part of
+  // the scaled maze SVG. Use the shared geometry helper to find the portal's
+  // border anchor in maze coordinates, then apply the perpendicular outside
+  // projection in CSS pixels so large mazes do not swallow the marker visually.
+  const borderAnchor = getEndpointMarkerCenter({
     mazeWidth: maze.width,
     mazeHeight: maze.height,
     cellSize,
     bounds: getMazeBodyBounds(maze.width, maze.height, cellSize, PREVIEW_PADDING),
     portal: point,
-    portalSide: inferPortalSide(maze, point),
-    markerRadius,
-    overhangAmount: markerRadius * 0.6,
+    portalSide: side,
+    markerRadius: 0,
+    overhangAmount: 0,
   });
+  const outsideOffsetPx = PREVIEW_MARKER_SIZE_PX / 2 - PREVIEW_MARKER_BORDER_OVERLAP_PX;
+  const left = formatPercent(borderAnchor.x, totalW);
+  const top = formatPercent(borderAnchor.y, totalH);
+  const position = {
+    left: side === 'left' || side === 'right' ? offsetFromEdge(left, side, outsideOffsetPx) : left,
+    top: side === 'top' || side === 'bottom' ? offsetFromEdge(top, side, outsideOffsetPx) : top,
+  } satisfies CSSProperties;
 
-  const markerX = marker.x;
-  const markerY = marker.y;
+  if (import.meta.env.DEV && typeof window !== 'undefined' && window.localStorage.getItem('maze:endpoint-debug') === '1') {
+    console.debug('[maze:endpoint-marker] preview marker', {
+      label,
+      point,
+      side,
+      bounds: getMazeBodyBounds(maze.width, maze.height, cellSize, PREVIEW_PADDING),
+      borderAnchor,
+      position,
+      maze: { slug: maze.slug, width: maze.width, height: maze.height, seed: maze.seed },
+    });
+  }
 
-  return {
-    left: `${(markerX / totalW) * 100}%`,
-    top: `${(markerY / totalH) * 100}%`,
-  };
+  return position;
 }
 
 function getPreviewEntryArrowPoints(maze: MazeData): string {
   const { entry } = maze;
 
   const side = inferPortalSide(maze, entry);
+
+  if (!side) {
+    warnInvalidPortalSide(maze, entry, 'entry');
+    return '6.72,8.92 17.28,8.92 12,16.84';
+  }
 
   if (side === 'top') return '6.72,8.92 17.28,8.92 12,16.84';
   if (side === 'bottom') return '6.72,15.08 17.28,15.08 12,7.16';
@@ -76,29 +118,35 @@ function getPreviewEntryArrowPoints(maze: MazeData): string {
 function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: number }) {
   const markerBase = 'pointer-events-none absolute z-10 h-6 w-6 -translate-x-1/2 -translate-y-1/2 overflow-visible drop-shadow-[0_2px_4px_rgba(15,23,42,0.32)] md:h-7 md:w-7';
   const entryArrowPoints = getPreviewEntryArrowPoints(maze);
+  const entryStyle = getPreviewMarkerPosition(maze, maze.entry, cellSize, 'entry');
+  const exitStyle = getPreviewMarkerPosition(maze, maze.exit, cellSize, 'exit');
 
   return (
     <>
+      {entryStyle && (
       <svg
         viewBox="0 0 24 24"
         className={markerBase}
-        style={getPreviewMarkerPosition(maze, maze.entry, cellSize)}
+        style={entryStyle}
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill="white" />
         <circle cx="12" cy="12" r="8.8" fill="#0d9488" opacity="0.9" />
         <polygon points={entryArrowPoints} fill="white" opacity="0.95" />
       </svg>
+      )}
+      {exitStyle && (
       <svg
         viewBox="0 0 24 24"
         className={markerBase}
-        style={getPreviewMarkerPosition(maze, maze.exit, cellSize)}
+        style={exitStyle}
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill="white" />
         <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
         <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
       </svg>
+      )}
     </>
   );
 }

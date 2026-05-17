@@ -6,7 +6,7 @@
 import type { MazeData, Point } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { indexToPoint } from '../../lib/maze/utils';
-import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide } from '../../lib/maze/endpointMarkers';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 
 const PLAYER_PATH_COLOR = '#3b82f6';
 const PLAYER_MARKER_COLOR = '#2563eb';
@@ -101,41 +101,50 @@ export function MazeRenderer({
   const mazeBounds = getMazeBodyBounds(width, height, cellSize, padding);
   const entrySide = inferPortalSide(maze, entry);
   const exitSide = inferPortalSide(maze, exit);
+  if (markersOutside && !entrySide) warnInvalidPortalSide(maze, entry, 'entry');
+  if (markersOutside && !exitSide) warnInvalidPortalSide(maze, exit, 'exit');
+
   const entryMarker = markersOutside
-    ? getEndpointMarkerCenter({
-        mazeWidth: width,
-        mazeHeight: height,
-        cellSize,
-        bounds: mazeBounds,
-        portal: entry,
-        portalSide: entrySide,
-        markerRadius: markerR,
-        overhangAmount: markerOverhang,
-      })
+    ? entrySide
+      ? getEndpointMarkerCenter({
+          mazeWidth: width,
+          mazeHeight: height,
+          cellSize,
+          bounds: mazeBounds,
+          portal: entry,
+          portalSide: entrySide,
+          markerRadius: markerR,
+          overhangAmount: markerOverhang,
+        })
+      : null
     : { x: entryCx, y: entryCy };
   const exitMarker = markersOutside
-    ? getEndpointMarkerCenter({
-        mazeWidth: width,
-        mazeHeight: height,
-        cellSize,
-        bounds: mazeBounds,
-        portal: exit,
-        portalSide: exitSide,
-        markerRadius: markerR,
-        overhangAmount: markerOverhang,
-      })
+    ? exitSide
+      ? getEndpointMarkerCenter({
+          mazeWidth: width,
+          mazeHeight: height,
+          cellSize,
+          bounds: mazeBounds,
+          portal: exit,
+          portalSide: exitSide,
+          markerRadius: markerR,
+          overhangAmount: markerOverhang,
+        })
+      : null
     : { x: exitCx, y: exitCy };
 
-  const entryMx = entryMarker.x;
-  const entryMy = entryMarker.y;
-  const exitMx  = exitMarker.x;
-  const exitMy  = exitMarker.y;
+  const entryMx = entryMarker?.x ?? entryCx;
+  const entryMy = entryMarker?.y ?? entryCy;
+  const exitMx  = exitMarker?.x ?? exitCx;
+  const exitMy  = exitMarker?.y ?? exitCy;
 
   // ── Entry arrow — points INTO the maze from whichever perimeter wall ─────────
   const entryArrowPoints = (() => {
     const cx = entryMx;
     const cy = entryMy;
     const r  = markerR;
+
+    if (!entrySide) return '';
 
     if (entrySide === 'top') {
       // Top wall → arrow points DOWN
@@ -165,9 +174,9 @@ export function MazeRenderer({
 
   const solutionPoints = showSolution && solution.length > 0
     ? [
-        ...(markersOutside && solutionStartsAtEntry ? [`${entryMx},${entryMy}`] : []),
+        ...(markersOutside && entryMarker && solutionStartsAtEntry ? [`${entryMx},${entryMy}`] : []),
         ...solution.map(cellCenter),
-        ...(markersOutside && solutionEndsAtExit ? [`${exitMx},${exitMy}`] : []),
+        ...(markersOutside && exitMarker && solutionEndsAtExit ? [`${exitMx},${exitMy}`] : []),
       ].join(' ')
     : null;
 
@@ -206,16 +215,16 @@ export function MazeRenderer({
 
   const playerCx = playerPosition
     ? isEntryMarkerPosition
-      ? entryMx
+      ? entryMarker?.x ?? null
       : isExitMarkerPosition
-        ? exitMx
+        ? exitMarker?.x ?? null
         : padding + playerPosition.x * cellSize + cellSize / 2
     : null;
   const playerCy = playerPosition
     ? isEntryMarkerPosition
-      ? entryMy
+      ? entryMarker?.y ?? null
       : isExitMarkerPosition
-        ? exitMy
+        ? exitMarker?.y ?? null
         : padding + playerPosition.y * cellSize + cellSize / 2
     : null;
 
@@ -308,36 +317,44 @@ export function MazeRenderer({
       {showEndpointMarkers && (
         <>
           {/* Entry marker — teal circle with directional white arrow */}
-          <circle className="maze-endpoint-marker maze-entry-marker" cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_COLOR} opacity={0.9} />
-          {markerR >= 5 && (
-            <polygon
-              className="maze-endpoint-marker maze-entry-marker"
-              points={entryArrowPoints}
-              fill="white"
-              opacity={0.95}
-            />
+          {entryMarker && (
+            <>
+              <circle className="maze-endpoint-marker maze-entry-marker" cx={entryMx} cy={entryMy} r={markerR} fill={START_MARKER_COLOR} opacity={0.9} />
+              {markerR >= 5 && entryArrowPoints && (
+                <polygon
+                  className="maze-endpoint-marker maze-entry-marker"
+                  points={entryArrowPoints}
+                  fill="white"
+                  opacity={0.95}
+                />
+              )}
+            </>
           )}
 
           {/* Exit marker — amber circle with star */}
-          <circle className="maze-endpoint-marker maze-exit-marker" cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
-          {markerR >= 5 && (
-            <polygon
-              className="maze-endpoint-marker maze-exit-marker"
-              points={[
-                [exitMx,                    exitMy - markerR * 0.72],
-                [exitMx + markerR * 0.24,   exitMy - markerR * 0.20],
-                [exitMx + markerR * 0.69,   exitMy - markerR * 0.22],
-                [exitMx + markerR * 0.34,   exitMy + markerR * 0.17],
-                [exitMx + markerR * 0.43,   exitMy + markerR * 0.64],
-                [exitMx,                    exitMy + markerR * 0.36],
-                [exitMx - markerR * 0.43,   exitMy + markerR * 0.64],
-                [exitMx - markerR * 0.34,   exitMy + markerR * 0.17],
-                [exitMx - markerR * 0.69,   exitMy - markerR * 0.22],
-                [exitMx - markerR * 0.24,   exitMy - markerR * 0.20],
-              ].map(([x, y]) => `${x},${y}`).join(' ')}
-              fill="white"
-              opacity={0.95}
-            />
+          {exitMarker && (
+            <>
+              <circle className="maze-endpoint-marker maze-exit-marker" cx={exitMx} cy={exitMy} r={markerR} fill={FINISH_MARKER_COLOR} opacity={0.9} />
+              {markerR >= 5 && (
+                <polygon
+                  className="maze-endpoint-marker maze-exit-marker"
+                  points={[
+                    [exitMx,                    exitMy - markerR * 0.72],
+                    [exitMx + markerR * 0.24,   exitMy - markerR * 0.20],
+                    [exitMx + markerR * 0.69,   exitMy - markerR * 0.22],
+                    [exitMx + markerR * 0.34,   exitMy + markerR * 0.17],
+                    [exitMx + markerR * 0.43,   exitMy + markerR * 0.64],
+                    [exitMx,                    exitMy + markerR * 0.36],
+                    [exitMx - markerR * 0.43,   exitMy + markerR * 0.64],
+                    [exitMx - markerR * 0.34,   exitMy + markerR * 0.17],
+                    [exitMx - markerR * 0.69,   exitMy - markerR * 0.22],
+                    [exitMx - markerR * 0.24,   exitMy - markerR * 0.20],
+                  ].map(([x, y]) => `${x},${y}`).join(' ')}
+                  fill="white"
+                  opacity={0.95}
+                />
+              )}
+            </>
           )}
         </>
       )}

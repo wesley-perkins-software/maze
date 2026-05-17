@@ -1,8 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { MazeData, Point } from '../../src/types/maze';
 import { WALL_E, WALL_N, WALL_S, WALL_W } from '../../src/types/maze';
 import { getPreviewMarkerPosition } from '../../src/components/maze/MazeGenerator';
-import { getEndpointMarkerCenter, getMazeBodyBounds, type PortalSide } from '../../src/lib/maze/endpointMarkers';
+import { getMinimapEndpointMarkerPosition } from '../../src/components/maze/FullscreenMazePlayer';
+import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, type PortalSide } from '../../src/lib/maze/endpointMarkers';
 
 const PREVIEW_PADDING = 6;
 const CELL_SIZE = 8;
@@ -16,9 +17,29 @@ const SIDE_WALL: Record<PortalSide, number> = {
   left: WALL_W,
 };
 
-function mazeWithPoint(width: number, height: number, point: Point, side: PortalSide): MazeData {
+const OPPOSITE_SIDE: Record<PortalSide, PortalSide> = {
+  top: 'bottom',
+  bottom: 'top',
+  left: 'right',
+  right: 'left',
+};
+
+function pointOnSide(width: number, height: number, side: PortalSide, offset = 0): Point {
+  if (side === 'top') return { x: Math.min(width - 2, Math.max(1, Math.floor(width / 2) + offset)), y: 0 };
+  if (side === 'bottom') return { x: Math.min(width - 2, Math.max(1, Math.floor(width / 2) + offset)), y: height - 1 };
+  if (side === 'left') return { x: 0, y: Math.min(height - 2, Math.max(1, Math.floor(height / 2) + offset)) };
+  return { x: width - 1, y: Math.min(height - 2, Math.max(1, Math.floor(height / 2) + offset)) };
+}
+
+function mazeWithPortals(
+  width: number,
+  height: number,
+  entry: { point: Point; side: PortalSide },
+  exit: { point: Point; side: PortalSide },
+): MazeData {
   const grid = Array(width * height).fill(WALL_N | WALL_E | WALL_S | WALL_W);
-  grid[point.y * width + point.x] &= ~SIDE_WALL[side];
+  grid[entry.point.y * width + entry.point.x] &= ~SIDE_WALL[entry.side];
+  grid[exit.point.y * width + exit.point.x] &= ~SIDE_WALL[exit.side];
 
   return {
     id: `test-${width}x${height}`,
@@ -27,22 +48,67 @@ function mazeWithPoint(width: number, height: number, point: Point, side: Portal
     width,
     height,
     seed: 1,
-    entry: point,
-    exit: point,
+    entry: entry.point,
+    exit: exit.point,
     grid,
     solution: [],
     generatedAt: '2026-05-13T00:00:00.000Z',
   };
 }
 
-function percentagesToCoordinates(position: { left: string; top: string }, width: number, height: number) {
-  const totalW = width * CELL_SIZE + PREVIEW_PADDING * 2;
-  const totalH = height * CELL_SIZE + PREVIEW_PADDING * 2;
+function mazeWithPoint(width: number, height: number, point: Point, side: PortalSide): MazeData {
+  return mazeWithPortals(width, height, { point, side }, { point, side });
+}
 
+function evaluateCssLength(value: unknown, totalPx: number): number {
+  const text = String(value);
+  const calc = text.match(/^calc\((-?\d+(?:\.\d+)?)% ([+-]) (\d+(?:\.\d+)?)px\)$/);
+  if (calc) {
+    const percentValue = (Number.parseFloat(calc[1]) / 100) * totalPx;
+    const px = Number.parseFloat(calc[3]);
+    return calc[2] === '+' ? percentValue + px : percentValue - px;
+  }
+
+  if (text.endsWith('%')) return (Number.parseFloat(text) / 100) * totalPx;
+  if (text.endsWith('px')) return Number.parseFloat(text);
+  return Number.parseFloat(text);
+}
+
+function previewCoordinates(position: NonNullable<ReturnType<typeof getPreviewMarkerPosition>>, width: number, height: number) {
   return {
-    x: (Number.parseFloat(position.left) / 100) * totalW,
-    y: (Number.parseFloat(position.top) / 100) * totalH,
+    x: evaluateCssLength(position.left, width * CELL_SIZE + PREVIEW_PADDING * 2),
+    y: evaluateCssLength(position.top, height * CELL_SIZE + PREVIEW_PADDING * 2),
   };
+}
+
+function minimapCoordinates(position: NonNullable<ReturnType<typeof getMinimapEndpointMarkerPosition>>, width: number, height: number) {
+  return {
+    x: evaluateCssLength(position.left, width * CELL_SIZE + 2 * 2),
+    y: evaluateCssLength(position.top, height * CELL_SIZE + 2 * 2),
+  };
+}
+
+function expectOutsideCorrectSide(point: Point, side: PortalSide, coords: Point, width: number, height: number, padding = PREVIEW_PADDING) {
+  const left = padding;
+  const top = padding;
+  const right = padding + width * CELL_SIZE;
+  const bottom = padding + height * CELL_SIZE;
+
+  if (side === 'top') {
+    expect(coords.y).toBeLessThanOrEqual(top);
+    expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
+  } else if (side === 'bottom') {
+    expect(coords.y).toBeGreaterThanOrEqual(bottom);
+    expect(coords.x).toBeCloseTo(padding + point.x * CELL_SIZE + CELL_SIZE / 2, 8);
+  } else if (side === 'left') {
+    expect(coords.x).toBeLessThanOrEqual(left);
+    expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
+  } else {
+    expect(coords.x).toBeGreaterThanOrEqual(right);
+    expect(coords.y).toBeCloseTo(padding + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
+  }
+
+  expect(coords.x > left && coords.x < right && coords.y > top && coords.y < bottom).toBe(false);
 }
 
 describe('getEndpointMarkerCenter', () => {
@@ -73,41 +139,90 @@ describe('getEndpointMarkerCenter', () => {
       if (expected.y !== undefined) expect(marker.y).toBeCloseTo(expected.y, 8);
     }
   });
+
+  it('does not infer a side when the perimeter wall is still closed', () => {
+    const point = { x: 20, y: 0 };
+    const maze = mazeWithPortals(40, 40, { point, side: 'top' }, { point: { x: 20, y: 39 }, side: 'bottom' });
+    maze.grid[point.y * maze.width + point.x] |= WALL_N;
+
+    expect(inferPortalSide(maze, point)).toBeNull();
+  });
 });
 
 describe('getPreviewMarkerPosition', () => {
-  const sizes = [20, 40, 60, 80, 100];
+  const sizes = [40, 60, 100] as const;
+  const aspectSizes = [
+    { width: 100, height: 10 },
+    { width: 10, height: 100 },
+  ] as const;
+  const portalPairs: Array<{ entrySide: PortalSide; exitSide: PortalSide; label: string }> = [
+    { entrySide: 'top', exitSide: 'bottom', label: 'start top / finish bottom' },
+    { entrySide: 'bottom', exitSide: 'top', label: 'start bottom / finish top' },
+    { entrySide: 'left', exitSide: 'right', label: 'start left / finish right' },
+    { entrySide: 'right', exitSide: 'left', label: 'start right / finish left' },
+    { entrySide: 'top', exitSide: 'left', label: 'mixed top / left' },
+    { entrySide: 'right', exitSide: 'bottom', label: 'mixed right / bottom' },
+    { entrySide: 'top', exitSide: 'top', label: 'same-side top' },
+  ];
 
-  it.each(sizes)('centers top, right, bottom, and left markers outside the outer wall for %ix%i mazes', (size) => {
-    const sidePoints: Array<{ side: PortalSide; point: Point; expected: Partial<Point> }> = [
-      { side: 'top', point: { x: Math.floor(size / 2), y: 0 }, expected: { y: PREVIEW_PADDING - OUTSIDE_OFFSET } },
-      { side: 'right', point: { x: size - 1, y: Math.floor(size / 2) }, expected: { x: size * CELL_SIZE + PREVIEW_PADDING + OUTSIDE_OFFSET } },
-      { side: 'bottom', point: { x: Math.floor(size / 2), y: size - 1 }, expected: { y: size * CELL_SIZE + PREVIEW_PADDING + OUTSIDE_OFFSET } },
-      { side: 'left', point: { x: 0, y: Math.floor(size / 2) }, expected: { x: PREVIEW_PADDING - OUTSIDE_OFFSET } },
-    ];
+  it.each(sizes)('keeps start and finish preview markers outside the maze body for all side pairs in %ix%i mazes', (size) => {
+    for (const { entrySide, exitSide, label } of portalPairs) {
+      const entryPoint = pointOnSide(size, size, entrySide, -2);
+      const exitPoint = pointOnSide(size, size, exitSide, 2);
+      const maze = mazeWithPortals(size, size, { point: entryPoint, side: entrySide }, { point: exitPoint, side: exitSide });
+      const entryPosition = getPreviewMarkerPosition(maze, maze.entry, CELL_SIZE, `${label} entry`);
+      const exitPosition = getPreviewMarkerPosition(maze, maze.exit, CELL_SIZE, `${label} exit`);
 
-    for (const { side, point, expected } of sidePoints) {
-      const maze = mazeWithPoint(size, size, point, side);
-      const coordinates = percentagesToCoordinates(getPreviewMarkerPosition(maze, point, CELL_SIZE), size, size);
-
-      if (expected.x !== undefined) {
-        expect(coordinates.x).toBeCloseTo(expected.x, 8);
-      }
-
-      if (expected.y !== undefined) {
-        expect(coordinates.y).toBeCloseTo(expected.y, 8);
-      }
+      expect(entryPosition, `${label} entry`).not.toBeNull();
+      expect(exitPosition, `${label} exit`).not.toBeNull();
+      expectOutsideCorrectSide(entryPoint, entrySide, previewCoordinates(entryPosition!, size, size), size, size);
+      expectOutsideCorrectSide(exitPoint, exitSide, previewCoordinates(exitPosition!, size, size), size, size);
     }
   });
 
-  it('uses width and height independently for non-square maze previews', () => {
-    const width = 100;
-    const height = 10;
-    const point = { x: width - 1, y: Math.floor(height / 2) };
-    const maze = mazeWithPoint(width, height, point, 'right');
-    const coordinates = percentagesToCoordinates(getPreviewMarkerPosition(maze, point, CELL_SIZE), width, height);
+  it.each(aspectSizes)('uses width and height independently for non-square preview markers ($width×$height)', ({ width, height }) => {
+    const entrySide: PortalSide = width > height ? 'right' : 'bottom';
+    const exitSide = OPPOSITE_SIDE[entrySide];
+    const entryPoint = pointOnSide(width, height, entrySide);
+    const exitPoint = pointOnSide(width, height, exitSide);
+    const maze = mazeWithPortals(width, height, { point: entryPoint, side: entrySide }, { point: exitPoint, side: exitSide });
 
-    expect(coordinates.x).toBeCloseTo(width * CELL_SIZE + PREVIEW_PADDING + OUTSIDE_OFFSET, 8);
-    expect(coordinates.y).toBeCloseTo(PREVIEW_PADDING + point.y * CELL_SIZE + CELL_SIZE / 2, 8);
+    const entryPosition = getPreviewMarkerPosition(maze, maze.entry, CELL_SIZE, 'entry');
+    const exitPosition = getPreviewMarkerPosition(maze, maze.exit, CELL_SIZE, 'exit');
+
+    expect(entryPosition).not.toBeNull();
+    expect(exitPosition).not.toBeNull();
+    expectOutsideCorrectSide(entryPoint, entrySide, previewCoordinates(entryPosition!, width, height), width, height);
+    expectOutsideCorrectSide(exitPoint, exitSide, previewCoordinates(exitPosition!, width, height), width, height);
+  });
+
+  it('fails safe instead of returning an inside-maze preview position when side inference fails', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const point = { x: 20, y: 0 };
+    const maze = mazeWithPortals(40, 40, { point, side: 'top' }, { point: { x: 20, y: 39 }, side: 'bottom' });
+    maze.grid[point.y * maze.width + point.x] |= WALL_N;
+
+    expect(getPreviewMarkerPosition(maze, point, CELL_SIZE, 'entry')).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('preview and minimap agree on endpoint sides for the same maze', () => {
+    const width = 60;
+    const height = 60;
+    const entrySide: PortalSide = 'bottom';
+    const exitSide: PortalSide = 'right';
+    const entryPoint = pointOnSide(width, height, entrySide);
+    const exitPoint = pointOnSide(width, height, exitSide);
+    const maze = mazeWithPortals(width, height, { point: entryPoint, side: entrySide }, { point: exitPoint, side: exitSide });
+
+    const previewEntry = previewCoordinates(getPreviewMarkerPosition(maze, maze.entry, CELL_SIZE, 'entry')!, width, height);
+    const previewExit = previewCoordinates(getPreviewMarkerPosition(maze, maze.exit, CELL_SIZE, 'exit')!, width, height);
+    const minimapEntry = minimapCoordinates(getMinimapEndpointMarkerPosition(maze, CELL_SIZE, maze.entry, 28)!, width, height);
+    const minimapExit = minimapCoordinates(getMinimapEndpointMarkerPosition(maze, CELL_SIZE, maze.exit, 28)!, width, height);
+
+    expect(previewEntry.y).toBeGreaterThan(PREVIEW_PADDING + height * CELL_SIZE);
+    expect(minimapEntry.y).toBeGreaterThan(2 + height * CELL_SIZE);
+    expect(previewExit.x).toBeGreaterThan(PREVIEW_PADDING + width * CELL_SIZE);
+    expect(minimapExit.x).toBeGreaterThan(2 + width * CELL_SIZE);
   });
 });

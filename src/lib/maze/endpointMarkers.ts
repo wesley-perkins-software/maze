@@ -39,11 +39,25 @@ const SIDE_TO_WALL: Record<PortalSide, number> = {
   left: WALL_W,
 };
 
+function isDevEnvironment(): boolean {
+  return Boolean(import.meta.env?.DEV);
+}
+
 /**
- * Infer the side of a portal from the opened perimeter wall. Coordinate checks
- * are used as a fallback for synthetic/test mazes that do not include wall data.
+ * Infer the side of a portal from the opened perimeter wall. Returns null when
+ * the point is not on a perimeter edge or no outward wall has been opened,
+ * because guessing a side can put an endpoint marker inside the maze body.
  */
-export function inferPortalSide(maze: MazeData, portal: Point): PortalSide {
+export function inferPortalSide(maze: MazeData, portal: Point): PortalSide | null {
+  if (
+    portal.x < 0 ||
+    portal.y < 0 ||
+    portal.x >= maze.width ||
+    portal.y >= maze.height
+  ) {
+    return null;
+  }
+
   const cell = maze.grid[portal.y * maze.width + portal.x];
   const candidates: PortalSide[] = [];
 
@@ -52,10 +66,20 @@ export function inferPortalSide(maze: MazeData, portal: Point): PortalSide {
   if (portal.y === maze.height - 1) candidates.push('bottom');
   if (portal.x === 0) candidates.push('left');
 
-  const openCandidate = candidates.find((side) => (cell & SIDE_TO_WALL[side]) === 0);
-  if (openCandidate) return openCandidate;
+  if (candidates.length === 0) return null;
 
-  return candidates[0] ?? 'top';
+  return candidates.find((side) => (cell & SIDE_TO_WALL[side]) === 0) ?? null;
+}
+
+export function warnInvalidPortalSide(maze: MazeData, portal: Point, label: string): void {
+  if (!isDevEnvironment()) return;
+
+  console.warn('[maze:endpoint-marker] Unable to infer portal side; marker will not be rendered.', {
+    label,
+    maze: { slug: maze.slug, width: maze.width, height: maze.height, seed: maze.seed },
+    portal,
+    cell: maze.grid[portal.y * maze.width + portal.x],
+  });
 }
 
 /**
