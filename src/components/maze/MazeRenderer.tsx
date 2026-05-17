@@ -112,7 +112,7 @@ export function MazeRenderer({
           portal: entry,
           portalSide: entrySide,
           markerRadius: markerR,
-          outsideGap: 0,
+          placementMode: 'outside',
         })
       : null
     : { x: entryCx, y: entryCy };
@@ -126,7 +126,7 @@ export function MazeRenderer({
           portal: exit,
           portalSide: exitSide,
           markerRadius: markerR,
-          outsideGap: 0,
+          placementMode: 'outside',
         })
       : null
     : { x: exitCx, y: exitCy };

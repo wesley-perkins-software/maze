@@ -245,7 +245,7 @@ export function getMinimapEndpointMarkerPosition(
       portal: point,
       portalSide: side,
       markerRadius,
-      outsideGap: 0,
+      placementMode: 'inside',
     });
 
     return {
@@ -270,7 +270,7 @@ export function getMinimapEndpointMarkerPosition(
     portal: point,
     portalSide: side,
     markerRadius,
-    outsideGap: 0,
+    placementMode: 'inside',
   });
 
   return {
