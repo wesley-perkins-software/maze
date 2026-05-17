@@ -428,6 +428,14 @@ function formatTime(ms: number) {
   return m > 0 ? `${m}m ${s % 60}s` : `${s}s`;
 }
 
+function formatPauseTime(ms: number): string {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  if (m === 0) return `${s} second${s !== 1 ? 's' : ''}`;
+  const rem = s % 60;
+  return rem === 0 ? `${m} min` : `${m} min ${String(rem).padStart(2, '0')} sec`;
+}
+
 export interface FullscreenMazePlayerProps {
   maze: MazeData;
   /** Optional label shown in the top bar, e.g. "Today's Maze" for the daily challenge. */
@@ -1384,14 +1392,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   padding: '32px 36px 24px',
                 }}
               >
-                {/* Pause icon */}
-                <div aria-hidden="true" style={{ color: 'var(--color-muted)', marginBottom: 8 }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="5" y="3" width="4" height="18" rx="1" />
-                    <rect x="15" y="3" width="4" height="18" rx="1" />
-                  </svg>
-                </div>
-
                 {/* Title */}
                 <p
                   style={{
@@ -1412,12 +1412,12 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                     alignItems: 'center',
                     gap: 6,
                     color: 'var(--color-muted-strong)',
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: 500,
-                    marginBottom: 18,
+                    marginBottom: 20,
                   }}
                 >
-                  <span>{formatTime(state.elapsedMs)}</span>
+                  <span>{formatPauseTime(state.elapsedMs)}</span>
                   <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
                   <span>{maze.width} × {maze.height}</span>
                   {!label && (
@@ -1528,23 +1528,25 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   ) : (
                     <button
                       onClick={handleResetRequest}
-                      className="btn-ghost w-full rounded-lg text-xs px-3 py-2 gap-2"
+                      className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
+                      style={{ fontSize: 15 }}
                     >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
                       </svg>
-                      Reset progress
+                      Reset Progress
                     </button>
                   )}
                   {onClose && (
                     <button
                       onClick={onClose}
-                      className="btn-ghost w-full rounded-lg text-xs px-3 py-2 gap-2"
+                      className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
+                      style={{ fontSize: 15 }}
                     >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
                       </svg>
-                      Exit maze
+                      Exit Maze
                     </button>
                   )}
                 </div>
