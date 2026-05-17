@@ -17,9 +17,16 @@ interface PositionedGlyphProps extends SvgGlyphProps {
   badgeRadius: number;
 }
 
+interface StartMarkerIconProps extends SvgGlyphProps {
+  arrowPoints?: string;
+  badgeOpacity?: number | string;
+}
+
 interface FinishMarkerIconProps extends SvgGlyphProps {
   badgeOpacity?: number | string;
 }
+
+export const DEFAULT_START_ARROW_POINTS = '6.72,8.92 17.28,8.92 12,16.84';
 
 const FLAG_POLE = {
   x: 7.7,
@@ -29,6 +36,31 @@ const FLAG_POLE = {
   rx: 0.875,
 } as const;
 const FLAG_PENNANT_PATH = 'M9.15 6.9 L18.05 9.95 L9.15 13 Z';
+
+export function StartArrowGlyph({ className, opacity = 0.95, arrowPoints = DEFAULT_START_ARROW_POINTS }: StartMarkerIconProps) {
+  return <polygon className={className} points={arrowPoints} fill="white" opacity={opacity} />;
+}
+
+export function StartMarkerIcon({
+  className,
+  opacity = 0.95,
+  arrowPoints = DEFAULT_START_ARROW_POINTS,
+  badgeOpacity = 0.9,
+}: StartMarkerIconProps) {
+  return (
+    <>
+      <circle cx={ENDPOINT_MARKER_CENTER} cy={ENDPOINT_MARKER_CENTER} r={ENDPOINT_MARKER_OUTER_RADIUS} fill="white" />
+      <circle
+        cx={ENDPOINT_MARKER_CENTER}
+        cy={ENDPOINT_MARKER_CENTER}
+        r={ENDPOINT_MARKER_BADGE_RADIUS}
+        fill={START_MARKER_COLOR}
+        opacity={badgeOpacity}
+      />
+      <StartArrowGlyph className={className} opacity={opacity} arrowPoints={arrowPoints} />
+    </>
+  );
+}
 
 export function FinishFlagGlyph({ className, opacity = 0.95 }: SvgGlyphProps) {
   return (

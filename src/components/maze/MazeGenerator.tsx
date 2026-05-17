@@ -10,7 +10,7 @@ import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
-import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
+import { DEFAULT_START_ARROW_POINTS, FinishMarkerIcon, StartMarkerIcon } from './EndpointMarkerGlyphs';
 import type { PortalSide } from '../../lib/maze/endpointMarkers';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
@@ -110,15 +110,15 @@ function getPreviewEntryArrowPoints(maze: MazeData): string {
 
   if (!side) {
     warnInvalidPortalSide(maze, entry, 'entry');
-    return '6.72,8.92 17.28,8.92 12,16.84';
+    return DEFAULT_START_ARROW_POINTS;
   }
 
-  if (side === 'top') return '6.72,8.92 17.28,8.92 12,16.84';
+  if (side === 'top') return DEFAULT_START_ARROW_POINTS;
   if (side === 'bottom') return '6.72,15.08 17.28,15.08 12,7.16';
   if (side === 'left') return '8.92,6.72 16.84,12 8.92,17.28';
   if (side === 'right') return '15.08,6.72 7.16,12 15.08,17.28';
 
-  return '6.72,8.92 17.28,8.92 12,16.84';
+  return DEFAULT_START_ARROW_POINTS;
 }
 
 function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: number }) {
@@ -136,9 +136,7 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
         style={entryStyle}
         aria-hidden="true"
       >
-        <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_COLOR} opacity="0.9" />
-        <polygon points={entryArrowPoints} fill="white" opacity="0.95" />
+        <StartMarkerIcon arrowPoints={entryArrowPoints} />
       </svg>
       )}
       {exitStyle && (
@@ -152,6 +150,28 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
       </svg>
       )}
     </>
+  );
+}
+
+function PreviewStartLegend({ arrowPoints }: { arrowPoints: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[12px] font-medium leading-none text-arch-600 sm:text-[13px]">
+      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] shrink-0 overflow-visible sm:h-5 sm:w-5" aria-hidden="true">
+        <StartMarkerIcon arrowPoints={arrowPoints} />
+      </svg>
+      Start
+    </span>
+  );
+}
+
+function PreviewFinishLegend() {
+  return (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[12px] font-medium leading-none text-arch-600 sm:text-[13px]">
+      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] shrink-0 overflow-visible sm:h-5 sm:w-5" aria-hidden="true">
+        <FinishMarkerIcon />
+      </svg>
+      Finish
+    </span>
   );
 }
 
@@ -362,6 +382,7 @@ export function MazeGenerator() {
   const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
 
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
+  const previewStartArrowPoints = getPreviewEntryArrowPoints(maze);
 
   const printMaze = (
     <div className="print-only" aria-hidden="true">
@@ -425,11 +446,14 @@ export function MazeGenerator() {
 
         {/* Identity caption — below card, flush with card edges */}
         <div
-          className="flex justify-between items-center pt-2 pb-1 mx-auto"
+          className="grid grid-cols-[minmax(0,1fr)_auto_auto_minmax(0,1fr)] items-center gap-x-5 pt-2 pb-1 mx-auto sm:gap-x-6"
           style={{ width: 'min(100%, calc(100vh - 140px))' }}
+          aria-label="Maze preview metadata"
         >
-          <span className="text-sm font-mono font-medium text-arch-600">{width} × {height}</span>
-          <span className="text-sm font-mono font-medium text-arch-600">{presetLabel}</span>
+          <span className="whitespace-nowrap text-[13px] font-mono font-medium text-arch-600 sm:text-sm">{width} × {height}</span>
+          <PreviewStartLegend arrowPoints={previewStartArrowPoints} />
+          <PreviewFinishLegend />
+          <span className="justify-self-end whitespace-nowrap text-[13px] font-mono font-medium text-arch-600 sm:text-sm">{presetLabel}</span>
         </div>
 
         {playing && (
