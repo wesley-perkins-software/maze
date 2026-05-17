@@ -221,7 +221,6 @@ export function MazeGenerator() {
   const [customWidth,  setCustomWidth]  = useState(40);
   const [customHeight, setCustomHeight] = useState(40);
   const [playing,   setPlaying]   = useState(false);
-  const [solved,    setSolved]    = useState(false);
   const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
   const [playerKey, setPlayerKey] = useState(0);
   const [printRoot, setPrintRoot] = useState<HTMLElement | null>(null);
@@ -277,7 +276,6 @@ export function MazeGenerator() {
     const m = generateMaze({ width: dims.w, height: dims.h, difficulty, seed: nextSeed(), anyPortalSide: true, lightMode });
     setMaze(m);
     setPlaying(false);
-    setSolved(false);
     setSolveStats(null);
   }, [nextSeed]);
 
@@ -331,22 +329,11 @@ export function MazeGenerator() {
     logMazeStateDebug('play click', maze);
     hasPlayedRef.current = true;
     setPlaying(true);
-    setSolved(false);
   }, [maze]);
 
   const handleSolve = useCallback((stats: SolveStats) => {
     setSolveStats(stats);
-    setSolved(true);
   }, []);
-
-  const handleTryLarger = useCallback(() => {
-    cancelScheduledCustomPreview();
-    const presets: SizePreset[] = ['small', 'medium', 'large', 'expert', 'monster'];
-    const idx  = presets.indexOf(sizePreset);
-    const next = presets[Math.min(idx + 1, presets.length - 1)];
-    setSizePreset(next);
-    generate(next, SIZE_MAP[next]);
-  }, [sizePreset, generate, cancelScheduledCustomPreview]);
 
   const handleDownloadSVG = useCallback(() => {
     const svg = renderDownloadSVG(maze);
@@ -475,37 +462,16 @@ export function MazeGenerator() {
               personalBest={null}
               onPlayAgain={() => {
                 setSolveStats(null);
-                setSolved(false);
                 setPlayerKey(k => k + 1);
               }}
               onClose={() => {
                 setSolveStats(null);
                 setPlaying(false);
               }}
+              onNewMaze={handleGenerate}
+              mazeWidth={maze.width}
+              mazeHeight={maze.height}
             />
-          </div>
-        )}
-
-        {/* Post-solve CTA */}
-        {solved && (
-          <div className="mt-3 rounded-sm border border-green-200 bg-green-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-sm font-medium text-green-800">Nice work! Ready for another?</p>
-            <div className="flex gap-2 shrink-0">
-              {sizePreset !== 'monster' && !showCustom && (
-                <button
-                  onClick={handleTryLarger}
-                  className="inline-flex items-center gap-1.5 rounded-sm bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
-                >
-                  Try Larger →
-                </button>
-              )}
-              <button
-                onClick={handleGenerate}
-                className="inline-flex items-center gap-1.5 rounded-sm border border-green-300 bg-white px-4 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 transition-colors"
-              >
-                New Maze
-              </button>
-            </div>
           </div>
         )}
       </div>

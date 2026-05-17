@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { getMsUntilMidnightUTC } from '../../lib/utils/countdown';
 
-// Set to 50 to activate a 320×50 banner ad slot above the tertiary actions.
+// Set to 50 to activate a 320×50 banner ad slot between secondary and tertiary actions.
+// When enabling, also widen the card from max-w-xs to max-w-sm to give the ad breathing room.
 const POST_SOLVE_AD_SLOT_H = 0;
 
 export interface PostSolveNav {
@@ -30,6 +31,15 @@ export interface PostSolveOverlayProps {
   returnCopy?: string;
   /** Show a live countdown to the next daily maze */
   showCountdown?: boolean;
+  /**
+   * Generator-specific: when provided, "New Maze" becomes the primary CTA and
+   * "Play Again" becomes secondary. Replaces the default "Play Again" primary layout.
+   */
+  onNewMaze?: () => void;
+  /** Width of the generated maze — shown in stats and share text. */
+  mazeWidth?: number;
+  /** Height of the generated maze — shown in stats and share text. */
+  mazeHeight?: number;
 }
 
 function formatTime(ms: number) {
@@ -87,6 +97,24 @@ function CheckIcon() {
   );
 }
 
+function XIcon() {
+  return (
+    <svg
+      className="w-4 h-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
 function CountdownLine() {
   const [ms, setMs] = useState(() => getMsUntilMidnightUTC());
   useEffect(() => {
@@ -107,19 +135,17 @@ function CountdownLine() {
   );
 }
 
-function ShareButton({ mazeSlug }: { mazeSlug?: string }) {
+function ShareButton({ shareText, mazeSlug: _mazeSlug }: { shareText: string; mazeSlug?: string }) {
   const btnRef = useRef<HTMLButtonElement>(null);
 
   const handleShare = async () => {
     const btn = btnRef.current;
     if (!btn) return;
-    const url = window.location.href;
-    const title = 'I just solved a maze!';
     try {
       if (navigator.share) {
-        await navigator.share({ title, url });
+        await navigator.share({ title: 'MazeThis', text: shareText });
       } else {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(shareText);
         const orig = btn.textContent ?? '';
         btn.textContent = 'Copied!';
         setTimeout(() => { if (btn) btn.textContent = orig; }, 2000);
@@ -151,6 +177,9 @@ export function PostSolveOverlay({
   completionCopy,
   returnCopy,
   showCountdown,
+  onNewMaze,
+  mazeWidth,
+  mazeHeight,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   // On mobile, the browser fires a synthetic click event at the touch position
@@ -171,6 +200,18 @@ export function PostSolveOverlay({
   const statsItems: string[] = [`⏱ ${formatTime(elapsedMs)}`];
   if (stepCount > 0) statsItems.push(`${stepCount} steps`);
   if (hintsUsed > 0) statsItems.push(`${hintsUsed} hint${hintsUsed > 1 ? 's' : ''}`);
+  if (onNewMaze && mazeWidth && mazeHeight) statsItems.push(`${mazeWidth} × ${mazeHeight}`);
+
+  const generatorUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/maze-generator`
+    : '/maze-generator';
+
+  const shareText = onNewMaze && mazeWidth && mazeHeight
+    ? `I solved a ${mazeWidth}×${mazeHeight} maze in ${formatTime(elapsedMs)}${stepCount > 0 ? ` and ${stepCount} steps` : ''}. Try one: ${generatorUrl}`
+    : `I just solved a maze! Try it: ${typeof window !== 'undefined' ? window.location.href : ''}`;
+
+  // Generator layout: New Maze primary, Play Again secondary
+  const isGeneratorMode = Boolean(onNewMaze && !nav);
 
   return (
     <div
@@ -185,6 +226,17 @@ export function PostSolveOverlay({
         className="post-solve-card-in relative w-full max-w-xs bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4"
         style={!interactive ? { pointerEvents: 'none' } : undefined}
       >
+
+        {/* Dismiss X — generator mode only */}
+        {isGeneratorMode && onClose && (
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            aria-label="Close"
+          >
+            <XIcon />
+          </button>
+        )}
 
         {/* Success icon */}
         <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
@@ -219,8 +271,16 @@ export function PostSolveOverlay({
           </p>
         )}
 
-        {/* Primary CTA — Next Maze */}
-        {nav ? (
+        {/* Primary CTA */}
+        {isGeneratorMode ? (
+          <button
+            onClick={onNewMaze}
+            className="btn-primary w-full justify-center text-base py-3"
+            ref={primaryBtnRef as React.Ref<HTMLButtonElement>}
+          >
+            New Maze
+          </button>
+        ) : nav ? (
           <a
             href={`/mazes/${nav.nextSlug}`}
             className="btn-primary w-full justify-center text-base py-3"
@@ -242,16 +302,25 @@ export function PostSolveOverlay({
         )}
 
         {/* Secondary CTA */}
-        {nav && (
+        {isGeneratorMode ? (
+          <button
+            onClick={onPlayAgain}
+            className="btn-secondary w-full justify-center text-sm py-2.5"
+          >
+            Play Again
+          </button>
+        ) : nav ? (
           <a
             href={`/${nav.categorySlug}`}
             className="btn-secondary text-sm justify-center py-2 w-full"
           >
             Browse Mazes
           </a>
-        )}
+        ) : null}
 
-        {/* Ad slot — reserved for future monetization */}
+        {/* Ad slot — reserved for future monetization.
+            Position: after secondary CTA, before tertiary actions.
+            When enabling POST_SOLVE_AD_SLOT_H, also widen card to max-w-sm. */}
         {POST_SOLVE_AD_SLOT_H > 0 && (
           <div
             style={{ height: POST_SOLVE_AD_SLOT_H }}
@@ -278,12 +347,12 @@ export function PostSolveOverlay({
               Make Your Own
             </a>
           )}
-          {!nav && onClose && (
+          {!nav && !isGeneratorMode && onClose && (
             <button onClick={onClose} className="btn-ghost text-sm">
               Done
             </button>
           )}
-          <ShareButton mazeSlug={mazeSlug} />
+          <ShareButton shareText={shareText} mazeSlug={mazeSlug} />
         </div>
       </div>
     </div>
