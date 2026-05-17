@@ -1167,7 +1167,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   <Timer elapsedMs={state.elapsedMs} />
                 </span>
               )}
-              {state.status === 'paused' && <span className="text-amber-500 font-medium text-xs">Paused</span>}
+              {/* "Paused" label intentionally omitted here — the centered pause card already communicates this */}
               {state.status === 'idle' && (label
                 ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
                 : (
@@ -1444,7 +1444,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                     borderRadius: 12,
                     padding: '16px 0',
                     fontWeight: 700,
-                    fontSize: 14,
+                    fontSize: 17,
                     cursor: 'pointer',
                     marginBottom: 8,
                     transition: 'background 0.15s',
