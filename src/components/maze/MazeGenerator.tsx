@@ -121,8 +121,6 @@ function getPreviewEntryArrowPoints(maze: MazeData): string {
   return DEFAULT_START_ARROW_POINTS;
 }
 
-const LEGEND_START_ARROW_POINTS = '8.92,6.72 16.84,12 8.92,17.28';
-
 function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: number }) {
   const markerBase = 'pointer-events-none absolute z-10 h-6 w-6 -translate-x-1/2 -translate-y-1/2 overflow-visible drop-shadow-[0_2px_4px_rgba(15,23,42,0.32)] md:h-7 md:w-7';
   const entryArrowPoints = getPreviewEntryArrowPoints(maze);
@@ -155,37 +153,25 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
   );
 }
 
-function PreviewStartLegendIcon() {
+function PreviewStartLegend({ arrowPoints }: { arrowPoints: string }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0 overflow-visible" aria-hidden="true">
-      <StartMarkerIcon arrowPoints={LEGEND_START_ARROW_POINTS} />
-    </svg>
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[12px] font-medium leading-none text-arch-400 sm:text-[13px]">
+      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] shrink-0 overflow-visible sm:h-5 sm:w-5" aria-hidden="true">
+        <StartMarkerIcon arrowPoints={arrowPoints} />
+      </svg>
+      Start
+    </span>
   );
 }
 
-function PreviewFinishLegendIcon() {
+function PreviewFinishLegend() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0 overflow-visible" aria-hidden="true">
-      <FinishMarkerIcon />
-    </svg>
-  );
-}
-
-function PreviewEndpointLegend() {
-  return (
-    <div
-      className="order-3 flex w-full items-center justify-center gap-5 text-[13px] font-medium leading-none text-arch-400 sm:order-2 sm:w-auto sm:gap-6"
-      aria-label="Maze endpoint legend"
-    >
-      <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-        <PreviewStartLegendIcon />
-        Start
-      </span>
-      <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-        <PreviewFinishLegendIcon />
-        Finish
-      </span>
-    </div>
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[12px] font-medium leading-none text-arch-400 sm:text-[13px]">
+      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] shrink-0 overflow-visible sm:h-5 sm:w-5" aria-hidden="true">
+        <FinishMarkerIcon />
+      </svg>
+      Finish
+    </span>
   );
 }
 
@@ -396,6 +382,7 @@ export function MazeGenerator() {
   const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
 
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
+  const previewStartArrowPoints = getPreviewEntryArrowPoints(maze);
 
   const printMaze = (
     <div className="print-only" aria-hidden="true">
@@ -459,12 +446,14 @@ export function MazeGenerator() {
 
         {/* Identity caption — below card, flush with card edges */}
         <div
-          className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 pt-2 pb-1 mx-auto"
+          className="grid grid-cols-[minmax(0,1fr)_auto_auto_minmax(0,1fr)] items-center gap-x-5 pt-2 pb-1 mx-auto sm:gap-x-6"
           style={{ width: 'min(100%, calc(100vh - 140px))' }}
+          aria-label="Maze preview metadata"
         >
-          <span className="order-1 text-sm font-mono font-medium text-arch-600">{width} × {height}</span>
-          <PreviewEndpointLegend />
-          <span className="order-2 text-sm font-mono font-medium text-arch-600 sm:order-3">{presetLabel}</span>
+          <span className="whitespace-nowrap text-[13px] font-mono font-medium text-arch-600 sm:text-sm">{width} × {height}</span>
+          <PreviewStartLegend arrowPoints={previewStartArrowPoints} />
+          <PreviewFinishLegend />
+          <span className="justify-self-end whitespace-nowrap text-[13px] font-mono font-medium text-arch-600 sm:text-sm">{presetLabel}</span>
         </div>
 
         {playing && (
