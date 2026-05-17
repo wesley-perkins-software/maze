@@ -1366,21 +1366,21 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             <div
               className="absolute inset-0 flex items-center justify-center"
               style={{
-                background: 'rgba(10, 10, 14, 0.48)',
-                backdropFilter: 'blur(3px)',
-                WebkitBackdropFilter: 'blur(3px)',
+                background: 'rgba(10, 10, 14, 0.38)',
+                backdropFilter: 'blur(2px)',
+                WebkitBackdropFilter: 'blur(2px)',
                 zIndex: 20,
               }}
             >
               <div
-                className="flex flex-col items-center mx-4 w-full"
+                className="flex flex-col items-center mx-6 w-full"
                 style={{
-                  maxWidth: 296,
+                  maxWidth: 400,
                   background: 'var(--color-surface)',
                   border: '1px solid var(--color-border)',
                   borderRadius: 20,
                   boxShadow: '0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.10)',
-                  padding: '24px 20px 16px',
+                  padding: '28px 32px 20px',
                 }}
               >
                 {/* Pause icon */}
@@ -1437,19 +1437,19 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: 8,
-                    background: 'var(--color-brand)',
-                    color: 'white',
+                    background: 'var(--color-charcoal)',
+                    color: 'var(--color-bg)',
                     border: 'none',
                     borderRadius: 12,
-                    padding: '11px 0',
+                    padding: '12px 0',
                     fontWeight: 700,
                     fontSize: 14,
                     cursor: 'pointer',
                     marginBottom: 8,
                     transition: 'background 0.15s',
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-brand-dark)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-brand)'; }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-charcoal-2)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-charcoal)'; }}
                 >
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <polygon points="5,3 19,12 5,21" />
