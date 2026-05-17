@@ -9,6 +9,7 @@ import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import { FinishFlagGlyph, FINISH_MARKER_COLOR, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 import type { PortalSide } from '../../lib/maze/endpointMarkers';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
@@ -132,7 +133,7 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill="#0d9488" opacity="0.9" />
+        <circle cx="12" cy="12" r="8.8" fill={START_MARKER_COLOR} opacity="0.9" />
         <polygon points={entryArrowPoints} fill="white" opacity="0.95" />
       </svg>
       )}
@@ -144,8 +145,8 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
         aria-hidden="true"
       >
         <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill="#f59e0b" />
-        <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
+        <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
+        <FinishFlagGlyph />
       </svg>
       )}
     </>

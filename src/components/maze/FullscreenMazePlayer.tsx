@@ -9,6 +9,7 @@ import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
+import { FinishFlagGlyph, FINISH_MARKER_COLOR, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -73,8 +74,6 @@ const SIDEBAR_MINIMAP_STAGE_H = 240;
 const SIDEBAR_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
 const SOLVE_REVEAL_DELAY_MS = 250;
-const START_MARKER_COLOR = '#0d9488';
-const FINISH_MARKER_COLOR = '#f59e0b';
 
 function clamp(min: number, value: number, max: number): number {
   return Math.min(max, Math.max(min, value));
@@ -389,7 +388,7 @@ function MinimapEndpointMarkers({
       >
         <circle cx="12" cy="12" r="12" fill="white" />
         <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
-        <polygon points="12,5 13.8,9.6 18.7,9.8 14.9,12.9 16.1,17.7 12,15 7.9,17.7 9.2,12.9 5.3,9.8 10.2,9.6" fill="white" />
+        <FinishFlagGlyph />
       </svg>
       )}
     </>
