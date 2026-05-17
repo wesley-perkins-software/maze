@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { getMsUntilMidnightUTC } from '../../lib/utils/countdown';
 
-// Set to 50 to activate a 320×50 banner ad slot above the tertiary actions.
+// Set to 50 to activate a 320×50 banner ad slot between secondary and tertiary actions.
+// When enabling, also widen the card from max-w-xs to max-w-sm to give the ad breathing room.
 const POST_SOLVE_AD_SLOT_H = 0;
 
 export interface PostSolveNav {
@@ -30,12 +31,26 @@ export interface PostSolveOverlayProps {
   returnCopy?: string;
   /** Show a live countdown to the next daily maze */
   showCountdown?: boolean;
+  /**
+   * Generator-specific: when provided, "New Maze" becomes the primary CTA and
+   * "Play Again" becomes secondary. Replaces the default "Play Again" primary layout.
+   */
+  onNewMaze?: () => void;
+  /** Width of the generated maze — shown in stats and share text. */
+  mazeWidth?: number;
+  /** Height of the generated maze — shown in stats and share text. */
+  mazeHeight?: number;
 }
 
-function formatTime(ms: number) {
-  const s = Math.floor(ms / 1000);
-  const m = Math.floor(s / 60);
-  return m > 0 ? `${m}m ${s % 60}s` : `${s}s`;
+function formatTime(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  const minLabel = min === 1 ? '1 minute' : `${min} minutes`;
+  const secLabel = sec === 1 ? '1 second' : `${sec} seconds`;
+  if (min === 0) return secLabel;
+  if (sec === 0) return minLabel;
+  return `${minLabel} ${secLabel}`;
 }
 
 // Eight confetti particles: colors drawn from the brand palette
@@ -73,16 +88,34 @@ function ConfettiParticles() {
 function CheckIcon() {
   return (
     <svg
-      className="w-7 h-7 text-emerald-600"
+      className="w-7 h-7"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
-      strokeWidth={2.5}
+      stroke="#047857"
+      strokeWidth={3}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
       <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg
+      className="w-4 h-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
 }
@@ -107,19 +140,17 @@ function CountdownLine() {
   );
 }
 
-function ShareButton({ mazeSlug }: { mazeSlug?: string }) {
+function ShareButton({ shareText, mazeSlug: _mazeSlug }: { shareText: string; mazeSlug?: string }) {
   const btnRef = useRef<HTMLButtonElement>(null);
 
   const handleShare = async () => {
     const btn = btnRef.current;
     if (!btn) return;
-    const url = window.location.href;
-    const title = 'I just solved a maze!';
     try {
       if (navigator.share) {
-        await navigator.share({ title, url });
+        await navigator.share({ title: 'MazeThis', text: shareText });
       } else {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(shareText);
         const orig = btn.textContent ?? '';
         btn.textContent = 'Copied!';
         setTimeout(() => { if (btn) btn.textContent = orig; }, 2000);
@@ -133,7 +164,7 @@ function ShareButton({ mazeSlug }: { mazeSlug?: string }) {
       onClick={handleShare}
       className="btn-ghost text-sm"
     >
-      Share
+      Share Result
     </button>
   );
 }
@@ -151,6 +182,9 @@ export function PostSolveOverlay({
   completionCopy,
   returnCopy,
   showCountdown,
+  onNewMaze,
+  mazeWidth,
+  mazeHeight,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   // On mobile, the browser fires a synthetic click event at the touch position
@@ -171,6 +205,18 @@ export function PostSolveOverlay({
   const statsItems: string[] = [`⏱ ${formatTime(elapsedMs)}`];
   if (stepCount > 0) statsItems.push(`${stepCount} steps`);
   if (hintsUsed > 0) statsItems.push(`${hintsUsed} hint${hintsUsed > 1 ? 's' : ''}`);
+  if (onNewMaze && mazeWidth && mazeHeight) statsItems.push(`${mazeWidth} × ${mazeHeight}`);
+
+  const generatorUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/maze-generator`
+    : '/maze-generator';
+
+  const shareText = onNewMaze && mazeWidth && mazeHeight
+    ? `I solved a ${mazeWidth}×${mazeHeight} maze in ${formatTime(elapsedMs)}${stepCount > 0 ? ` and ${stepCount} steps` : ''}. Try making your own maze: ${generatorUrl}`
+    : `I just solved a maze! Try it: ${typeof window !== 'undefined' ? window.location.href : ''}`;
+
+  // Generator layout: New Maze primary, Play Again secondary
+  const isGeneratorMode = Boolean(onNewMaze && !nav);
 
   return (
     <div
@@ -182,12 +228,23 @@ export function PostSolveOverlay({
       <ConfettiParticles />
 
       <div
-        className="post-solve-card-in relative w-full max-w-xs bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4"
+        className={`post-solve-card-in relative w-full bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4 ${isGeneratorMode ? 'max-w-sm sm:max-w-[440px]' : 'max-w-xs'}`}
         style={!interactive ? { pointerEvents: 'none' } : undefined}
       >
 
+        {/* Dismiss X — generator mode only */}
+        {isGeneratorMode && onClose && (
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            aria-label="Close"
+          >
+            <XIcon />
+          </button>
+        )}
+
         {/* Success icon */}
-        <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: '#D1FAE5', border: '1.5px solid #6EE7B7' }}>
           <CheckIcon />
         </div>
 
@@ -219,8 +276,16 @@ export function PostSolveOverlay({
           </p>
         )}
 
-        {/* Primary CTA — Next Maze */}
-        {nav ? (
+        {/* Primary CTA */}
+        {isGeneratorMode ? (
+          <button
+            onClick={onNewMaze}
+            className="btn-primary w-full justify-center text-base py-3"
+            ref={primaryBtnRef as React.Ref<HTMLButtonElement>}
+          >
+            New Maze
+          </button>
+        ) : nav ? (
           <a
             href={`/mazes/${nav.nextSlug}`}
             className="btn-primary w-full justify-center text-base py-3"
@@ -242,16 +307,25 @@ export function PostSolveOverlay({
         )}
 
         {/* Secondary CTA */}
-        {nav && (
+        {isGeneratorMode ? (
+          <button
+            onClick={onPlayAgain}
+            className="btn-secondary w-full justify-center text-sm py-2.5"
+          >
+            Play Again
+          </button>
+        ) : nav ? (
           <a
             href={`/${nav.categorySlug}`}
             className="btn-secondary text-sm justify-center py-2 w-full"
           >
             Browse Mazes
           </a>
-        )}
+        ) : null}
 
-        {/* Ad slot — reserved for future monetization */}
+        {/* Ad slot — reserved for future monetization.
+            Position: after secondary CTA, before tertiary actions.
+            When enabling POST_SOLVE_AD_SLOT_H, also widen card to max-w-sm. */}
         {POST_SOLVE_AD_SLOT_H > 0 && (
           <div
             style={{ height: POST_SOLVE_AD_SLOT_H }}
@@ -278,12 +352,12 @@ export function PostSolveOverlay({
               Make Your Own
             </a>
           )}
-          {!nav && onClose && (
+          {!nav && !isGeneratorMode && onClose && (
             <button onClick={onClose} className="btn-ghost text-sm">
               Done
             </button>
           )}
-          <ShareButton mazeSlug={mazeSlug} />
+          <ShareButton shareText={shareText} mazeSlug={mazeSlug} />
         </div>
       </div>
     </div>
