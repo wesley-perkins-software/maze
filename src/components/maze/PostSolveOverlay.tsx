@@ -42,10 +42,15 @@ export interface PostSolveOverlayProps {
   mazeHeight?: number;
 }
 
-function formatTime(ms: number) {
-  const s = Math.floor(ms / 1000);
-  const m = Math.floor(s / 60);
-  return m > 0 ? `${m}m ${s % 60}s` : `${s}s`;
+function formatTime(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  const minLabel = min === 1 ? '1 minute' : `${min} minutes`;
+  const secLabel = sec === 1 ? '1 second' : `${sec} seconds`;
+  if (min === 0) return secLabel;
+  if (sec === 0) return minLabel;
+  return `${minLabel} ${secLabel}`;
 }
 
 // Eight confetti particles: colors drawn from the brand palette
@@ -159,7 +164,7 @@ function ShareButton({ shareText, mazeSlug: _mazeSlug }: { shareText: string; ma
       onClick={handleShare}
       className="btn-ghost text-sm"
     >
-      Share
+      Share Result
     </button>
   );
 }
@@ -207,7 +212,7 @@ export function PostSolveOverlay({
     : '/maze-generator';
 
   const shareText = onNewMaze && mazeWidth && mazeHeight
-    ? `I solved a ${mazeWidth}×${mazeHeight} maze in ${formatTime(elapsedMs)}${stepCount > 0 ? ` and ${stepCount} steps` : ''}. Try one: ${generatorUrl}`
+    ? `I solved a ${mazeWidth}×${mazeHeight} maze in ${formatTime(elapsedMs)}${stepCount > 0 ? ` and ${stepCount} steps` : ''}. Try making your own maze: ${generatorUrl}`
     : `I just solved a maze! Try it: ${typeof window !== 'undefined' ? window.location.href : ''}`;
 
   // Generator layout: New Maze primary, Play Again secondary
@@ -223,7 +228,7 @@ export function PostSolveOverlay({
       <ConfettiParticles />
 
       <div
-        className="post-solve-card-in relative w-full max-w-xs bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4"
+        className={`post-solve-card-in relative w-full bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4 ${isGeneratorMode ? 'max-w-sm sm:max-w-[440px]' : 'max-w-xs'}`}
         style={!interactive ? { pointerEvents: 'none' } : undefined}
       >
 
