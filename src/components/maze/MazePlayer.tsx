@@ -271,6 +271,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
           hintCells={state.hintCells}
           interactive={isActive}
           svgRef={svgRef}
+          markersOutside
         />
 
         {/* Paused overlay */}
