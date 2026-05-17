@@ -1366,21 +1366,22 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             <div
               className="absolute inset-0 flex items-center justify-center"
               style={{
-                background: 'rgba(10, 10, 14, 0.38)',
+                background: 'rgba(10, 10, 14, 0.30)',
                 backdropFilter: 'blur(2px)',
                 WebkitBackdropFilter: 'blur(2px)',
                 zIndex: 20,
               }}
             >
               <div
-                className="flex flex-col items-center mx-6 w-full"
+                className="flex flex-col items-center w-full"
                 style={{
-                  maxWidth: 400,
+                  width: 'calc(100vw - 40px)',
+                  maxWidth: 460,
                   background: 'var(--color-surface)',
                   border: '1px solid var(--color-border)',
                   borderRadius: 20,
                   boxShadow: '0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.10)',
-                  padding: '28px 32px 20px',
+                  padding: '32px 36px 24px',
                 }}
               >
                 {/* Pause icon */}
@@ -1441,7 +1442,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                     color: 'var(--color-bg)',
                     border: 'none',
                     borderRadius: 12,
-                    padding: '12px 0',
+                    padding: '16px 0',
                     fontWeight: 700,
                     fontSize: 14,
                     cursor: 'pointer',
