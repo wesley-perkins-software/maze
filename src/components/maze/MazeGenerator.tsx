@@ -9,7 +9,7 @@ import type { SolveStats } from './FullscreenMazePlayer';
 import { PostSolveOverlay } from './PostSolveOverlay';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
-import { FinishFlagGlyph, FINISH_MARKER_COLOR, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
+import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 import type { PortalSide } from '../../lib/maze/endpointMarkers';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
@@ -144,9 +144,7 @@ function PreviewEndpointMarkers({ maze, cellSize }: { maze: MazeData; cellSize: 
         style={exitStyle}
         aria-hidden="true"
       >
-        <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
-        <FinishFlagGlyph />
+        <FinishMarkerIcon />
       </svg>
       )}
     </>
