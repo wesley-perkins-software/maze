@@ -12,27 +12,22 @@ interface PositionedGlyphProps extends SvgGlyphProps {
   r: number;
 }
 
-const FLAG_GLYPH_PATH = [
-  // A waved/tapered flag silhouette with two oversized checker cutouts. The
-  // negative-space checks are intentionally sparse so the glyph still reads at
-  // minimap sizes without becoming a box/window grid.
+const FINISH_FLAG_PATH = [
+  // A simple solid pennant: wide enough to read instantly at minimap sizes,
+  // with a subtle fly-edge notch so the pole + flag does not become a "P".
   'M8.35 7.25',
-  'C10.35 6.35 12.15 7.55 14.25 7.05',
-  'C15.35 6.78 16.35 6.35 17.2 6.05',
-  'L16.25 9.55',
-  'L17.2 13.05',
-  'C15.15 13.85 13.3 13.08 11.45 12.82',
-  'C10.28 12.66 9.32 12.9 8.35 13.35',
+  'C10.85 6.62 13.15 7.38 16.85 6.95',
+  'L14.95 9.62',
+  'L16.85 12.3',
+  'C13.9 12.72 11.25 11.72 8.35 12.35',
   'Z',
-  'M10.05 8.35 L12.25 8.35 L12.25 10.18 L10.05 10.18 Z',
-  'M13.25 10.25 L15.55 10.25 L15.55 12.05 L13.25 12.05 Z',
 ].join(' ');
 
 export function FinishFlagGlyph({ className, opacity = 0.95 }: SvgGlyphProps) {
   return (
     <g className={className} opacity={opacity}>
-      <rect x="7" y="6.35" width="1.75" height="11.3" rx="0.875" fill="white" />
-      <path d={FLAG_GLYPH_PATH} fill="white" fillRule="evenodd" clipRule="evenodd" />
+      <rect x="7.15" y="6.45" width="1.7" height="11.1" rx="0.85" fill="white" />
+      <path d={FINISH_FLAG_PATH} fill="white" />
     </g>
   );
 }
