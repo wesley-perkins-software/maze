@@ -96,7 +96,6 @@ export function MazeRenderer({
   const exitCx  = padding + exit.x  * cellSize + cellSize / 2;
   const exitCy  = padding + exit.y  * cellSize + cellSize / 2;
   const markerR = markerRadius ?? cellSize * 0.38;
-  const markerOverhang = markerR * 0.6;
   const mazeBounds = getMazeBodyBounds(width, height, cellSize, padding);
   const entrySide = inferPortalSide(maze, entry);
   const exitSide = inferPortalSide(maze, exit);
@@ -113,7 +112,7 @@ export function MazeRenderer({
           portal: entry,
           portalSide: entrySide,
           markerRadius: markerR,
-          overhangAmount: markerOverhang,
+          outsideGap: 0,
         })
       : null
     : { x: entryCx, y: entryCy };
@@ -127,7 +126,7 @@ export function MazeRenderer({
           portal: exit,
           portalSide: exitSide,
           markerRadius: markerR,
-          overhangAmount: markerOverhang,
+          outsideGap: 0,
         })
       : null
     : { x: exitCx, y: exitCy };

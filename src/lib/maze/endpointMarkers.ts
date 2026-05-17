@@ -22,15 +22,13 @@ export type EndpointMarkerPositionOptions = {
   portal: Point;
   portalSide: PortalSide;
   markerRadius: number;
-  /**
-   * How much of the marker radius should extend back over the maze border.
-   * The marker center remains outside the maze whenever this is less than the
-   * marker radius.
-   */
-  overhangAmount: number;
+  /** Optional gap between the marker badge edge and the maze body. */
+  outsideGap?: number;
 };
 
 export type EndpointMarkerCenter = { x: number; y: number };
+
+export const ENDPOINT_MARKER_OUTSIDE_GAP_PX = 0;
 
 const SIDE_TO_WALL: Record<PortalSide, number> = {
   top: WALL_N,
@@ -95,14 +93,13 @@ export function getEndpointMarkerCenter({
   portal,
   portalSide,
   markerRadius,
-  overhangAmount,
+  outsideGap = ENDPOINT_MARKER_OUTSIDE_GAP_PX,
 }: EndpointMarkerPositionOptions): EndpointMarkerCenter {
   const left = bounds.x;
   const top = bounds.y;
   const right = bounds.x + bounds.width;
   const bottom = bounds.y + bounds.height;
-  const clampedOverhang = Math.min(Math.max(0, overhangAmount), markerRadius);
-  const outsideOffset = markerRadius - clampedOverhang;
+  const outsideOffset = markerRadius + Math.max(0, outsideGap);
   const portalCenterX = left + (Math.min(Math.max(portal.x, 0), mazeWidth - 1) + 0.5) * cellSize;
   const portalCenterY = top + (Math.min(Math.max(portal.y, 0), mazeHeight - 1) + 0.5) * cellSize;
 
