@@ -339,7 +339,7 @@ export function MazeRenderer({
                   className="maze-endpoint-marker maze-exit-marker"
                   cx={exitMx}
                   cy={exitMy}
-                  r={markerR}
+                  badgeRadius={markerR}
                 />
               )}
             </>

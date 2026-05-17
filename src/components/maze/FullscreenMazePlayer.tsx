@@ -9,7 +9,7 @@ import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
-import { FinishFlagGlyph, FINISH_MARKER_COLOR, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
+import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -386,9 +386,7 @@ function MinimapEndpointMarkers({
         style={{ ...markerStyle, ...exitPos }}
         aria-hidden="true"
       >
-        <circle cx="12" cy="12" r="12" fill="white" />
-        <circle cx="12" cy="12" r="8.8" fill={FINISH_MARKER_COLOR} />
-        <FinishFlagGlyph />
+        <FinishMarkerIcon />
       </svg>
       )}
     </>
