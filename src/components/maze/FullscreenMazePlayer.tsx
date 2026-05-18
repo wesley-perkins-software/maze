@@ -792,7 +792,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Clear look mode when the active maze changes or the game resets/solves.
   useEffect(() => { exitLookMode(); }, [mazeKey, exitLookMode]);
   useEffect(() => {
-    if (state.status === 'idle' || state.status === 'solved') exitLookMode();
+    if (state.status === 'idle' || state.status === 'paused' || state.status === 'solved') exitLookMode();
   }, [state.status, exitLookMode]);
 
   const isActive = state.status === 'playing' || state.status === 'idle';
@@ -1050,6 +1050,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     bounds: MinimapRenderedBounds,
   ) {
     e.stopPropagation();
+    if (state.status === 'paused') return;
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsMinimapDragging(true);
     if (cameraMode !== 'look') {
@@ -1165,12 +1166,19 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     </div>
   );
 
+  const pauseOverlayBottomPadding = vpSize.w >= 768 ? 0 : mobileDockH;
+
   const dpadPanel = (
     <div
       className="flex h-full min-w-0 items-center justify-center"
       style={cameraMode === 'look' ? { opacity: 0.38 } : undefined}
     >
-      <DPad dispatch={dispatchWithLookExit} isActive={isActive} compact={mobileDockH <= 148} />
+      <DPad
+        dispatch={dispatchWithLookExit}
+        isActive={isActive || state.status === 'paused'}
+        disabled={state.status === 'paused'}
+        compact={mobileDockH <= 148}
+      />
     </div>
   );
 
@@ -1444,190 +1452,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             </button>
           )}
 
-          {/* Paused overlay */}
-          {state.status === 'paused' && (
-            <div
-              className="absolute inset-0 flex items-center justify-center"
-              style={{
-                background: 'rgba(10, 10, 14, 0.30)',
-                backdropFilter: 'blur(2px)',
-                WebkitBackdropFilter: 'blur(2px)',
-                zIndex: 20,
-              }}
-            >
-              <div
-                className="flex flex-col items-center w-full"
-                style={{
-                  width: 'calc(100vw - 40px)',
-                  maxWidth: 460,
-                  background: 'var(--color-surface)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 20,
-                  boxShadow: '0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.10)',
-                  padding: '32px 36px 24px',
-                }}
-              >
-                {/* Title */}
-                <p
-                  style={{
-                    color: 'var(--color-charcoal)',
-                    fontWeight: 700,
-                    fontSize: 20,
-                    letterSpacing: '-0.3px',
-                    marginBottom: 6,
-                  }}
-                >
-                  Paused
-                </p>
 
-                {/* Stats row */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    color: 'var(--color-muted-strong)',
-                    fontSize: 15,
-                    fontWeight: 500,
-                    marginBottom: 20,
-                  }}
-                >
-                  <span>{formatPauseTime(state.elapsedMs)}</span>
-                  <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
-                  <span>{maze.width} × {maze.height}</span>
-                  {!label && (
-                    <>
-                      <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
-                      <span>Generated</span>
-                    </>
-                  )}
-                </div>
-
-                {/* Resume — primary action */}
-                <button
-                  onClick={() => dispatch({ type: 'RESUME' })}
-                  autoFocus
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    background: 'var(--color-charcoal)',
-                    color: 'var(--color-bg)',
-                    border: 'none',
-                    borderRadius: 12,
-                    padding: '16px 0',
-                    fontWeight: 700,
-                    fontSize: 17,
-                    cursor: 'pointer',
-                    marginBottom: 8,
-                    transition: 'background 0.15s',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-charcoal-2)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-charcoal)'; }}
-                >
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <polygon points="5,3 19,12 5,21" />
-                  </svg>
-                  Resume
-                </button>
-
-                {/* AD_SLOT: Pause-screen banner — renders after Resume, never before.
-                    Un-comment ad unit and set PAUSE_AD_ENABLED = true to activate. */}
-                {PAUSE_AD_ENABLED && (
-                  <div
-                    style={{
-                      width: '100%',
-                      height: 50,
-                      background: 'var(--color-border)',
-                      borderRadius: 8,
-                      marginBottom: 8,
-                    }}
-                  >
-                    {/* Ad unit */}
-                  </div>
-                )}
-
-                {/* Divider */}
-                <div
-                  style={{
-                    width: '100%',
-                    height: 1,
-                    background: 'var(--color-border)',
-                    margin: '8px 0 4px',
-                  }}
-                />
-
-                {/* Secondary actions */}
-                <div style={{ width: '100%' }}>
-                  {resetConfirming ? (
-                    <div
-                      style={{
-                        background: 'rgba(220, 38, 38, 0.06)',
-                        border: '1px solid rgba(220, 38, 38, 0.2)',
-                        borderRadius: 10,
-                        padding: '10px 12px',
-                        marginBottom: 2,
-                      }}
-                    >
-                      <p style={{ color: '#b91c1c', fontWeight: 600, fontSize: 12, marginBottom: 8 }}>
-                        Reset Progress?
-                      </p>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <button
-                          onClick={handleResetCancel}
-                          autoFocus
-                          className="btn-ghost flex-1 rounded-lg text-xs py-1.5 justify-center"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={handleResetConfirm}
-                          style={{
-                            flex: 1,
-                            padding: '6px 0',
-                            borderRadius: 8,
-                            border: '1px solid rgba(220, 38, 38, 0.3)',
-                            background: 'rgba(220, 38, 38, 0.1)',
-                            color: '#b91c1c',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}
-                        >
-                          Reset
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={handleResetRequest}
-                      className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
-                      style={{ fontSize: 15 }}
-                    >
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
-                      </svg>
-                      Reset Progress
-                    </button>
-                  )}
-                  {onClose && (
-                    <button
-                      onClick={onClose}
-                      className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
-                      style={{ fontSize: 15 }}
-                    >
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-                      </svg>
-                      Exit Maze
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
 
         </div>
 
@@ -1847,6 +1672,197 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           <div className="w-px flex-1 bg-stone-200" />
         </div>
       </div>
+
+      {/* Paused overlay — covers every non-menu control so only pause-menu actions are interactive. */}
+      {state.status === 'paused' && (
+        <div
+          className="absolute inset-0 z-40 flex items-center justify-center"
+          style={{
+            background: 'rgba(10, 10, 14, 0.30)',
+            backdropFilter: 'blur(2px)',
+            WebkitBackdropFilter: 'blur(2px)',
+            paddingTop: TOP_BAR_H,
+            paddingBottom: pauseOverlayBottomPadding,
+          }}
+        >
+          <div
+            className="flex flex-col items-center w-full"
+            style={{
+              width: 'calc(100vw - 40px)',
+              maxWidth: 460,
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 20,
+              boxShadow: '0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.10)',
+              padding: '32px 36px 24px',
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="pause-menu-title"
+          >
+            {/* Title */}
+            <p
+              id="pause-menu-title"
+              style={{
+                color: 'var(--color-charcoal)',
+                fontWeight: 700,
+                fontSize: 20,
+                letterSpacing: '-0.3px',
+                marginBottom: 6,
+              }}
+            >
+              Paused
+            </p>
+
+            {/* Stats row */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                color: 'var(--color-muted-strong)',
+                fontSize: 15,
+                fontWeight: 500,
+                marginBottom: 20,
+              }}
+            >
+              <span>{formatPauseTime(state.elapsedMs)}</span>
+              <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
+              <span>{maze.width} × {maze.height}</span>
+              {!label && (
+                <>
+                  <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
+                  <span>Generated</span>
+                </>
+              )}
+            </div>
+
+            {/* Primary action */}
+            <button
+              onClick={() => dispatch({ type: 'RESUME' })}
+              autoFocus
+              style={{
+                width: '100%',
+                height: 52,
+                borderRadius: 14,
+                background: 'var(--color-charcoal)',
+                color: 'white',
+                border: 'none',
+                fontSize: 18,
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+                cursor: 'pointer',
+                marginBottom: 8,
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-charcoal-2)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-charcoal)'; }}
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <polygon points="5,3 19,12 5,21" />
+              </svg>
+              Resume
+            </button>
+
+            {/* AD_SLOT: Pause-screen banner — renders after Resume, never before.
+                Un-comment ad unit and set PAUSE_AD_ENABLED = true to activate. */}
+            {PAUSE_AD_ENABLED && (
+              <div
+                style={{
+                  width: '100%',
+                  height: 50,
+                  background: 'var(--color-border)',
+                  borderRadius: 8,
+                  marginBottom: 8,
+                }}
+              >
+                {/* Ad unit */}
+              </div>
+            )}
+
+            {/* Divider */}
+            <div
+              style={{
+                width: '100%',
+                height: 1,
+                background: 'var(--color-border)',
+                margin: '8px 0 4px',
+              }}
+            />
+
+            {/* Secondary actions */}
+            <div style={{ width: '100%' }}>
+              {resetConfirming ? (
+                <div
+                  style={{
+                    background: 'rgba(220, 38, 38, 0.06)',
+                    border: '1px solid rgba(220, 38, 38, 0.2)',
+                    borderRadius: 10,
+                    padding: '10px 12px',
+                    marginBottom: 2,
+                  }}
+                >
+                  <p style={{ color: '#b91c1c', fontWeight: 600, fontSize: 12, marginBottom: 8 }}>
+                    Reset Progress?
+                  </p>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={handleResetCancel}
+                      autoFocus
+                      className="btn-ghost flex-1 rounded-lg text-xs py-1.5 justify-center"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleResetConfirm}
+                      style={{
+                        flex: 1,
+                        padding: '6px 0',
+                        borderRadius: 8,
+                        border: '1px solid rgba(220, 38, 38, 0.3)',
+                        background: 'rgba(220, 38, 38, 0.1)',
+                        color: '#b91c1c',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={handleResetRequest}
+                  className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
+                  style={{ fontSize: 15 }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+                  </svg>
+                  Reset Progress
+                </button>
+              )}
+              {onClose && (
+                <button
+                  onClick={onClose}
+                  className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
+                  style={{ fontSize: 15 }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                  </svg>
+                  Exit Maze
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {initialCameraReady && showBottomStartPlayerOverlay && (
         <svg
