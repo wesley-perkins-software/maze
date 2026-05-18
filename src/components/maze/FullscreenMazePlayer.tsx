@@ -119,6 +119,10 @@ const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
 const MINIMAP_PLAYER_MARKER_COLOR = '#2563eb';
 const PLAYER_MARKER_COLOR = '#2563eb';
 
+const MINIMAP_VIEWPORT_HIDE_MAX_MAZE_DIMENSION = 20;
+const MINIMAP_VIEWPORT_HIDE_AREA_RATIO = 0.55;
+const MINIMAP_VIEWPORT_HIDE_DIMENSION_RATIO = 0.85;
+
 type MinimapLayout = 'square' | 'horizontal-rail' | 'vertical-rail';
 
 export interface MinimapRenderedBounds {
@@ -130,6 +134,27 @@ export interface MinimapRenderedBounds {
   svgHeight: number;
   containerWidth: number;
   containerHeight: number;
+}
+
+function shouldShowMinimapViewportFrame(
+  maze: MazeData,
+  frameWidth: number,
+  frameHeight: number,
+  bounds: MinimapRenderedBounds,
+): boolean {
+  if (Math.max(maze.width, maze.height) <= MINIMAP_VIEWPORT_HIDE_MAX_MAZE_DIMENSION) {
+    return false;
+  }
+
+  if (bounds.width <= 0 || bounds.height <= 0) return false;
+
+  const widthRatio = frameWidth / bounds.width;
+  const heightRatio = frameHeight / bounds.height;
+  const areaRatio = widthRatio * heightRatio;
+
+  return widthRatio < MINIMAP_VIEWPORT_HIDE_DIMENSION_RATIO
+    && heightRatio < MINIMAP_VIEWPORT_HIDE_DIMENSION_RATIO
+    && areaRatio < MINIMAP_VIEWPORT_HIDE_AREA_RATIO;
 }
 
 function getMobileMinimapLayout(maze: MazeData): MinimapLayout {
@@ -334,8 +359,9 @@ function MinimapPlayerMarker({
         width: markerSize,
         height: markerSize,
         transform: 'translate(-50%, -50%)',
-        transition: 'left 120ms ease-out, top 120ms ease-out',
-        filter: 'drop-shadow(0 1px 2px rgba(15, 23, 42, 0.4))',
+        // Avoid CSS filters/transitions on the moving minimap marker. Some mobile
+        // compositors leave gray smear trails when a filtered SVG moves over the
+        // scaled minimap, which can look like a phantom path.
       }}
       data-marker-type="player"
       aria-hidden="true"
@@ -364,7 +390,6 @@ function MinimapEndpointMarkers({
     width: markerSize,
     height: markerSize,
     transform: 'translate(-50%, -50%)',
-    filter: 'drop-shadow(0 2px 3px rgba(15, 23, 42, 0.5)) drop-shadow(0 0 7px rgba(255, 255, 255, 0.98))',
   };
 
   // Arrow direction based on which perimeter wall the entry is on (viewBox 0 0 24 24, circle r=8.8 at 12,12)
@@ -998,10 +1023,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Fixed square card always has room for full-size desktop markers.
   const sidebarMarkerSize = DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE;
 
-  const minimapViewportFrameClass = isRailMinimap
-    ? 'absolute z-10 rounded border border-stone-900/65 pointer-events-none'
-    : 'absolute z-10 rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none';
-  const minimapViewportFrameOpacity = isRailMinimap ? 0.45 : 0.65;
+  const showMobileMinimapViewportFrame = shouldShowMinimapViewportFrame(maze, mmFrameW, mmFrameH, minimapRenderedBounds);
+  const showSidebarMinimapViewportFrame = shouldShowMinimapViewportFrame(maze, dmFrameW, dmFrameH, sidebarMinimapRenderedBounds);
+  const minimapViewportFrameClass = 'absolute z-10 rounded-sm border border-sky-700/45 pointer-events-none';
+  const minimapViewportFrameOpacity = isRailMinimap ? 0.55 : 0.7;
 
   // Converts pointer event coordinates (relative to the minimap container) into
   // maze-pixel coordinates using the letterbox-aware rendered bounds. Works for
@@ -1114,16 +1139,18 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             bounds={minimapRenderedBounds}
           />
           {/* Current viewport frame */}
-          <div
-            className={minimapViewportFrameClass}
-            style={{
-              left: mmFrameX,
-              top: mmFrameY,
-              width: mmFrameW,
-              height: mmFrameH,
-              opacity: minimapViewportFrameOpacity,
-            }}
-          />
+          {showMobileMinimapViewportFrame && (
+            <div
+              className={minimapViewportFrameClass}
+              style={{
+                left: mmFrameX,
+                top: mmFrameY,
+                width: mmFrameW,
+                height: mmFrameH,
+                opacity: minimapViewportFrameOpacity,
+              }}
+            />
+          )}
           {showMinimapPlayerMarker && (
             <MinimapPlayerMarker
               maze={maze}
@@ -1274,15 +1301,36 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   {showTrail ? 'Hide Traveled Path' : 'Show Traveled Path'}
                 </button>
                 <div className="h-px bg-slate-100" />
-                <button
-                  onClick={() => { dispatch({ type: 'RESET', startPosition: maze.entry }); setMenuOpen(false); }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-slate-500 hover:bg-slate-50 transition-colors flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
-                  </svg>
-                  Reset
-                </button>
+                {resetConfirming ? (
+                  <div className="px-4 py-3 bg-red-50">
+                    <p className="mb-2 text-sm font-medium text-red-800">Reset Progress?</p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleResetCancel}
+                        className="flex-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                        autoFocus
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => { handleResetConfirm(); setMenuOpen(false); }}
+                        className="flex-1 rounded-md border border-red-300 bg-red-100 px-2 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-200"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleResetRequest}
+                    className="w-full text-left px-4 py-2.5 text-sm text-slate-500 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+                    </svg>
+                    Reset Progress
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -1524,7 +1572,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                       }}
                     >
                       <p style={{ color: '#b91c1c', fontWeight: 600, fontSize: 12, marginBottom: 8 }}>
-                        Reset all progress?
+                        Reset Progress?
                       </p>
                       <div style={{ display: 'flex', gap: 8 }}>
                         <button
@@ -1630,16 +1678,18 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   markerSize={DESKTOP_MINIMAP_PLAYER_MARKER_SIZE}
                 />
               )}
-              <div
-                className="absolute rounded border-2 border-stone-900/75 ring-1 ring-white/90 pointer-events-none"
-                style={{
-                  left: dmFrameX,
-                  top: dmFrameY,
-                  width: dmFrameW,
-                  height: dmFrameH,
-                  opacity: 0.65,
-                }}
-              />
+              {showSidebarMinimapViewportFrame && (
+                <div
+                  className="absolute z-10 rounded-sm border border-sky-700/45 pointer-events-none"
+                  style={{
+                    left: dmFrameX,
+                    top: dmFrameY,
+                    width: dmFrameW,
+                    height: dmFrameH,
+                    opacity: 0.7,
+                  }}
+                />
+              )}
             </div>
             </div>{/* end minimap stage */}
 
@@ -1716,7 +1766,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               )}
               {resetConfirming ? (
                 <div className="rounded border border-red-200 bg-red-50 px-3 py-2.5 space-y-2.5">
-                  <p className="text-sm font-medium text-red-800">Reset progress?</p>
+                  <p className="text-sm font-medium text-red-800">Reset Progress?</p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleResetCancel}
@@ -1741,7 +1791,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
                   </svg>
-                  <span>Reset progress</span>
+                  <span>Reset Progress</span>
                 </button>
               )}
             </div>
