@@ -31,6 +31,7 @@ const TOP_BAR_H = 44;
 const AD_SLOT_H = 0;
 const SAFE_PAD = 32;
 function getMobileMinimapMaxSize(dockH: number): number {
+  if (dockH >= 240) return 144;
   if (dockH >= 192) return 120;
   if (dockH >= 168) return 96;
   return 90;
@@ -61,11 +62,12 @@ function getElementSize(el: HTMLElement | null): ViewportSize | null {
 function sizesEqual(a: ViewportSize, b: ViewportSize): boolean {
   return a.w === b.w && a.h === b.h;
 }
-function getMobileDockHeight(viewportH: number): number {
-  // Keep the full-size mobile controls on tall phones even when in-app browser
-  // chrome reduces visualViewport height below the physical screen height.
-  if (viewportH >= 640) return 192;
-  if (viewportH >= 560) return 168;
+function getMobileDockHeight(viewport: ViewportSize): number {
+  // iPhone Pro Max-sized screens need the original tall control shelf shown in
+  // QA screenshots; height alone is unreliable in mobile browser chrome.
+  if (viewport.w >= 430 && viewport.h >= 700) return 260;
+  if (viewport.h >= 640) return 192;
+  if (viewport.h >= 560) return 168;
   return 148;
 }
 const SIDEBAR_W = 224;
@@ -966,7 +968,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     && maze.entry.y === maze.height - 1;
 
   // ── Mobile dock sizing (responsive to viewport height) ───────────────────────
-  const mobileDockH = getMobileDockHeight(vpSize.h);
+  const mobileDockH = getMobileDockHeight(vpSize);
   const mobileMiniMapSlotH = mobileDockH - MOBILE_CONTROL_DOCK_Y_PADDING * 2;
   const mobileMinimapMaxSize = getMobileMinimapMaxSize(mobileDockH);
 
