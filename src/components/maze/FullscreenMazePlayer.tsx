@@ -77,6 +77,7 @@ const SIDEBAR_AD_ENABLED = false;
 // The slot renders below Resume/stats, never above the primary action.
 const PAUSE_AD_ENABLED = false;
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
+const TRAIL_VISIBILITY_KEY = 'maze:show-trail';
 const SOLVE_REVEAL_DELAY_MS = 250;
 
 function clamp(min: number, value: number, max: number): number {
@@ -484,13 +485,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   };
 
   const [showTrail, setShowTrail] = useState(() => {
-    try { return localStorage.getItem('maze:show-trail') !== 'false'; } catch { return true; }
+    try { return localStorage.getItem(TRAIL_VISIBILITY_KEY) === 'true'; } catch { return false; }
   });
 
   const toggleShowTrail = () => {
     setShowTrail(v => {
       const next = !v;
-      try { localStorage.setItem('maze:show-trail', next ? 'true' : 'false'); } catch {}
+      try { localStorage.setItem(TRAIL_VISIBILITY_KEY, next ? 'true' : 'false'); } catch {}
       return next;
     });
   };
@@ -1172,7 +1173,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
                 : (
                   <>
-                    <span className="md:hidden text-slate-400 text-xs">Swipe or use D-pad to move</span>
+                    <span className="md:hidden text-slate-500 text-xs font-medium">Swipe or use D-pad to move</span>
                     <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
                   </>
                 )
@@ -1208,7 +1209,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
             </button>
 
             {menuOpen && (
-              <div className="absolute top-full right-0 mt-1.5 w-40 rounded-xl shadow-lg border border-slate-200 bg-white overflow-hidden z-10">
+              <div className="absolute top-full right-0 mt-1.5 w-48 rounded-xl shadow-lg border border-slate-200 bg-white overflow-hidden z-10">
                 {state.status !== 'solved' && (
                   <button
                     onClick={() => { handleHint(); setMenuOpen(false); }}
@@ -1244,7 +1245,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                   </svg>
-                  {showTrail ? 'Hide path traveled' : 'Show path traveled'}
+                  {showTrail ? 'Hide Traveled Path' : 'Show Traveled Path'}
                 </button>
                 <div className="h-px bg-slate-100" />
                 <button
@@ -1662,7 +1663,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                 </svg>
-                <span>{showTrail ? 'Hide path traveled' : 'Show path traveled'}</span>
+                <span>{showTrail ? 'Hide Traveled Path' : 'Show Traveled Path'}</span>
               </button>
             </div>
 

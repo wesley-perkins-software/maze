@@ -36,6 +36,7 @@ function getHintStepCount(maze: MazeData): number {
 }
 
 const PERSONAL_BEST_KEY = (slug: string) => `pb:${slug}`;
+const TRAIL_VISIBILITY_KEY = 'maze:show-trail';
 const SOLVE_REVEAL_DELAY_MS = 250;
 
 function getPersonalBest(slug: string): number | null {
@@ -121,12 +122,12 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
 
   // ── Trail visibility preference (persisted) ──────────────────────────────────
   const [showTrail, setShowTrail] = useState(() => {
-    try { return localStorage.getItem('maze:show-trail') !== 'false'; } catch { return true; }
+    try { return localStorage.getItem(TRAIL_VISIBILITY_KEY) === 'true'; } catch { return false; }
   });
   const toggleShowTrail = () => {
     setShowTrail(v => {
       const next = !v;
-      try { localStorage.setItem('maze:show-trail', next ? 'true' : 'false'); } catch {}
+      try { localStorage.setItem(TRAIL_VISIBILITY_KEY, next ? 'true' : 'false'); } catch {}
       return next;
     });
   };
@@ -235,7 +236,7 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
             className="text-xs px-3 py-1.5 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium transition-colors"
             aria-pressed={showTrail}
           >
-            {showTrail ? 'Hide path' : 'Show path'}
+            {showTrail ? 'Hide Traveled Path' : 'Show Traveled Path'}
           </button>
 
           {/* Reset */}
