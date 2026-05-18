@@ -43,9 +43,9 @@ type TierConfig = {
 };
 
 const TIER_CONFIG: Record<Difficulty, TierConfig> = {
-  small:  { newestBias: 0.75, braidFactor: 0.02 },
-  medium: { newestBias: 0.80, braidFactor: 0.01 },
-  large:  { newestBias: 0.85, braidFactor: 0.01 },
+  small:  { newestBias: 0.75, braidFactor: 0.02 }, // approachable — keep as-is
+  medium: { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS, perfect maze
+  large:  { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS, perfect maze
 };
 
 export type GeneratorOptions = {
@@ -85,6 +85,15 @@ export type GeneratorOptions = {
 
 /** XOR constant for deriving the entropy RNG from the maze seed. */
 const ENTROPY_XOR = 0x9e3779b9;
+
+/**
+ * XOR constant for deriving the carve-start RNG.
+ * Must differ from ENTROPY_XOR so the two RNG streams are independent.
+ * Used to place the carving origin at a uniformly-random interior cell,
+ * which avoids the structural bias of a fixed center or corner start and
+ * produces significantly longer solution paths (D4 variant in topology audit).
+ */
+const CARVE_START_XOR = 0xf00dcafe;
 
 /** Prime multiplier for deriving retry maze seeds. */
 const MAZE_RETRY_PRIME = 0x9e3779b9;
@@ -142,9 +151,21 @@ function generateWithAnySidePortals(
   // live slider preview responsive.
   const interMazeThreshold = lightMode ? 0.50 : 0.78;
 
-  // Carving start cell — overridable for topology experiments.
-  const centerCell: Point = experimentalStartCell ??
-    { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+  // Carve start cell. Explicit override wins (experiments / tests). Otherwise:
+  //   small — maze center: approachable branchy feel with current newestBias
+  //   medium / large — deterministic random interior cell derived from seed:
+  //     pure DFS from a random origin produces much longer solution paths
+  //     (confirmed by topology audit: +22–27pp path fraction) and avoids
+  //     the portal-side bias that a fixed corner start introduces.
+  const centerCell: Point = experimentalStartCell ?? (
+    difficulty === 'small'
+      ? { x: Math.floor(width / 2), y: Math.floor(height / 2) }
+      : (() => {
+          const rng = createPRNG(seed ^ CARVE_START_XOR);
+          const idx = Math.floor(rng() * totalCells);
+          return { x: idx % width, y: (idx / width) | 0 };
+        })()
+  );
 
   // Separate entropy RNG for portal selection. Derived from the same seed so
   // results are deterministic, but never touches the carving RNG state.
