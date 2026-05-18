@@ -38,6 +38,7 @@ export type SolutionMetrics = {
 export function refValues(totalCells: number): { refPath: number; refTurns: number } {
   if (totalCells <= 400)  return { refPath: 88,  refTurns: 60  }; // ≤ 20×20   (audit p50=58, p75=64)
   if (totalCells <= 1600) return { refPath: 256, refTurns: 155 }; // ≤ 40×40   (audit p50=151, p75=165)
+  if (totalCells <= 2400) return { refPath: 270, refTurns: 210 }; // ≤ ~49×49 / 60×30 (audit p50≈200)
   if (totalCells <= 3600) return { refPath: 396, refTurns: 265 }; // ≤ 60×60   (audit p50=259, p75=275)
   if (totalCells <= 6400) return { refPath: 576, refTurns: 370 }; // ≤ 80×80   (audit p50=359, p75=381)
   return                         { refPath: 700, refTurns: 460 }; // 100×100+  (audit p50=454, p75=466)

@@ -74,6 +74,11 @@ export type GeneratorOptions = {
    * Full composite scoring applies for all explicit "Generate New Maze" calls.
    */
   lightMode?: boolean;
+  /**
+   * Experimental: override the carving start cell instead of the default center.
+   * For topology experiments only — not for production use.
+   */
+  experimentalStartCell?: Point;
 };
 
 // ── Any-side mode constants ───────────────────────────────────────────────────
@@ -108,6 +113,7 @@ export function generateMaze(options: GeneratorOptions): MazeData {
     return generateWithAnySidePortals(
       width, height, difficulty, seed, newestBias, braidFactor,
       options.lightMode ?? false,
+      options.experimentalStartCell,
     );
   }
 
@@ -128,6 +134,7 @@ function generateWithAnySidePortals(
   newestBias: number,
   braidFactor: number,
   lightMode: boolean,
+  experimentalStartCell?: Point,
 ): MazeData {
   const totalCells = width * height;
   const minPath    = Math.floor(minPathFraction(totalCells) * totalCells);
@@ -135,9 +142,9 @@ function generateWithAnySidePortals(
   // live slider preview responsive.
   const interMazeThreshold = lightMode ? 0.50 : 0.78;
 
-  // Carve always starts from the maze center — decoupled from entry/exit so
-  // multiple portal pairs can be scored on the same structural maze.
-  const centerCell: Point = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
+  // Carving start cell — overridable for topology experiments.
+  const centerCell: Point = experimentalStartCell ??
+    { x: Math.floor(width / 2), y: Math.floor(height / 2) };
 
   // Separate entropy RNG for portal selection. Derived from the same seed so
   // results are deterministic, but never touches the carving RNG state.
