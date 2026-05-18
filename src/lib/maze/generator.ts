@@ -274,7 +274,8 @@ function generateWithAnySidePortals(
 /**
  * Minimum acceptable solution path length as a fraction of total cells.
  * Used as a fast pre-filter before computing the full composite score.
- * These are aspirational targets; the fallback ensures generation never fails.
+ * These are conservative lower bounds — the composite quality gate (refPath
+ * in quality.ts) is calibrated to the observed p50 and is the real filter.
  */
 function minPathFraction(totalCells: number): number {
   if (totalCells <= 400)   return 0.22; // ≤ 20×20:  ~88 cells

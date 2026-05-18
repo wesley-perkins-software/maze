@@ -19,6 +19,43 @@ describe('refValues', () => {
     const m = refValues(1600);
     expect(m.refTurns).toBeGreaterThan(s.refTurns);
   });
+
+  it('≤1000 bucket is distinct from ≤400 and ≤1600 buckets', () => {
+    const r400  = refValues(400);
+    const r1000 = refValues(1000);
+    const r1600 = refValues(1600);
+    expect(r1000.refPath).toBeGreaterThan(r400.refPath);
+    expect(r1600.refPath).toBeGreaterThan(r1000.refPath);
+    expect(r1000.refTurns).toBeGreaterThan(r400.refTurns);
+    expect(r1600.refTurns).toBeGreaterThan(r1000.refTurns);
+  });
+
+  it('refValues are monotonically increasing across all tiers', () => {
+    const tiers = [400, 1000, 1600, 2400, 3600, 6400, 10000];
+    for (let i = 1; i < tiers.length; i++) {
+      const prev = refValues(tiers[i - 1]);
+      const curr = refValues(tiers[i]);
+      expect(curr.refPath).toBeGreaterThan(prev.refPath);
+      expect(curr.refTurns).toBeGreaterThan(prev.refTurns);
+    }
+  });
+
+  it('turnScore for a median 40×40 maze is not capped at 1.5×', () => {
+    // With new refs, p50 turns≈407 / refTurns=375 ≈ 1.085 — well below the 1.5× cap.
+    const { refTurns } = refValues(1600); // ≤ 40×40 bucket
+    const observedP50Turns = 407;
+    const ratio = observedP50Turns / refTurns;
+    expect(ratio).toBeGreaterThan(1.0);  // median maze scores above reference
+    expect(ratio).toBeLessThan(1.5);     // but is not permanently capped
+  });
+
+  it('turnScore for a median 100×100 maze is not capped at 1.5×', () => {
+    const { refTurns } = refValues(10000); // 100×100+ bucket
+    const observedP50Turns = 2027;
+    const ratio = observedP50Turns / refTurns;
+    expect(ratio).toBeGreaterThan(1.0);
+    expect(ratio).toBeLessThan(1.5);
+  });
 });
 
 describe('scoreMetrics', () => {

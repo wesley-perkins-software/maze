@@ -28,20 +28,21 @@ export type SolutionMetrics = {
 /**
  * Per-size reference values used to normalise score components.
  *
- * refPath: the minimum viable path length (= minPathFraction × totalCells).
- *   A maze at this threshold scores 1.0 on path; longer paths score up to 1.5.
+ * Both values are calibrated to ~92% of the observed p50 for each size tier
+ * (via scripts/quality-audit.ts, 50–200 mazes per size). Calibrated for
+ * the pure-DFS / no-braid topology used for medium and large mazes.
  *
- * refTurns: empirically calibrated to the p50–p75 of observed turn counts
- *   (via scripts/quality-audit.ts). An average maze scores ~1.0; a winding
- *   maze scores higher. Calibrated from a 50–200 maze sample per size.
+ * An average maze scores ~1.09× on each normalised component; p10 mazes
+ * score ~0.80–0.85×; exceptional mazes approach the 1.5× cap.
  */
 export function refValues(totalCells: number): { refPath: number; refTurns: number } {
-  if (totalCells <= 400)  return { refPath: 88,  refTurns: 60  }; // ≤ 20×20   (audit p50=58, p75=64)
-  if (totalCells <= 1600) return { refPath: 256, refTurns: 155 }; // ≤ 40×40   (audit p50=151, p75=165)
-  if (totalCells <= 2400) return { refPath: 270, refTurns: 210 }; // ≤ ~49×49 / 60×30 (audit p50≈200)
-  if (totalCells <= 3600) return { refPath: 396, refTurns: 265 }; // ≤ 60×60   (audit p50=259, p75=275)
-  if (totalCells <= 6400) return { refPath: 576, refTurns: 370 }; // ≤ 80×80   (audit p50=359, p75=381)
-  return                         { refPath: 700, refTurns: 460 }; // 100×100+  (audit p50=454, p75=466)
+  if (totalCells <= 400)  return { refPath: 88,   refTurns: 60   }; // ≤ 20×20   (p50 turns≈63,   p50 path≈101)
+  if (totalCells <= 1000) return { refPath: 420,  refTurns: 265  }; // ≤ 100×10  (p50 turns≈288,  p50 path≈456)
+  if (totalCells <= 1600) return { refPath: 590,  refTurns: 375  }; // ≤ 40×40   (p50 turns≈407,  p50 path≈645)
+  if (totalCells <= 2400) return { refPath: 650,  refTurns: 420  }; // ≤ 60×30   (p50 turns≈456,  p50 path≈713)
+  if (totalCells <= 3600) return { refPath: 1190, refTurns: 770  }; // ≤ 60×60   (p50 turns≈837,  p50 path≈1300)
+  if (totalCells <= 6400) return { refPath: 1930, refTurns: 1240 }; // ≤ 80×80   (p50 turns≈1352, p50 path≈2106)
+  return                         { refPath: 2910, refTurns: 1860 }; // 100×100+  (p50 turns≈2027, p50 path≈3170)
 }
 
 /**
