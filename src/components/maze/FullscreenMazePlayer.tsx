@@ -522,6 +522,26 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     createInitialState,
   );
 
+  const handleMobilePauseToggle = () => {
+    if (state.status === 'playing') {
+      setMenuOpen(false);
+      dispatch({ type: 'PAUSE' });
+      return;
+    }
+
+    dispatch({ type: 'RESUME' });
+  };
+
+  const isMobileMenuBlocked = state.status === 'paused' || state.status === 'solved';
+  const toggleMobileMenu = () => {
+    if (isMobileMenuBlocked) {
+      setMenuOpen(false);
+      return;
+    }
+
+    setMenuOpen(v => !v);
+  };
+
   // Exits look mode and returns to follow-camera. Stable reference (empty deps).
   const exitLookMode = useCallback(() => {
     // Restore the camera refs to the saved pre-look position so the follow
@@ -716,6 +736,11 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       rafIds.forEach(id => window.cancelAnimationFrame(id));
     };
   }, [mazeKey, mazeViewportSize?.w, mazeViewportSize?.h, vpSize.w, vpSize.h]);
+
+  // Close overflow menu whenever a modal/completion surface owns the UI.
+  useEffect(() => {
+    if (isMobileMenuBlocked) setMenuOpen(false);
+  }, [isMobileMenuBlocked]);
 
   // Close overflow menu on outside tap/click
   useEffect(() => {
@@ -1173,7 +1198,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
                 : (
                   <>
-                    <span className="md:hidden text-slate-500 text-xs font-medium">Swipe or use D-pad to move</span>
+                    <span className="md:hidden text-slate-500 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
                     <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
                   </>
                 )
@@ -1187,7 +1212,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         <div className="flex items-center gap-1 shrink-0">
           {(state.status === 'playing' || state.status === 'paused') && (
             <button
-              onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
+              onClick={handleMobilePauseToggle}
               className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors text-sm"
               aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
             >
@@ -1198,17 +1223,18 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
           {/* ⋯ overflow menu */}
           <div ref={menuRef} className="relative md:hidden">
             <button
-              onClick={() => setMenuOpen(v => !v)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors"
+              onClick={toggleMobileMenu}
+              disabled={isMobileMenuBlocked}
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:pointer-events-none"
               aria-label="More options"
-              aria-expanded={menuOpen}
+              aria-expanded={menuOpen && !isMobileMenuBlocked}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <circle cx="5"  cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
               </svg>
             </button>
 
-            {menuOpen && (
+            {menuOpen && !isMobileMenuBlocked && (
               <div className="absolute top-full right-0 mt-1.5 w-48 rounded-xl shadow-lg border border-slate-200 bg-white overflow-hidden z-10">
                 {state.status !== 'solved' && (
                   <button
