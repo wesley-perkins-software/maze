@@ -1025,8 +1025,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const showMobileMinimapViewportFrame = shouldShowMinimapViewportFrame(maze, mmFrameW, mmFrameH, minimapRenderedBounds);
   const showSidebarMinimapViewportFrame = shouldShowMinimapViewportFrame(maze, dmFrameW, dmFrameH, sidebarMinimapRenderedBounds);
-  const minimapViewportFrameClass = 'absolute z-10 rounded-sm border-2 border-slate-950 pointer-events-none';
-  const minimapViewportFrameOpacity = isRailMinimap ? 0.9 : 0.95;
+  const minimapViewportFrameClass = 'absolute z-10 rounded-sm pointer-events-none';
+  const minimapViewportFrameStyle = { borderWidth: 2, borderStyle: 'solid' as const, borderColor: 'rgba(31, 41, 55, 0.78)', backgroundColor: 'transparent' };
 
   // Converts pointer event coordinates (relative to the minimap container) into
   // maze-pixel coordinates using the letterbox-aware rendered bounds. Works for
@@ -1148,7 +1148,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 top: mmFrameY,
                 width: mmFrameW,
                 height: mmFrameH,
-                opacity: minimapViewportFrameOpacity,
+                ...minimapViewportFrameStyle,
               }}
             />
           )}
@@ -1505,13 +1505,13 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
               )}
               {showSidebarMinimapViewportFrame && (
                 <div
-                  className="absolute z-10 rounded-sm border border-sky-700/45 pointer-events-none"
+                  className={minimapViewportFrameClass}
                   style={{
                     left: dmFrameX,
                     top: dmFrameY,
                     width: dmFrameW,
                     height: dmFrameH,
-                    opacity: 0.7,
+                    ...minimapViewportFrameStyle,
                   }}
                 />
               )}
