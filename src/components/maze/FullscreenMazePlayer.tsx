@@ -62,8 +62,10 @@ function sizesEqual(a: ViewportSize, b: ViewportSize): boolean {
   return a.w === b.w && a.h === b.h;
 }
 function getMobileDockHeight(viewportH: number): number {
-  if (viewportH >= 700) return 192;
-  if (viewportH >= 580) return 168;
+  // Keep the full-size mobile controls on tall phones even when in-app browser
+  // chrome reduces visualViewport height below the physical screen height.
+  if (viewportH >= 640) return 192;
+  if (viewportH >= 560) return 168;
   return 148;
 }
 const SIDEBAR_W = 224;
@@ -1178,6 +1180,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         isActive={isActive || state.status === 'paused'}
         disabled={state.status === 'paused'}
         compact={mobileDockH <= 148}
+        roomy={mobileDockH >= 192}
       />
     </div>
   );
