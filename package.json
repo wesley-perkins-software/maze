@@ -11,6 +11,8 @@
     "validate:catalog": "tsx scripts/validate-catalog.ts",
     "generate:og": "node scripts/generate-og.mjs",
     "quality:audit": "tsx scripts/quality-audit.ts",
+    "topology:experiment": "tsx scripts/topology-experiment.ts",
+    "confirmation:audit": "tsx scripts/confirmation-audit.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
