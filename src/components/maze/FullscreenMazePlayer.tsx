@@ -63,8 +63,7 @@ function sizesEqual(a: ViewportSize, b: ViewportSize): boolean {
 }
 function getMobileDockHeight(viewportH: number): number {
   if (viewportH >= 700) return 192;
-  if (viewportH >= 580) return 168;
-  return 148;
+  return 168;
 }
 const SIDEBAR_W = 224;
 const SIDEBAR_MINIMAP_SIZE = 192;
@@ -1177,7 +1176,6 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         dispatch={dispatchWithLookExit}
         isActive={isActive || state.status === 'paused'}
         disabled={state.status === 'paused'}
-        compact={mobileDockH <= 148}
       />
     </div>
   );

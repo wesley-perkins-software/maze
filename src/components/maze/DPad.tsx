@@ -8,7 +8,6 @@ const HOLD_REPEAT_MS = 320;
 interface DPadProps {
   dispatch: (action: GameAction) => void;
   isActive: boolean;
-  compact?: boolean;
   disabled?: boolean;
 }
 
@@ -41,7 +40,7 @@ function ChevronRight() {
   );
 }
 
-export function DPad({ dispatch, isActive, compact = false, disabled = false }: DPadProps) {
+export function DPad({ dispatch, isActive, disabled = false }: DPadProps) {
   const [activeDirection, setActiveDirection] = useState<Direction | null>(null);
   const touchActiveRef = useRef(false);
   const touchResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -195,8 +194,8 @@ export function DPad({ dispatch, isActive, compact = false, disabled = false }: 
       className="touch-none"
       style={{
         display: 'grid',
-        gridTemplateColumns: compact ? '56px 24px 56px' : '56px 32px 56px',
-        gridTemplateRows: compact ? '56px 24px 56px' : '56px 32px 56px',
+        gridTemplateColumns: '56px 32px 56px',
+        gridTemplateRows: '56px 32px 56px',
         justifyItems: 'center',
         alignItems: 'center',
       }}
