@@ -1025,7 +1025,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
 
   const showMobileMinimapViewportFrame = shouldShowMinimapViewportFrame(maze, mmFrameW, mmFrameH, minimapRenderedBounds);
   const showSidebarMinimapViewportFrame = shouldShowMinimapViewportFrame(maze, dmFrameW, dmFrameH, sidebarMinimapRenderedBounds);
-  const minimapViewportFrameClass = 'absolute z-10 rounded-sm border border-sky-700/45 pointer-events-none';
+  const minimapViewportFrameClass = 'absolute z-10 rounded-sm border border-sky-900/75 pointer-events-none';
   const minimapViewportFrameOpacity = isRailMinimap ? 0.55 : 0.7;
 
   // Converts pointer event coordinates (relative to the minimap container) into
