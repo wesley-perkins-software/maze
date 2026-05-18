@@ -9,6 +9,7 @@ interface DPadProps {
   dispatch: (action: GameAction) => void;
   isActive: boolean;
   compact?: boolean;
+  disabled?: boolean;
 }
 
 function ChevronUp() {
@@ -40,7 +41,7 @@ function ChevronRight() {
   );
 }
 
-export function DPad({ dispatch, isActive, compact = false }: DPadProps) {
+export function DPad({ dispatch, isActive, compact = false, disabled = false }: DPadProps) {
   const [activeDirection, setActiveDirection] = useState<Direction | null>(null);
   const touchActiveRef = useRef(false);
   const touchResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -57,6 +58,7 @@ export function DPad({ dispatch, isActive, compact = false }: DPadProps) {
   }
 
   function run(direction: Direction) {
+    if (disabled) return;
     lastDirectionRef.current = direction;
     setActiveDirection(direction);
     dispatch({ type: 'RUN', direction });
@@ -86,6 +88,7 @@ export function DPad({ dispatch, isActive, compact = false }: DPadProps) {
 
   function handleTouchStart(e: TouchEvent<HTMLButtonElement>, direction: Direction) {
     e.preventDefault();
+    if (disabled) return;
     // Cancel any pending reset so rapid taps don't let synthetic mousedown through.
     if (touchResetTimerRef.current !== null) {
       clearTimeout(touchResetTimerRef.current);
@@ -96,7 +99,7 @@ export function DPad({ dispatch, isActive, compact = false }: DPadProps) {
   }
 
   function handleMouseDown(direction: Direction) {
-    if (touchActiveRef.current) return;
+    if (disabled || touchActiveRef.current) return;
     run(direction);
   }
 
@@ -106,9 +109,13 @@ export function DPad({ dispatch, isActive, compact = false }: DPadProps) {
     if (touchResetTimerRef.current !== null) clearTimeout(touchResetTimerRef.current);
   }, []);
 
+  useEffect(() => {
+    if (disabled) stopInteraction();
+  }, [disabled]);
+
   // Window-level listeners. No dep array — safe to re-register each render.
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive || disabled) return;
 
     function onTouchMove(e: TouchEvent) {
       if (!touchActiveRef.current) return;
@@ -166,7 +173,9 @@ export function DPad({ dispatch, isActive, compact = false }: DPadProps) {
         type="button"
         aria-label={label}
         data-dir={dir}
-        className={`${baseBtnClass} ${
+        disabled={disabled}
+        aria-disabled={disabled}
+        className={`${baseBtnClass} ${disabled ? 'opacity-70 cursor-default' : ''} ${
           isPressed
             ? 'bg-[#F1EFE8] border-[var(--color-border-strong)] text-slate-700 shadow-none scale-[0.97]'
             : 'active:bg-[#F1EFE8] active:border-[var(--color-border-strong)] active:text-slate-700 active:scale-[0.97] active:shadow-none'
