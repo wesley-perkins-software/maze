@@ -119,9 +119,7 @@ const DESKTOP_MINIMAP_PLAYER_MARKER_SIZE = 12;
 const MINIMAP_PLAYER_MARKER_COLOR = '#2563eb';
 const PLAYER_MARKER_COLOR = '#2563eb';
 
-const MINIMAP_VIEWPORT_HIDE_MAX_MAZE_DIMENSION = 20;
-const MINIMAP_VIEWPORT_HIDE_AREA_RATIO = 0.55;
-const MINIMAP_VIEWPORT_HIDE_DIMENSION_RATIO = 0.85;
+const MINIMAP_VIEWPORT_HIDE_NEAR_FULL_RATIO = 0.94;
 
 type MinimapLayout = 'square' | 'horizontal-rail' | 'vertical-rail';
 
@@ -137,24 +135,20 @@ export interface MinimapRenderedBounds {
 }
 
 function shouldShowMinimapViewportFrame(
-  maze: MazeData,
   frameWidth: number,
   frameHeight: number,
   bounds: MinimapRenderedBounds,
 ): boolean {
-  if (Math.max(maze.width, maze.height) <= MINIMAP_VIEWPORT_HIDE_MAX_MAZE_DIMENSION) {
-    return false;
-  }
-
   if (bounds.width <= 0 || bounds.height <= 0) return false;
 
   const widthRatio = frameWidth / bounds.width;
   const heightRatio = frameHeight / bounds.height;
-  const areaRatio = widthRatio * heightRatio;
+  // Hide only when the viewport covers nearly the entire minimap; otherwise
+  // keep the frame visible even on small/medium mazes.
+  const coversNearlyAllWidth = widthRatio >= MINIMAP_VIEWPORT_HIDE_NEAR_FULL_RATIO;
+  const coversNearlyAllHeight = heightRatio >= MINIMAP_VIEWPORT_HIDE_NEAR_FULL_RATIO;
 
-  return widthRatio < MINIMAP_VIEWPORT_HIDE_DIMENSION_RATIO
-    && heightRatio < MINIMAP_VIEWPORT_HIDE_DIMENSION_RATIO
-    && areaRatio < MINIMAP_VIEWPORT_HIDE_AREA_RATIO;
+  return !(coversNearlyAllWidth && coversNearlyAllHeight);
 }
 
 function getMobileMinimapLayout(maze: MazeData): MinimapLayout {
@@ -1023,8 +1017,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   // Fixed square card always has room for full-size desktop markers.
   const sidebarMarkerSize = DESKTOP_MINIMAP_ENDPOINT_MARKER_SIZE;
 
-  const showMobileMinimapViewportFrame = shouldShowMinimapViewportFrame(maze, mmFrameW, mmFrameH, minimapRenderedBounds);
-  const showSidebarMinimapViewportFrame = shouldShowMinimapViewportFrame(maze, dmFrameW, dmFrameH, sidebarMinimapRenderedBounds);
+  const showMobileMinimapViewportFrame = shouldShowMinimapViewportFrame(mmFrameW, mmFrameH, minimapRenderedBounds);
+  const showSidebarMinimapViewportFrame = shouldShowMinimapViewportFrame(dmFrameW, dmFrameH, sidebarMinimapRenderedBounds);
   const minimapViewportFrameClass = 'absolute z-10 rounded-sm pointer-events-none';
   const minimapViewportFrameStyle = { borderWidth: 2, borderStyle: 'solid' as const, borderColor: 'rgba(31, 41, 55, 0.78)', backgroundColor: 'transparent' };
 
