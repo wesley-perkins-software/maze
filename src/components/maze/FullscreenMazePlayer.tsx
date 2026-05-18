@@ -359,8 +359,9 @@ function MinimapPlayerMarker({
         width: markerSize,
         height: markerSize,
         transform: 'translate(-50%, -50%)',
-        transition: 'left 120ms ease-out, top 120ms ease-out',
-        filter: 'drop-shadow(0 1px 2px rgba(15, 23, 42, 0.4))',
+        // Avoid CSS filters/transitions on the moving minimap marker. Some mobile
+        // compositors leave gray smear trails when a filtered SVG moves over the
+        // scaled minimap, which can look like a phantom path.
       }}
       data-marker-type="player"
       aria-hidden="true"
@@ -389,7 +390,6 @@ function MinimapEndpointMarkers({
     width: markerSize,
     height: markerSize,
     transform: 'translate(-50%, -50%)',
-    filter: 'drop-shadow(0 2px 3px rgba(15, 23, 42, 0.5)) drop-shadow(0 0 7px rgba(255, 255, 255, 0.98))',
   };
 
   // Arrow direction based on which perimeter wall the entry is on (viewBox 0 0 24 24, circle r=8.8 at 12,12)
