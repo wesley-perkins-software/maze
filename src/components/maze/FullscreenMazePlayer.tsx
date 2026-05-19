@@ -630,21 +630,35 @@ export function FullscreenMazePlayer({
   onSessionChangeRef.current = onSessionChange;
 
   // Debounced save on every state/showTrail change (500ms after last update).
+  // Skip idle (never moved) — there's nothing meaningful to restore.
   useEffect(() => {
-    if (!onSessionChange || state.status === 'solved') return;
+    if (!onSessionChange || state.status === 'solved' || state.status === 'idle') return;
     const id = window.setTimeout(() => {
       onSessionChangeRef.current?.(stateRef.current, showTrailRef.current);
     }, 500);
     return () => clearTimeout(id);
   }, [state, showTrail, onSessionChange]);
 
+  // Save immediately on unmount so progress is preserved when the player Exits.
+  // The debounced effect's cleanup cancels the pending timeout before it fires,
+  // so without this the last few seconds of movement could be lost.
+  useEffect(() => {
+    return () => {
+      const s = stateRef.current;
+      if (s.status === 'playing' || s.status === 'paused') {
+        onSessionChangeRef.current?.(s, showTrailRef.current);
+      }
+    };
+  }, []);
+
   // Immediate save on tab hide / page unload — critical for iOS Safari which
   // kills pages without firing beforeunload.
   useEffect(() => {
     if (!onSessionChange) return;
     const saveNow = () => {
-      if (stateRef.current.status !== 'solved') {
-        onSessionChangeRef.current?.(stateRef.current, showTrailRef.current);
+      const s = stateRef.current;
+      if (s.status === 'playing' || s.status === 'paused') {
+        onSessionChangeRef.current?.(s, showTrailRef.current);
       }
     };
     document.addEventListener('visibilitychange', saveNow);

@@ -225,9 +225,10 @@ export function difficultyForCustomSize(w: number, h: number): Difficulty {
 function formatResumeTime(ms: number): string {
   const s = Math.floor(ms / 1000);
   const m = Math.floor(s / 60);
-  if (m === 0) return `${s}s`;
   const rem = s % 60;
-  return rem === 0 ? `${m} min` : `${m} min ${String(rem).padStart(2, '0')} sec`;
+  if (m === 0) return `${s} second${s !== 1 ? 's' : ''}`;
+  if (rem === 0) return `${m} minute${m !== 1 ? 's' : ''}`;
+  return `${m} minute${m !== 1 ? 's' : ''} ${rem} second${rem !== 1 ? 's' : ''}`;
 }
 
 function ResumeBanner({
@@ -245,7 +246,7 @@ function ResumeBanner({
 
   return (
     <div
-      className="rounded-sm border-2 border-arch-accent/40 bg-arch-accent/5 px-4 py-3 flex flex-col gap-3"
+      className="rounded-sm border border-arch-200 bg-arch-surface px-4 py-3 flex flex-col gap-3"
       role="region"
       aria-label="Unfinished maze session"
     >
@@ -260,7 +261,7 @@ function ResumeBanner({
       <div className="flex gap-2">
         <button
           onClick={onResume}
-          className="flex-1 rounded-sm bg-arch-accent px-3 py-2 text-sm font-semibold text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark transition-colors"
+          className="flex-1 rounded-sm bg-arch-charcoal px-3 py-2 text-sm font-semibold text-white hover:bg-arch-charcoal/85 active:bg-arch-charcoal/85 transition-colors"
         >
           Resume
         </button>
@@ -634,6 +635,10 @@ export function MazeGenerator() {
               setPlaying(false);
               setInitialGameState(undefined);
               setInitialShowTrail(undefined);
+              // Reload any session the player just saved so the resume card
+              // appears immediately after Exit (without requiring a page reload).
+              const saved = loadGeneratedSession(GENERATOR_VERSION);
+              setResumeSession(saved);
             }}
           />
         )}
