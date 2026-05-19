@@ -9,6 +9,7 @@ interface DPadProps {
   dispatch: (action: GameAction) => void;
   isActive: boolean;
   compact?: boolean;
+  roomy?: boolean;
   disabled?: boolean;
 }
 
@@ -41,7 +42,7 @@ function ChevronRight() {
   );
 }
 
-export function DPad({ dispatch, isActive, compact = false, disabled = false }: DPadProps) {
+export function DPad({ dispatch, isActive, compact = false, roomy = false, disabled = false }: DPadProps) {
   const [activeDirection, setActiveDirection] = useState<Direction | null>(null);
   const touchActiveRef = useRef(false);
   const touchResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -159,8 +160,11 @@ export function DPad({ dispatch, isActive, compact = false, disabled = false }: 
   // Early return after all hooks — safe per React rules.
   if (!isActive) return null;
 
+  const buttonSize = roomy && !compact ? 64 : 56;
+  const gridGap = compact ? 24 : roomy ? 36 : 32;
+
   const baseBtnClass =
-    'flex items-center justify-center w-14 h-14 rounded-full ' +
+    'flex items-center justify-center rounded-full ' +
     'bg-[#FDFCF8] border-2 border-[var(--color-border)] text-[#64748B] shadow ' +
     'select-none touch-none ' +
     'transition-all duration-75 cursor-pointer ' +
@@ -180,6 +184,7 @@ export function DPad({ dispatch, isActive, compact = false, disabled = false }: 
             ? 'bg-[#F1EFE8] border-[var(--color-border-strong)] text-slate-700 shadow-none scale-[0.97]'
             : 'active:bg-[#F1EFE8] active:border-[var(--color-border-strong)] active:text-slate-700 active:scale-[0.97] active:shadow-none'
         }`}
+        style={{ width: buttonSize, height: buttonSize }}
         onMouseDown={() => handleMouseDown(dir)}
         onTouchStart={(e) => handleTouchStart(e, dir)}
       >
@@ -195,8 +200,8 @@ export function DPad({ dispatch, isActive, compact = false, disabled = false }: 
       className="touch-none"
       style={{
         display: 'grid',
-        gridTemplateColumns: compact ? '56px 24px 56px' : '56px 32px 56px',
-        gridTemplateRows: compact ? '56px 24px 56px' : '56px 32px 56px',
+        gridTemplateColumns: `${buttonSize}px ${gridGap}px ${buttonSize}px`,
+        gridTemplateRows: `${buttonSize}px ${gridGap}px ${buttonSize}px`,
         justifyItems: 'center',
         alignItems: 'center',
       }}
