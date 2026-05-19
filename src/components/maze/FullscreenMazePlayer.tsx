@@ -1829,7 +1829,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                     marginBottom: 2,
                   }}
                 >
-                  <p style={{ color: '#b91c1c', fontWeight: 600, fontSize: 12, marginBottom: 8 }}>
+                  <p style={{ color: '#b91c1c', fontWeight: 600, fontSize: 14, marginBottom: 8 }}>
                     Reset Progress?
                   </p>
                   <div style={{ display: 'flex', gap: 8 }}>
