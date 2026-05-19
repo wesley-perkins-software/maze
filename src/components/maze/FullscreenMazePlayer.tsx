@@ -5,6 +5,7 @@ import { Timer } from './Timer';
 import { gameReducer, createInitialState } from '../../lib/gameplay/reducer';
 import { useKeyboardInput, useTouchInput } from '../../lib/gameplay/input';
 import type { GameAction } from '../../lib/gameplay/types';
+import { getEntryStartPosition, getExitEndPosition } from '../../lib/gameplay/movement';
 import { DPad } from './DPad';
 import { inBounds } from '../../lib/maze/utils';
 import { solveMazeFrom } from '../../lib/maze/solver';
@@ -844,12 +845,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
   const mazeH = maze.height * PLAY_CELL_SIZE + MAZE_PADDING * 2;
 
-  const pointOnMarker = (point: typeof maze.entry, marker: typeof maze.entry) => (
-    (marker.y === 0 && point.x === marker.x && point.y === -1) ||
-    (marker.y === maze.height - 1 && point.x === marker.x && point.y === maze.height) ||
-    (marker.x === 0 && point.x === -1 && point.y === marker.y) ||
-    (marker.x === maze.width - 1 && point.x === maze.width && point.y === marker.y)
-  );
+  const entryStartPosition = getEntryStartPosition(maze);
+  const exitEndPosition = getExitEndPosition(maze);
   const endpointMarkerRadius = PLAY_CELL_SIZE * 0.38;
   const mazeBounds = getMazeBodyBounds(maze.width, maze.height, PLAY_CELL_SIZE, MAZE_PADDING);
   const entrySide = inferPortalSide(maze, maze.entry);
@@ -885,8 +882,10 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const markerPy = (point: typeof maze.entry, marker: { x: number; y: number } | null) => marker?.y
     ?? (MAZE_PADDING + point.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2);
 
-  const playerOnEntryMarker = pointOnMarker(state.playerPosition, maze.entry);
-  const playerOnExitMarker = pointOnMarker(state.playerPosition, maze.exit);
+  const playerOnEntryMarker = state.playerPosition.x === entryStartPosition.x
+    && state.playerPosition.y === entryStartPosition.y;
+  const playerOnExitMarker = state.playerPosition.x === exitEndPosition.x
+    && state.playerPosition.y === exitEndPosition.y;
   const playerOnEntryPortalCell = state.playerPosition.x === maze.entry.x && state.playerPosition.y === maze.entry.y;
   const playerOnExitPortalCell = state.playerPosition.x === maze.exit.x && state.playerPosition.y === maze.exit.y;
 
