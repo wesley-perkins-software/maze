@@ -4,6 +4,11 @@ import type { GameAction, Direction } from '../../lib/gameplay/types';
 // How long between repeated RUN dispatches while a button is held.
 // Longer than a single-cell repeat since each step covers more distance.
 const HOLD_REPEAT_MS = 320;
+const D_PAD_BUTTON_SIZE = 56;
+// Keep a small but intentional air gap between neighboring controls. The gap is
+// the edge-to-edge spacing between buttons because the middle grid track is empty.
+const D_PAD_GAP = 28;
+const D_PAD_COMPACT_GAP = 20;
 
 interface DPadProps {
   dispatch: (action: GameAction) => void;
@@ -195,8 +200,12 @@ export function DPad({ dispatch, isActive, compact = false, disabled = false }: 
       className="touch-none"
       style={{
         display: 'grid',
-        gridTemplateColumns: compact ? '56px 24px 56px' : '56px 32px 56px',
-        gridTemplateRows: compact ? '56px 24px 56px' : '56px 32px 56px',
+        gridTemplateColumns: compact
+          ? `${D_PAD_BUTTON_SIZE}px ${D_PAD_COMPACT_GAP}px ${D_PAD_BUTTON_SIZE}px`
+          : `${D_PAD_BUTTON_SIZE}px ${D_PAD_GAP}px ${D_PAD_BUTTON_SIZE}px`,
+        gridTemplateRows: compact
+          ? `${D_PAD_BUTTON_SIZE}px ${D_PAD_COMPACT_GAP}px ${D_PAD_BUTTON_SIZE}px`
+          : `${D_PAD_BUTTON_SIZE}px ${D_PAD_GAP}px ${D_PAD_BUTTON_SIZE}px`,
         justifyItems: 'center',
         alignItems: 'center',
       }}
