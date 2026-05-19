@@ -604,8 +604,9 @@ export function FullscreenMazePlayer({
   // only exits look mode (returns camera to player) without applying the move.
   // Uses cameraModeRef so the callback stays stable across mode changes.
   const dispatchWithLookExit = useCallback((action: GameAction) => {
-    if (action.type === 'RUN' && cameraModeRef.current === 'look') {
-      exitLookMode();
+    if (cameraModeRef.current === 'look') {
+      // One-off swipe (RUN) exits look mode; continuous drag (MOVE) does nothing in look mode.
+      if (action.type === 'RUN') exitLookMode();
       return;
     }
     dispatch(action);
