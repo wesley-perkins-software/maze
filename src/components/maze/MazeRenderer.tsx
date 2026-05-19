@@ -6,6 +6,7 @@
 import type { MazeData, Point } from '../../types/maze';
 import { WALL_N, WALL_E, WALL_S, WALL_W } from '../../types/maze';
 import { indexToPoint } from '../../lib/maze/utils';
+import { getEntryStartPosition, getExitEndPosition } from '../../lib/gameplay/movement';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 import { FINISH_MARKER_COLOR, PositionedFinishFlagGlyph, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
 
@@ -198,30 +199,32 @@ export function MazeRenderer({
   // ── Player circle ────────────────────────────────────────────────────────────
   // The player can be on a virtual cell just outside an entry/exit gap.
   // In that case, draw it centered on the corresponding outside marker.
-  const isEntryMarkerPosition = playerPosition && (
-    (entry.y === 0 && playerPosition.x === entry.x && playerPosition.y === -1) ||
-    (entry.y === height - 1 && playerPosition.x === entry.x && playerPosition.y === height) ||
-    (entry.x === 0 && playerPosition.x === -1 && playerPosition.y === entry.y) ||
-    (entry.x === width - 1 && playerPosition.x === width && playerPosition.y === entry.y)
-  );
-  const isExitMarkerPosition = playerPosition && (
-    (exit.y === 0 && playerPosition.x === exit.x && playerPosition.y === -1) ||
-    (exit.y === height - 1 && playerPosition.x === exit.x && playerPosition.y === height) ||
-    (exit.x === 0 && playerPosition.x === -1 && playerPosition.y === exit.y) ||
-    (exit.x === width - 1 && playerPosition.x === width && playerPosition.y === exit.y)
-  );
+  const isEntryPortalCell = playerPosition
+    && playerPosition.x === entry.x
+    && playerPosition.y === entry.y;
+  const isExitPortalCell = playerPosition
+    && playerPosition.x === exit.x
+    && playerPosition.y === exit.y;
+  const entryStartPosition = getEntryStartPosition(maze);
+  const exitEndPosition = getExitEndPosition(maze);
+  const isEntryMarkerPosition = playerPosition
+    && playerPosition.x === entryStartPosition.x
+    && playerPosition.y === entryStartPosition.y;
+  const isExitMarkerPosition = playerPosition
+    && playerPosition.x === exitEndPosition.x
+    && playerPosition.y === exitEndPosition.y;
 
   const playerCx = playerPosition
-    ? isEntryMarkerPosition
+    ? (markersOutside && entryMarker && (isEntryPortalCell || isEntryMarkerPosition))
       ? entryMarker?.x ?? null
-      : isExitMarkerPosition
+      : (markersOutside && exitMarker && (isExitPortalCell || isExitMarkerPosition))
         ? exitMarker?.x ?? null
         : padding + playerPosition.x * cellSize + cellSize / 2
     : null;
   const playerCy = playerPosition
-    ? isEntryMarkerPosition
+    ? (markersOutside && entryMarker && (isEntryPortalCell || isEntryMarkerPosition))
       ? entryMarker?.y ?? null
-      : isExitMarkerPosition
+      : (markersOutside && exitMarker && (isExitPortalCell || isExitMarkerPosition))
         ? exitMarker?.y ?? null
         : padding + playerPosition.y * cellSize + cellSize / 2
     : null;
