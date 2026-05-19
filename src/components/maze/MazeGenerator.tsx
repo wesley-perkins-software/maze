@@ -234,15 +234,22 @@ function formatResumeTime(ms: number): string {
 function ResumeBanner({
   session,
   onResume,
-  onStartNew,
+  onDiscard,
 }: {
   session: GeneratedMazeSession;
   onResume: () => void;
-  onStartNew: () => void;
+  onDiscard: () => void;
 }) {
   const { maze: m, progress } = session;
-  const timeStr = formatResumeTime(progress.elapsedMs);
-  const stepsStr = progress.steps.toLocaleString();
+
+  // Only show elapsed time once at least 1 second has passed; avoid "0 seconds".
+  const timeStr = progress.elapsedMs >= 1000 ? formatResumeTime(progress.elapsedMs) : null;
+  const stepWord = progress.steps === 1 ? 'step' : 'steps';
+  const detail = progress.steps === 0 && !timeStr
+    ? 'Not started'
+    : timeStr
+      ? `${timeStr} · ${progress.steps.toLocaleString()} ${stepWord}`
+      : `${progress.steps.toLocaleString()} ${stepWord}`;
 
   return (
     <div
@@ -255,7 +262,7 @@ function ResumeBanner({
           You have an unfinished maze.
         </p>
         <p className="mt-0.5 text-xs font-mono text-arch-600 leading-snug">
-          {m.width} × {m.height} {m.label} · {timeStr} · {stepsStr} steps
+          {m.width} × {m.height} {m.label} · {detail}
         </p>
       </div>
       <div className="flex gap-2">
@@ -266,10 +273,10 @@ function ResumeBanner({
           Resume
         </button>
         <button
-          onClick={onStartNew}
+          onClick={onDiscard}
           className="flex-1 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
         >
-          Start New
+          Discard
         </button>
       </div>
     </div>
@@ -463,17 +470,13 @@ export function MazeGenerator() {
     logMazeStateDebug('resume click', restoredMaze);
   }, [resumeSession]);
 
-  // "Start New" in the resume banner — discard the saved session and play the
-  // current preview maze as a fresh game.
-  const handleStartNew = useCallback(() => {
+  // "Discard" in the resume banner — clears the saved session and hides the card.
+  // Does NOT start a maze, generate a maze, or change the current preview.
+  // The user can use normal generator controls to start a fresh game.
+  const handleDiscard = useCallback(() => {
     clearGeneratedSession();
     setResumeSession(null);
-    setInitialGameState(undefined);
-    setInitialShowTrail(undefined);
-    hasPlayedRef.current = true;
-    setPlaying(true);
-    logMazeStateDebug('start new (discard session)', maze);
-  }, [maze]);
+  }, []);
 
   const handleSolve = useCallback((stats: SolveStats) => {
     clearGeneratedSession();
@@ -696,7 +699,7 @@ export function MazeGenerator() {
 
         {/* Resume banner — shown when an unfinished generated-maze session exists */}
         {resumeSession && !playing && (
-          <ResumeBanner session={resumeSession} onResume={handleResume} onStartNew={handleStartNew} />
+          <ResumeBanner session={resumeSession} onResume={handleResume} onDiscard={handleDiscard} />
         )}
 
         {/* Size selector — always first */}

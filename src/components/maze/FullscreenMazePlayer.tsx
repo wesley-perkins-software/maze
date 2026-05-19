@@ -642,6 +642,8 @@ export function FullscreenMazePlayer({
   // Save immediately on unmount so progress is preserved when the player Exits.
   // The debounced effect's cleanup cancels the pending timeout before it fires,
   // so without this the last few seconds of movement could be lost.
+  // Note: handleClose also saves synchronously for the Exit button path, so
+  // this serves as a safety net for other unmount scenarios.
   useEffect(() => {
     return () => {
       const s = stateRef.current;
@@ -650,6 +652,18 @@ export function FullscreenMazePlayer({
       }
     };
   }, []);
+
+  // Wrapper for the Exit button. Saves the latest state synchronously BEFORE
+  // calling onClose so that the parent can immediately reload from localStorage.
+  // The debounced autosave would be cancelled by React's cleanup on unmount, so
+  // without this explicit save the last <500ms of movement would be lost.
+  const handleClose = useCallback(() => {
+    const s = stateRef.current;
+    if (s.status === 'playing' || s.status === 'paused') {
+      onSessionChangeRef.current?.(s, showTrailRef.current);
+    }
+    onClose();
+  }, [onClose]);
 
   // Immediate save on tab hide / page unload — critical for iOS Safari which
   // kills pages without firing beforeunload.
@@ -1302,7 +1316,7 @@ export function FullscreenMazePlayer({
       >
         {/* Left: Exit */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors shrink-0"
           aria-label="Exit play mode"
         >
@@ -1952,18 +1966,16 @@ export function FullscreenMazePlayer({
                   Reset Progress
                 </button>
               )}
-              {onClose && (
-                <button
-                  onClick={onClose}
-                  className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
-                  style={{ fontSize: 15 }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-                  </svg>
-                  Exit Maze
-                </button>
-              )}
+              <button
+                onClick={handleClose}
+                className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
+                style={{ fontSize: 15 }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Exit Maze
+              </button>
             </div>
           </div>
         </div>
