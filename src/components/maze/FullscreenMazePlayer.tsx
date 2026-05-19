@@ -463,9 +463,29 @@ export interface FullscreenMazePlayerProps {
   label?: string;
   onSolve?: (stats: SolveStats) => void;
   onClose: () => void;
+  /** Inject restored game state (from a saved session). Replaces createInitialState. */
+  initialGameState?: import('../../lib/gameplay/types.js').GameState;
+  /** Restore the showTrail preference from a saved session. */
+  initialShowTrail?: boolean;
+  /**
+   * Called on state changes (debounced 500ms) and immediately on visibilitychange/pagehide.
+   * Use to persist the session to localStorage. Not called when status is 'solved'.
+   */
+  onSessionChange?: (state: import('../../lib/gameplay/types.js').GameState, showTrail: boolean) => void;
+  /** Called after a confirmed reset so the caller can clear any saved session. */
+  onReset?: () => void;
 }
 
-export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: FullscreenMazePlayerProps) {
+export function FullscreenMazePlayer({
+  maze,
+  label,
+  onSolve,
+  onClose,
+  initialGameState,
+  initialShowTrail,
+  onSessionChange,
+  onReset,
+}: FullscreenMazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
@@ -505,6 +525,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   };
 
   const [showTrail, setShowTrail] = useState(() => {
+    if (initialShowTrail !== undefined) return initialShowTrail;
     try { return localStorage.getItem(TRAIL_VISIBILITY_KEY) === 'true'; } catch { return false; }
   });
 
@@ -538,8 +559,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const [state, dispatch] = useReducer(
     (s: ReturnType<typeof createInitialState>, a: Parameters<typeof gameReducer>[1]) =>
       gameReducer(s, a, maze),
-    maze,
-    createInitialState,
+    // Use injected state (from a saved session) when available; otherwise derive fresh.
+    initialGameState ?? createInitialState(maze),
   );
 
   const handleMobilePauseToggle = () => {
@@ -598,6 +619,80 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     }, 1000);
     return () => clearInterval(id);
   }, [state.status, state.startTime]);
+
+  // ── Session autosave ─────────────────────────────────────────────────────────
+  // Refs keep event handlers from going stale without re-registering listeners.
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const showTrailRef = useRef(showTrail);
+  showTrailRef.current = showTrail;
+  const onSessionChangeRef = useRef(onSessionChange);
+  onSessionChangeRef.current = onSessionChange;
+
+  // Debounced save on every state/showTrail change (500ms after last update).
+  // Skip idle (never moved) — there's nothing meaningful to restore.
+  useEffect(() => {
+    if (!onSessionChange || state.status === 'solved' || state.status === 'idle') return;
+    const id = window.setTimeout(() => {
+      onSessionChangeRef.current?.(stateRef.current, showTrailRef.current);
+    }, 500);
+    return () => clearTimeout(id);
+  }, [state, showTrail, onSessionChange]);
+
+  // Save immediately on unmount so progress is preserved when the player Exits.
+  // The debounced effect's cleanup cancels the pending timeout before it fires,
+  // so without this the last few seconds of movement could be lost.
+  // Note: handleClose also saves synchronously for the Exit button path, so
+  // this serves as a safety net for other unmount scenarios.
+  useEffect(() => {
+    return () => {
+      const s = stateRef.current;
+      if (s.status === 'playing' || s.status === 'paused') {
+        onSessionChangeRef.current?.(s, showTrailRef.current);
+      }
+    };
+  }, []);
+
+  // Wrapper for the Exit button. Saves the latest state synchronously BEFORE
+  // calling onClose so that the parent can immediately reload from localStorage.
+  // The debounced autosave would be cancelled by React's cleanup on unmount, so
+  // without this explicit save the last <500ms of movement would be lost.
+  const handleClose = useCallback(() => {
+    const s = stateRef.current;
+    if (s.status === 'playing' || s.status === 'paused') {
+      onSessionChangeRef.current?.(s, showTrailRef.current);
+    }
+    onClose();
+  }, [onClose]);
+
+  // Immediate save on tab hide / page unload — critical for iOS Safari which
+  // kills pages without firing beforeunload.
+  useEffect(() => {
+    if (!onSessionChange) return;
+    const saveNow = () => {
+      const s = stateRef.current;
+      if (s.status === 'playing' || s.status === 'paused') {
+        onSessionChangeRef.current?.(s, showTrailRef.current);
+      }
+    };
+    document.addEventListener('visibilitychange', saveNow);
+    window.addEventListener('pagehide', saveNow);
+    return () => {
+      document.removeEventListener('visibilitychange', saveNow);
+      window.removeEventListener('pagehide', saveNow);
+    };
+  }, [onSessionChange]);
+
+  // Conservative beforeunload guard while an unfinished maze is active.
+  // Desktop browsers show a "Leave site?" prompt; mobile Safari ignores it,
+  // which is fine — autosave handles that path.
+  useEffect(() => {
+    if (!onSessionChange) return;
+    if (state.status !== 'playing' && state.status !== 'paused') return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); return ''; };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [onSessionChange, state.status]);
 
   // Delay parent completion UI long enough for the solved render to paint,
   // so players can see the cursor move onto the outside flag marker first.
@@ -828,7 +923,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
     setResetConfirming(false);
     dispatch({ type: 'RESET', startPosition: maze.entry });
-  }, [maze.entry]);
+    onReset?.();
+  }, [maze.entry, onReset]);
 
   const handleResetCancel = useCallback(() => {
     if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
@@ -1220,7 +1316,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
       >
         {/* Left: Exit */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors shrink-0"
           aria-label="Exit play mode"
         >
@@ -1870,18 +1966,16 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                   Reset Progress
                 </button>
               )}
-              {onClose && (
-                <button
-                  onClick={onClose}
-                  className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
-                  style={{ fontSize: 15 }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-                  </svg>
-                  Exit Maze
-                </button>
-              )}
+              <button
+                onClick={handleClose}
+                className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
+                style={{ fontSize: 15 }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Exit Maze
+              </button>
             </div>
           </div>
         </div>
