@@ -160,7 +160,7 @@ export function DPad({ dispatch, isActive, compact = false, disabled = false }: 
   if (!isActive) return null;
 
   const baseBtnClass =
-    'flex items-center justify-center w-14 h-14 rounded-full ' +
+    'flex items-center justify-center w-[60px] h-[60px] rounded-full ' +
     'bg-[#FDFCF8] border-2 border-[var(--color-border)] text-[#64748B] shadow ' +
     'select-none touch-none ' +
     'transition-all duration-75 cursor-pointer ' +
@@ -195,8 +195,8 @@ export function DPad({ dispatch, isActive, compact = false, disabled = false }: 
       className="touch-none"
       style={{
         display: 'grid',
-        gridTemplateColumns: compact ? '56px 24px 56px' : '56px 32px 56px',
-        gridTemplateRows: compact ? '56px 24px 56px' : '56px 32px 56px',
+        gridTemplateColumns: compact ? '60px 28px 60px' : '60px 36px 60px',
+        gridTemplateRows: compact ? '60px 28px 60px' : '60px 36px 60px',
         justifyItems: 'center',
         alignItems: 'center',
       }}
