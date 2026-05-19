@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import type { CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import type { Difficulty, MazeData, Point } from '../../types/maze';
-import { generateMaze } from '../../lib/maze/index';
+import { generateMaze, GENERATOR_VERSION } from '../../lib/maze/index';
 import { getMazeDebugSummary, shouldLogMazeStateDebug } from '../../lib/maze/fingerprint';
 import { MazeRenderer } from './MazeRenderer';
 import { FullscreenMazePlayer } from './FullscreenMazePlayer';
@@ -12,6 +12,13 @@ import { renderDownloadSVG } from '../../lib/svg/renderToString';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 import { DEFAULT_START_ARROW_POINTS, FinishMarkerIcon, StartMarkerIcon } from './EndpointMarkerGlyphs';
 import type { PortalSide } from '../../lib/maze/endpointMarkers';
+import {
+  loadGeneratedSession,
+  saveGeneratedSession,
+  clearGeneratedSession,
+} from '../../lib/gameplay/session';
+import type { GeneratedMazeSession } from '../../lib/gameplay/session';
+import type { GameState } from '../../lib/gameplay/types';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
 
@@ -215,6 +222,59 @@ export function difficultyForCustomSize(w: number, h: number): Difficulty {
   return 'large';
 }
 
+function formatResumeTime(ms: number): string {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  if (m === 0) return `${s}s`;
+  const rem = s % 60;
+  return rem === 0 ? `${m} min` : `${m} min ${String(rem).padStart(2, '0')} sec`;
+}
+
+function ResumeBanner({
+  session,
+  onResume,
+  onStartNew,
+}: {
+  session: GeneratedMazeSession;
+  onResume: () => void;
+  onStartNew: () => void;
+}) {
+  const { maze: m, progress } = session;
+  const timeStr = formatResumeTime(progress.elapsedMs);
+  const stepsStr = progress.steps.toLocaleString();
+
+  return (
+    <div
+      className="rounded-sm border-2 border-arch-accent/40 bg-arch-accent/5 px-4 py-3 flex flex-col gap-3"
+      role="region"
+      aria-label="Unfinished maze session"
+    >
+      <div>
+        <p className="text-sm font-semibold text-arch-charcoal leading-snug">
+          You have an unfinished maze.
+        </p>
+        <p className="mt-0.5 text-xs font-mono text-arch-600 leading-snug">
+          {m.width} × {m.height} {m.label} · {timeStr} · {stepsStr} steps
+        </p>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={onResume}
+          className="flex-1 rounded-sm bg-arch-accent px-3 py-2 text-sm font-semibold text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark transition-colors"
+        >
+          Resume
+        </button>
+        <button
+          onClick={onStartNew}
+          className="flex-1 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
+        >
+          Start New
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function MazeGenerator() {
   const [sizePreset, setSizePreset] = useState<SizePreset>('medium');
   const [showCustom, setShowCustom] = useState(false);
@@ -229,9 +289,24 @@ export function MazeGenerator() {
   const customPreviewTimerRef = useRef<number | null>(null);
   const customPreviewRequestRef = useRef(0);
 
+  // ── Session state ─────────────────────────────────────────────────────────────
+  const [resumeSession, setResumeSession] = useState<GeneratedMazeSession | null>(null);
+  // Injected into FullscreenMazePlayer to restore a saved session.
+  const [initialGameState, setInitialGameState] = useState<GameState | undefined>(undefined);
+  const [initialShowTrail, setInitialShowTrail] = useState<boolean | undefined>(undefined);
+  // Mirror of maze ref so autosave callback can read it without a stale closure.
+  const mazeRef = useRef<MazeData | null>(null);
+  const presetLabelRef = useRef<string>('Medium');
+
 
   useEffect(() => {
     setPrintRoot(document.body);
+  }, []);
+
+  // Load any saved session on mount.
+  useEffect(() => {
+    const session = loadGeneratedSession(GENERATOR_VERSION);
+    if (session) setResumeSession(session);
   }, []);
 
   const getDimensions = useCallback(
@@ -242,6 +317,7 @@ export function MazeGenerator() {
   const [maze, setMaze] = useState(() => {
     const initialMaze = createInitialMaze();
     lastSeedRef.current = initialMaze.seed;
+    mazeRef.current = initialMaze;
     return initialMaze;
   });
 
@@ -275,8 +351,12 @@ export function MazeGenerator() {
       : difficultyForCustomSize(dims.w, dims.h);
     const m = generateMaze({ width: dims.w, height: dims.h, difficulty, seed: nextSeed(), anyPortalSide: true, lightMode });
     setMaze(m);
+    mazeRef.current = m;
     setPlaying(false);
     setSolveStats(null);
+    // Reset any pending restored state when a fresh maze is generated.
+    setInitialGameState(undefined);
+    setInitialShowTrail(undefined);
   }, [nextSeed]);
 
   useEffect(() => {
@@ -325,14 +405,111 @@ export function MazeGenerator() {
     }
   }, [showCustom, customWidth, customHeight, sizePreset, generate, cancelScheduledCustomPreview]);
 
+  // "Play This Maze" — if a saved session exists, the resume banner handles the
+  // choice. Clicking this button while a banner is visible scrolls to it and
+  // does nothing else, so the player must explicitly choose Resume or Start New.
   const handlePlay = useCallback(() => {
+    if (resumeSession) {
+      // A saved session exists — user must choose via the banner.
+      // The banner is always visible when resumeSession !== null, so no action needed.
+      return;
+    }
     logMazeStateDebug('play click', maze);
     hasPlayedRef.current = true;
+    setInitialGameState(undefined);
+    setInitialShowTrail(undefined);
     setPlaying(true);
+  }, [maze, resumeSession]);
+
+  // Resume the saved session: re-generate the exact same maze from saved seed.
+  const handleResume = useCallback(() => {
+    if (!resumeSession) return;
+    const { maze: m, progress } = resumeSession;
+
+    const restoredMaze = generateMaze({
+      width: m.width,
+      height: m.height,
+      difficulty: m.difficulty,
+      seed: m.seed,
+      anyPortalSide: true,
+    });
+
+    // Restore as 'paused' (or 'idle' if the session never started) so the
+    // timer doesn't run until the player explicitly resumes. The RESUME reducer
+    // action recalculates startTime = Date.now() - elapsedMs, meaning time
+    // spent away from the page is never counted.
+    const restored: GameState = {
+      status: progress.status === 'idle' ? 'idle' : 'paused',
+      playerPosition: progress.playerPosition,
+      trail: progress.trail,
+      startTime: null,
+      elapsedMs: progress.elapsedMs,
+      solutionVisible: progress.solutionVisible,
+      hintsUsed: progress.hintsUsed,
+      // hintCells are intentionally not restored — they are transient, derived
+      // from the current position and solver. Player can re-request a hint.
+      hintCells: [],
+    };
+
+    setMaze(restoredMaze);
+    mazeRef.current = restoredMaze;
+    lastSeedRef.current = restoredMaze.seed;
+    setInitialGameState(restored);
+    setInitialShowTrail(progress.showTrail);
+    setResumeSession(null);
+    hasPlayedRef.current = true;
+    setPlaying(true);
+    logMazeStateDebug('resume click', restoredMaze);
+  }, [resumeSession]);
+
+  // "Start New" in the resume banner — discard the saved session and play the
+  // current preview maze as a fresh game.
+  const handleStartNew = useCallback(() => {
+    clearGeneratedSession();
+    setResumeSession(null);
+    setInitialGameState(undefined);
+    setInitialShowTrail(undefined);
+    hasPlayedRef.current = true;
+    setPlaying(true);
+    logMazeStateDebug('start new (discard session)', maze);
   }, [maze]);
 
   const handleSolve = useCallback((stats: SolveStats) => {
+    clearGeneratedSession();
     setSolveStats(stats);
+  }, []);
+
+  // Autosave callback — called by FullscreenMazePlayer on state changes.
+  const handleSessionChange = useCallback((gameState: GameState, showTrail: boolean) => {
+    const currentMaze = mazeRef.current;
+    if (!currentMaze || gameState.status === 'solved') return;
+
+    saveGeneratedSession({
+      generatorVersion: GENERATOR_VERSION,
+      maze: {
+        width: currentMaze.width,
+        height: currentMaze.height,
+        seed: currentMaze.seed,
+        difficulty: currentMaze.difficulty,
+        label: presetLabelRef.current,
+        anyPortalSide: true,
+      },
+      progress: {
+        playerPosition: gameState.playerPosition,
+        elapsedMs: gameState.elapsedMs,
+        steps: gameState.trail.length,
+        hintsUsed: gameState.hintsUsed,
+        trail: gameState.trail,
+        showTrail,
+        solutionVisible: gameState.solutionVisible,
+        status: gameState.status,
+      },
+    });
+  }, []);
+
+  // Clear saved session when the player confirms a reset.
+  const handleReset = useCallback(() => {
+    clearGeneratedSession();
   }, []);
 
   const handleDownloadSVG = useCallback(() => {
@@ -369,6 +546,7 @@ export function MazeGenerator() {
   const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
 
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
+  presetLabelRef.current = presetLabel;
   const previewStartArrowPoints = getPreviewEntryArrowPoints(maze);
 
   const printMaze = (
@@ -447,8 +625,16 @@ export function MazeGenerator() {
           <FullscreenMazePlayer
             key={playerKey}
             maze={maze}
+            initialGameState={initialGameState}
+            initialShowTrail={initialShowTrail}
+            onSessionChange={handleSessionChange}
+            onReset={handleReset}
             onSolve={handleSolve}
-            onClose={() => setPlaying(false)}
+            onClose={() => {
+              setPlaying(false);
+              setInitialGameState(undefined);
+              setInitialShowTrail(undefined);
+            }}
           />
         )}
 
@@ -502,6 +688,11 @@ export function MazeGenerator() {
             Choose a size, generate a maze, then play online or print.
           </p>
         </div>
+
+        {/* Resume banner — shown when an unfinished generated-maze session exists */}
+        {resumeSession && !playing && (
+          <ResumeBanner session={resumeSession} onResume={handleResume} onStartNew={handleStartNew} />
+        )}
 
         {/* Size selector — always first */}
         <fieldset>
@@ -582,10 +773,16 @@ export function MazeGenerator() {
             Generate New Maze
           </button>
 
-          {/* Primary play action */}
+          {/* Primary play action — disabled when a saved session is pending choice */}
           <button
             onClick={handlePlay}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-sm bg-arch-accent px-5 py-3 text-base font-semibold text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark transition-colors"
+            disabled={!!resumeSession}
+            className={`w-full inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3 text-base font-semibold transition-colors ${
+              resumeSession
+                ? 'bg-arch-accent/40 text-white cursor-not-allowed'
+                : 'bg-arch-accent text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark'
+            }`}
+            title={resumeSession ? 'Choose Resume or Start New above first' : undefined}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z"/>

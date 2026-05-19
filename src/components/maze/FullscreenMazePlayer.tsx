@@ -463,9 +463,29 @@ export interface FullscreenMazePlayerProps {
   label?: string;
   onSolve?: (stats: SolveStats) => void;
   onClose: () => void;
+  /** Inject restored game state (from a saved session). Replaces createInitialState. */
+  initialGameState?: import('../../lib/gameplay/types.js').GameState;
+  /** Restore the showTrail preference from a saved session. */
+  initialShowTrail?: boolean;
+  /**
+   * Called on state changes (debounced 500ms) and immediately on visibilitychange/pagehide.
+   * Use to persist the session to localStorage. Not called when status is 'solved'.
+   */
+  onSessionChange?: (state: import('../../lib/gameplay/types.js').GameState, showTrail: boolean) => void;
+  /** Called after a confirmed reset so the caller can clear any saved session. */
+  onReset?: () => void;
 }
 
-export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: FullscreenMazePlayerProps) {
+export function FullscreenMazePlayer({
+  maze,
+  label,
+  onSolve,
+  onClose,
+  initialGameState,
+  initialShowTrail,
+  onSessionChange,
+  onReset,
+}: FullscreenMazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const mazeViewportRef = useRef<HTMLDivElement>(null);
   const announcerRef = useRef<HTMLDivElement>(null);
@@ -505,6 +525,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   };
 
   const [showTrail, setShowTrail] = useState(() => {
+    if (initialShowTrail !== undefined) return initialShowTrail;
     try { return localStorage.getItem(TRAIL_VISIBILITY_KEY) === 'true'; } catch { return false; }
   });
 
@@ -538,8 +559,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const [state, dispatch] = useReducer(
     (s: ReturnType<typeof createInitialState>, a: Parameters<typeof gameReducer>[1]) =>
       gameReducer(s, a, maze),
-    maze,
-    createInitialState,
+    // Use injected state (from a saved session) when available; otherwise derive fresh.
+    initialGameState ?? createInitialState(maze),
   );
 
   const handleMobilePauseToggle = () => {
@@ -598,6 +619,52 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     }, 1000);
     return () => clearInterval(id);
   }, [state.status, state.startTime]);
+
+  // ── Session autosave ─────────────────────────────────────────────────────────
+  // Refs keep event handlers from going stale without re-registering listeners.
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const showTrailRef = useRef(showTrail);
+  showTrailRef.current = showTrail;
+  const onSessionChangeRef = useRef(onSessionChange);
+  onSessionChangeRef.current = onSessionChange;
+
+  // Debounced save on every state/showTrail change (500ms after last update).
+  useEffect(() => {
+    if (!onSessionChange || state.status === 'solved') return;
+    const id = window.setTimeout(() => {
+      onSessionChangeRef.current?.(stateRef.current, showTrailRef.current);
+    }, 500);
+    return () => clearTimeout(id);
+  }, [state, showTrail, onSessionChange]);
+
+  // Immediate save on tab hide / page unload — critical for iOS Safari which
+  // kills pages without firing beforeunload.
+  useEffect(() => {
+    if (!onSessionChange) return;
+    const saveNow = () => {
+      if (stateRef.current.status !== 'solved') {
+        onSessionChangeRef.current?.(stateRef.current, showTrailRef.current);
+      }
+    };
+    document.addEventListener('visibilitychange', saveNow);
+    window.addEventListener('pagehide', saveNow);
+    return () => {
+      document.removeEventListener('visibilitychange', saveNow);
+      window.removeEventListener('pagehide', saveNow);
+    };
+  }, [onSessionChange]);
+
+  // Conservative beforeunload guard while an unfinished maze is active.
+  // Desktop browsers show a "Leave site?" prompt; mobile Safari ignores it,
+  // which is fine — autosave handles that path.
+  useEffect(() => {
+    if (!onSessionChange) return;
+    if (state.status !== 'playing' && state.status !== 'paused') return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); return ''; };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [onSessionChange, state.status]);
 
   // Delay parent completion UI long enough for the solved render to paint,
   // so players can see the cursor move onto the outside flag marker first.
@@ -828,7 +895,8 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
     setResetConfirming(false);
     dispatch({ type: 'RESET', startPosition: maze.entry });
-  }, [maze.entry]);
+    onReset?.();
+  }, [maze.entry, onReset]);
 
   const handleResetCancel = useCallback(() => {
     if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);

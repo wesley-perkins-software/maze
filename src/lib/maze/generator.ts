@@ -81,6 +81,13 @@ export type GeneratorOptions = {
   experimentalStartCell?: Point;
 };
 
+/**
+ * Bump this when algorithm changes would produce a structurally different maze
+ * from the same seed (making saved trails/positions invalid). Routine fixes that
+ * don't change wall topology do NOT require a bump.
+ */
+export const GENERATOR_VERSION = 1;
+
 // ── Any-side mode constants ───────────────────────────────────────────────────
 
 /** XOR constant for deriving the entropy RNG from the maze seed. */
