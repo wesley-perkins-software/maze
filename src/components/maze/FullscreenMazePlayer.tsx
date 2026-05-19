@@ -1233,7 +1233,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
         {/* Center: status / timer */}
         <div className="flex-1 flex justify-center items-center gap-1.5 text-sm">
           {cameraMode === 'look' ? (
-            <span className="font-semibold text-xs sm:text-sm" style={{ color: '#4f46e5' }}>
+            <span className="font-semibold text-sm" style={{ color: '#4f46e5' }}>
               Camera view — movement paused
             </span>
           ) : (
@@ -1298,7 +1298,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 {state.status !== 'solved' && (
                   <button
                     onClick={() => { handleHint(); setMenuOpen(false); }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-amber-600 font-medium hover:bg-amber-50 transition-colors flex items-center gap-2"
+                    className="w-full text-left px-4 py-2.5 text-[15px] text-amber-600 font-medium hover:bg-amber-50 transition-colors flex items-center gap-2"
                     aria-pressed={isHintActive}
                   >
                     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1309,7 +1309,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 )}
                 <button
                   onClick={() => { dispatch({ type: 'TOGGLE_SOLUTION' }); setMenuOpen(false); }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                  className="w-full text-left px-4 py-2.5 text-[15px] text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
                 >
                   {state.solutionVisible ? (
                     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1324,7 +1324,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 </button>
                 <button
                   onClick={() => { toggleShowTrail(); setMenuOpen(false); }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                  className="w-full text-left px-4 py-2.5 text-[15px] text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
                   aria-pressed={showTrail}
                 >
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1355,7 +1355,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                 ) : (
                   <button
                     onClick={handleResetRequest}
-                    className="w-full text-left px-4 py-2.5 text-sm text-slate-500 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                    className="w-full text-left px-4 py-2.5 text-[15px] text-slate-500 hover:bg-slate-50 transition-colors flex items-center gap-2"
                   >
                     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
@@ -1829,14 +1829,14 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                     marginBottom: 2,
                   }}
                 >
-                  <p style={{ color: '#b91c1c', fontWeight: 600, fontSize: 12, marginBottom: 8 }}>
+                  <p style={{ color: '#b91c1c', fontWeight: 600, fontSize: 14, marginBottom: 8 }}>
                     Reset Progress?
                   </p>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button
                       onClick={handleResetCancel}
                       autoFocus
-                      className="btn-ghost flex-1 rounded-lg text-xs py-1.5 justify-center"
+                      className="btn-ghost flex-1 rounded-lg text-sm py-1.5 justify-center"
                     >
                       Cancel
                     </button>
@@ -1849,7 +1849,7 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
                         border: '1px solid rgba(220, 38, 38, 0.3)',
                         background: 'rgba(220, 38, 38, 0.1)',
                         color: '#b91c1c',
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: 600,
                         cursor: 'pointer',
                       }}
