@@ -22,6 +22,7 @@ export interface SolveStats {
 const PLAY_CELL_SIZE = 32;
 const PAN_LOOKAHEAD = PLAY_CELL_SIZE * 1; // extra px revealed when the camera pans
 const MAZE_PADDING = 32;     // must be >= SAFE_PAD to guarantee player visibility at maze edges
+const PLAY_ENDPOINT_MARKER_RADIUS = PLAY_CELL_SIZE * 0.38;
 const TOP_BAR_H = 44;
 // AD_SLOT: Reserved for future monetization.
 // Recommended placement: between maze viewport and control strip (above controls, below maze).
@@ -844,31 +845,60 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
   const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
   const mazeH = maze.height * PLAY_CELL_SIZE + MAZE_PADDING * 2;
 
+  const pointEquals = (a: typeof maze.entry, b: typeof maze.entry) => a.x === b.x && a.y === b.y;
   const pointOnMarker = (point: typeof maze.entry, marker: typeof maze.entry) => (
     (marker.y === 0 && point.x === marker.x && point.y === -1) ||
     (marker.y === maze.height - 1 && point.x === marker.x && point.y === maze.height) ||
     (marker.x === 0 && point.x === -1 && point.y === marker.y) ||
     (marker.x === maze.width - 1 && point.x === maze.width && point.y === marker.y)
   );
-  const markerPx = (point: typeof maze.entry) => (
-    point.x === 0 ? MAZE_PADDING / 2 : point.x === maze.width - 1 ? mazeW - MAZE_PADDING / 2 : MAZE_PADDING + point.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2
-  );
-  const markerPy = (point: typeof maze.entry) => (
-    point.y === 0 ? MAZE_PADDING / 2 : point.y === maze.height - 1 ? mazeH - MAZE_PADDING / 2 : MAZE_PADDING + point.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2
-  );
 
+  const mazeBounds = getMazeBodyBounds(maze.width, maze.height, PLAY_CELL_SIZE, MAZE_PADDING);
+  const entrySide = inferPortalSide(maze, maze.entry);
+  const exitSide = inferPortalSide(maze, maze.exit);
+  if (!entrySide) warnInvalidPortalSide(maze, maze.entry, 'entry');
+  if (!exitSide) warnInvalidPortalSide(maze, maze.exit, 'exit');
+
+  const entryMarkerCenter = entrySide
+    ? getEndpointMarkerCenter({
+        mazeWidth: maze.width,
+        mazeHeight: maze.height,
+        cellSize: PLAY_CELL_SIZE,
+        bounds: mazeBounds,
+        portal: maze.entry,
+        portalSide: entrySide,
+        markerRadius: PLAY_ENDPOINT_MARKER_RADIUS,
+        placementMode: 'outside',
+      })
+    : null;
+
+  const exitMarkerCenter = exitSide
+    ? getEndpointMarkerCenter({
+        mazeWidth: maze.width,
+        mazeHeight: maze.height,
+        cellSize: PLAY_CELL_SIZE,
+        bounds: mazeBounds,
+        portal: maze.exit,
+        portalSide: exitSide,
+        markerRadius: PLAY_ENDPOINT_MARKER_RADIUS,
+        placementMode: 'outside',
+      })
+    : null;
+
+  const playerAtEntryCell = pointEquals(state.playerPosition, maze.entry);
+  const playerAtExitCell = pointEquals(state.playerPosition, maze.exit);
   const playerOnEntryMarker = pointOnMarker(state.playerPosition, maze.entry);
   const playerOnExitMarker = pointOnMarker(state.playerPosition, maze.exit);
 
-  const playerPx = playerOnEntryMarker
-    ? markerPx(maze.entry)
-    : playerOnExitMarker
-      ? markerPx(maze.exit)
+  const playerPx = (playerAtEntryCell || playerOnEntryMarker) && entryMarkerCenter
+    ? entryMarkerCenter.x
+    : (playerAtExitCell || playerOnExitMarker) && exitMarkerCenter
+      ? exitMarkerCenter.x
       : MAZE_PADDING + state.playerPosition.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
-  const playerPy = playerOnEntryMarker
-    ? markerPy(maze.entry)
-    : playerOnExitMarker
-      ? markerPy(maze.exit)
+  const playerPy = (playerAtEntryCell || playerOnEntryMarker) && entryMarkerCenter
+    ? entryMarkerCenter.y
+    : (playerAtExitCell || playerOnExitMarker) && exitMarkerCenter
+      ? exitMarkerCenter.y
       : MAZE_PADDING + state.playerPosition.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
 
   const stripH = vpSize.w < 768 ? controlStripH : 0;
