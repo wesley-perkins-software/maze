@@ -37,18 +37,18 @@ export function useKeyboardInput(dispatch: Dispatch, enabled: boolean): void {
 }
 
 // Pointer Events-based input:
-// - Quick flick (pointer lifts before ACTIVATION_DELAY_MS): dispatches RUN (slide to wall).
-// - Press-and-drag (pointer held past delay): dispatches repeated MOVE (one cell per DRAG_THRESHOLD px).
+// - Quick flick (pointer lifts before ACTIVATION_DELAY_MS): dispatches RUN (slide to decision point).
+// - Press-and-drag (pointer held past delay): dispatches RUN per DRAG_THRESHOLD px crossed — same movement semantics as a regular swipe.
 const ACTIVATION_DELAY_MS = 150; // ms before continuous drag mode activates
-const DRAG_THRESHOLD = 28;       // px finger must move from last origin to trigger one MOVE
-const THROTTLE_MS = 80;          // min ms between consecutive continuous MOVEs (~12.5/sec)
+const DRAG_THRESHOLD = 28;       // px finger must move from last origin to trigger one RUN
+const THROTTLE_MS = 80;          // min ms between consecutive continuous RUNs (~12.5/sec)
 const MIN_SWIPE = 20;            // px minimum for a quick-flick RUN (preserved from original)
 
 /**
  * Attaches pointer-event handlers to any element for swipe and continuous drag movement.
  *
- * Quick flick  → RUN (slide to wall, existing behaviour).
- * Press + drag → repeated single-cell MOVE while finger is held down.
+ * Quick flick  → RUN (slide to decision point, existing behaviour).
+ * Press + drag → repeated RUN per threshold crossing — same movement semantics, no need to lift finger.
  */
 export function useTouchInput(
   ref: RefObject<HTMLElement | SVGSVGElement | null>,
@@ -121,7 +121,7 @@ export function useTouchInput(
           ? (dx > 0 ? 'E' : 'W')
           : (dy > 0 ? 'S' : 'N');
 
-        dispatch({ type: 'MOVE', direction: dir });
+        dispatch({ type: 'RUN', direction: dir });
         originX = e.clientX;
         originY = e.clientY;
         lastMoveTime = now;
