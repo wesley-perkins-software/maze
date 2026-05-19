@@ -850,25 +850,55 @@ export function FullscreenMazePlayer({ maze, label, onSolve, onClose }: Fullscre
     (marker.x === 0 && point.x === -1 && point.y === marker.y) ||
     (marker.x === maze.width - 1 && point.x === maze.width && point.y === marker.y)
   );
-  const markerPx = (point: typeof maze.entry) => (
-    point.x === 0 ? MAZE_PADDING / 2 : point.x === maze.width - 1 ? mazeW - MAZE_PADDING / 2 : MAZE_PADDING + point.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2
-  );
-  const markerPy = (point: typeof maze.entry) => (
-    point.y === 0 ? MAZE_PADDING / 2 : point.y === maze.height - 1 ? mazeH - MAZE_PADDING / 2 : MAZE_PADDING + point.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2
-  );
+  const endpointMarkerRadius = PLAY_CELL_SIZE * 0.38;
+  const mazeBounds = getMazeBodyBounds(maze.width, maze.height, PLAY_CELL_SIZE, MAZE_PADDING);
+  const entrySide = inferPortalSide(maze, maze.entry);
+  const exitSide = inferPortalSide(maze, maze.exit);
+  if (!entrySide) warnInvalidPortalSide(maze, maze.entry, 'fullscreen entry');
+  if (!exitSide) warnInvalidPortalSide(maze, maze.exit, 'fullscreen exit');
+  const entryMarker = entrySide
+    ? getEndpointMarkerCenter({
+        mazeWidth: maze.width,
+        mazeHeight: maze.height,
+        cellSize: PLAY_CELL_SIZE,
+        bounds: mazeBounds,
+        portal: maze.entry,
+        portalSide: entrySide,
+        markerRadius: endpointMarkerRadius,
+        placementMode: 'outside',
+      })
+    : null;
+  const exitMarker = exitSide
+    ? getEndpointMarkerCenter({
+        mazeWidth: maze.width,
+        mazeHeight: maze.height,
+        cellSize: PLAY_CELL_SIZE,
+        bounds: mazeBounds,
+        portal: maze.exit,
+        portalSide: exitSide,
+        markerRadius: endpointMarkerRadius,
+        placementMode: 'outside',
+      })
+    : null;
+  const markerPx = (point: typeof maze.entry, marker: { x: number; y: number } | null) => marker?.x
+    ?? (MAZE_PADDING + point.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2);
+  const markerPy = (point: typeof maze.entry, marker: { x: number; y: number } | null) => marker?.y
+    ?? (MAZE_PADDING + point.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2);
 
   const playerOnEntryMarker = pointOnMarker(state.playerPosition, maze.entry);
   const playerOnExitMarker = pointOnMarker(state.playerPosition, maze.exit);
+  const playerOnEntryPortalCell = state.playerPosition.x === maze.entry.x && state.playerPosition.y === maze.entry.y;
+  const playerOnExitPortalCell = state.playerPosition.x === maze.exit.x && state.playerPosition.y === maze.exit.y;
 
-  const playerPx = playerOnEntryMarker
-    ? markerPx(maze.entry)
-    : playerOnExitMarker
-      ? markerPx(maze.exit)
+  const playerPx = (playerOnEntryMarker || playerOnEntryPortalCell)
+    ? markerPx(maze.entry, entryMarker)
+    : (playerOnExitMarker || playerOnExitPortalCell)
+      ? markerPx(maze.exit, exitMarker)
       : MAZE_PADDING + state.playerPosition.x * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
-  const playerPy = playerOnEntryMarker
-    ? markerPy(maze.entry)
-    : playerOnExitMarker
-      ? markerPy(maze.exit)
+  const playerPy = (playerOnEntryMarker || playerOnEntryPortalCell)
+    ? markerPy(maze.entry, entryMarker)
+    : (playerOnExitMarker || playerOnExitPortalCell)
+      ? markerPy(maze.exit, exitMarker)
       : MAZE_PADDING + state.playerPosition.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
 
   const stripH = vpSize.w < 768 ? controlStripH : 0;

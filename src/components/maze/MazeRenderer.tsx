@@ -198,6 +198,12 @@ export function MazeRenderer({
   // ── Player circle ────────────────────────────────────────────────────────────
   // The player can be on a virtual cell just outside an entry/exit gap.
   // In that case, draw it centered on the corresponding outside marker.
+  const isEntryPortalCell = playerPosition
+    && playerPosition.x === entry.x
+    && playerPosition.y === entry.y;
+  const isExitPortalCell = playerPosition
+    && playerPosition.x === exit.x
+    && playerPosition.y === exit.y;
   const isEntryMarkerPosition = playerPosition && (
     (entry.y === 0 && playerPosition.x === entry.x && playerPosition.y === -1) ||
     (entry.y === height - 1 && playerPosition.x === entry.x && playerPosition.y === height) ||
@@ -212,16 +218,16 @@ export function MazeRenderer({
   );
 
   const playerCx = playerPosition
-    ? isEntryMarkerPosition
+    ? (markersOutside && entryMarker && (isEntryPortalCell || isEntryMarkerPosition))
       ? entryMarker?.x ?? null
-      : isExitMarkerPosition
+      : (markersOutside && exitMarker && (isExitPortalCell || isExitMarkerPosition))
         ? exitMarker?.x ?? null
         : padding + playerPosition.x * cellSize + cellSize / 2
     : null;
   const playerCy = playerPosition
-    ? isEntryMarkerPosition
+    ? (markersOutside && entryMarker && (isEntryPortalCell || isEntryMarkerPosition))
       ? entryMarker?.y ?? null
-      : isExitMarkerPosition
+      : (markersOutside && exitMarker && (isExitPortalCell || isExitMarkerPosition))
         ? exitMarker?.y ?? null
         : padding + playerPosition.y * cellSize + cellSize / 2
     : null;
