@@ -1354,14 +1354,11 @@ export function FullscreenMazePlayer({
                 </span>
               )}
               {/* "Paused" label intentionally omitted here — the centered pause card already communicates this */}
-              {state.status === 'idle' && (label
-                ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
-                : (
-                  <>
-                    <span className="md:hidden text-slate-500 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
-                    <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
-                  </>
-                )
+              {state.status === 'idle' && (
+                <>
+                  <span className="md:hidden text-slate-500 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
+                  <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
+                </>
               )}
               {state.status === 'solved' && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
             </>
