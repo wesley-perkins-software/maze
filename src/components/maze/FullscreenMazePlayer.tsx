@@ -537,6 +537,11 @@ export function FullscreenMazePlayer({
     });
   };
 
+
+  const normalizedLabel = label?.trim() ?? '';
+  const isGeneratorSizeLabel = ['small', 'medium', 'large', 'monster', 'custom'].includes(normalizedLabel.toLowerCase());
+  const pauseMetaLabel = normalizedLabel.length > 0 ? normalizedLabel : `${maze.width} × ${maze.height}`;
+
   const [vpSize, setVpSize] = useState(getWindowViewportSize);
   const [mazeViewportSize, setMazeViewportSize] = useState<ViewportSize | null>(null);
   const [initialCameraReady, setInitialCameraReady] = useState(() => getWindowViewportSize().w >= 768);
@@ -1349,14 +1354,11 @@ export function FullscreenMazePlayer({
                 </span>
               )}
               {/* "Paused" label intentionally omitted here — the centered pause card already communicates this */}
-              {state.status === 'idle' && (label
-                ? <span className="text-slate-600 text-xs font-semibold tracking-wide">{label}</span>
-                : (
-                  <>
-                    <span className="md:hidden text-slate-500 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
-                    <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
-                  </>
-                )
+              {state.status === 'idle' && (
+                <>
+                  <span className="md:hidden text-slate-500 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
+                  <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
+                </>
               )}
               {state.status === 'solved' && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
             </>
@@ -1848,8 +1850,8 @@ export function FullscreenMazePlayer({
             >
               <span>{formatPauseTime(state.elapsedMs)}</span>
               <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
-              <span>{maze.width} × {maze.height}</span>
-              {!label && (
+              <span>{pauseMetaLabel}</span>
+              {(normalizedLabel.length === 0 || isGeneratorSizeLabel) && (
                 <>
                   <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
                   <span>Generated</span>
