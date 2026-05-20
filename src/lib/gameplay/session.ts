@@ -86,3 +86,17 @@ export function clearGeneratedSession(): void {
     // ignore
   }
 }
+
+export function isSameGeneratedMazeIdentity(
+  session: GeneratedMazeSession,
+  previewMaze: Pick<SessionMaze, 'seed' | 'width' | 'height' | 'difficulty'>,
+  currentGeneratorVersion: number,
+): boolean {
+  return (
+    session.generatorVersion === currentGeneratorVersion
+    && session.maze.seed === previewMaze.seed
+    && session.maze.width === previewMaze.width
+    && session.maze.height === previewMaze.height
+    && session.maze.difficulty === previewMaze.difficulty
+  );
+}
