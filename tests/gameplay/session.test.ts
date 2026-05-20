@@ -3,6 +3,7 @@ import {
   saveGeneratedSession,
   loadGeneratedSession,
   clearGeneratedSession,
+  isSameGeneratedMazeIdentity,
   SESSION_STORAGE_KEY,
   SESSION_VERSION,
 } from '../../src/lib/gameplay/session';
@@ -190,5 +191,51 @@ describe('localStorage unavailable', () => {
       removeItem: () => { throw new Error('SecurityError'); },
     });
     expect(() => clearGeneratedSession()).not.toThrow();
+  });
+});
+
+describe('isSameGeneratedMazeIdentity', () => {
+  it('returns true when seed, dimensions, difficulty, label, and generator version all match', () => {
+    const saved = {
+      ...makeSession(),
+      maze: {
+        width: 60,
+        height: 60,
+        seed: 12345,
+        difficulty: 'large' as const,
+        label: 'Large',
+        anyPortalSide: true as const,
+      },
+    };
+    saveGeneratedSession(saved);
+    const loaded = loadGeneratedSession(CURRENT_VERSION)!;
+    const previewMaze = {
+      width: 60,
+      height: 60,
+      seed: 12345,
+      difficulty: 'large',
+      label: 'Large',
+    } as any;
+
+    expect(isSameGeneratedMazeIdentity(loaded, previewMaze, CURRENT_VERSION)).toBe(true);
+  });
+
+  it('returns false when any identity field differs', () => {
+    const loaded = {
+      ...makeSession(),
+      version: 1 as const,
+      mode: 'generated' as const,
+      savedAt: Date.now(),
+    };
+    const previewMaze = {
+      width: loaded.maze.width,
+      height: loaded.maze.height,
+      seed: loaded.maze.seed + 1,
+      difficulty: loaded.maze.difficulty,
+      label: loaded.maze.label,
+    } as any;
+
+    expect(isSameGeneratedMazeIdentity(loaded, previewMaze, CURRENT_VERSION)).toBe(false);
+    expect(isSameGeneratedMazeIdentity(loaded, { ...previewMaze, seed: loaded.maze.seed }, CURRENT_VERSION + 1)).toBe(false);
   });
 });

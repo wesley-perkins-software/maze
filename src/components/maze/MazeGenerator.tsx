@@ -16,6 +16,7 @@ import {
   loadGeneratedSession,
   saveGeneratedSession,
   clearGeneratedSession,
+  isSameGeneratedMazeIdentity,
 } from '../../lib/gameplay/session';
 import type { GeneratedMazeSession } from '../../lib/gameplay/session';
 import type { GameState } from '../../lib/gameplay/types';
@@ -231,6 +232,7 @@ function formatResumeTime(ms: number): string {
   return `${m} minute${m !== 1 ? 's' : ''} ${rem} second${rem !== 1 ? 's' : ''}`;
 }
 
+
 function ResumeBanner({
   session,
   onResume,
@@ -418,8 +420,10 @@ export function MazeGenerator() {
     }
   }, [showCustom, customWidth, customHeight, sizePreset, generate, cancelScheduledCustomPreview, resumeSession]);
 
-  // "Play This Maze" starts the current preview. If a saved generated session
-  // exists, clear it first so the new run does not inherit stale progress.
+  const isPreviewSameAsSavedSession = resumeSession
+    ? isSameGeneratedMazeIdentity(resumeSession, maze, GENERATOR_VERSION)
+    : false;
+
   const handlePlay = useCallback(() => {
     if (resumeSession) {
       clearGeneratedSession();
@@ -786,7 +790,7 @@ export function MazeGenerator() {
             Generate New Maze
           </button>
 
-          {/* Primary play action */}
+          {/* Primary play/restart action */}
           <button
             onClick={handlePlay}
             className="w-full inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3 text-base font-semibold transition-colors bg-arch-accent text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark"
@@ -794,7 +798,7 @@ export function MazeGenerator() {
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z"/>
             </svg>
-            Play This Maze
+            {isPreviewSameAsSavedSession ? 'Restart This Maze' : 'Play This Maze'}
           </button>
 
           {/* Utility */}

@@ -1,4 +1,5 @@
 import type { Difficulty } from '../../types/maze.js';
+import type { MazeData } from '../../types/maze.js';
 import type { Point } from '../../types/maze.js';
 import type { GameStatus } from './types.js';
 
@@ -85,4 +86,19 @@ export function clearGeneratedSession(): void {
   } catch {
     // ignore
   }
+}
+
+export function isSameGeneratedMazeIdentity(
+  session: GeneratedMazeSession,
+  previewMaze: MazeData,
+  currentGeneratorVersion: number,
+): boolean {
+  return (
+    session.generatorVersion === currentGeneratorVersion
+    && session.maze.seed === previewMaze.seed
+    && session.maze.width === previewMaze.width
+    && session.maze.height === previewMaze.height
+    && session.maze.difficulty === previewMaze.difficulty
+    && session.maze.label === previewMaze.label
+  );
 }
