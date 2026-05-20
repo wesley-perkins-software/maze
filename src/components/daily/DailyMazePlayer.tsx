@@ -2,14 +2,14 @@
  * DailyMazePlayer — client:only React island for the Maze of the Day page.
  *
  * Matches the generator UX exactly: static preview → fullscreen player on
- * "Play". Runs entirely in the browser. Derives today's UTC date, hashes it
- * to a seed, and generates a 60×60 large maze — same result for every user
- * on the same calendar day, no server or rebuild required.
+ * "Play". Runs entirely in the browser. Derives today's local calendar date,
+ * hashes it to a seed, and generates a 60×60 large maze — same result for
+ * every user on the same local calendar day, no server or rebuild required.
+ * The maze resets at local midnight.
  */
 import { useState, useEffect, useCallback } from 'react';
-import { generateMaze } from '../../lib/maze/generator';
+import { generateMaze, GENERATOR_VERSION } from '../../lib/maze/generator';
 import { getMazesByDifficulty } from '../../lib/catalog/index';
-import { dateToSeed } from '../../lib/catalog/index';
 import { MazeRenderer } from '../maze/MazeRenderer';
 import { FullscreenMazePlayer } from '../maze/FullscreenMazePlayer';
 import type { SolveStats } from '../maze/FullscreenMazePlayer';
@@ -17,12 +17,22 @@ import { PostSolveOverlay } from '../maze/PostSolveOverlay';
 import type { PostSolveNav } from '../maze/PostSolveOverlay';
 import type { MazeData } from '../../types/maze';
 
-function getUTCDateString(): string {
+function getLocalDateString(): string {
   const d = new Date();
-  const y = d.getUTCFullYear();
-  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(d.getUTCDate()).padStart(2, '0');
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
+}
+
+function dailyMazeSeed(dateStr: string): number {
+  const input = `maze-of-the-day:${dateStr}:v${GENERATOR_VERSION}`;
+  let h = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
 }
 
 function formatDateLabel(dateStr: string): string {
@@ -44,10 +54,10 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   const [postSolveNav, setPostSolveNav] = useState<PostSolveNav | null>(null);
 
   useEffect(() => {
-    const today = getUTCDateString();
-    const seed = dateToSeed(today);
+    const today = getLocalDateString();
+    const seed = dailyMazeSeed(today);
 
-    const generated = generateMaze({ width: 60, height: 60, difficulty: 'large', seed });
+    const generated = generateMaze({ width: 60, height: 60, difficulty: 'large', seed, anyPortalSide: true });
     generated.id = `daily-${today}`;
     generated.slug = `daily-${today}`;
 
@@ -76,7 +86,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   }, []);
 
   const handleSolve = useCallback((stats: SolveStats) => {
-    const today = getUTCDateString();
+    const today = getLocalDateString();
     localStorage.setItem(`daily_completed_${today}`, 'true');
     window.dispatchEvent(new StorageEvent('storage', {
       key: `daily_completed_${today}`,
