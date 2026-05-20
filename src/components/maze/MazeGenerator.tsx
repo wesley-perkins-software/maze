@@ -262,7 +262,7 @@ function ResumeBanner({
           You have an unfinished maze.
         </p>
         <p className="mt-0.5 text-xs font-mono text-arch-600 leading-snug">
-          {m.width} × {m.height} {m.label} · {detail}
+          {(m.label && m.label.trim().length > 0) ? m.label : `${m.width} × ${m.height}`} · {detail}
         </p>
       </div>
       <div className="flex gap-2">
@@ -406,21 +406,24 @@ export function MazeGenerator() {
   const handleGenerate = useCallback(() => {
     cancelScheduledCustomPreview();
 
+    if (resumeSession) {
+      clearGeneratedSession();
+      setResumeSession(null);
+    }
+
     if (showCustom) {
       generate(null, { w: customWidth, h: customHeight });
     } else {
       generate(sizePreset, SIZE_MAP[sizePreset]);
     }
-  }, [showCustom, customWidth, customHeight, sizePreset, generate, cancelScheduledCustomPreview]);
+  }, [showCustom, customWidth, customHeight, sizePreset, generate, cancelScheduledCustomPreview, resumeSession]);
 
-  // "Play This Maze" — if a saved session exists, the resume banner handles the
-  // choice. Clicking this button while a banner is visible scrolls to it and
-  // does nothing else, so the player must explicitly choose Resume or Start New.
+  // "Play This Maze" starts the current preview. If a saved generated session
+  // exists, clear it first so the new run does not inherit stale progress.
   const handlePlay = useCallback(() => {
     if (resumeSession) {
-      // A saved session exists — user must choose via the banner.
-      // The banner is always visible when resumeSession !== null, so no action needed.
-      return;
+      clearGeneratedSession();
+      setResumeSession(null);
     }
     logMazeStateDebug('play click', maze);
     hasPlayedRef.current = true;
@@ -631,6 +634,7 @@ export function MazeGenerator() {
             maze={maze}
             initialGameState={initialGameState}
             initialShowTrail={initialShowTrail}
+            label={presetLabel}
             onSessionChange={handleSessionChange}
             onReset={handleReset}
             onSolve={handleSolve}
@@ -665,6 +669,7 @@ export function MazeGenerator() {
               onNewMaze={handleGenerate}
               mazeWidth={maze.width}
               mazeHeight={maze.height}
+              mazeLabel={presetLabel}
             />
           </div>
         )}
@@ -781,16 +786,10 @@ export function MazeGenerator() {
             Generate New Maze
           </button>
 
-          {/* Primary play action — disabled when a saved session is pending choice */}
+          {/* Primary play action */}
           <button
             onClick={handlePlay}
-            disabled={!!resumeSession}
-            className={`w-full inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3 text-base font-semibold transition-colors ${
-              resumeSession
-                ? 'bg-arch-accent/40 text-white cursor-not-allowed'
-                : 'bg-arch-accent text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark'
-            }`}
-            title={resumeSession ? 'Choose Resume or Start New above first' : undefined}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3 text-base font-semibold transition-colors bg-arch-accent text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z"/>

@@ -36,10 +36,12 @@ export interface PostSolveOverlayProps {
    * "Play Again" becomes secondary. Replaces the default "Play Again" primary layout.
    */
   onNewMaze?: () => void;
-  /** Width of the generated maze — shown in stats and share text. */
+  /** Width of the generated maze — shown in share text. */
   mazeWidth?: number;
-  /** Height of the generated maze — shown in stats and share text. */
+  /** Height of the generated maze — shown in share text. */
   mazeHeight?: number;
+  /** Friendly generator size label, e.g. "Large". */
+  mazeLabel?: string;
 }
 
 function formatTime(ms: number): string {
@@ -185,6 +187,7 @@ export function PostSolveOverlay({
   onNewMaze,
   mazeWidth,
   mazeHeight,
+  mazeLabel,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   // On mobile, the browser fires a synthetic click event at the touch position
@@ -205,7 +208,13 @@ export function PostSolveOverlay({
   const statsItems: string[] = [`⏱ ${formatTime(elapsedMs)}`];
   if (stepCount > 0) statsItems.push(`${stepCount} steps`);
   if (hintsUsed > 0) statsItems.push(`${hintsUsed} hint${hintsUsed > 1 ? 's' : ''}`);
-  if (onNewMaze && mazeWidth && mazeHeight) statsItems.push(`${mazeWidth} × ${mazeHeight}`);
+  if (onNewMaze) {
+    if (mazeLabel && mazeLabel.trim().length > 0) {
+      statsItems.push(mazeLabel);
+    } else if (mazeWidth && mazeHeight) {
+      statsItems.push(`${mazeWidth} × ${mazeHeight}`);
+    }
+  }
 
   const generatorUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/maze-generator`

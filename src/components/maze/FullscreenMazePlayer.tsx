@@ -537,6 +537,11 @@ export function FullscreenMazePlayer({
     });
   };
 
+
+  const normalizedLabel = label?.trim() ?? '';
+  const isGeneratorSizeLabel = ['small', 'medium', 'large', 'monster', 'custom'].includes(normalizedLabel.toLowerCase());
+  const pauseMetaLabel = normalizedLabel.length > 0 ? normalizedLabel : `${maze.width} × ${maze.height}`;
+
   const [vpSize, setVpSize] = useState(getWindowViewportSize);
   const [mazeViewportSize, setMazeViewportSize] = useState<ViewportSize | null>(null);
   const [initialCameraReady, setInitialCameraReady] = useState(() => getWindowViewportSize().w >= 768);
@@ -1848,8 +1853,8 @@ export function FullscreenMazePlayer({
             >
               <span>{formatPauseTime(state.elapsedMs)}</span>
               <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
-              <span>{maze.width} × {maze.height}</span>
-              {!label && (
+              <span>{pauseMetaLabel}</span>
+              {(normalizedLabel.length === 0 || isGeneratorSizeLabel) && (
                 <>
                   <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
                   <span>Generated</span>
