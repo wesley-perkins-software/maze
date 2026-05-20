@@ -195,7 +195,7 @@ describe('localStorage unavailable', () => {
 });
 
 describe('isSameGeneratedMazeIdentity', () => {
-  it('returns true when seed, dimensions, difficulty, label, and generator version all match', () => {
+  it('returns true when seed, dimensions, difficulty, and generator version all match', () => {
     const saved = {
       ...makeSession(),
       maze: {
@@ -214,8 +214,7 @@ describe('isSameGeneratedMazeIdentity', () => {
       height: 60,
       seed: 12345,
       difficulty: 'large',
-      label: 'Large',
-    } as any;
+    };
 
     expect(isSameGeneratedMazeIdentity(loaded, previewMaze, CURRENT_VERSION)).toBe(true);
   });
@@ -232,8 +231,7 @@ describe('isSameGeneratedMazeIdentity', () => {
       height: loaded.maze.height,
       seed: loaded.maze.seed + 1,
       difficulty: loaded.maze.difficulty,
-      label: loaded.maze.label,
-    } as any;
+    };
 
     expect(isSameGeneratedMazeIdentity(loaded, previewMaze, CURRENT_VERSION)).toBe(false);
     expect(isSameGeneratedMazeIdentity(loaded, { ...previewMaze, seed: loaded.maze.seed }, CURRENT_VERSION + 1)).toBe(false);
