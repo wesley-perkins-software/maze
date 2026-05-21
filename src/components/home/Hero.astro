@@ -629,8 +629,8 @@ const heroSvg = renderThumbnail(heroMaze);
       desktopLink.innerHTML = `${PLAY_ICON} Play Today's Maze`;
       mobileSecEl.innerHTML = '';
       desktopSecEl.innerHTML = '';
-      if (mobileSecGroupEl)  mobileSecGroupEl.hidden  = false;
-      if (desktopSecGroupEl) desktopSecGroupEl.hidden = false;
+      if (mobileSecGroupEl)  mobileSecGroupEl.style.display  = '';
+      if (desktopSecGroupEl) desktopSecGroupEl.style.display = '';
     } else if (state.type === 'in-progress') {
       mobileLink.style.display  = '';
       desktopLink.style.display = '';
@@ -641,14 +641,14 @@ const heroSvg = renderThumbnail(heroMaze);
       const link = restartLinkHtml();
       mobileSecEl.innerHTML = link;
       desktopSecEl.innerHTML = link;
-      if (mobileSecGroupEl)  mobileSecGroupEl.hidden  = false;
-      if (desktopSecGroupEl) desktopSecGroupEl.hidden = false;
+      if (mobileSecGroupEl)  mobileSecGroupEl.style.display  = '';
+      if (desktopSecGroupEl) desktopSecGroupEl.style.display = '';
     } else {
       // completed — hide primary CTA and static sec group; inject equal-weight chips
       mobileLink.style.display  = 'none';
       desktopLink.style.display = 'none';
-      if (mobileSecGroupEl)  mobileSecGroupEl.hidden  = true;
-      if (desktopSecGroupEl) desktopSecGroupEl.hidden = true;
+      if (mobileSecGroupEl)  mobileSecGroupEl.style.display  = 'none';
+      if (desktopSecGroupEl) desktopSecGroupEl.style.display = 'none';
       const solvedLinks =
         `<div class="hero-solved-links">`
         + `<a href="/maze-generator" class="hero-solved-link">Make a Maze →</a>`
