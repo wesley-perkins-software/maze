@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { getMsUntilMidnightUTC } from '../../lib/utils/countdown';
+import { getMsUntilLocalMidnight } from '../../lib/utils/countdown';
 
 // Set to 50 to activate a 320×50 banner ad slot between secondary and tertiary actions.
 // When enabling, also widen the card from max-w-xs to max-w-sm to give the ad breathing room.
@@ -125,9 +125,9 @@ function XIcon() {
 }
 
 function CountdownLine() {
-  const [ms, setMs] = useState(() => getMsUntilMidnightUTC());
+  const [ms, setMs] = useState(() => getMsUntilLocalMidnight());
   useEffect(() => {
-    const id = setInterval(() => setMs(getMsUntilMidnightUTC()), 1000);
+    const id = setInterval(() => setMs(getMsUntilLocalMidnight()), 1000);
     return () => clearInterval(id);
   }, []);
   const s = Math.max(0, Math.floor(ms / 1000));

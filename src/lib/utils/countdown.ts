@@ -1,8 +1,8 @@
-export function getMsUntilMidnightUTC(): number {
+export function getMsUntilLocalMidnight(): number {
   const now = new Date();
-  const midnight = new Date(Date.UTC(
-    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1,
-  ));
+  const midnight = new Date(
+    now.getFullYear(), now.getMonth(), now.getDate() + 1,
+  );
   return midnight.getTime() - now.getTime();
 }
 
