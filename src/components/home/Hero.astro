@@ -84,7 +84,7 @@ const heroSvg = renderThumbnail(heroMaze);
       <div id="hero-cta-secondary-mobile"></div>
 
       <!-- Secondary links — clearly links, clearly secondary, 44px tap targets -->
-      <div class="hero-sec-group-mobile">
+      <div id="hero-sec-group-mobile" class="hero-sec-group-mobile">
         <a href="/#maze-library" class="hero-sec-link">Browse Library →</a>
         <a href="/maze-generator" class="hero-sec-link">Make a Maze →</a>
       </div>
@@ -130,7 +130,7 @@ const heroSvg = renderThumbnail(heroMaze);
           <div id="hero-cta-secondary-desktop"></div>
 
           <!-- Secondary links — horizontal row on desktop -->
-          <div class="hero-sec-group-desktop">
+          <div id="hero-sec-group-desktop" class="hero-sec-group-desktop">
             <a href="/#maze-library" class="hero-sec-link">Browse Library →</a>
             <a href="/maze-generator" class="hero-sec-link">Make a Maze →</a>
           </div>
@@ -352,6 +352,39 @@ const heroSvg = renderThumbnail(heroMaze);
   }
   @media (max-width: 767px) {
     :global(.hero-daily-secondary-btn) { padding: 0.7rem 0.875rem; }
+  }
+
+  /* Solved-state action row — two equal-weight chips injected via innerHTML */
+  :global(.hero-solved-links) {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       0.625rem;
+    width:     100%;
+  }
+  :global(.hero-solved-link) {
+    display:         inline-flex;
+    align-items:     center;
+    font-family:     'IBM Plex Mono', monospace;
+    font-size:       0.75rem;
+    font-weight:     400;
+    color:           var(--color-charcoal);
+    text-decoration: none;
+    cursor:          pointer;
+    border:          1px solid var(--color-border-strong);
+    padding:         0.7rem 0.875rem;
+    white-space:     nowrap;
+    transition:      color 120ms ease, border-color 120ms ease;
+  }
+  :global(.hero-solved-link:hover) {
+    border-color: var(--color-charcoal);
+  }
+  :global(.hero-solved-link:focus-visible) {
+    outline:        2px solid var(--color-charcoal);
+    outline-offset: 2px;
+  }
+  @media (min-width: 768px) {
+    :global(.hero-solved-links) { width: auto; }
+    :global(.hero-solved-link)  { padding: 0.4rem 0.875rem; }
   }
 
   /* "Restart today's maze" — outlined secondary, real control, clearly quieter than Resume */
@@ -584,14 +617,23 @@ const heroSvg = renderThumbnail(heroMaze);
     mobileSecEl: HTMLElement,
     desktopSecEl: HTMLElement,
   ): void => {
+    const mobileSecGroupEl  = document.getElementById('hero-sec-group-mobile');
+    const desktopSecGroupEl = document.getElementById('hero-sec-group-desktop');
+
     if (state.type === 'not-started') {
+      mobileLink.style.display  = '';
+      desktopLink.style.display = '';
       mobileLink.href = dailyPlayPath;
       mobileLink.innerHTML = `${PLAY_ICON} Play Today's Maze`;
       desktopLink.href = dailyPlayPath;
       desktopLink.innerHTML = `${PLAY_ICON} Play Today's Maze`;
       mobileSecEl.innerHTML = '';
       desktopSecEl.innerHTML = '';
+      if (mobileSecGroupEl)  mobileSecGroupEl.hidden  = false;
+      if (desktopSecGroupEl) desktopSecGroupEl.hidden = false;
     } else if (state.type === 'in-progress') {
+      mobileLink.style.display  = '';
+      desktopLink.style.display = '';
       mobileLink.href = dailyPlayPath;
       mobileLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
       desktopLink.href = dailyPlayPath;
@@ -599,15 +641,21 @@ const heroSvg = renderThumbnail(heroMaze);
       const link = restartLinkHtml();
       mobileSecEl.innerHTML = link;
       desktopSecEl.innerHTML = link;
+      if (mobileSecGroupEl)  mobileSecGroupEl.hidden  = false;
+      if (desktopSecGroupEl) desktopSecGroupEl.hidden = false;
     } else {
-      // completed
-      mobileLink.href = '/maze-generator';
-      mobileLink.innerHTML = 'Make a Maze';
-      desktopLink.href = '/maze-generator';
-      desktopLink.innerHTML = 'Make a Maze';
-      const browseLink = `<a href="/small-mazes" class="hero-daily-secondary-btn">Browse Library</a>`;
-      mobileSecEl.innerHTML = browseLink;
-      desktopSecEl.innerHTML = browseLink;
+      // completed — hide primary CTA and static sec group; inject equal-weight chips
+      mobileLink.style.display  = 'none';
+      desktopLink.style.display = 'none';
+      if (mobileSecGroupEl)  mobileSecGroupEl.hidden  = true;
+      if (desktopSecGroupEl) desktopSecGroupEl.hidden = true;
+      const solvedLinks =
+        `<div class="hero-solved-links">`
+        + `<a href="/maze-generator" class="hero-solved-link">Make a Maze →</a>`
+        + `<a href="/small-mazes" class="hero-solved-link">Browse Library →</a>`
+        + `</div>`;
+      mobileSecEl.innerHTML  = solvedLinks;
+      desktopSecEl.innerHTML = solvedLinks;
     }
 
     // Keep the sticky CTA href in sync.
