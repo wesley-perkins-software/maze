@@ -138,7 +138,7 @@ function CountdownLine() {
     ? `${h}h ${String(m).padStart(2, '0')}m`
     : `${m}m ${String(sec).padStart(2, '0')}s`;
   return (
-    <p className="text-slate-400 text-xs mt-0.5">
+    <p className="text-slate-500 text-xs mt-0.5">
       New maze unlocks in {formatted}
     </p>
   );
@@ -282,26 +282,26 @@ export function PostSolveOverlay({
             {isDailyMode ? 'Daily Maze Complete!' : 'Maze Complete!'}
           </h3>
           {completionCopy && (
-            <p className="mt-1.5 text-sm text-slate-500">{completionCopy}</p>
+            <p className="mt-1.5 text-sm text-slate-600">{completionCopy}</p>
           )}
         </div>
 
         {/* Stats row */}
-        <p className="text-sm text-slate-500 text-center">
+        <p className="text-base font-semibold text-slate-700 text-center">
           {statsItems.join(' · ')}
         </p>
 
         {/* Daily habit messaging */}
         {returnCopy && (
           <div className="text-center -mt-1">
-            <p className="text-xs text-slate-500">{returnCopy}</p>
+            <p className="text-sm text-slate-600">{returnCopy}</p>
             {showCountdown && <CountdownLine />}
           </div>
         )}
 
         {/* Bridge copy */}
         {isDailyMode && (
-          <p className="text-xs text-slate-400 text-center -mt-1">
+          <p className="text-sm text-slate-500 text-center -mt-1">
             Want more? Create your own maze while you wait.
           </p>
         )}
