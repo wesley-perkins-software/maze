@@ -65,6 +65,21 @@ function formatResumeTime(ms: number): string {
   return `${m} minute${m !== 1 ? 's' : ''} ${rem} second${rem !== 1 ? 's' : ''}`;
 }
 
+function isDailyTestOverrideAllowed(): boolean {
+  if (import.meta.env.DEV) return true;
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname.toLowerCase();
+  if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]') return true;
+  if (host === 'mazethis.com' || host === 'www.mazethis.com') return false;
+  return host.endsWith('.netlify.app');
+}
+
+function useDailyTestMazeOverride(): boolean {
+  if (typeof window === 'undefined' || !isDailyTestOverrideAllowed()) return false;
+  const params = new URLSearchParams(window.location.search);
+  return params.get('testMaze') === '1' || params.get('dailyTestMaze') === '1';
+}
+
 export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   const [maze, setMaze] = useState<MazeData | null>(null);
   const [dateLabel, setDateLabel] = useState('');
@@ -84,8 +99,14 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   useEffect(() => {
     const today = getLocalDateString();
     const seed = dailyMazeSeed(today);
+    const useTestMaze = useDailyTestMazeOverride();
 
-    const generated = generateMaze({ width: 60, height: 60, difficulty: 'large', seed, anyPortalSide: true });
+    // Dev/test-only daily maze override for post-solve QA. Do not enable in production.
+    const mazeConfig = useTestMaze
+      ? { width: 10, height: 10, difficulty: 'small' as const, seed: 12345, anyPortalSide: true }
+      : { width: 60, height: 60, difficulty: 'large' as const, seed, anyPortalSide: true };
+
+    const generated = generateMaze(mazeConfig);
     generated.id = `daily-${today}`;
     generated.slug = `daily-${today}`;
 
@@ -107,13 +128,13 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
 
     // Scale the preview to fill the content area (max ~880px) responsively.
     const containerW = Math.min(window.innerWidth - 32, 880);
-    setPreviewCellSize(Math.max(6, Math.floor(containerW / 60)));
+    setPreviewCellSize(Math.max(6, Math.floor(containerW / generated.width)));
 
     mazeRef.current = generated;
     setMaze(generated);
 
     // Load any saved progress for today; only restores if date + seed + version match.
-    const saved = loadDailySession(GENERATOR_VERSION, today, seed);
+    const saved = loadDailySession(GENERATOR_VERSION, today, generated.seed);
     if (saved) setResumeSession(saved);
 
     if (autoPlay) {
@@ -148,8 +169,8 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
         width: currentMaze.width,
         height: currentMaze.height,
         seed: currentMaze.seed,
-        difficulty: 'large',
-        label: 'Large',
+        difficulty: currentMaze.difficulty,
+        label: currentMaze.difficulty === 'small' ? 'Small' : 'Large',
         anyPortalSide: true,
       },
       progress: {
