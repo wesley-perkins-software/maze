@@ -308,7 +308,7 @@ const heroSvg = renderThumbnail(heroMaze);
     display:     flex;
     flex-wrap:   wrap;
     gap:         0.625rem;
-    padding-top: 0.125rem; /* optical alignment with status above */
+    padding-top: 0.875rem;
   }
   .hero-sec-group-mobile .hero-sec-link {
     padding: 0.7rem 0.875rem; /* taller padding = solid 44px tap target */
@@ -320,6 +320,7 @@ const heroSvg = renderThumbnail(heroMaze);
     flex-direction: row;
     gap:         0.625rem;
     align-items: center;
+    margin-top:  0.75rem;
   }
 
   /*
@@ -339,7 +340,6 @@ const heroSvg = renderThumbnail(heroMaze);
     border:       1px solid var(--color-border-strong);
     padding:      0.4rem 0.875rem;
     white-space:  nowrap;
-    margin-top:   0.5rem;
     transition:   color 120ms ease, border-color 120ms ease;
   }
   :global(.hero-daily-secondary-btn:hover) {
@@ -354,31 +354,112 @@ const heroSvg = renderThumbnail(heroMaze);
     :global(.hero-daily-secondary-btn) { padding: 0.7rem 0.875rem; }
   }
 
-  /* "Restart today's maze" (in-progress state) — quiet text-link, clearly subordinate */
-  :global(.hero-daily-restart-link) {
-    display:         inline-block;
-    font-family:     'IBM Plex Mono', monospace;
-    font-size:       0.75rem;
-    color:           var(--color-muted-strong);
-    background:      none;
-    border:          none;
-    padding:         0.35rem 0;
-    margin-top:      0.375rem;
-    cursor:          pointer;
-    text-decoration: none;
-    transition:      color 120ms ease;
+  /*
+    "Restart today's maze" (in-progress state).
+    Ghost/secondary button — clearly a real control, clearly subordinate to Resume.
+    Full-width on mobile to match the primary CTA width; auto on desktop.
+    Same stamp shadow treatment as the primary CTA, in charcoal instead of red.
+  */
+  :global(.hero-daily-restart-btn) {
+    display:          flex;
+    width:            100%;
+    align-items:      center;
+    justify-content:  center;
+    gap:              0.5rem;
+    font-family:      'IBM Plex Mono', monospace;
+    font-size:        0.875rem;
+    font-weight:      600;
+    color:            var(--color-charcoal);
+    background:       none;
+    border:           1px solid var(--color-charcoal);
+    padding:          0.875rem 1.75rem;
+    cursor:           pointer;
+    box-shadow:       0 2px 0 0 var(--color-charcoal);
+    transition:       background-color 150ms ease, color 150ms ease;
   }
-  :global(.hero-daily-restart-link:hover) {
-    color:           var(--color-charcoal);
-    text-decoration: underline;
+  :global(.hero-daily-restart-btn:hover) {
+    background-color: var(--color-charcoal);
+    color:            var(--color-bg);
   }
-  :global(.hero-daily-restart-link:focus-visible) {
+  :global(.hero-daily-restart-btn:active) {
+    transform:  translateY(2px);
+    box-shadow: none;
+  }
+  :global(.hero-daily-restart-btn:focus-visible) {
     outline:        2px solid var(--color-charcoal);
     outline-offset: 2px;
   }
-  /* Taller tap target on mobile */
-  @media (max-width: 767px) {
-    :global(.hero-daily-restart-link) { padding: 0.65rem 0; }
+  @media (min-width: 768px) {
+    :global(.hero-daily-restart-btn) {
+      display:   inline-flex;
+      width:     auto;
+      font-size: 0.8125rem;
+      padding:   0.625rem 1.5rem;
+    }
+  }
+
+  /* ── Restart confirmation panel ─────────────────────────────────────────── */
+  :global(.hero-daily-confirm) {
+    width:            100%;
+    padding:          0.875rem 1rem;
+    background-color: var(--color-surface);
+    border:           1px solid var(--color-border-strong);
+    border-left:      3px solid var(--color-accent);
+  }
+  :global(.hero-daily-confirm-title) {
+    font-family:  'IBM Plex Mono', monospace;
+    font-size:    0.875rem;
+    font-weight:  600;
+    color:        var(--color-charcoal);
+    line-height:  1.4;
+    margin-bottom: 0.2rem;
+  }
+  :global(.hero-daily-confirm-body) {
+    font-family:  'IBM Plex Mono', monospace;
+    font-size:    0.8125rem;
+    color:        var(--color-muted-strong);
+    line-height:  1.4;
+    margin-bottom: 0.75rem;
+  }
+  :global(.hero-daily-confirm-actions) {
+    display: flex;
+    gap:     0.5rem;
+  }
+  :global(.hero-daily-confirm-cancel),
+  :global(.hero-daily-confirm-restart) {
+    flex:        1;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size:   0.8125rem;
+    font-weight: 600;
+    padding:     0.625rem 0.875rem;
+    cursor:      pointer;
+    border:      1px solid transparent;
+    transition:  background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+    white-space: nowrap;
+  }
+  /* Cancel — ghost, neutral */
+  :global(.hero-daily-confirm-cancel) {
+    color:        var(--color-muted-strong);
+    background:   none;
+    border-color: var(--color-border-strong);
+  }
+  :global(.hero-daily-confirm-cancel:hover) {
+    color:        var(--color-charcoal);
+    border-color: var(--color-charcoal);
+  }
+  /* Restart — charcoal fill, destructive weight without doubling the red accent */
+  :global(.hero-daily-confirm-restart) {
+    color:            var(--color-bg);
+    background-color: var(--color-charcoal);
+    border-color:     var(--color-charcoal);
+  }
+  :global(.hero-daily-confirm-restart:hover) {
+    background-color: color-mix(in srgb, var(--color-charcoal) 85%, transparent);
+  }
+  :global(.hero-daily-confirm-cancel:focus-visible),
+  :global(.hero-daily-confirm-restart:focus-visible) {
+    outline:        2px solid var(--color-charcoal);
+    outline-offset: 2px;
   }
 </style>
 
@@ -473,25 +554,19 @@ const heroSvg = renderThumbnail(heroMaze);
   // ── CTA rendering ────────────────────────────────────────────────────────────
   const PLAY_ICON = `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
 
-  // "Restart today's maze" — quiet text-link style, clearly secondary to Resume.
+  // "Restart today's maze" — ghost secondary button, full-width on mobile.
   const restartLinkHtml = (): string =>
-    `<button type="button" class="hero-daily-restart-link" data-action="daily-restart">Restart today's maze</button>`;
+    `<button type="button" class="hero-daily-restart-btn" data-action="daily-restart">Restart today's maze</button>`;
 
-  // Inline confirmation shown when the user taps "Restart today's maze".
-  const restartConfirmHtml = (): string => {
-    const monoBase = `font-family:'IBM Plex Mono',monospace;`;
-    const titleStyle = `${monoBase}font-size:0.8125rem;font-weight:600;color:var(--color-charcoal);line-height:1.4;display:block;margin-bottom:0.2rem;`;
-    const bodyStyle  = `${monoBase}font-size:0.75rem;color:var(--color-muted-strong);line-height:1.4;display:block;margin-bottom:0.5rem;`;
-    const cancelStyle  = `${monoBase}font-size:0.75rem;color:var(--color-muted-strong);background:none;border:1px solid var(--color-border-strong);cursor:pointer;padding:0.4rem 0.75rem;`;
-    const confirmStyle = `${monoBase}font-size:0.75rem;color:var(--color-charcoal);font-weight:600;background:none;border:1px solid var(--color-charcoal);cursor:pointer;padding:0.4rem 0.75rem;`;
-    return `<div style="margin-top:0.5rem;">`
-         + `<span style="${titleStyle}">Restart today's maze?</span>`
-         + `<span style="${bodyStyle}">Your current progress will be lost.</span>`
-         + `<div style="display:flex;gap:0.5rem;">`
-         + `<button type="button" data-action="daily-restart-cancel" style="${cancelStyle}">Cancel</button>`
-         + `<button type="button" data-action="daily-restart-confirm" style="${confirmStyle}">Restart</button>`
-         + `</div></div>`;
-  };
+  // Inline confirmation panel replacing the restart button when tapped.
+  const restartConfirmHtml = (): string =>
+    `<div class="hero-daily-confirm">`
+    + `<p class="hero-daily-confirm-title">Restart today's maze?</p>`
+    + `<p class="hero-daily-confirm-body">Your current progress will be lost.</p>`
+    + `<div class="hero-daily-confirm-actions">`
+    + `<button type="button" class="hero-daily-confirm-cancel" data-action="daily-restart-cancel">Cancel</button>`
+    + `<button type="button" class="hero-daily-confirm-restart" data-action="daily-restart-confirm">Restart</button>`
+    + `</div></div>`;
 
   const updateCta = (
     state: DailyState,
