@@ -116,7 +116,25 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
     const saved = loadDailySession(GENERATOR_VERSION, today, seed);
     if (saved) setResumeSession(saved);
 
-    if (autoPlay) setPlaying(true);
+    if (autoPlay) {
+      if (saved) {
+        // Auto-restore saved progress so the player opens with progress intact.
+        const { progress } = saved;
+        setInitialGameState({
+          status: progress.status === 'idle' ? 'idle' : 'paused',
+          playerPosition: progress.playerPosition,
+          trail: progress.trail,
+          startTime: null,
+          elapsedMs: progress.elapsedMs,
+          solutionVisible: progress.solutionVisible,
+          hintsUsed: progress.hintsUsed,
+          hintCells: [],
+        });
+        setInitialShowTrail(progress.showTrail);
+        setResumeSession(null);
+      }
+      setPlaying(true);
+    }
   }, []);
 
   // ── Autosave ─────────────────────────────────────────────────────────────────

@@ -583,9 +583,9 @@ const heroSvg = renderThumbnail(heroMaze);
       mobileSecEl.innerHTML = '';
       desktopSecEl.innerHTML = '';
     } else if (state.type === 'in-progress') {
-      mobileLink.href = '/maze-of-the-day/';
+      mobileLink.href = '/play/maze-of-the-day/';
       mobileLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
-      desktopLink.href = '/maze-of-the-day/';
+      desktopLink.href = '/play/maze-of-the-day/';
       desktopLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
       const link = restartLinkHtml();
       mobileSecEl.innerHTML = link;
@@ -604,7 +604,7 @@ const heroSvg = renderThumbnail(heroMaze);
     // Keep the sticky CTA href in sync.
     const stickyCta = document.querySelector<HTMLAnchorElement>('#sticky-cta a');
     if (stickyCta) {
-      stickyCta.href = state.type === 'in-progress' ? '/maze-of-the-day/' : '/play/maze-of-the-day/';
+      stickyCta.href = '/play/maze-of-the-day/';
     }
   };
 
