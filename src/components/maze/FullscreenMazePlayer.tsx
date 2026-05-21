@@ -1342,7 +1342,7 @@ export function FullscreenMazePlayer({
               {state.status === 'playing' && (
                 <span className="flex items-center gap-1.5 font-mono font-medium text-slate-700">
                   {label && (
-                    <span className="hidden sm:inline text-xs font-sans font-medium text-slate-400 mr-0.5">
+                    <span className="hidden sm:inline text-sm font-sans font-semibold text-slate-600 mr-0.5">
                       {label} ·
                     </span>
                   )}
@@ -1357,7 +1357,7 @@ export function FullscreenMazePlayer({
               {state.status === 'idle' && (
                 <>
                   <span className="md:hidden text-slate-500 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
-                  <span className="hidden md:inline text-slate-400 text-xs">Arrow keys or WASD to run</span>
+                  <span className="hidden md:inline text-slate-500 text-sm">Arrow keys or WASD to run</span>
                 </>
               )}
               {state.status === 'solved' && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
