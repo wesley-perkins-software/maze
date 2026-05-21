@@ -323,9 +323,11 @@ const heroSvg = renderThumbnail(heroMaze);
   }
 
   /*
-    Secondary action buttons (Restart, Share) are injected via innerHTML so
-    Astro-scoped classes won't reach them. :global() makes hover/focus work.
+    Secondary action buttons injected via innerHTML bypass Astro scoping.
+    :global() ensures hover/focus pseudo-classes apply correctly.
   */
+
+  /* Share Result (completed state) — chip style matching hero-sec-link */
   :global(.hero-daily-secondary-btn) {
     display:      inline-flex;
     align-items:  center;
@@ -348,11 +350,35 @@ const heroSvg = renderThumbnail(heroMaze);
     outline:        2px solid var(--color-charcoal);
     outline-offset: 2px;
   }
-  /* Mobile: taller vertical padding for 44px tap target */
   @media (max-width: 767px) {
-    :global(.hero-daily-secondary-btn) {
-      padding: 0.7rem 0.875rem;
-    }
+    :global(.hero-daily-secondary-btn) { padding: 0.7rem 0.875rem; }
+  }
+
+  /* "Restart today's maze" (in-progress state) — quiet text-link, clearly subordinate */
+  :global(.hero-daily-restart-link) {
+    display:         inline-block;
+    font-family:     'IBM Plex Mono', monospace;
+    font-size:       0.75rem;
+    color:           var(--color-muted-strong);
+    background:      none;
+    border:          none;
+    padding:         0.35rem 0;
+    margin-top:      0.375rem;
+    cursor:          pointer;
+    text-decoration: none;
+    transition:      color 120ms ease;
+  }
+  :global(.hero-daily-restart-link:hover) {
+    color:           var(--color-charcoal);
+    text-decoration: underline;
+  }
+  :global(.hero-daily-restart-link:focus-visible) {
+    outline:        2px solid var(--color-charcoal);
+    outline-offset: 2px;
+  }
+  /* Taller tap target on mobile */
+  @media (max-width: 767px) {
+    :global(.hero-daily-restart-link) { padding: 0.65rem 0; }
   }
 </style>
 
@@ -377,15 +403,6 @@ const heroSvg = renderThumbnail(heroMaze);
     const m = Math.floor((total % 3600) / 60);
     const s = total % 60;
     return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  };
-
-  const formatResumeTime = (ms: number): string => {
-    const s = Math.floor(ms / 1000);
-    const m = Math.floor(s / 60);
-    const rem = s % 60;
-    if (m === 0) return `${s} second${s !== 1 ? 's' : ''}`;
-    if (rem === 0) return `${m} minute${m !== 1 ? 's' : ''}`;
-    return `${m} minute${m !== 1 ? 's' : ''} ${rem} second${rem !== 1 ? 's' : ''}`;
   };
 
   // ── Session detection ────────────────────────────────────────────────────────
@@ -443,16 +460,8 @@ const heroSvg = renderThumbnail(heroMaze);
     }
 
     if (state.type === 'in-progress') {
-      const steps = (state.session.progress.steps ?? 0) as number;
-      const stepWord = steps === 1 ? 'step' : 'steps';
-      const elapsedMs = (state.session.progress.elapsedMs ?? 0) as number;
-      const timeStr = elapsedMs >= 1000 ? formatResumeTime(elapsedMs) : null;
-      const detail = timeStr
-        ? `Large · ${timeStr} · ${steps.toLocaleString()} ${stepWord}`
-        : `Large · ${steps.toLocaleString()} ${stepWord}`;
-      return `<p style="${line1Style}"><span style="${accentStyle}">◑</span>&thinsp;In progress</p>`
-           + `<p style="${line2Style}">Today's maze is underway.</p>`
-           + `<p style="${line2Style}">${detail}</p>`;
+      return `<p style="${line1Style}">In progress</p>`
+           + `<p style="${line2Style}">Continue today's maze.</p>`;
     }
 
     // completed
@@ -463,6 +472,26 @@ const heroSvg = renderThumbnail(heroMaze);
 
   // ── CTA rendering ────────────────────────────────────────────────────────────
   const PLAY_ICON = `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
+
+  // "Restart today's maze" — quiet text-link style, clearly secondary to Resume.
+  const restartLinkHtml = (): string =>
+    `<button type="button" class="hero-daily-restart-link" data-action="daily-restart">Restart today's maze</button>`;
+
+  // Inline confirmation shown when the user taps "Restart today's maze".
+  const restartConfirmHtml = (): string => {
+    const monoBase = `font-family:'IBM Plex Mono',monospace;`;
+    const titleStyle = `${monoBase}font-size:0.8125rem;font-weight:600;color:var(--color-charcoal);line-height:1.4;display:block;margin-bottom:0.2rem;`;
+    const bodyStyle  = `${monoBase}font-size:0.75rem;color:var(--color-muted-strong);line-height:1.4;display:block;margin-bottom:0.5rem;`;
+    const cancelStyle  = `${monoBase}font-size:0.75rem;color:var(--color-muted-strong);background:none;border:1px solid var(--color-border-strong);cursor:pointer;padding:0.4rem 0.75rem;`;
+    const confirmStyle = `${monoBase}font-size:0.75rem;color:var(--color-charcoal);font-weight:600;background:none;border:1px solid var(--color-charcoal);cursor:pointer;padding:0.4rem 0.75rem;`;
+    return `<div style="margin-top:0.5rem;">`
+         + `<span style="${titleStyle}">Restart today's maze?</span>`
+         + `<span style="${bodyStyle}">Your current progress will be lost.</span>`
+         + `<div style="display:flex;gap:0.5rem;">`
+         + `<button type="button" data-action="daily-restart-cancel" style="${cancelStyle}">Cancel</button>`
+         + `<button type="button" data-action="daily-restart-confirm" style="${confirmStyle}">Restart</button>`
+         + `</div></div>`;
+  };
 
   const updateCta = (
     state: DailyState,
@@ -483,9 +512,9 @@ const heroSvg = renderThumbnail(heroMaze);
       mobileLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
       desktopLink.href = '/maze-of-the-day/';
       desktopLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
-      const btn = `<button type="button" class="hero-daily-secondary-btn" data-action="daily-restart">Restart</button>`;
-      mobileSecEl.innerHTML = btn;
-      desktopSecEl.innerHTML = btn;
+      const link = restartLinkHtml();
+      mobileSecEl.innerHTML = link;
+      desktopSecEl.innerHTML = link;
     } else {
       // completed
       mobileLink.href = '/maze-of-the-day/';
@@ -508,10 +537,31 @@ const heroSvg = renderThumbnail(heroMaze);
   document.addEventListener('click', async (e: MouseEvent) => {
     const target = e.target as Element | null;
     const action = (target?.closest('[data-action]') as HTMLElement | null)?.dataset['action'];
+
     if (action === 'daily-restart') {
-      localStorage.removeItem('mazethis.dailyMaze.activeSession');
+      // Show inline confirmation instead of immediately clearing progress.
+      const html = restartConfirmHtml();
+      if (mobileSecEl) mobileSecEl.innerHTML = html;
+      if (desktopSecEl) desktopSecEl.innerHTML = html;
+      return;
+    }
+
+    if (action === 'daily-restart-cancel') {
+      // Restore the quiet restart link; preserve progress.
+      const link = restartLinkHtml();
+      if (mobileSecEl) mobileSecEl.innerHTML = link;
+      if (desktopSecEl) desktopSecEl.innerHTML = link;
+      return;
+    }
+
+    if (action === 'daily-restart-confirm') {
+      // User confirmed — clear progress and navigate to start fresh.
+      try { localStorage.removeItem('mazethis.dailyMaze.activeSession'); } catch { /* ignore */ }
       window.location.href = '/maze-of-the-day/';
-    } else if (action === 'daily-share') {
+      return;
+    }
+
+    if (action === 'daily-share') {
       const url = `${window.location.origin}/maze-of-the-day/`;
       try {
         if (navigator.share) {
