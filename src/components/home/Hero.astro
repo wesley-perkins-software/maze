@@ -455,6 +455,24 @@ const heroSvg = renderThumbnail(heroMaze);
 </style>
 
 <script>
+  const qs = new URLSearchParams(window.location.search);
+  const dailyTestEnabled = qs.get('dailyTestMaze') === '1';
+  const dailyPlayPath = dailyTestEnabled
+    ? '/play/maze-of-the-day/?testMaze=1'
+    : '/play/maze-of-the-day/';
+  const dailyPagePath = dailyTestEnabled
+    ? '/maze-of-the-day/?testMaze=1'
+    : '/maze-of-the-day/';
+
+  // Preserve homepage daily test mode in hero links so /?dailyTestMaze=1 can
+  // jump directly into the tiny deterministic Maze of the Day override.
+  for (const anchor of document.querySelectorAll<HTMLAnchorElement>('a[href="/play/maze-of-the-day/"]')) {
+    anchor.href = dailyPlayPath;
+  }
+  for (const anchor of document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-of-the-day/"]')) {
+    anchor.href = dailyPagePath;
+  }
+
   // ── Date helpers ─────────────────────────────────────────────────────────────
   // Use local date throughout — DailyMazePlayer keys sessions and completion
   // flags by local calendar date, so UTC diverges for users in UTC− time zones.
@@ -567,25 +585,25 @@ const heroSvg = renderThumbnail(heroMaze);
     desktopSecEl: HTMLElement,
   ): void => {
     if (state.type === 'not-started') {
-      mobileLink.href = '/play/maze-of-the-day/';
+      mobileLink.href = dailyPlayPath;
       mobileLink.innerHTML = `${PLAY_ICON} Play Today's Maze`;
-      desktopLink.href = '/play/maze-of-the-day/';
+      desktopLink.href = dailyPlayPath;
       desktopLink.innerHTML = `${PLAY_ICON} Play Today's Maze`;
       mobileSecEl.innerHTML = '';
       desktopSecEl.innerHTML = '';
     } else if (state.type === 'in-progress') {
-      mobileLink.href = '/play/maze-of-the-day/';
+      mobileLink.href = dailyPlayPath;
       mobileLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
-      desktopLink.href = '/play/maze-of-the-day/';
+      desktopLink.href = dailyPlayPath;
       desktopLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
       const link = restartLinkHtml();
       mobileSecEl.innerHTML = link;
       desktopSecEl.innerHTML = link;
     } else {
       // completed
-      mobileLink.href = '/maze-of-the-day/';
+      mobileLink.href = dailyPagePath;
       mobileLink.innerHTML = `${PLAY_ICON} Play Again`;
-      desktopLink.href = '/maze-of-the-day/';
+      desktopLink.href = dailyPagePath;
       desktopLink.innerHTML = `${PLAY_ICON} Play Again`;
       const btn = `<button type="button" class="hero-daily-secondary-btn" data-action="daily-share">Share Result</button>`;
       mobileSecEl.innerHTML = btn;
@@ -595,7 +613,7 @@ const heroSvg = renderThumbnail(heroMaze);
     // Keep the sticky CTA href in sync.
     const stickyCta = document.querySelector<HTMLAnchorElement>('#sticky-cta a');
     if (stickyCta) {
-      stickyCta.href = '/play/maze-of-the-day/';
+      stickyCta.href = dailyPlayPath;
     }
   };
 
@@ -623,7 +641,7 @@ const heroSvg = renderThumbnail(heroMaze);
     if (action === 'daily-restart-confirm') {
       // User confirmed — clear progress and navigate to start fresh.
       try { localStorage.removeItem('mazethis.dailyMaze.activeSession'); } catch { /* ignore */ }
-      window.location.href = '/play/maze-of-the-day/';
+      window.location.href = dailyPlayPath;
       return;
     }
 
