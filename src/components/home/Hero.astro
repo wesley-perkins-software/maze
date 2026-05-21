@@ -632,7 +632,7 @@ const heroSvg = renderThumbnail(heroMaze);
     if (action === 'daily-restart-confirm') {
       // User confirmed — clear progress and navigate to start fresh.
       try { localStorage.removeItem('mazethis.dailyMaze.activeSession'); } catch { /* ignore */ }
-      window.location.href = '/maze-of-the-day/';
+      window.location.href = '/play/maze-of-the-day/';
       return;
     }
 
