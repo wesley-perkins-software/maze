@@ -277,9 +277,9 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
               <div className="flex gap-2">
                 <button
                   onClick={handleResume}
-                  className="flex-1 rounded-sm bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 active:bg-blue-800 transition-colors"
+                  className="flex-1 btn-primary rounded-sm px-3 py-2 text-sm"
                 >
-                  Resume
+                  Resume Today's Maze
                 </button>
                 <button
                   onClick={handleRestart}
@@ -296,7 +296,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
             <div className="mt-4 flex justify-center">
               <button
                 onClick={() => { setPlaying(true); setSolveStats(null); }}
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-base font-semibold text-white hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm"
+                className="btn-primary rounded-lg px-6 py-3 text-base shadow-sm"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M8 5v14l11-7z" />
