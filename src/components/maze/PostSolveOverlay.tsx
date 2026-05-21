@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { getMsUntilMidnightUTC } from '../../lib/utils/countdown';
+import { getMsUntilLocalMidnight } from '../../lib/utils/countdown';
 
 // Set to 50 to activate a 320×50 banner ad slot between secondary and tertiary actions.
 // When enabling, also widen the card from max-w-xs to max-w-sm to give the ad breathing room.
@@ -25,7 +25,7 @@ export interface PostSolveOverlayProps {
   onPlayAgain: () => void;
   onClose?: () => void;
   mazeSlug?: string;
-  /** Short positive line shown under "Maze Complete!", e.g. "Nice work — you solved today's challenge." */
+  /** Short positive line shown under the title, e.g. "Nice work — you solved today's challenge." */
   completionCopy?: string;
   /** e.g. "Come back tomorrow for a fresh challenge." */
   returnCopy?: string;
@@ -42,6 +42,8 @@ export interface PostSolveOverlayProps {
   mazeHeight?: number;
   /** Friendly generator size label, e.g. "Large". */
   mazeLabel?: string;
+  /** Daily maze post-solve: daily-specific title, actions, and share text. */
+  isDailyMode?: boolean;
 }
 
 function formatTime(ms: number): string {
@@ -123,9 +125,9 @@ function XIcon() {
 }
 
 function CountdownLine() {
-  const [ms, setMs] = useState(() => getMsUntilMidnightUTC());
+  const [ms, setMs] = useState(() => getMsUntilLocalMidnight());
   useEffect(() => {
-    const id = setInterval(() => setMs(getMsUntilMidnightUTC()), 1000);
+    const id = setInterval(() => setMs(getMsUntilLocalMidnight()), 1000);
     return () => clearInterval(id);
   }, []);
   const s = Math.max(0, Math.floor(ms / 1000));
@@ -136,13 +138,21 @@ function CountdownLine() {
     ? `${h}h ${String(m).padStart(2, '0')}m`
     : `${m}m ${String(sec).padStart(2, '0')}s`;
   return (
-    <p className="text-slate-400 text-xs mt-0.5">
+    <p className="text-slate-500 text-xs mt-0.5">
       New maze unlocks in {formatted}
     </p>
   );
 }
 
-function ShareButton({ shareText, mazeSlug: _mazeSlug }: { shareText: string; mazeSlug?: string }) {
+function ShareButton({
+  shareText,
+  mazeSlug: _mazeSlug,
+  className = 'btn-ghost text-sm',
+}: {
+  shareText: string;
+  mazeSlug?: string;
+  className?: string;
+}) {
   const btnRef = useRef<HTMLButtonElement>(null);
 
   const handleShare = async () => {
@@ -164,7 +174,7 @@ function ShareButton({ shareText, mazeSlug: _mazeSlug }: { shareText: string; ma
     <button
       ref={btnRef}
       onClick={handleShare}
-      className="btn-ghost text-sm"
+      className={className}
     >
       Share Result
     </button>
@@ -188,6 +198,7 @@ export function PostSolveOverlay({
   mazeWidth,
   mazeHeight,
   mazeLabel,
+  isDailyMode,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   // On mobile, the browser fires a synthetic click event at the touch position
@@ -206,8 +217,10 @@ export function PostSolveOverlay({
   }, []);
 
   const statsItems: string[] = [`⏱ ${formatTime(elapsedMs)}`];
-  if (stepCount > 0) statsItems.push(`${stepCount} steps`);
-  if (hintsUsed > 0) statsItems.push(`${hintsUsed} hint${hintsUsed > 1 ? 's' : ''}`);
+  if (!isDailyMode) {
+    if (stepCount > 0) statsItems.push(`${stepCount} steps`);
+    if (hintsUsed > 0) statsItems.push(`${hintsUsed} hint${hintsUsed > 1 ? 's' : ''}`);
+  }
   if (onNewMaze) {
     if (mazeLabel && mazeLabel.trim().length > 0) {
       statsItems.push(mazeLabel);
@@ -220,12 +233,18 @@ export function PostSolveOverlay({
     ? `${window.location.origin}/maze-generator`
     : '/maze-generator';
 
-  const shareText = onNewMaze && mazeWidth && mazeHeight
+  const dailyShareUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/maze-of-the-day`
+    : '/maze-of-the-day';
+
+  const shareText = isDailyMode
+    ? `I solved today's MazeThis Maze of the Day in ${formatTime(elapsedMs)}.\n\nCan you solve it?\n${dailyShareUrl}`
+    : onNewMaze && mazeWidth && mazeHeight
     ? `I solved a ${mazeWidth}×${mazeHeight} maze in ${formatTime(elapsedMs)}${stepCount > 0 ? ` and ${stepCount} steps` : ''}. Try making your own maze: ${generatorUrl}`
     : `I just solved a maze! Try it: ${typeof window !== 'undefined' ? window.location.href : ''}`;
 
   // Generator layout: New Maze primary, Play Again secondary
-  const isGeneratorMode = Boolean(onNewMaze && !nav);
+  const isGeneratorMode = Boolean(onNewMaze && !nav && !isDailyMode);
 
   return (
     <div
@@ -259,34 +278,46 @@ export function PostSolveOverlay({
 
         {/* Heading + optional completion copy */}
         <div className="text-center leading-snug">
-          <h3 className="text-xl font-bold text-slate-800">Maze Complete!</h3>
+          <h3 className="text-xl font-bold text-slate-800">
+            {isDailyMode ? 'Daily Maze Complete!' : 'Maze Complete!'}
+          </h3>
           {completionCopy && (
-            <p className="mt-1.5 text-sm text-slate-500">{completionCopy}</p>
+            <p className="mt-1.5 text-sm text-slate-600">{completionCopy}</p>
           )}
         </div>
 
         {/* Stats row */}
-        <p className="text-sm text-slate-500 text-center">
+        <p className="text-base font-semibold text-slate-700 text-center">
           {statsItems.join(' · ')}
         </p>
 
         {/* Daily habit messaging */}
         {returnCopy && (
           <div className="text-center -mt-1">
-            <p className="text-xs text-slate-500">{returnCopy}</p>
+            <p className="text-sm text-slate-600">{returnCopy}</p>
             {showCountdown && <CountdownLine />}
           </div>
         )}
 
-        {/* Bridge copy — connects daily experience to maze library */}
-        {showCountdown && nav && (
+        {/* Bridge copy */}
+        {isDailyMode && (
+          <p className="text-sm text-slate-500 text-center -mt-1">
+            Want more? Create your own maze while you wait.
+          </p>
+        )}
+        {!isDailyMode && showCountdown && nav && (
           <p className="text-xs text-slate-400 text-center -mt-1">
             Want more? Try another maze while you wait.
           </p>
         )}
 
         {/* Primary CTA */}
-        {isGeneratorMode ? (
+        {isDailyMode ? (
+          <ShareButton
+            shareText={shareText}
+            className="btn-primary w-full justify-center text-base py-3"
+          />
+        ) : isGeneratorMode ? (
           <button
             onClick={onNewMaze}
             className="btn-primary w-full justify-center text-base py-3"
@@ -316,7 +347,14 @@ export function PostSolveOverlay({
         )}
 
         {/* Secondary CTA */}
-        {isGeneratorMode ? (
+        {isDailyMode ? (
+          <a
+            href="/maze-generator"
+            className="btn-secondary w-full justify-center text-sm py-2.5"
+          >
+            Create a New Maze
+          </a>
+        ) : isGeneratorMode ? (
           <button
             onClick={onPlayAgain}
             className="btn-secondary w-full justify-center text-sm py-2.5"
@@ -346,27 +384,35 @@ export function PostSolveOverlay({
 
         {/* Tertiary actions */}
         <div className="flex items-center gap-1 flex-wrap justify-center -mb-1">
-          {nav && (
+          {isDailyMode ? (
             <button onClick={onPlayAgain} className="btn-ghost text-sm">
               Play Again
             </button>
+          ) : (
+            <>
+              {nav && (
+                <button onClick={onPlayAgain} className="btn-ghost text-sm">
+                  Play Again
+                </button>
+              )}
+              {nav && !showCountdown && (
+                <a href={`/mazes/${nav.randomSlug}`} className="btn-ghost text-sm">
+                  Random
+                </a>
+              )}
+              {showCountdown && (
+                <a href="/maze-generator" className="btn-ghost text-sm">
+                  Make Your Own
+                </a>
+              )}
+              {!nav && !isGeneratorMode && onClose && (
+                <button onClick={onClose} className="btn-ghost text-sm">
+                  Done
+                </button>
+              )}
+              <ShareButton shareText={shareText} mazeSlug={mazeSlug} />
+            </>
           )}
-          {nav && !showCountdown && (
-            <a href={`/mazes/${nav.randomSlug}`} className="btn-ghost text-sm">
-              Random
-            </a>
-          )}
-          {showCountdown && (
-            <a href="/maze-generator" className="btn-ghost text-sm">
-              Make Your Own
-            </a>
-          )}
-          {!nav && !isGeneratorMode && onClose && (
-            <button onClick={onClose} className="btn-ghost text-sm">
-              Done
-            </button>
-          )}
-          <ShareButton shareText={shareText} mazeSlug={mazeSlug} />
         </div>
       </div>
     </div>

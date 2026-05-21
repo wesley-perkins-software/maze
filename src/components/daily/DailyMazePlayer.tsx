@@ -14,12 +14,10 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { generateMaze, GENERATOR_VERSION } from '../../lib/maze/generator';
-import { getMazesByDifficulty } from '../../lib/catalog/index';
 import { MazeRenderer } from '../maze/MazeRenderer';
 import { FullscreenMazePlayer } from '../maze/FullscreenMazePlayer';
 import type { SolveStats } from '../maze/FullscreenMazePlayer';
 import { PostSolveOverlay } from '../maze/PostSolveOverlay';
-import type { PostSolveNav } from '../maze/PostSolveOverlay';
 import type { MazeData } from '../../types/maze';
 import type { GameState } from '../../lib/gameplay/types';
 import {
@@ -87,7 +85,6 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   const [playing, setPlaying] = useState(false);
   const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
   const [playerKey, setPlayerKey] = useState(0);
-  const [postSolveNav, setPostSolveNav] = useState<PostSolveNav | null>(null);
 
   // ── Session state ────────────────────────────────────────────────────────────
   const [resumeSession, setResumeSession] = useState<DailyMazeSession | null>(null);
@@ -109,20 +106,6 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
     const generated = generateMaze(mazeConfig);
     generated.id = `daily-${today}`;
     generated.slug = `daily-${today}`;
-
-    // Pick two distinct large catalog mazes deterministically so post-solve
-    // "Play Another" and "Random" links are stable across all users today.
-    const largePool = getMazesByDifficulty('large');
-    const nextMaze = largePool[seed % largePool.length];
-    const randomMaze = largePool[(seed + 7) % largePool.length] ?? nextMaze;
-
-    setPostSolveNav({
-      nextSlug: nextMaze.slug,
-      nextLabel: 'Try Another Maze',
-      randomSlug: randomMaze.slug,
-      categorySlug: 'large-mazes',
-      categoryLabel: 'Large',
-    });
 
     setDateLabel(formatDateLabel(today));
 
@@ -353,8 +336,8 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
             hintsUsed={solveStats.hintsUsed}
             isNewBest={solveStats.isNewBest}
             personalBest={null}
-            nav={postSolveNav ?? undefined}
-            completionCopy="Nice work — you solved today's challenge."
+            isDailyMode={true}
+            completionCopy="Nice work — you solved today's maze."
             returnCopy="Come back tomorrow for a fresh challenge."
             showCountdown={true}
             onPlayAgain={() => {
