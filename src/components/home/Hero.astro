@@ -491,8 +491,8 @@ const heroSvg = renderThumbnail(heroMaze);
     const total = Math.max(0, Math.floor(ms / 1000));
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
-    const s = total % 60;
-    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
   };
 
   // ── Session detection ────────────────────────────────────────────────────────
@@ -557,7 +557,7 @@ const heroSvg = renderThumbnail(heroMaze);
     // completed
     const cd = formatCountdown(msUntilMidnight());
     return `<p style="${line1Style}"><span style="${accentStyle}">✓</span>&thinsp;Solved today</p>`
-         + `<p style="${line2Style}">Next maze in <span style="font-variant-numeric:tabular-nums;">${cd}</span></p>`;
+         + `<p style="${line2Style}">New maze in <span style="font-variant-numeric:tabular-nums;">${cd}</span></p>`;
   };
 
   // ── CTA rendering ────────────────────────────────────────────────────────────
@@ -601,13 +601,13 @@ const heroSvg = renderThumbnail(heroMaze);
       desktopSecEl.innerHTML = link;
     } else {
       // completed
-      mobileLink.href = dailyPagePath;
-      mobileLink.innerHTML = `${PLAY_ICON} Play Again`;
-      desktopLink.href = dailyPagePath;
-      desktopLink.innerHTML = `${PLAY_ICON} Play Again`;
-      const btn = `<button type="button" class="hero-daily-secondary-btn" data-action="daily-share">Share Result</button>`;
-      mobileSecEl.innerHTML = btn;
-      desktopSecEl.innerHTML = btn;
+      mobileLink.href = '/maze-generator';
+      mobileLink.innerHTML = 'Make a Maze';
+      desktopLink.href = '/maze-generator';
+      desktopLink.innerHTML = 'Make a Maze';
+      const browseLink = `<a href="/small-mazes" class="hero-daily-secondary-btn">Browse Library</a>`;
+      mobileSecEl.innerHTML = browseLink;
+      desktopSecEl.innerHTML = browseLink;
     }
 
     // Keep the sticky CTA href in sync.
@@ -645,16 +645,6 @@ const heroSvg = renderThumbnail(heroMaze);
       return;
     }
 
-    if (action === 'daily-share') {
-      const url = `${window.location.origin}/maze-of-the-day/`;
-      try {
-        if (navigator.share) {
-          await navigator.share({ title: "Can you solve today's maze?", url });
-        } else {
-          await navigator.clipboard.writeText(url);
-        }
-      } catch { /* user cancelled or API unavailable */ }
-    }
   });
 
   // ── Main update loop ─────────────────────────────────────────────────────────
