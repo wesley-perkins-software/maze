@@ -14,6 +14,7 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { generateMaze, GENERATOR_VERSION } from '../../lib/maze/generator';
+import { getLocalDateString, createDailyMaze } from '../../lib/maze/dailyMaze';
 import { MazeRenderer } from '../maze/MazeRenderer';
 import { FullscreenMazePlayer } from '../maze/FullscreenMazePlayer';
 import type { SolveStats } from '../maze/FullscreenMazePlayer';
@@ -27,23 +28,6 @@ import {
 } from '../../lib/gameplay/dailySession';
 import type { DailyMazeSession } from '../../lib/gameplay/dailySession';
 
-function getLocalDateString(): string {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-function dailyMazeSeed(dateStr: string): number {
-  const input = `maze-of-the-day:${dateStr}:v${GENERATOR_VERSION}`;
-  let h = 0x811c9dc5;
-  for (let i = 0; i < input.length; i++) {
-    h ^= input.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  return h >>> 0;
-}
 
 function formatDateLabel(dateStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -95,17 +79,17 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
 
   useEffect(() => {
     const today = getLocalDateString();
-    const seed = dailyMazeSeed(today);
     const useTestMaze = useDailyTestMazeOverride();
 
-    // Dev/test-only daily maze override for post-solve QA. Do not enable in production.
-    const mazeConfig = useTestMaze
-      ? { width: 10, height: 10, difficulty: 'small' as const, seed: 12345, anyPortalSide: true }
-      : { width: 60, height: 60, difficulty: 'large' as const, seed, anyPortalSide: true };
-
-    const generated = generateMaze(mazeConfig);
-    generated.id = `daily-${today}`;
-    generated.slug = `daily-${today}`;
+    let generated: MazeData;
+    if (useTestMaze) {
+      // Dev/test-only daily maze override for post-solve QA. Do not enable in production.
+      generated = generateMaze({ width: 10, height: 10, difficulty: 'small' as const, seed: 12345, anyPortalSide: true });
+      generated.id = `daily-${today}`;
+      generated.slug = `daily-${today}`;
+    } else {
+      generated = createDailyMaze();
+    }
 
     setDateLabel(formatDateLabel(today));
 
