@@ -1,12 +1,5 @@
 ---
-import { getFeaturedMazes } from '../../lib/catalog/index.js';
-import { generateMazeFromCatalog } from '../../lib/maze/index.js';
-import { renderThumbnail } from '../../lib/svg/renderToString.js';
-
-const featured = getFeaturedMazes();
-const heroEntry = featured.find(f => f.difficulty === 'large') ?? featured[0];
-const heroMaze = generateMazeFromCatalog(heroEntry);
-const heroSvg = renderThumbnail(heroMaze);
+import HeroMazePreview from './HeroMazePreview.jsx';
 ---
 
 <section
@@ -27,7 +20,9 @@ const heroSvg = renderThumbnail(heroMaze);
     <!-- Full-width maze with headline overlaid -->
     <div class="hero-maze-poster">
       <!-- Maze at confident opacity — it IS the product -->
-      <div class="maze-fill-width" style="opacity: 0.60;" set:html={heroSvg} />
+      <div style="opacity: 0.60;">
+        <HeroMazePreview client:only="react" className="hero-maze-preview-mobile" />
+      </div>
 
       <!--
         Scrim: elliptical cream shape, taller at the vertical center where
@@ -151,7 +146,9 @@ const heroSvg = renderThumbnail(heroMaze);
               aria-label="Play today's maze"
               tabindex="-1"
             >
-              <div class="maze-fill-square w-full h-full transition-transform duration-500 group-hover:scale-[1.02]" set:html={heroSvg} />
+              <div class="maze-fill-square w-full h-full transition-transform duration-500 group-hover:scale-[1.02]">
+                <HeroMazePreview client:only="react" className="hero-maze-preview-desktop" />
+              </div>
             </a>
           </div>
         </div>
@@ -165,6 +162,10 @@ const heroSvg = renderThumbnail(heroMaze);
   /* ── SVG scaling ────────────────────────────────────────────────────────── */
   .maze-fill-width :global(svg)  { width: 100%; height: auto;  display: block; }
   .maze-fill-square :global(svg) { width: 100%; height: 100%;  display: block; }
+
+  /* Hero maze preview islands — must use :global() to reach inside React islands */
+  .hero-maze-preview-mobile :global(svg)  { width: 100%; height: auto;  display: block; }
+  .hero-maze-preview-desktop :global(svg) { width: 100%; height: 100%; display: block; }
 
   /*
     Mobile root: display/flex-direction live as Tailwind classes (flex flex-col)
@@ -186,24 +187,26 @@ const heroSvg = renderThumbnail(heroMaze);
     /* Thin print-rule frame above and below the maze image */
     border-top:    1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border-strong);
+    /* Maintain 1:1 aspect ratio before the React island hydrates */
+    aspect-ratio: 1;
   }
 
   /*
-    Scrim: linear gradient, transparent at top → opaque cream at bottom.
-    Keeps maze fully visible in the upper portion (where it reads as product),
-    grades to readable contrast around the headline, and grounds the poster
-    with a clean bottom edge into the content below.
+    Scrim: radial ellipse centered on the headline position.
+    Fades cream around the text for readability without washing out the
+    maze edges or bottom — the maze stays visible on all sides.
+    The center `at 50% 42%` accounts for the headline's padding-bottom shift.
   */
   .hero-scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to bottom,
-      transparent               0%,
-      rgba(246, 245, 240, 0.12) 22%,
-      rgba(246, 245, 240, 0.52) 48%,
-      rgba(246, 245, 240, 0.88) 72%,
-      #F6F5F0                   100%
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 78% 56% at 50% 42%,
+      rgba(246, 245, 240, 0.90)  0%,
+      rgba(246, 245, 240, 0.68) 38%,
+      rgba(246, 245, 240, 0.34) 62%,
+      transparent               88%
     );
   }
 
