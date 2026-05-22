@@ -195,14 +195,14 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     Scrim: radial ellipse centered on the headline position.
     Fades cream around the text for readability without washing out the
     maze edges or bottom — the maze stays visible on all sides.
-    The center `at 50% 42%` accounts for the headline's padding-bottom shift.
+    The center `at 50% 45%` tracks the headline's padding-bottom position.
   */
   .hero-scrim {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: radial-gradient(
-      ellipse 78% 56% at 50% 42%,
+      ellipse 78% 56% at 50% 45%,
       rgba(246, 245, 240, 0.90)  0%,
       rgba(246, 245, 240, 0.68) 38%,
       rgba(246, 245, 240, 0.34) 62%,
@@ -212,8 +212,9 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
   /*
     Headline overlay: fills the poster, flexed to center.
-    padding-bottom of 14% shifts the visual center ~7% upward —
-    better negative space at the bottom, avoids feeling cramped at top.
+    padding-bottom shifts the visual center upward from 50%.
+    At 10%, the headline sits at ~45% from the top — slightly above
+    dead-center, giving breathing room without feeling too high.
   */
   .hero-headline-link {
     position: absolute;
@@ -221,7 +222,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 14%;
+    padding-bottom: 10%;
     /* no text-decoration — it's a layout link, the heading is the content */
   }
 
