@@ -15,6 +15,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { generateMaze, GENERATOR_VERSION } from '../../lib/maze/generator';
 import { getLocalDateString, createDailyMaze } from '../../lib/maze/dailyMaze';
+import { getDailyNow } from '../../lib/utils/dailyNow';
 import { MazeRenderer } from '../maze/MazeRenderer';
 import { FullscreenMazePlayer } from '../maze/FullscreenMazePlayer';
 import type { SolveStats } from '../maze/FullscreenMazePlayer';
@@ -76,9 +77,13 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   const [initialShowTrail, setInitialShowTrail] = useState<boolean | undefined>(undefined);
   // Stable ref so autosave callback never captures a stale maze.
   const mazeRef = useRef<MazeData | null>(null);
+  // Date captured at mount — stays fixed so midnight never swaps the maze mid-play.
+  const dailyDateRef = useRef<string>('');
 
   useEffect(() => {
-    const today = getLocalDateString();
+    const now = getDailyNow();
+    const today = getLocalDateString(now);
+    dailyDateRef.current = today;
     const useTestMaze = useDailyTestMazeOverride();
 
     let generated: MazeData;
@@ -88,7 +93,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
       generated.id = `daily-${today}`;
       generated.slug = `daily-${today}`;
     } else {
-      generated = createDailyMaze();
+      generated = createDailyMaze(now);
     }
 
     setDateLabel(formatDateLabel(today));
@@ -131,7 +136,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
     if (!currentMaze || gameState.status === 'solved') return;
     saveDailySession({
       generatorVersion: GENERATOR_VERSION,
-      localDate: getLocalDateString(),
+      localDate: dailyDateRef.current,
       maze: {
         width: currentMaze.width,
         height: currentMaze.height,
@@ -190,7 +195,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   // ── Solve ────────────────────────────────────────────────────────────────────
   const handleSolve = useCallback((stats: SolveStats) => {
     clearDailySession();
-    const today = getLocalDateString();
+    const today = dailyDateRef.current;
     localStorage.setItem(`daily_completed_${today}`, 'true');
     window.dispatchEvent(new StorageEvent('storage', {
       key: `daily_completed_${today}`,
@@ -208,7 +213,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
     setInitialShowTrail(undefined);
     // Reload session so the resume card appears immediately on the preview page
     // (the player saved synchronously before calling onClose).
-    const today = getLocalDateString();
+    const today = dailyDateRef.current;
     const currentMaze = mazeRef.current;
     if (currentMaze) {
       const saved = loadDailySession(GENERATOR_VERSION, today, currentMaze.seed);

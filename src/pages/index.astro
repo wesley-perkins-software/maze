@@ -200,18 +200,16 @@ const organizationSchema = JSON.stringify({
 </BaseLayout>
 
 <script>
+  import { getDailyNow } from '../lib/utils/dailyNow';
+  import { getLocalDateString } from '../lib/maze/dailyMaze';
+
   const stickyEl = document.getElementById('sticky-cta');
   const heroCta  = document.getElementById('hero-play-cta');
   const subEl    = document.getElementById('sticky-cta-sub');
   const btnEl    = document.getElementById('sticky-cta-btn') as HTMLAnchorElement | null;
 
-  function getLocalDateString(): string {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  }
-
   function getStickyState(): 'not-started' | 'in-progress' | 'completed' {
-    const today = getLocalDateString();
+    const today = getLocalDateString(getDailyNow());
     if (localStorage.getItem(`daily_completed_${today}`) === 'true') return 'completed';
     try {
       const raw = localStorage.getItem('mazethis.dailyMaze.activeSession');

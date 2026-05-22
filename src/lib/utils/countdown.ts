@@ -1,5 +1,4 @@
-export function getMsUntilLocalMidnight(): number {
-  const now = new Date();
+export function getMsUntilLocalMidnight(now: Date = new Date()): number {
   const midnight = new Date(
     now.getFullYear(), now.getMonth(), now.getDate() + 1,
   );
