@@ -179,11 +179,13 @@ const organizationSchema = JSON.stringify({
             style="color: var(--color-charcoal);"
           >Today's Maze Challenge</p>
           <p
+            id="sticky-cta-sub"
             class="text-xs"
             style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
-          >Same puzzle for everyone · Free</p>
+          >A new maze is ready.</p>
         </div>
         <a
+          id="sticky-cta-btn"
           href="/play/maze-of-the-day/"
           class="btn-primary text-xs px-4 py-2 shrink-0"
           tabindex="-1"
@@ -199,23 +201,73 @@ const organizationSchema = JSON.stringify({
 
 <script>
   const stickyEl = document.getElementById('sticky-cta');
-  const heroCta = document.getElementById('hero-play-cta');
+  const heroCta  = document.getElementById('hero-play-cta');
+  const subEl    = document.getElementById('sticky-cta-sub');
+  const btnEl    = document.getElementById('sticky-cta-btn') as HTMLAnchorElement | null;
+
+  function getLocalDateString(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  function getStickyState(): 'not-started' | 'in-progress' | 'completed' {
+    const today = getLocalDateString();
+    if (localStorage.getItem(`daily_completed_${today}`) === 'true') return 'completed';
+    try {
+      const raw = localStorage.getItem('mazethis.dailyMaze.activeSession');
+      if (raw) {
+        const s = JSON.parse(raw) as Record<string, unknown>;
+        const prog = s['progress'] as Record<string, unknown> | undefined;
+        if (
+          s['version'] === 1 &&
+          s['mode'] === 'daily' &&
+          s['localDate'] === today &&
+          s['generatorVersion'] === 1 &&
+          (prog?.['steps'] as number | undefined ?? 0) > 0
+        ) return 'in-progress';
+      }
+    } catch { /* ignore */ }
+    return 'not-started';
+  }
+
+  let heroCtaVisible = true;
+
+  function applyBarState(): void {
+    if (!stickyEl) return;
+    const state = getStickyState();
+
+    if (state === 'completed') {
+      stickyEl.classList.add('translate-y-full');
+      stickyEl.setAttribute('aria-hidden', 'true');
+      btnEl?.setAttribute('tabindex', '-1');
+      return;
+    }
+
+    if (subEl) subEl.textContent = state === 'in-progress' ? 'Continue today\'s challenge.' : 'A new maze is ready.';
+    if (btnEl) btnEl.textContent = state === 'in-progress' ? 'Resume' : 'Play Now';
+
+    if (heroCtaVisible) {
+      stickyEl.classList.add('translate-y-full');
+      stickyEl.setAttribute('aria-hidden', 'true');
+      btnEl?.setAttribute('tabindex', '-1');
+    } else {
+      stickyEl.classList.remove('translate-y-full');
+      stickyEl.removeAttribute('aria-hidden');
+      btnEl?.removeAttribute('tabindex');
+    }
+  }
 
   if (stickyEl && heroCta) {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const visible = entry.isIntersecting;
-        stickyEl.classList.toggle('translate-y-full', visible);
-        if (visible) {
-          stickyEl.setAttribute('aria-hidden', 'true');
-          stickyEl.querySelector('a')?.setAttribute('tabindex', '-1');
-        } else {
-          stickyEl.removeAttribute('aria-hidden');
-          stickyEl.querySelector('a')?.removeAttribute('tabindex');
-        }
+        heroCtaVisible = entry.isIntersecting;
+        applyBarState();
       },
       { threshold: 0 },
     );
     observer.observe(heroCta);
   }
+
+  applyBarState();
+  window.addEventListener('storage', applyBarState);
 </script>
