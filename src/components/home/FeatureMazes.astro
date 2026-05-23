@@ -8,9 +8,11 @@ const featured = getFeaturedMazes();
 const svgs = featured.map(entry => renderThumbnail(generateMazeFromCatalog(entry)));
 
 const labels: Record<Difficulty, { name: string; time: string; desc: string; href: string }> = {
-  small:  { name: 'Small',  time: '~1–2 min',   desc: 'Quick mazes for kids and warm-ups.',  href: '/small-mazes'  },
-  medium: { name: 'Medium', time: '~5–10 min',  desc: 'Balanced mazes for a focused solve.', href: '/medium-mazes' },
-  large:  { name: 'Large',  time: '~10–20 min', desc: 'Dense mazes for a real challenge.',   href: '/large-mazes'  },
+  small:   { name: 'Small',   time: '~1–2 min',   desc: 'Quick mazes for kids and warm-ups.',  href: '/small-mazes'   },
+  medium:  { name: 'Medium',  time: '~5–10 min',  desc: 'Balanced mazes for a focused solve.', href: '/medium-mazes'  },
+  large:   { name: 'Large',   time: '~10–20 min', desc: 'Dense mazes for a real challenge.',   href: '/large-mazes'   },
+  expert:  { name: 'Expert',  time: '~20–40 min', desc: 'Deep corridors for serious solvers.', href: '/expert-mazes'  },
+  monster: { name: 'Monster', time: '~40–60 min', desc: 'Extreme mazes for the committed.',    href: '/monster-mazes' },
 };
 ---
 

@@ -1,20 +1,25 @@
 // ─── Difficulty (tier) ─────────────────────────────────────────────────────────
 //
-//  "Difficulty" is now synonymous with size tier. The three values map directly
-//  to the Small / Medium / Large options shown in the UI.
+//  "Difficulty" is synonymous with size tier. Five values map to the five
+//  library sizes. Expert and Monster are library-only tiers (no generator
+//  presets expose custom sizes in this range, but they use the same generator).
 
-export type Difficulty = 'small' | 'medium' | 'large';
+export type Difficulty = 'small' | 'medium' | 'large' | 'expert' | 'monster';
 
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
-  small:  'Small',
-  medium: 'Medium',
-  large:  'Large',
+  small:   'Small',
+  medium:  'Medium',
+  large:   'Large',
+  expert:  'Expert',
+  monster: 'Monster',
 };
 
 export const DIFFICULTY_DESCRIPTIONS: Record<Difficulty, string> = {
-  small:  'Quick, approachable mazes — 20×20 grid.',
-  medium: 'Focused challenge with real decision points — 40×40 grid.',
-  large:  'A genuine labyrinth. Easy to get lost — 60×60 grid.',
+  small:   'Quick, approachable mazes — 20×20 grid.',
+  medium:  'Focused challenge with real decision points — 40×40 grid.',
+  large:   'A genuine labyrinth. Easy to get lost — 60×60 grid.',
+  expert:  'Serious maze challenge with long corridors — 80×80 grid.',
+  monster: 'Extreme maze puzzle for committed solvers — 100×100 grid.',
 };
 
 // ─── Coordinate ────────────────────────────────────────────────────────────────
@@ -77,6 +82,24 @@ export type MazeCatalogEntry = {
 export type MazeCatalog = {
   version: number;
   mazes: MazeCatalogEntry[];
+};
+
+// ─── Library Catalog Types ─────────────────────────────────────────────────────
+//
+//  The library catalog (src/data/libraryCatalog.json) uses clean IDs instead of
+//  slugs and covers all five size tiers including Expert and Monster.
+
+export type LibraryCatalogEntry = {
+  id: string;          // e.g. "small-001", "expert-025", "monster-015"
+  difficulty: Difficulty;
+  width: number;
+  height: number;
+  seed: number;
+};
+
+export type LibraryCatalog = {
+  version: number;
+  mazes: LibraryCatalogEntry[];
 };
 
 // ─── SEO Helpers ───────────────────────────────────────────────────────────────

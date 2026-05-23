@@ -8,6 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "generate:catalog": "tsx scripts/generate-catalog.ts",
+    "generate:library-catalog": "tsx scripts/generate-library-catalog.ts",
+    "library:audit": "tsx scripts/audit-library.ts",
     "validate:catalog": "tsx scripts/validate-catalog.ts",
     "generate:og": "node scripts/generate-og.mjs",
     "quality:audit": "tsx scripts/quality-audit.ts",

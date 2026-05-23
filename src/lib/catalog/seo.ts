@@ -30,9 +30,11 @@ export function generateMazeDescription(entry: MazeCatalogEntry): string {
   const n = slugIndex(entry.slug);
 
   const audienceMap: Record<Difficulty, string> = {
-    small:  'quick and approachable for all ages',
-    medium: 'a focused challenge with real decision points',
-    large:  'a dense labyrinth — easy to get lost',
+    small:   'quick and approachable for all ages',
+    medium:  'a focused challenge with real decision points',
+    large:   'a dense labyrinth — easy to get lost',
+    expert:  'a serious challenge with deep corridors and long paths',
+    monster: 'an extreme labyrinth for committed solvers',
   };
 
   return (

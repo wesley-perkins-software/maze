@@ -73,9 +73,11 @@ export function getPrevMaze(source: MazeCatalogEntry): MazeCatalogEntry | undefi
  */
 export function getLargerMaze(source: MazeCatalogEntry): MazeCatalogEntry | undefined {
   const nextTier: Record<Difficulty, Difficulty | null> = {
-    small: 'medium',
-    medium: 'large',
-    large: null,
+    small:   'medium',
+    medium:  'large',
+    large:   'expert',
+    expert:  'monster',
+    monster: null,
   };
   const next = nextTier[source.difficulty];
   if (!next) return undefined;
