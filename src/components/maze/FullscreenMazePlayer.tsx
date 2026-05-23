@@ -68,11 +68,11 @@ function getMobileDockHeight(viewportH: number): number {
   return 148;
 }
 const SIDEBAR_W = 224;
-const SIDEBAR_MINIMAP_SIZE = 192;
+const SIDEBAR_MINIMAP_SIZE = 168;
 // Fixed stage height for the desktop minimap regardless of maze aspect ratio.
-// 240px = 192px max minimap + ~24px breathing room on each side so endpoint
+// 210px = 168px max minimap + ~21px breathing room on each side so endpoint
 // badge artwork (radius 13px) sits fully inside the stage for square mazes.
-const SIDEBAR_MINIMAP_STAGE_H = 240;
+const SIDEBAR_MINIMAP_STAGE_H = 210;
 const SIDEBAR_AD_ENABLED = false;
 // AD_SLOT: Pause-screen banner. Set to true when an ad provider is wired up.
 // The slot renders below Resume/stats, never above the primary action.
@@ -1357,7 +1357,7 @@ export function FullscreenMazePlayer({
               {state.status === 'idle' && (
                 <>
                   <span className="md:hidden text-slate-500 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
-                  <span className="hidden md:inline text-slate-500 text-sm">Arrow keys or WASD to run</span>
+                  <span className="hidden md:inline text-slate-500 text-base font-medium">Use arrow keys or WASD to move</span>
                 </>
               )}
               {state.status === 'solved' && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
