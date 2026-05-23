@@ -43,9 +43,11 @@ type TierConfig = {
 };
 
 const TIER_CONFIG: Record<Difficulty, TierConfig> = {
-  small:  { newestBias: 0.75, braidFactor: 0.02 }, // approachable — keep as-is
-  medium: { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS, perfect maze
-  large:  { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS, perfect maze
+  small:   { newestBias: 0.75, braidFactor: 0.02 }, // approachable — keep as-is
+  medium:  { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS, perfect maze
+  large:   { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS, perfect maze
+  expert:  { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS — deep corridors, 80×80
+  monster: { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS — extreme depth, 100×100
 };
 
 export type GeneratorOptions = {
@@ -693,9 +695,32 @@ export function generateMazeFromCatalog(entry: {
     height: entry.height,
     difficulty: entry.difficulty,
     seed: entry.seed,
-    // anyPortalSide intentionally not set — catalog uses legacy opposite-side behaviour.
+    // anyPortalSide intentionally not set — legacy catalog uses opposite-side behaviour.
   });
   maze.id   = entry.slug;
   maze.slug = entry.slug;
+  return maze;
+}
+
+/**
+ * Generate a library maze from a LibraryCatalogEntry.
+ * Uses anyPortalSide: true and the current GENERATOR_VERSION for premium quality.
+ */
+export function generateMazeFromLibraryCatalog(entry: {
+  id: string;
+  difficulty: Difficulty;
+  width: number;
+  height: number;
+  seed: number;
+}): MazeData {
+  const maze = generateMaze({
+    width: entry.width,
+    height: entry.height,
+    difficulty: entry.difficulty,
+    seed: entry.seed,
+    anyPortalSide: true,
+  });
+  maze.id   = entry.id;
+  maze.slug = entry.id;
   return maze;
 }

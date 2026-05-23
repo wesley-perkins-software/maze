@@ -1,0 +1,1125 @@
+{
+  "version": 3,
+  "mazes": [
+    {
+      "id": "small-001",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10001
+    },
+    {
+      "id": "small-002",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10002
+    },
+    {
+      "id": "small-003",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10003
+    },
+    {
+      "id": "small-004",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10004
+    },
+    {
+      "id": "small-005",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 11005
+    },
+    {
+      "id": "small-006",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 11006
+    },
+    {
+      "id": "small-007",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 11007
+    },
+    {
+      "id": "small-008",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10008
+    },
+    {
+      "id": "small-009",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10009
+    },
+    {
+      "id": "small-010",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10010
+    },
+    {
+      "id": "small-011",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10011
+    },
+    {
+      "id": "small-012",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10012
+    },
+    {
+      "id": "small-013",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 11013
+    },
+    {
+      "id": "small-014",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10014
+    },
+    {
+      "id": "small-015",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10015
+    },
+    {
+      "id": "small-016",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10016
+    },
+    {
+      "id": "small-017",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10017
+    },
+    {
+      "id": "small-018",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10018
+    },
+    {
+      "id": "small-019",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10019
+    },
+    {
+      "id": "small-020",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10020
+    },
+    {
+      "id": "small-021",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10021
+    },
+    {
+      "id": "small-022",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10022
+    },
+    {
+      "id": "small-023",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10023
+    },
+    {
+      "id": "small-024",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10024
+    },
+    {
+      "id": "small-025",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10025
+    },
+    {
+      "id": "small-026",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10026
+    },
+    {
+      "id": "small-027",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10027
+    },
+    {
+      "id": "small-028",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10028
+    },
+    {
+      "id": "small-029",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10029
+    },
+    {
+      "id": "small-030",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10030
+    },
+    {
+      "id": "small-031",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10031
+    },
+    {
+      "id": "small-032",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 12032
+    },
+    {
+      "id": "small-033",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10033
+    },
+    {
+      "id": "small-034",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10034
+    },
+    {
+      "id": "small-035",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10035
+    },
+    {
+      "id": "small-036",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10036
+    },
+    {
+      "id": "small-037",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10037
+    },
+    {
+      "id": "small-038",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10038
+    },
+    {
+      "id": "small-039",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10039
+    },
+    {
+      "id": "small-040",
+      "difficulty": "small",
+      "width": 20,
+      "height": 20,
+      "seed": 10040
+    },
+    {
+      "id": "medium-001",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20001
+    },
+    {
+      "id": "medium-002",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20002
+    },
+    {
+      "id": "medium-003",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20003
+    },
+    {
+      "id": "medium-004",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20004
+    },
+    {
+      "id": "medium-005",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20005
+    },
+    {
+      "id": "medium-006",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20006
+    },
+    {
+      "id": "medium-007",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20007
+    },
+    {
+      "id": "medium-008",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20008
+    },
+    {
+      "id": "medium-009",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20009
+    },
+    {
+      "id": "medium-010",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20010
+    },
+    {
+      "id": "medium-011",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20011
+    },
+    {
+      "id": "medium-012",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20012
+    },
+    {
+      "id": "medium-013",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20013
+    },
+    {
+      "id": "medium-014",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20014
+    },
+    {
+      "id": "medium-015",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20015
+    },
+    {
+      "id": "medium-016",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20016
+    },
+    {
+      "id": "medium-017",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20017
+    },
+    {
+      "id": "medium-018",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 21018
+    },
+    {
+      "id": "medium-019",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20019
+    },
+    {
+      "id": "medium-020",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20020
+    },
+    {
+      "id": "medium-021",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20021
+    },
+    {
+      "id": "medium-022",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20022
+    },
+    {
+      "id": "medium-023",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20023
+    },
+    {
+      "id": "medium-024",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20024
+    },
+    {
+      "id": "medium-025",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20025
+    },
+    {
+      "id": "medium-026",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20026
+    },
+    {
+      "id": "medium-027",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20027
+    },
+    {
+      "id": "medium-028",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 21028
+    },
+    {
+      "id": "medium-029",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20029
+    },
+    {
+      "id": "medium-030",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20030
+    },
+    {
+      "id": "medium-031",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20031
+    },
+    {
+      "id": "medium-032",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 22032
+    },
+    {
+      "id": "medium-033",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20033
+    },
+    {
+      "id": "medium-034",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20034
+    },
+    {
+      "id": "medium-035",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20035
+    },
+    {
+      "id": "medium-036",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20036
+    },
+    {
+      "id": "medium-037",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20037
+    },
+    {
+      "id": "medium-038",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20038
+    },
+    {
+      "id": "medium-039",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20039
+    },
+    {
+      "id": "medium-040",
+      "difficulty": "medium",
+      "width": 40,
+      "height": 40,
+      "seed": 20040
+    },
+    {
+      "id": "large-001",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30001
+    },
+    {
+      "id": "large-002",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30002
+    },
+    {
+      "id": "large-003",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30003
+    },
+    {
+      "id": "large-004",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30004
+    },
+    {
+      "id": "large-005",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30005
+    },
+    {
+      "id": "large-006",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30006
+    },
+    {
+      "id": "large-007",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30007
+    },
+    {
+      "id": "large-008",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30008
+    },
+    {
+      "id": "large-009",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30009
+    },
+    {
+      "id": "large-010",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30010
+    },
+    {
+      "id": "large-011",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30011
+    },
+    {
+      "id": "large-012",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30012
+    },
+    {
+      "id": "large-013",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30013
+    },
+    {
+      "id": "large-014",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30014
+    },
+    {
+      "id": "large-015",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30015
+    },
+    {
+      "id": "large-016",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30016
+    },
+    {
+      "id": "large-017",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30017
+    },
+    {
+      "id": "large-018",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30018
+    },
+    {
+      "id": "large-019",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30019
+    },
+    {
+      "id": "large-020",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30020
+    },
+    {
+      "id": "large-021",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30021
+    },
+    {
+      "id": "large-022",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30022
+    },
+    {
+      "id": "large-023",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30023
+    },
+    {
+      "id": "large-024",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30024
+    },
+    {
+      "id": "large-025",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30025
+    },
+    {
+      "id": "large-026",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30026
+    },
+    {
+      "id": "large-027",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 31027
+    },
+    {
+      "id": "large-028",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30028
+    },
+    {
+      "id": "large-029",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 31029
+    },
+    {
+      "id": "large-030",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30030
+    },
+    {
+      "id": "large-031",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30031
+    },
+    {
+      "id": "large-032",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30032
+    },
+    {
+      "id": "large-033",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30033
+    },
+    {
+      "id": "large-034",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30034
+    },
+    {
+      "id": "large-035",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30035
+    },
+    {
+      "id": "large-036",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30036
+    },
+    {
+      "id": "large-037",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 31037
+    },
+    {
+      "id": "large-038",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30038
+    },
+    {
+      "id": "large-039",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30039
+    },
+    {
+      "id": "large-040",
+      "difficulty": "large",
+      "width": 60,
+      "height": 60,
+      "seed": 30040
+    },
+    {
+      "id": "expert-001",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40001
+    },
+    {
+      "id": "expert-002",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40002
+    },
+    {
+      "id": "expert-003",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40003
+    },
+    {
+      "id": "expert-004",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40004
+    },
+    {
+      "id": "expert-005",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40005
+    },
+    {
+      "id": "expert-006",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40006
+    },
+    {
+      "id": "expert-007",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40007
+    },
+    {
+      "id": "expert-008",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40008
+    },
+    {
+      "id": "expert-009",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40009
+    },
+    {
+      "id": "expert-010",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40010
+    },
+    {
+      "id": "expert-011",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 41011
+    },
+    {
+      "id": "expert-012",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40012
+    },
+    {
+      "id": "expert-013",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40013
+    },
+    {
+      "id": "expert-014",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40014
+    },
+    {
+      "id": "expert-015",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40015
+    },
+    {
+      "id": "expert-016",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 42016
+    },
+    {
+      "id": "expert-017",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40017
+    },
+    {
+      "id": "expert-018",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40018
+    },
+    {
+      "id": "expert-019",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40019
+    },
+    {
+      "id": "expert-020",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40020
+    },
+    {
+      "id": "expert-021",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40021
+    },
+    {
+      "id": "expert-022",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 41022
+    },
+    {
+      "id": "expert-023",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40023
+    },
+    {
+      "id": "expert-024",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40024
+    },
+    {
+      "id": "expert-025",
+      "difficulty": "expert",
+      "width": 80,
+      "height": 80,
+      "seed": 40025
+    },
+    {
+      "id": "monster-001",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50001
+    },
+    {
+      "id": "monster-002",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50002
+    },
+    {
+      "id": "monster-003",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50003
+    },
+    {
+      "id": "monster-004",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50004
+    },
+    {
+      "id": "monster-005",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50005
+    },
+    {
+      "id": "monster-006",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50006
+    },
+    {
+      "id": "monster-007",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50007
+    },
+    {
+      "id": "monster-008",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50008
+    },
+    {
+      "id": "monster-009",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50009
+    },
+    {
+      "id": "monster-010",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50010
+    },
+    {
+      "id": "monster-011",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50011
+    },
+    {
+      "id": "monster-012",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50012
+    },
+    {
+      "id": "monster-013",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50013
+    },
+    {
+      "id": "monster-014",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 51014
+    },
+    {
+      "id": "monster-015",
+      "difficulty": "monster",
+      "width": 100,
+      "height": 100,
+      "seed": 50015
+    }
+  ]
+}
