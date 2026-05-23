@@ -315,8 +315,8 @@ export function MazePlayer({ maze, onSolve, postSolveNav }: MazePlayerProps) {
       <p className="text-xs text-slate-400 text-center md:hidden" aria-hidden="true">
         Swipe or use D-pad to move
       </p>
-      <p className="text-xs text-slate-400 text-center hidden md:block" aria-hidden="true">
-        Arrow keys or WASD to run
+      <p className="text-xs text-slate-900 text-center hidden md:block" aria-hidden="true">
+        Use arrow keys or WASD to move
       </p>
     </div>
   );

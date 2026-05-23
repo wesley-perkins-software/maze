@@ -68,11 +68,11 @@ function getMobileDockHeight(viewportH: number): number {
   return 148;
 }
 const SIDEBAR_W = 224;
-const SIDEBAR_MINIMAP_SIZE = 192;
-// Fixed stage height for the desktop minimap regardless of maze aspect ratio.
-// 240px = 192px max minimap + ~24px breathing room on each side so endpoint
-// badge artwork (radius 13px) sits fully inside the stage for square mazes.
-const SIDEBAR_MINIMAP_STAGE_H = 240;
+const SIDEBAR_MINIMAP_SIZE = 168;
+// Fixed stage height for the desktop minimap. With items-start alignment,
+// 182px = 168px minimap + 14px bottom buffer so the exit endpoint marker
+// (radius 13px) sits just inside the stage boundary.
+const SIDEBAR_MINIMAP_STAGE_H = 182;
 const SIDEBAR_AD_ENABLED = false;
 // AD_SLOT: Pause-screen banner. Set to true when an ad provider is wired up.
 // The slot renders below Resume/stats, never above the primary action.
@@ -1340,13 +1340,13 @@ export function FullscreenMazePlayer({
           ) : (
             <>
               {state.status === 'playing' && (
-                <span className="flex items-center gap-1.5 font-mono font-medium text-slate-700">
+                <span className="flex items-center gap-1.5 font-mono font-medium text-slate-900">
                   {label && (
-                    <span className="hidden sm:inline text-sm font-sans font-semibold text-slate-600 mr-0.5">
+                    <span className="hidden sm:inline text-sm font-sans font-semibold text-slate-900 mr-0.5">
                       {label} ·
                     </span>
                   )}
-                  <svg className="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="w-3.5 h-3.5 shrink-0 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="12" cy="12" r="10" strokeWidth="2"/>
                     <polyline points="12 6 12 12 16 14" strokeWidth="2"/>
                   </svg>
@@ -1356,8 +1356,8 @@ export function FullscreenMazePlayer({
               {/* "Paused" label intentionally omitted here — the centered pause card already communicates this */}
               {state.status === 'idle' && (
                 <>
-                  <span className="md:hidden text-slate-500 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
-                  <span className="hidden md:inline text-slate-500 text-sm">Arrow keys or WASD to run</span>
+                  <span className="md:hidden text-slate-900 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
+                  <span className="hidden md:inline text-slate-900 text-base font-medium">Use arrow keys or WASD to move</span>
                 </>
               )}
               {state.status === 'solved' && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
@@ -1587,7 +1587,7 @@ export function FullscreenMazePlayer({
 
             {/* Minimap stage — fixed height so buttons never shift with maze aspect ratio */}
             <div
-              className="flex items-center justify-center overflow-visible"
+              className="flex items-start justify-center overflow-visible"
               style={{ height: SIDEBAR_MINIMAP_STAGE_H }}
             >
             {/* Minimap card — sized to maze aspect ratio, centered inside stage */}
