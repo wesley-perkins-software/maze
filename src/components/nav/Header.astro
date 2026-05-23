@@ -48,12 +48,12 @@ const pathname = Astro.url.pathname;
           Generator
         </a>
         <a
-          href="/easy-mazes"
+          href="/maze-library"
           class:list={[
             'btn-ghost text-sm px-3 py-1.5',
-            pathname.includes('mazes') && !pathname.includes('maze-generator') ? 'font-semibold' : '',
+            (pathname === '/maze-library' || pathname.endsWith('-mazes') || pathname.startsWith('/play/library')) ? 'font-semibold' : '',
           ]}
-          style={pathname.includes('mazes') && !pathname.includes('maze-generator') ? 'color: var(--color-accent);' : ''}
+          style={(pathname === '/maze-library' || pathname.endsWith('-mazes') || pathname.startsWith('/play/library')) ? 'color: var(--color-accent);' : ''}
         >
           Maze Library
         </a>
@@ -115,11 +115,12 @@ const pathname = Astro.url.pathname;
   >
     <a href="/play/maze-of-the-day/" class="block btn-ghost w-full text-left font-semibold py-2.5" style="color: var(--color-accent);">Play Today's Maze</a>
     <a href="/maze-generator" class="block btn-ghost w-full text-left py-2.5">Generator</a>
-    <a href="/easy-mazes" class="block btn-ghost w-full text-left py-2.5">Easy Mazes</a>
-    <a href="/medium-mazes" class="block btn-ghost w-full text-left py-2.5">Medium Mazes</a>
-    <a href="/hard-mazes" class="block btn-ghost w-full text-left py-2.5">Hard Mazes</a>
-    <a href="/mazes-for-kids" class="block btn-ghost w-full text-left py-2.5">Kids Mazes</a>
-    <a href="/mazes-for-adults" class="block btn-ghost w-full text-left py-2.5">Adults Mazes</a>
+    <a href="/maze-library" class="block btn-ghost w-full text-left py-2.5">Maze Library</a>
+    <a href="/small-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Small Mazes</a>
+    <a href="/medium-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Medium Mazes</a>
+    <a href="/large-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Large Mazes</a>
+    <a href="/expert-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Expert Mazes</a>
+    <a href="/monster-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Monster Mazes</a>
     <a href="/blog" class="block btn-ghost w-full text-left py-2.5">Blog</a>
     <a href="/faq" class="block btn-ghost w-full text-left py-2.5">FAQ</a>
   </div>

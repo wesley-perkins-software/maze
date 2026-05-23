@@ -26,6 +26,7 @@ export const GET: APIRoute = async () => {
     url('/', '1.0', 'weekly'),
     url('/maze-of-the-day/', '0.9', 'daily'),
     url('/maze-generator', '0.9', 'monthly'),
+    url('/maze-library', '0.9', 'monthly'),
     url('/printable-mazes', '0.8', 'monthly'),
     url('/faq', '0.7', 'monthly'),
     url('/blog', '0.8', 'weekly'),
