@@ -492,45 +492,32 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 </style>
 
 <script>
+  import { getDailyNow } from '../../lib/utils/dailyNow';
+  import { getLocalDateString } from '../../lib/maze/dailyMaze';
+  import { getMsUntilLocalMidnight, formatCountdown } from '../../lib/utils/countdown';
+
   const qs = new URLSearchParams(window.location.search);
   const dailyTestEnabled = qs.get('dailyTestMaze') === '1';
-  const dailyPlayPath = dailyTestEnabled
-    ? '/play/maze-of-the-day/?testMaze=1'
-    : '/play/maze-of-the-day/';
-  const dailyPagePath = dailyTestEnabled
-    ? '/maze-of-the-day/?testMaze=1'
-    : '/maze-of-the-day/';
+  const dailyNowParam = qs.get('dailyNow');
 
-  // Preserve homepage daily test mode in hero links so /?dailyTestMaze=1 can
-  // jump directly into the tiny deterministic Maze of the Day override.
+  // Build paths forwarding all active test params.
+  const buildTestSearch = (): string => {
+    const parts: string[] = [];
+    if (dailyTestEnabled) parts.push('testMaze=1');
+    if (dailyNowParam) parts.push(`dailyNow=${encodeURIComponent(dailyNowParam)}`);
+    return parts.length ? '?' + parts.join('&') : '';
+  };
+  const testSearch = buildTestSearch();
+  const dailyPlayPath = `/play/maze-of-the-day/${testSearch}`;
+  const dailyPagePath = `/maze-of-the-day/${testSearch}`;
+
+  // Preserve test params in hero links so they survive navigation.
   for (const anchor of document.querySelectorAll<HTMLAnchorElement>('a[href="/play/maze-of-the-day/"]')) {
     anchor.href = dailyPlayPath;
   }
   for (const anchor of document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-of-the-day/"]')) {
     anchor.href = dailyPagePath;
   }
-
-  // ── Date helpers ─────────────────────────────────────────────────────────────
-  // Use local date throughout — DailyMazePlayer keys sessions and completion
-  // flags by local calendar date, so UTC diverges for users in UTC− time zones.
-  const getLocalDateString = (): string => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  };
-
-  const msUntilMidnight = (): number => {
-    const now = new Date();
-    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-    return midnight.getTime() - now.getTime();
-  };
-
-  const formatCountdown = (ms: number): string => {
-    const total = Math.max(0, Math.floor(ms / 1000));
-    const h = Math.floor(total / 3600);
-    const m = Math.floor((total % 3600) / 60);
-    if (h > 0) return `${h}h ${m}m`;
-    return `${m}m`;
-  };
 
   // ── Session detection ────────────────────────────────────────────────────────
   interface InProgressSession {
@@ -545,7 +532,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
       if (
         s['version'] !== 1 ||
         s['mode'] !== 'daily' ||
-        s['localDate'] !== getLocalDateString() ||
+        s['localDate'] !== getLocalDateString(getDailyNow()) ||
         s['generatorVersion'] !== 1 ||
         !s['maze'] ||
         !s['progress']
@@ -562,7 +549,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     | { type: 'completed' };
 
   const detectState = (): DailyState => {
-    const today = getLocalDateString();
+    const today = getLocalDateString(getDailyNow());
     if (localStorage.getItem(`daily_completed_${today}`) === 'true') {
       return { type: 'completed' };
     }
@@ -592,7 +579,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     }
 
     // completed
-    const cd = formatCountdown(msUntilMidnight());
+    const cd = formatCountdown(getMsUntilLocalMidnight(getDailyNow()));
     return `<p style="${line1Style}"><span style="${accentStyle}">✓</span>&thinsp;Solved today</p>`
          + `<p style="${line2Style}">New maze in <span style="font-variant-numeric:tabular-nums;">${cd}</span></p>`;
   };

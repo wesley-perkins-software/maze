@@ -246,11 +246,14 @@ const schemaLD = JSON.stringify({
 </BaseLayout>
 
 <script>
+  import { getDailyNow } from '../../lib/utils/dailyNow';
+  import { getMsUntilLocalMidnight } from '../../lib/utils/countdown';
+
   // Populate the date badge with today's local date.
   (function () {
     const label = document.getElementById('motd-date-label');
     if (label) {
-      label.textContent = new Date().toLocaleDateString('en-US', {
+      label.textContent = getDailyNow().toLocaleDateString('en-US', {
         weekday: 'long',
         month: 'long',
         day: 'numeric',
@@ -259,9 +262,7 @@ const schemaLD = JSON.stringify({
 
     // Countdown to local midnight
     function tickMotdCountdown() {
-      const now = new Date();
-      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      const rem = Math.max(0, Math.floor((midnight.getTime() - now.getTime()) / 1000));
+      const rem = Math.max(0, Math.floor(getMsUntilLocalMidnight(getDailyNow()) / 1000));
       const h = Math.floor(rem / 3600);
       const m = Math.floor((rem % 3600) / 60);
       const s = rem % 60;

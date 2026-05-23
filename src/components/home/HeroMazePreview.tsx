@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import { createDailyMaze } from '../../lib/maze/dailyMaze';
 import { renderMazeToSVGString } from '../../lib/svg/renderToString';
+import { getDailyNow } from '../../lib/utils/dailyNow';
 
 export default function HeroMazePreview({ className = '' }: { className?: string }) {
   const svgString = useMemo(() => {
-    const maze = createDailyMaze();
+    const maze = createDailyMaze(getDailyNow());
     return renderMazeToSVGString(maze, {
       cellSize: 10,
       wallThickness: 1.5,
