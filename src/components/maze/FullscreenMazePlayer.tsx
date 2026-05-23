@@ -69,10 +69,10 @@ function getMobileDockHeight(viewportH: number): number {
 }
 const SIDEBAR_W = 224;
 const SIDEBAR_MINIMAP_SIZE = 168;
-// Fixed stage height for the desktop minimap regardless of maze aspect ratio.
-// 210px = 168px max minimap + ~21px breathing room on each side so endpoint
-// badge artwork (radius 13px) sits fully inside the stage for square mazes.
-const SIDEBAR_MINIMAP_STAGE_H = 210;
+// Fixed stage height for the desktop minimap. With items-start alignment,
+// 182px = 168px minimap + 14px bottom buffer so the exit endpoint marker
+// (radius 13px) sits just inside the stage boundary.
+const SIDEBAR_MINIMAP_STAGE_H = 182;
 const SIDEBAR_AD_ENABLED = false;
 // AD_SLOT: Pause-screen banner. Set to true when an ad provider is wired up.
 // The slot renders below Resume/stats, never above the primary action.
