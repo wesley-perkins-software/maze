@@ -1717,13 +1717,12 @@ export function FullscreenMazePlayer({
 
             </div>{/* end minimap stage */}
 
-            {/* Hint slot — 40px with centered text when camera exploration is useful,
-                16px compact spacer otherwise. Always a sibling of the stage so the
-                minimap card dimensions never change. */}
+            {/* Hint slot — fixed 40px, always rendered, so the divider and buttons
+                below never shift regardless of camera mode or canExploreCamera state. */}
             <div
               aria-hidden="true"
               style={{
-                height: canExploreCamera && cameraMode !== 'look' ? 40 : 16,
+                height: 40,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
