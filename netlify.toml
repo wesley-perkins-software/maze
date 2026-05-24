@@ -6,8 +6,28 @@
   NODE_VERSION = "22"
 
 [[redirects]]
+  from   = "/mazes/small-*"
+  to     = "/small-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/mazes/medium-*"
+  to     = "/medium-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/mazes/large-*"
+  to     = "/large-mazes"
+  status = 301
+
+[[redirects]]
   from   = "/mazes"
-  to     = "/easy-mazes"
+  to     = "/maze-library"
+  status = 301
+
+[[redirects]]
+  from   = "/mazes/*"
+  to     = "/maze-library"
   status = 301
 
 [[redirects]]
@@ -20,11 +40,6 @@
 
 [context.deploy-preview.environment]
   SITE_URL = "https://deploy-preview--mazethis.netlify.app"
-
-[[headers]]
-  for = "/mazes/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
   for = "/_astro/*"

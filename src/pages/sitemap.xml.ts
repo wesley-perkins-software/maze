@@ -1,10 +1,9 @@
 /**
  * Generates /sitemap.xml at build time.
- * Includes all maze pages, category pages, blog posts, and top-level pages.
- * Excludes /print variants.
+ * Includes category pages, blog posts, and top-level pages.
+ * Excludes old /mazes/* routes (deleted in PR 3) and /play/library/* (noindex).
  */
 import type { APIRoute } from 'astro';
-import { getAllMazes } from '../lib/catalog/index';
 import { CATEGORIES } from '../types/maze';
 import { getCollection } from 'astro:content';
 
@@ -19,7 +18,6 @@ function url(path: string, priority: string, changefreq: string, lastmod?: strin
 }
 
 export const GET: APIRoute = async () => {
-  const mazes = getAllMazes();
   const blogPosts = await getCollection('blog');
 
   const staticUrls = [
@@ -50,13 +48,9 @@ export const GET: APIRoute = async () => {
     ),
   );
 
-  const mazeUrls = mazes.map((m) =>
-    url(`/mazes/${m.slug}`, '0.6', 'yearly'),
-  );
-
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticUrls, ...categoryUrls, ...blogUrls, ...mazeUrls].join('\n')}
+${[...staticUrls, ...categoryUrls, ...blogUrls].join('\n')}
 </urlset>`;
 
   return new Response(xml, {
