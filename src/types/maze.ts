@@ -122,6 +122,7 @@ export type CategoryInfo = {
   title: string;        // page <title>
   description: string;  // meta description
   h1: string;
+  teaser: string;       // one-sentence summary for "What to try next" cross-tier blocks
 };
 
 export const CATEGORIES: CategoryInfo[] = [
@@ -133,6 +134,7 @@ export const CATEGORIES: CategoryInfo[] = [
     description:
       'Play 40 free small maze puzzles online. Quick, approachable challenges on a 20×20 grid. Track your progress and complete the collection.',
     h1: 'Small Mazes',
+    teaser: 'Quick, approachable puzzles on a 20×20 grid — a great starting point or warm-up.',
   },
   {
     difficulty: 'medium',
@@ -142,6 +144,7 @@ export const CATEGORIES: CategoryInfo[] = [
     description:
       'Play 40 free medium maze puzzles online. Real branching paths and decision points on a 40×40 grid. Track your progress and complete the collection.',
     h1: 'Medium Mazes',
+    teaser: 'More branching paths and decision points on a 40×40 grid — a balanced next step.',
   },
   {
     difficulty: 'large',
@@ -151,6 +154,7 @@ export const CATEGORIES: CategoryInfo[] = [
     description:
       'Play 40 free large maze puzzles online. Dense labyrinths on a 60×60 grid that are genuinely easy to get lost in. Complete the full collection.',
     h1: 'Large Mazes',
+    teaser: 'Dense labyrinths on a 60×60 grid — built for longer, more satisfying solves.',
   },
   {
     difficulty: 'expert',
@@ -160,6 +164,7 @@ export const CATEGORIES: CategoryInfo[] = [
     description:
       'Play 25 free expert maze puzzles online. Long corridors and deep branching on an 80×80 grid. A serious challenge for experienced solvers.',
     h1: 'Expert Mazes',
+    teaser: 'Longer paths and more sustained navigation on an 80×80 grid — a significant step up.',
   },
   {
     difficulty: 'monster',
@@ -169,6 +174,7 @@ export const CATEGORIES: CategoryInfo[] = [
     description:
       'Play 15 free monster maze puzzles online. Extreme 100×100 labyrinths — the hardest mazes in the MazeThis collection. For committed solvers only.',
     h1: 'Monster Mazes',
+    teaser: 'The largest puzzles in the Maze Library — 100×100 grids for committed solvers.',
   },
 ];
 

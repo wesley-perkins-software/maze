@@ -9,9 +9,10 @@ export interface Props {
   schemaLD?: string;
   totalCount: number;
   tagline?: string;
+  nextCategory?: CategoryInfo;
 }
 
-const { category, schemaLD, totalCount, tagline } = Astro.props;
+const { category, schemaLD, totalCount, tagline, nextCategory } = Astro.props;
 const taglineText = tagline ?? `${totalCount} maze puzzles — play free online.`;
 ---
 
@@ -31,7 +32,7 @@ const taglineText = tagline ?? `${totalCount} maze puzzles — play free online.
     <!-- Page header -->
     <div class="mt-4 mb-8">
       <h1 class="mb-2">{category.h1}</h1>
-      <p class="text-slate-500 text-lg">{taglineText}</p>
+      <p class="text-lg" style="color: var(--color-charcoal);">{taglineText}</p>
     </div>
 
     <!-- Category nav -->
@@ -39,18 +40,36 @@ const taglineText = tagline ?? `${totalCount} maze puzzles — play free online.
       <CategoryNav activeDifficulty={category.difficulty} compact />
     </div>
 
-    <!-- Maze grid -->
+    <!-- Maze grid + page-specific content -->
     <slot />
 
-    <!-- Bottom CTA -->
-    <div class="mt-12 rounded-2xl bg-blue-50 border border-blue-100 p-8 text-center">
-      <h2 class="text-xl font-bold text-slate-800 mb-2">Want a custom maze?</h2>
-      <p class="text-slate-600 mb-4">
-        Use our free maze generator to create mazes in any size and difficulty.
+    <!-- What to try next -->
+    <div class="mt-12">
+      {nextCategory ? (
+        <div class="rounded-xl border p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4" style="border-color: var(--color-border);">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: var(--color-muted-strong);">What to Try Next</p>
+            <p class="font-bold text-lg" style="color: var(--color-charcoal);">{nextCategory.label}</p>
+            <p class="mt-1" style="color: var(--color-charcoal);">{nextCategory.teaser}</p>
+          </div>
+          <a href={`/${nextCategory.slug}`} class="btn-secondary shrink-0">
+            Browse {nextCategory.label} →
+          </a>
+        </div>
+      ) : (
+        <div class="rounded-xl border p-6 text-center" style="border-color: var(--color-border);">
+          <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color: var(--color-muted-strong);">You've Reached the Top Tier</p>
+          <p class="font-bold text-lg mb-1" style="color: var(--color-charcoal);">Maze Library</p>
+          <p class="mb-4" style="color: var(--color-charcoal);">Explore all 160 curated puzzles across five difficulty tiers.</p>
+          <a href="/maze-library" class="btn-secondary">
+            Browse Full Library →
+          </a>
+        </div>
+      )}
+      <p class="mt-4 text-sm text-center" style="color: var(--color-muted-strong);">
+        Want something completely different?
+        <a href="/maze-generator" class="underline hover:opacity-80" style="color: var(--color-charcoal);">Create a custom maze →</a>
       </p>
-      <a href="/maze-generator" class="btn-primary">
-        Open Maze Generator
-      </a>
     </div>
   </div>
 </BaseLayout>
