@@ -1246,12 +1246,11 @@ export function FullscreenMazePlayer({
     >
       {/* flex-col so the hint sits below the minimap card inside the dock */}
       <div
-        className="flex min-w-0 flex-col items-center justify-center"
+        className="relative flex min-w-0 flex-col items-center justify-center"
         style={{
           width: minimapSlotW,
           maxWidth: '100%',
           height: mobileMiniMapSlotH,
-          gap: 6,
         }}
       >
         <div
@@ -1322,19 +1321,22 @@ export function FullscreenMazePlayer({
           )}
         </div>
 
-        {/* Permanent hint — sits below minimap card inside the dock, never over the canvas.
-            Suppressed when camera exploration is not meaningful, for vertical-rail mazes
-            where vertical space is exhausted, and while look mode is active. */}
+        {/* Permanent hint — absolutely positioned below the minimap card so it does not
+            participate in the flex centering calculation. This keeps the minimap card
+            center aligned with the D-pad center regardless of hint visibility. */}
         {canExploreCamera && minimapLayout !== 'vertical-rail' && (
           <span
             aria-hidden="true"
             style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: `translateX(-50%) translateY(${minimapContainerH / 2 + 6}px)`,
               fontSize: 11,
               color: 'var(--color-charcoal)',
               pointerEvents: 'none',
               whiteSpace: 'nowrap',
               letterSpacing: '0.01em',
-              flexShrink: 0,
               visibility: cameraMode === 'look' ? 'hidden' : 'visible',
             }}
           >
