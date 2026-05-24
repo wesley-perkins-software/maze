@@ -38,6 +38,11 @@ const collectionSlug = `${entry.difficulty}-mazes`;
       <span class="text-slate-700 font-medium">{label}</span>
     </div>
 
+    <h1 class="text-2xl font-bold text-slate-900 mb-1">{tierLabel} Maze #{num}</h1>
+    <p class="text-sm text-slate-500 mb-6">
+      Part of the <a href={`/${collectionSlug}`} class="hover:text-slate-800 transition-colors">{tierLabel} Mazes</a> collection.
+    </p>
+
     <LibraryMazePlayer client:only="react" entry={entry} />
   </div>
 </BaseLayout>
