@@ -1267,34 +1267,16 @@ export function FullscreenMazePlayer({
       className="flex h-full min-w-0 items-center justify-center overflow-visible box-border"
       style={minimapCenterGutterStyle}
     >
+      {/* flex-col so the hint sits below the minimap card inside the dock */}
       <div
-        className="relative flex min-w-0 items-center justify-center"
+        className="flex min-w-0 flex-col items-center justify-center"
         style={{
           width: minimapSlotW,
           maxWidth: '100%',
           height: mobileMiniMapSlotH,
+          gap: 3,
         }}
       >
-        {/* Session-transient hint — floats above the minimap, fades out after ~5s */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            marginBottom: 5,
-            pointerEvents: 'none',
-            opacity: minimapHintVisible && cameraMode !== 'look' && state.status !== 'paused' ? 1 : 0,
-            transition: 'opacity 0.5s ease',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <span style={{ fontSize: 11, color: 'var(--color-muted)', letterSpacing: '0.01em' }}>
-            Tap minimap to explore
-          </span>
-        </div>
-
         <div
           role="button"
           tabIndex={0}
@@ -1302,6 +1284,7 @@ export function FullscreenMazePlayer({
           style={{
             width: minimapContainerW,
             height: minimapContainerH,
+            flexShrink: 0,
             borderRadius: isRailMinimap ? 16 : 12,
             cursor: 'pointer',
           }}
@@ -1322,6 +1305,7 @@ export function FullscreenMazePlayer({
             showSolution={state.solutionVisible}
             hintCells={state.hintCells}
             showEndpointMarkers={false}
+            hideTitle
           />
           <MinimapEndpointMarkers
             maze={maze}
@@ -1351,30 +1335,27 @@ export function FullscreenMazePlayer({
               markerSize={minimapPlayerMarkerSize}
             />
           )}
-          {/* Camera icon badge — permanent affordance that the minimap is interactive */}
-          <div
+        </div>
+
+        {/* Session-transient hint — sits below minimap card, inside the dock (not over canvas).
+            Suppressed for vertical-rail mazes where vertical space is exhausted. */}
+        {minimapLayout !== 'vertical-rail' && (
+          <span
             aria-hidden="true"
             style={{
-              position: 'absolute',
-              bottom: 4,
-              right: 4,
-              width: 16,
-              height: 16,
-              borderRadius: '50%',
-              background: 'rgba(15,23,42,0.42)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              fontSize: 11,
+              color: 'var(--color-charcoal)',
+              opacity: minimapHintVisible && cameraMode !== 'look' && state.status !== 'paused' ? 0.7 : 0,
+              transition: 'opacity 0.5s ease',
               pointerEvents: 'none',
-              zIndex: 20,
+              whiteSpace: 'nowrap',
+              letterSpacing: '0.01em',
+              flexShrink: 0,
             }}
           >
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-              <circle cx="12" cy="13" r="4" />
-            </svg>
-          </div>
-        </div>
+            Tap minimap to explore
+          </span>
+        )}
       </div>
     </div>
   );
@@ -1683,7 +1664,7 @@ export function FullscreenMazePlayer({
               role="button"
               tabIndex={0}
               aria-label="Minimap — click or drag to explore camera view"
-              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
               style={{
                 width: sidebarMinimapContainerW,
                 height: sidebarMinimapContainerH,
@@ -1710,6 +1691,7 @@ export function FullscreenMazePlayer({
                 solution={currentSolution}
                 showSolution={state.solutionVisible}
                 showEndpointMarkers={false}
+                hideTitle
               />
               <MinimapEndpointMarkers
                 maze={maze}
@@ -1738,42 +1720,19 @@ export function FullscreenMazePlayer({
                   }}
                 />
               )}
-              {/* Camera icon badge — permanent affordance that the minimap is interactive */}
-              <div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  bottom: 5,
-                  right: 5,
-                  width: 18,
-                  height: 18,
-                  borderRadius: '50%',
-                  background: minimapHovered ? 'rgba(15,23,42,0.65)' : 'rgba(15,23,42,0.38)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  pointerEvents: 'none',
-                  zIndex: 20,
-                  transition: 'background 0.18s ease',
-                }}
-              >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                  <circle cx="12" cy="13" r="4" />
-                </svg>
-              </div>
             </div>
             </div>{/* end minimap stage */}
 
-            {/* Session-transient hint — reserved 20px slot below stage, no layout shift */}
+            {/* Permanent hint — reserved 20px slot below the minimap stage, no layout shift.
+                Hidden while in camera/look mode (already using the feature) or paused. */}
             <div style={{ height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
               <span
                 aria-hidden="true"
                 style={{
                   fontSize: 11,
-                  color: 'var(--color-muted)',
-                  opacity: minimapHintVisible && cameraMode !== 'look' && state.status !== 'paused' ? 0.85 : 0,
-                  transition: 'opacity 0.5s ease',
+                  color: 'var(--color-charcoal)',
+                  opacity: cameraMode !== 'look' && state.status !== 'paused' ? 0.55 : 0,
+                  transition: 'opacity 0.3s ease',
                   pointerEvents: 'none',
                   whiteSpace: 'nowrap',
                   letterSpacing: '0.01em',

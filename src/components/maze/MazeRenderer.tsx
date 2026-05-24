@@ -37,6 +37,7 @@ export interface MazeRendererProps {
   showEndpointMarkers?: boolean; // render entry/exit markers inside the SVG
   markersOutside?: boolean;    // place entry/exit icons outside the perimeter wall
   showPlayerGlow?: boolean;    // render the animated glow ring around the player dot (default true)
+  hideTitle?: boolean;         // suppress the SVG <title> element (prevents browser tooltip on minimap)
 }
 
 export function MazeRenderer({
@@ -62,6 +63,7 @@ export function MazeRenderer({
   showEndpointMarkers = true,
   markersOutside = false,
   showPlayerGlow = true,
+  hideTitle = false,
 }: MazeRendererProps) {
   const { width, height, grid, entry, exit } = maze;
 
@@ -254,7 +256,7 @@ export function MazeRenderer({
       tabIndex={interactive ? 0 : undefined}
       onKeyDown={interactive ? onKeyDown : undefined}
     >
-      <title>{maze.slug ? maze.slug.replace(/-/g, ' ') : label}</title>
+      {!hideTitle && <title>{maze.slug ? maze.slug.replace(/-/g, ' ') : label}</title>}
 
       {/* Background */}
       <rect width={totalW} height={totalH} fill="white" />
