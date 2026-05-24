@@ -1011,6 +1011,9 @@ export function FullscreenMazePlayer({
   const fallbackViewH = Math.max(1, vpSize.h - TOP_BAR_H - AD_SLOT_H - stripH);
   const viewW = Math.max(1, mazeViewportSize?.w ?? fallbackViewW);
   const viewH = Math.max(1, mazeViewportSize?.h ?? fallbackViewH);
+  // True when the maze is larger than the play viewport in at least one dimension,
+  // meaning camera panning is actually possible and the minimap explore hint is useful.
+  const canExploreCamera = mazeW > viewW || mazeH > viewH;
 
   // Reset camera when game resets
   if (prevStatusRef.current !== 'idle' && state.status === 'idle') {
@@ -1632,9 +1635,10 @@ export function FullscreenMazePlayer({
         >
           <div className="flex flex-col p-4">
 
-            {/* Minimap stage — fixed height so buttons never shift with maze aspect ratio */}
+            {/* Minimap stage — fixed height so buttons never shift with maze aspect ratio.
+                flex-col: minimap card sits at top, remaining 14px used for hint. */}
             <div
-              className="flex items-start justify-center overflow-visible"
+              className="flex flex-col items-center overflow-visible"
               style={{ height: SIDEBAR_MINIMAP_STAGE_H }}
             >
             {/* Minimap card — sized to maze aspect ratio, centered inside stage */}
@@ -1646,6 +1650,7 @@ export function FullscreenMazePlayer({
               style={{
                 width: sidebarMinimapContainerW,
                 height: sidebarMinimapContainerH,
+                flexShrink: 0,
                 cursor: 'pointer',
                 boxShadow: minimapHovered
                   ? '0 2px 0 rgba(28,28,30,0.15), 0 0 0 3px rgba(79,70,229,0.18)'
@@ -1699,27 +1704,39 @@ export function FullscreenMazePlayer({
                 />
               )}
             </div>
-            </div>{/* end minimap stage */}
 
-            {/* Permanent hint — reserved 24px slot below the minimap stage, no layout shift.
-                Hidden while camera/look mode is active to avoid conflicting messages. */}
-            <div style={{ height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              {cameraMode !== 'look' && (
+            {/* Hint lives inside the stage, filling the 14px buffer below the minimap card.
+                This is the only way to vertically center text in the gap between the
+                minimap and the divider — placing it outside the stage would offset it low.
+                Hidden during camera/look mode (conflicting message) and for small mazes
+                where the viewport already fits the full maze (no meaningful panning). */}
+            {canExploreCamera && cameraMode !== 'look' && (
+              <div
+                aria-hidden="true"
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  pointerEvents: 'none',
+                  minHeight: 0,
+                }}
+              >
                 <span
-                  aria-hidden="true"
                   style={{
                     fontSize: 12,
+                    lineHeight: '14px',
                     color: 'var(--color-charcoal)',
-                    opacity: 0.7,
-                    pointerEvents: 'none',
+                    opacity: 0.72,
                     whiteSpace: 'nowrap',
                     letterSpacing: '0.01em',
                   }}
                 >
                   Click minimap to explore
                 </span>
-              )}
-            </div>
+              </div>
+            )}
+            </div>{/* end minimap stage */}
 
             {/* Divider */}
             <div className="h-px mb-3" style={{ backgroundColor: 'var(--color-border)' }} />
