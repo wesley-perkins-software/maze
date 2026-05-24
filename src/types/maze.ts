@@ -129,45 +129,45 @@ export const CATEGORIES: CategoryInfo[] = [
     difficulty: 'small',
     slug: 'small-mazes',
     label: 'Small Mazes',
-    title: 'Small Mazes — 40 Free Maze Puzzles | MazeThis',
+    title: 'Small Mazes — 40 Free Maze Puzzles to Play Online | MazeThis',
     description:
-      'Play 40 small maze puzzles on a 20×20 grid. Quick, approachable challenges for all ages — track your progress and complete the collection.',
+      'Play 40 free small maze puzzles online. Quick, approachable challenges on a 20×20 grid. Track your progress and complete the collection.',
     h1: 'Small Mazes',
   },
   {
     difficulty: 'medium',
     slug: 'medium-mazes',
     label: 'Medium Mazes',
-    title: 'Medium Mazes — 40 Free Maze Puzzles | MazeThis',
+    title: 'Medium Mazes — 40 Free Maze Puzzles to Play Online | MazeThis',
     description:
-      'Play 40 medium maze puzzles on a 40×40 grid. Real branching and decision points — a focused challenge for any solver.',
+      'Play 40 free medium maze puzzles online. Real branching paths and decision points on a 40×40 grid. Track your progress and complete the collection.',
     h1: 'Medium Mazes',
   },
   {
     difficulty: 'large',
     slug: 'large-mazes',
     label: 'Large Mazes',
-    title: 'Large Mazes — 40 Free Maze Puzzles | MazeThis',
+    title: 'Large Mazes — 40 Free Maze Puzzles to Play Online | MazeThis',
     description:
-      'Play 40 large maze puzzles on a 60×60 grid. Dense labyrinths that are easy to get lost in — a genuine challenge.',
+      'Play 40 free large maze puzzles online. Dense labyrinths on a 60×60 grid that are genuinely easy to get lost in. Complete the full collection.',
     h1: 'Large Mazes',
   },
   {
     difficulty: 'expert',
     slug: 'expert-mazes',
     label: 'Expert Mazes',
-    title: 'Expert Mazes — 25 Advanced Maze Puzzles | MazeThis',
+    title: 'Expert Mazes — 25 Hard Maze Puzzles to Play Online | MazeThis',
     description:
-      'Play 25 expert maze puzzles on an 80×80 grid. Long corridors, deep branching, and serious challenge. Not for the faint of heart.',
+      'Play 25 free expert maze puzzles online. Long corridors and deep branching on an 80×80 grid. A serious challenge for experienced solvers.',
     h1: 'Expert Mazes',
   },
   {
     difficulty: 'monster',
     slug: 'monster-mazes',
     label: 'Monster Mazes',
-    title: 'Monster Mazes — 15 Extreme Maze Puzzles | MazeThis',
+    title: 'Monster Mazes — 15 Extreme Maze Puzzles to Play Online | MazeThis',
     description:
-      'Play 15 monster maze puzzles on a 100×100 grid. Extreme puzzle challenge for committed solvers. The hardest mazes in the MazeThis collection.',
+      'Play 15 free monster maze puzzles online. Extreme 100×100 labyrinths — the hardest mazes in the MazeThis collection. For committed solvers only.',
     h1: 'Monster Mazes',
   },
 ];
