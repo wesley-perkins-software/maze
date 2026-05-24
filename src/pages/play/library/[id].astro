@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { LibraryMazePlayer } from '../../../components/library/LibraryMazePlayer';
+import { getAllLibraryMazes } from '../../../lib/library/catalog.js';
+import type { LibraryCatalogEntry } from '../../../types/maze.js';
+
+export async function getStaticPaths() {
+  const mazes = getAllLibraryMazes();
+  return mazes.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: LibraryCatalogEntry;
+}
+
+const { entry } = Astro.props;
+
+const num = String(parseInt(entry.id.split('-')[1] ?? '1', 10)).padStart(3, '0');
+const tierLabel = entry.difficulty.charAt(0).toUpperCase() + entry.difficulty.slice(1);
+const label = `${tierLabel} #${num}`;
+const collectionSlug = `${entry.difficulty}-mazes`;
+---
+
+<BaseLayout
+  title={`${label} — Maze Library | MazeThis`}
+  description={`Play ${label} from the MazeThis Maze Library — a ${entry.width}×${entry.height} maze puzzle, free to play in your browser.`}
+  noindex={true}
+>
+  <div class="mx-auto max-w-2xl px-4 py-6">
+    <div class="mb-4 flex items-center gap-2 text-sm text-slate-500">
+      <a href="/maze-library" class="hover:text-slate-800 transition-colors">Maze Library</a>
+      <span aria-hidden="true">›</span>
+      <a href={`/${collectionSlug}`} class="hover:text-slate-800 transition-colors">{tierLabel} Mazes</a>
+      <span aria-hidden="true">›</span>
+      <span class="text-slate-700 font-medium">{label}</span>
+    </div>
+
+    <LibraryMazePlayer client:only="react" entry={entry} />
+  </div>
+</BaseLayout>

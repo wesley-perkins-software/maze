@@ -4,8 +4,8 @@ import LibraryMazeCard from '../components/ui/LibraryMazeCard.astro';
 import { getCategoryBySlug } from '../types/maze.js';
 import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
 
-const category = getCategoryBySlug('large-mazes')!;
-const mazes = getLibraryMazesByDifficulty('large');
+const category = getCategoryBySlug('monster-mazes')!;
+const mazes = getLibraryMazesByDifficulty('monster');
 ---
 
 <CategoryLayout category={category} totalCount={mazes.length}>

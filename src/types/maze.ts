@@ -129,28 +129,46 @@ export const CATEGORIES: CategoryInfo[] = [
     difficulty: 'small',
     slug: 'small-mazes',
     label: 'Small Mazes',
-    title: 'Free Small Mazes to Print & Play | MazeThis',
+    title: 'Small Mazes — 40 Free Maze Puzzles | MazeThis',
     description:
-      'Browse 60 free printable small mazes on a 20×20 grid. Quick and approachable — perfect for all ages. Play online or download to print.',
-    h1: 'Free Printable Small Mazes',
+      'Play 40 small maze puzzles on a 20×20 grid. Quick, approachable challenges for all ages — track your progress and complete the collection.',
+    h1: 'Small Mazes',
   },
   {
     difficulty: 'medium',
     slug: 'medium-mazes',
     label: 'Medium Mazes',
-    title: 'Free Medium Mazes to Print & Play | MazeThis',
+    title: 'Medium Mazes — 40 Free Maze Puzzles | MazeThis',
     description:
-      'Browse 50 free printable medium mazes on a 40×40 grid. Real branching and decision points — a focused challenge for any solver.',
-    h1: 'Free Printable Medium Mazes',
+      'Play 40 medium maze puzzles on a 40×40 grid. Real branching and decision points — a focused challenge for any solver.',
+    h1: 'Medium Mazes',
   },
   {
     difficulty: 'large',
     slug: 'large-mazes',
     label: 'Large Mazes',
-    title: 'Free Large Mazes to Print & Play | MazeThis',
+    title: 'Large Mazes — 40 Free Maze Puzzles | MazeThis',
     description:
-      'Browse 40 free printable large mazes on a 60×60 grid. Dense, looping labyrinths that are easy to get lost in. A genuine challenge.',
-    h1: 'Free Printable Large Mazes',
+      'Play 40 large maze puzzles on a 60×60 grid. Dense labyrinths that are easy to get lost in — a genuine challenge.',
+    h1: 'Large Mazes',
+  },
+  {
+    difficulty: 'expert',
+    slug: 'expert-mazes',
+    label: 'Expert Mazes',
+    title: 'Expert Mazes — 25 Advanced Maze Puzzles | MazeThis',
+    description:
+      'Play 25 expert maze puzzles on an 80×80 grid. Long corridors, deep branching, and serious challenge. Not for the faint of heart.',
+    h1: 'Expert Mazes',
+  },
+  {
+    difficulty: 'monster',
+    slug: 'monster-mazes',
+    label: 'Monster Mazes',
+    title: 'Monster Mazes — 15 Extreme Maze Puzzles | MazeThis',
+    description:
+      'Play 15 monster maze puzzles on a 100×100 grid. Extreme puzzle challenge for committed solvers. The hardest mazes in the MazeThis collection.',
+    h1: 'Monster Mazes',
   },
 ];
 

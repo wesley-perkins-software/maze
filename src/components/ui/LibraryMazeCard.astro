@@ -1,0 +1,48 @@
+---
+import type { LibraryCatalogEntry } from '../../types/maze.js';
+import { generateMazeFromLibraryCatalog } from '../../lib/maze/index.js';
+import { renderThumbnail } from '../../lib/svg/renderToString.js';
+import DifficultyBadge from './DifficultyBadge.astro';
+
+export interface Props {
+  entry: LibraryCatalogEntry;
+  index: number;
+}
+
+const { entry, index } = Astro.props;
+const maze = generateMazeFromLibraryCatalog(entry);
+const svg = renderThumbnail(maze);
+const num = String(index + 1).padStart(3, '0');
+const label = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.slice(1)} #${num}`;
+---
+
+<a
+  href={`/play/library/${entry.id}`}
+  class="card card-hover group block"
+  data-maze-id={entry.id}
+  aria-label={`Play ${label}`}
+>
+  <div
+    class="flex items-center justify-center p-2 aspect-square overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
+    style="background-color: var(--color-bg);"
+    set:html={svg}
+  />
+  <div
+    class="p-3 space-y-1.5"
+    style="border-top: 1px solid var(--color-border);"
+  >
+    <p
+      class="text-sm font-semibold leading-tight transition-colors duration-150"
+      style="color: var(--color-charcoal);"
+    >
+      {label}
+    </p>
+    <div class="flex items-center justify-between gap-2">
+      <DifficultyBadge difficulty={entry.difficulty} size="sm" />
+      <span
+        class="text-xs"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+      >{entry.width}×{entry.height}</span>
+    </div>
+  </div>
+</a>

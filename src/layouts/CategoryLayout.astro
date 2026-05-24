@@ -8,9 +8,11 @@ export interface Props {
   category: CategoryInfo;
   schemaLD?: string;
   totalCount: number;
+  tagline?: string;
 }
 
-const { category, schemaLD, totalCount } = Astro.props;
+const { category, schemaLD, totalCount, tagline } = Astro.props;
+const taglineText = tagline ?? `${totalCount} maze puzzles — play free online.`;
 ---
 
 <BaseLayout
@@ -28,9 +30,7 @@ const { category, schemaLD, totalCount } = Astro.props;
     <!-- Page header -->
     <div class="mt-4 mb-8">
       <h1 class="mb-2">{category.h1}</h1>
-      <p class="text-slate-500 text-lg">
-        {totalCount} free printable mazes — solve online or print for free.
-      </p>
+      <p class="text-slate-500 text-lg">{taglineText}</p>
     </div>
 
     <!-- Category nav -->

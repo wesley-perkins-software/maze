@@ -9,9 +9,11 @@ export interface Props {
 const { activeDifficulty, compact = false } = Astro.props;
 
 const emojiMap: Record<string, string> = {
-  small:  '🌱',
-  medium: '⚡',
-  large:  '🔥',
+  small:   '🌱',
+  medium:  '⚡',
+  large:   '🔥',
+  expert:  '🧠',
+  monster: '🏔️',
 };
 ---
 
@@ -34,7 +36,7 @@ const emojiMap: Record<string, string> = {
       ))}
     </div>
   ) : (
-    <div class="grid grid-cols-3 gap-3">
+    <div class="grid grid-cols-3 sm:grid-cols-5 gap-3">
       {CATEGORIES.map((cat) => (
         <a
           href={`/${cat.slug}`}
