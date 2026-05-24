@@ -5,12 +5,19 @@
  *   static preview → fullscreen player on "Play" → custom post-solve overlay.
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { generateMazeFromLibraryCatalog } from '../../lib/maze/generator';
+import { generateMazeFromLibraryCatalog, GENERATOR_VERSION } from '../../lib/maze/generator';
 import { getNextLibraryMaze, getLibraryMazesByDifficulty } from '../../lib/library/catalog';
 import { markLibraryMazeComplete, isLibraryMazeComplete } from '../../lib/library/progress';
+import {
+  saveLibrarySession,
+  loadLibrarySession,
+  clearLibrarySession,
+} from '../../lib/library/session';
 import { MazeRenderer } from '../maze/MazeRenderer';
 import { FullscreenMazePlayer } from '../maze/FullscreenMazePlayer';
 import type { SolveStats } from '../maze/FullscreenMazePlayer';
+import type { GameState } from '../../lib/gameplay/types';
+import type { SessionProgress } from '../../lib/library/session';
 import type { LibraryCatalogEntry } from '../../types/maze';
 
 export interface LibraryMazePlayerProps {
@@ -35,6 +42,19 @@ function mazeShortLabel(e: LibraryCatalogEntry): string {
   return `${tier} #${n}`;
 }
 
+function buildInitialGameState(p: SessionProgress): GameState {
+  return {
+    status: p.status === 'idle' ? 'idle' : 'paused',
+    playerPosition: p.playerPosition,
+    trail: p.trail,
+    startTime: null,
+    elapsedMs: p.elapsedMs,
+    solutionVisible: p.solutionVisible,
+    hintsUsed: p.hintsUsed,
+    hintCells: [],
+  };
+}
+
 export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   const maze = useMemo(() => generateMazeFromLibraryCatalog(entry), [entry.id]);
 
@@ -42,6 +62,8 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   const [playerKey, setPlayerKey] = useState(0);
   const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
   const [isComplete, setIsComplete] = useState<boolean | null>(null);
+  const [savedSession, setSavedSession] = useState<ReturnType<typeof loadLibrarySession>>(null);
+  const [shouldResume, setShouldResume] = useState(false);
 
   const nextEntry = useMemo(() => getNextLibraryMaze(entry.id), [entry.id]);
 
@@ -56,6 +78,7 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
 
   useEffect(() => {
     setIsComplete(isLibraryMazeComplete(entry.id));
+    setSavedSession(loadLibrarySession(entry.id, GENERATOR_VERSION));
   }, [entry.id]);
 
   const previewMaxWidth = entry.difficulty === 'small' || entry.difficulty === 'medium' ? 480 : 440;
@@ -72,21 +95,80 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   const collectionHref = `/${entry.difficulty}-mazes`;
   const collectionLabel = `${tierLabel} Mazes`;
 
+  // Completion overrides in-progress — a completed maze never shows "In progress".
+  const hasInProgress = savedSession !== null && isComplete !== true;
+
   const handleSolve = useCallback((stats: SolveStats) => {
     markLibraryMazeComplete(entry.id);
+    clearLibrarySession(entry.id);
     setIsComplete(true);
+    setSavedSession(null);
     setSolveStats(stats);
   }, [entry.id]);
 
   const handleClose = useCallback(() => {
     setPlaying(false);
+    setShouldResume(false);
+    // FullscreenMazePlayer fires onSessionChange synchronously before calling onClose,
+    // so we can immediately reload the freshly-saved session here.
+    setSavedSession(loadLibrarySession(entry.id, GENERATOR_VERSION));
+  }, [entry.id]);
+
+  const handleSessionChange = useCallback((gameState: GameState, showTrail: boolean) => {
+    if (gameState.status === 'solved') return;
+    saveLibrarySession(entry.id, GENERATOR_VERSION, {
+      playerPosition: gameState.playerPosition,
+      elapsedMs: gameState.elapsedMs,
+      steps: gameState.trail.length,
+      hintsUsed: gameState.hintsUsed,
+      trail: gameState.trail,
+      showTrail,
+      solutionVisible: gameState.solutionVisible,
+      status: gameState.status,
+    } as SessionProgress);
+  }, [entry.id]);
+
+  const handleReset = useCallback(() => {
+    clearLibrarySession(entry.id);
+    setSavedSession(null);
+    setShouldResume(false);
+  }, [entry.id]);
+
+  const handleResumeCTA = useCallback(() => {
+    setShouldResume(true);
+    setPlaying(true);
+    setSolveStats(null);
+  }, []);
+
+  const handlePlayFresh = useCallback(() => {
+    setShouldResume(false);
+    setPlaying(true);
+    setSolveStats(null);
   }, []);
 
   const handlePlayAgain = useCallback(() => {
     setSolveStats(null);
+    setShouldResume(false);
     setPlayerKey((k) => k + 1);
     setPlaying(true);
   }, []);
+
+  const ctaLabel = isComplete === true
+    ? 'Play Again'
+    : hasInProgress
+      ? `Resume ${label}`
+      : `Play ${label}`;
+
+  const handleCTA = isComplete === true
+    ? handlePlayFresh
+    : hasInProgress
+      ? handleResumeCTA
+      : handlePlayFresh;
+
+  const initialGameState =
+    shouldResume && savedSession ? buildInitialGameState(savedSession.progress) : undefined;
+  const initialShowTrail =
+    shouldResume && savedSession ? savedSession.progress.showTrail : undefined;
 
   return (
     <div>
@@ -116,46 +198,50 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
                     </svg>
                     Complete
                   </span>
+                ) : hasInProgress ? (
+                  <span className="text-amber-600 font-medium">In progress</span>
                 ) : (
                   <span className="text-slate-500">Not started</span>
                 )}
               </div>
             )}
 
-            {/* Desktop-only: CTA, prev/next, broader nav */}
+            {/* Desktop-only: CTA, prev/next, broader nav — constrained to one aligned stack */}
             <div className="hidden md:flex flex-col gap-3 mt-2">
-              <button
-                onClick={() => { setPlaying(true); setSolveStats(null); }}
-                className="btn-primary self-start rounded-lg px-6 py-3 text-base shadow-sm"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                {isComplete === true ? 'Play Again' : `Play ${label}`}
-              </button>
+              <div className="flex flex-col gap-3 w-fit min-w-[220px]">
+                <button
+                  onClick={handleCTA}
+                  className="btn-primary w-full rounded-lg px-6 py-3 text-base shadow-sm"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  {ctaLabel}
+                </button>
 
-              <div className="flex items-center justify-between gap-4 text-sm font-medium text-slate-800">
-                {adjacentMazes.prev ? (
-                  <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-black hover:underline transition-colors">
-                    ← {mazeShortLabel(adjacentMazes.prev)}
-                  </a>
-                ) : (
-                  <span aria-hidden="true" />
-                )}
-                {adjacentMazes.next ? (
-                  <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-black hover:underline transition-colors">
-                    {mazeShortLabel(adjacentMazes.next)} →
-                  </a>
-                ) : (
-                  <span aria-hidden="true" />
-                )}
+                <div className="flex items-center justify-between gap-4 text-sm font-medium text-slate-800">
+                  {adjacentMazes.prev ? (
+                    <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-black hover:underline transition-colors">
+                      ← {mazeShortLabel(adjacentMazes.prev)}
+                    </a>
+                  ) : (
+                    <span aria-hidden="true" />
+                  )}
+                  {adjacentMazes.next ? (
+                    <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-black hover:underline transition-colors">
+                      {mazeShortLabel(adjacentMazes.next)} →
+                    </a>
+                  ) : (
+                    <span aria-hidden="true" />
+                  )}
+                </div>
+
+                <nav className="flex items-center gap-3 text-sm text-slate-600" aria-label="Collection navigation">
+                  <a href={collectionHref} className="hover:text-slate-900 transition-colors">{collectionLabel}</a>
+                  <span aria-hidden="true">·</span>
+                  <a href="/maze-library" className="hover:text-slate-900 transition-colors">Maze Library</a>
+                </nav>
               </div>
-
-              <nav className="flex items-center gap-3 text-sm text-slate-600" aria-label="Collection navigation">
-                <a href={collectionHref} className="hover:text-slate-900 transition-colors">{collectionLabel}</a>
-                <span aria-hidden="true">·</span>
-                <a href="/maze-library" className="hover:text-slate-900 transition-colors">Maze Library</a>
-              </nav>
             </div>
           </div>
 
@@ -173,13 +259,13 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
           {/* Mobile-only: CTA, prev/next, broader nav — below preview */}
           <div className="md:hidden flex flex-col items-center gap-3">
             <button
-              onClick={() => { setPlaying(true); setSolveStats(null); }}
+              onClick={handleCTA}
               className="btn-primary rounded-lg px-6 py-3 text-base shadow-sm"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M8 5v14l11-7z" />
               </svg>
-              {isComplete === true ? 'Play Again' : `Play ${label}`}
+              {ctaLabel}
             </button>
 
             <div className="flex items-center justify-between w-full gap-4 text-sm font-medium text-slate-800">
@@ -215,6 +301,10 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
           label={label}
           onSolve={handleSolve}
           onClose={handleClose}
+          onSessionChange={handleSessionChange}
+          onReset={handleReset}
+          initialGameState={initialGameState}
+          initialShowTrail={initialShowTrail}
         />
       )}
 
