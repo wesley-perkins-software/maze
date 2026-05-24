@@ -3,12 +3,11 @@
  *
  * Follows the DailyMazePlayer pattern:
  *   static preview → fullscreen player on "Play" → custom post-solve overlay.
- *
- * No session saving in PR 2. Completion marking is wired in PR 4.
  */
 import { useState, useCallback, useMemo } from 'react';
 import { generateMazeFromLibraryCatalog } from '../../lib/maze/generator';
 import { getNextLibraryMaze } from '../../lib/library/catalog';
+import { markLibraryMazeComplete } from '../../lib/library/progress';
 import { MazeRenderer } from '../maze/MazeRenderer';
 import { FullscreenMazePlayer } from '../maze/FullscreenMazePlayer';
 import type { SolveStats } from '../maze/FullscreenMazePlayer';
@@ -50,8 +49,9 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   const collectionHref = `/${entry.difficulty}-mazes`;
 
   const handleSolve = useCallback((stats: SolveStats) => {
+    markLibraryMazeComplete(entry.id);
     setSolveStats(stats);
-  }, []);
+  }, [entry.id]);
 
   const handleClose = useCallback(() => {
     setPlaying(false);

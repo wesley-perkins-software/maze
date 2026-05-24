@@ -18,10 +18,19 @@ const label = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.sli
 
 <a
   href={`/play/library/${entry.id}`}
-  class="card card-hover group block"
+  class="card card-hover group block relative"
   data-maze-id={entry.id}
   aria-label={`Play ${label}`}
 >
+  <div
+    class="completed-badge absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-emerald-500 items-center justify-center shadow-sm"
+    style="display:none;"
+    aria-hidden="true"
+  >
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  </div>
   <div
     class="flex items-center justify-center p-2 aspect-square overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
     style="background-color: var(--color-bg);"

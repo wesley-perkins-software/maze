@@ -1,17 +1,68 @@
 ---
 import CategoryLayout from '../layouts/CategoryLayout.astro';
 import LibraryMazeCard from '../components/ui/LibraryMazeCard.astro';
+import { LibraryProgress } from '../components/library/LibraryProgress';
 import { getCategoryBySlug } from '../types/maze.js';
 import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
 
 const category = getCategoryBySlug('medium-mazes')!;
 const mazes = getLibraryMazesByDifficulty('medium');
+const allIds = mazes.map((m) => m.id);
 ---
 
 <CategoryLayout category={category} totalCount={mazes.length}>
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="min-w-0 flex-1 max-w-xs">
+      <LibraryProgress client:load total={mazes.length} difficulty={category.difficulty} />
+    </div>
+    <a
+      id="play-next-link"
+      href={`/play/library/${allIds[0]}`}
+      data-all-ids={JSON.stringify(allIds)}
+      class="btn-primary text-sm px-4 py-2 shrink-0 self-start sm:self-auto"
+    >
+      Play Next
+    </a>
+  </div>
+
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
     {mazes.map((entry, i) => (
       <LibraryMazeCard entry={entry} index={i} />
     ))}
   </div>
 </CategoryLayout>
+
+<style>
+  [data-maze-id].maze-card-completed { border-color: #10b981; }
+  [data-maze-id].maze-card-completed .completed-badge { display: flex; }
+</style>
+
+<script>
+  (function () {
+    try {
+      var raw = localStorage.getItem('mazethis.library.progress');
+      var ids = raw ? JSON.parse(raw)?.completedMazeIds : [];
+      if (!Array.isArray(ids)) return;
+      var done = new Set(ids);
+
+      document.querySelectorAll('[data-maze-id]').forEach(function (el) {
+        if (done.has(el.getAttribute('data-maze-id'))) {
+          el.classList.add('maze-card-completed');
+        }
+      });
+
+      var link = document.getElementById('play-next-link');
+      if (!link) return;
+      var allIds = JSON.parse(link.getAttribute('data-all-ids') ?? '[]');
+      var next = allIds.find(function (id) { return !done.has(id); });
+      if (next) {
+        link.setAttribute('href', '/play/library/' + next);
+      } else {
+        link.textContent = 'All Complete ✓';
+        link.removeAttribute('href');
+        link.style.opacity = '0.55';
+        link.style.pointerEvents = 'none';
+      }
+    } catch (_) {}
+  })();
+</script>
