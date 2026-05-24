@@ -555,6 +555,9 @@ export function FullscreenMazePlayer({
   // blur on high-DPR mobile screens.
   const [isMinimapDragging, setIsMinimapDragging] = useState(false);
 
+  // ── Minimap discoverability hint ─────────────────────────────────────────────
+  const [minimapHovered, setMinimapHovered] = useState(false);
+
   useEffect(() => {
     if (!shouldLogMazeStateDebug()) return;
 
@@ -1008,6 +1011,9 @@ export function FullscreenMazePlayer({
   const fallbackViewH = Math.max(1, vpSize.h - TOP_BAR_H - AD_SLOT_H - stripH);
   const viewW = Math.max(1, mazeViewportSize?.w ?? fallbackViewW);
   const viewH = Math.max(1, mazeViewportSize?.h ?? fallbackViewH);
+  // True when the maze is larger than the play viewport in at least one dimension,
+  // meaning camera panning is actually possible and the minimap explore hint is useful.
+  const canExploreCamera = mazeW > viewW || mazeH > viewH;
 
   // Reset camera when game resets
   if (prevStatusRef.current !== 'idle' && state.status === 'idle') {
@@ -1191,6 +1197,23 @@ export function FullscreenMazePlayer({
     setCameraMode('look');
   }
 
+  // Keyboard activation: Enter or Space enters look mode at maze center.
+  function handleMinimapKeyDown(
+    e: React.KeyboardEvent<HTMLDivElement>,
+  ) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    if (state.status === 'paused') return;
+    if (cameraMode !== 'look') {
+      previousCameraRef.current =
+        camXRef.current !== null && camYRef.current !== null
+          ? { x: camXRef.current, y: camYRef.current }
+          : null;
+    }
+    setLookTargetPx({ x: mazeW / 2, y: mazeH / 2 });
+    setCameraMode('look');
+  }
+
   // Drag: update look target while the pointer is held down (capture active).
   function handleMinimapPointerMove(
     e: React.PointerEvent<HTMLDivElement>,
@@ -1225,27 +1248,33 @@ export function FullscreenMazePlayer({
       className="flex h-full min-w-0 items-center justify-center overflow-visible box-border"
       style={minimapCenterGutterStyle}
     >
+      {/* flex-col so the hint sits below the minimap card inside the dock */}
       <div
-        className="flex min-w-0 items-center justify-center"
+        className="flex min-w-0 flex-col items-center justify-center"
         style={{
           width: minimapSlotW,
           maxWidth: '100%',
           height: mobileMiniMapSlotH,
+          gap: 6,
         }}
       >
         <div
-          className="relative overflow-visible border-2 border-stone-800 bg-white shadow-sm"
+          role="button"
+          tabIndex={0}
+          className="relative overflow-visible border-2 border-stone-800 bg-white shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
           style={{
             width: minimapContainerW,
             height: minimapContainerH,
+            flexShrink: 0,
             borderRadius: isRailMinimap ? 16 : 12,
-            cursor: 'crosshair',
+            cursor: 'pointer',
           }}
-          aria-label="Minimap — tap or drag to pan view"
+          aria-label="Minimap — tap or drag to explore camera view"
           onPointerDown={(e) => handleMinimapPointerDown(e, minimapRenderedBounds)}
           onPointerMove={(e) => handleMinimapPointerMove(e, minimapRenderedBounds)}
           onPointerUp={handleMinimapPointerUp}
           onPointerCancel={handleMinimapPointerUp}
+          onKeyDown={handleMinimapKeyDown}
         >
           <MazeRenderer
             maze={maze}
@@ -1257,6 +1286,7 @@ export function FullscreenMazePlayer({
             showSolution={state.solutionVisible}
             hintCells={state.hintCells}
             showEndpointMarkers={false}
+            hideTitle
           />
           <MinimapEndpointMarkers
             maze={maze}
@@ -1287,6 +1317,26 @@ export function FullscreenMazePlayer({
             />
           )}
         </div>
+
+        {/* Permanent hint — sits below minimap card inside the dock, never over the canvas.
+            Suppressed for vertical-rail mazes where vertical space is exhausted, and
+            while camera/look mode is active to avoid conflicting messages. */}
+        {minimapLayout !== 'vertical-rail' && cameraMode !== 'look' && (
+          <span
+            aria-hidden="true"
+            style={{
+              fontSize: 11,
+              color: 'var(--color-charcoal)',
+              opacity: 0.65,
+              pointerEvents: 'none',
+              whiteSpace: 'nowrap',
+              letterSpacing: '0.01em',
+              flexShrink: 0,
+            }}
+          >
+            Tap minimap to explore
+          </span>
+        )}
       </div>
     </div>
   );
@@ -1585,20 +1635,35 @@ export function FullscreenMazePlayer({
         >
           <div className="flex flex-col p-4">
 
-            {/* Minimap stage — fixed height so buttons never shift with maze aspect ratio */}
+            {/* Minimap stage — fixed height so buttons never shift with maze aspect ratio.
+                flex-col: minimap card sits at top, remaining 14px used for hint. */}
             <div
-              className="flex items-start justify-center overflow-visible"
+              className="flex flex-col items-center overflow-visible"
               style={{ height: SIDEBAR_MINIMAP_STAGE_H }}
             >
             {/* Minimap card — sized to maze aspect ratio, centered inside stage */}
             <div
-              aria-label="Minimap — click or drag to pan view"
-              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
-              style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH, cursor: 'crosshair' }}
+              role="button"
+              tabIndex={0}
+              aria-label="Minimap — click or drag to explore camera view"
+              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              style={{
+                width: sidebarMinimapContainerW,
+                height: sidebarMinimapContainerH,
+                flexShrink: 0,
+                cursor: 'pointer',
+                boxShadow: minimapHovered
+                  ? '0 2px 0 rgba(28,28,30,0.15), 0 0 0 3px rgba(79,70,229,0.18)'
+                  : '0 2px 0 rgba(28,28,30,0.15)',
+                transition: 'box-shadow 0.18s ease',
+              }}
               onPointerDown={(e) => handleMinimapPointerDown(e, sidebarMinimapRenderedBounds)}
               onPointerMove={(e) => handleMinimapPointerMove(e, sidebarMinimapRenderedBounds)}
               onPointerUp={handleMinimapPointerUp}
               onPointerCancel={handleMinimapPointerUp}
+              onKeyDown={handleMinimapKeyDown}
+              onMouseEnter={() => setMinimapHovered(true)}
+              onMouseLeave={() => setMinimapHovered(false)}
             >
               <MazeRenderer
                 maze={maze}
@@ -1609,6 +1674,7 @@ export function FullscreenMazePlayer({
                 solution={currentSolution}
                 showSolution={state.solutionVisible}
                 showEndpointMarkers={false}
+                hideTitle
               />
               <MinimapEndpointMarkers
                 maze={maze}
@@ -1638,6 +1704,38 @@ export function FullscreenMazePlayer({
                 />
               )}
             </div>
+
+            {/* Hint lives inside the stage, filling the 14px buffer below the minimap card.
+                This is the only way to vertically center text in the gap between the
+                minimap and the divider — placing it outside the stage would offset it low.
+                Hidden during camera/look mode (conflicting message) and for small mazes
+                where the viewport already fits the full maze (no meaningful panning). */}
+            {canExploreCamera && cameraMode !== 'look' && (
+              <div
+                aria-hidden="true"
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  pointerEvents: 'none',
+                  minHeight: 0,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 12,
+                    lineHeight: '14px',
+                    color: 'var(--color-charcoal)',
+                    opacity: 0.72,
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.01em',
+                  }}
+                >
+                  Click minimap to explore
+                </span>
+              </div>
+            )}
             </div>{/* end minimap stage */}
 
             {/* Divider */}
