@@ -555,6 +555,23 @@ export function FullscreenMazePlayer({
   // blur on high-DPR mobile screens.
   const [isMinimapDragging, setIsMinimapDragging] = useState(false);
 
+  // ── Minimap discoverability hint ─────────────────────────────────────────────
+  // Appears once per player mount (no localStorage). Fades in after 800ms,
+  // fades out after ~5s total. Dismissed immediately on first minimap interaction.
+  const [minimapHintVisible, setMinimapHintVisible] = useState(false);
+  const minimapHintDismissedRef = useRef(false);
+  const [minimapHovered, setMinimapHovered] = useState(false);
+
+  // Show the minimap hint briefly on every player mount.
+  useEffect(() => {
+    const showId = window.setTimeout(() => setMinimapHintVisible(true), 800);
+    const hideId = window.setTimeout(() => setMinimapHintVisible(false), 5800);
+    return () => {
+      window.clearTimeout(showId);
+      window.clearTimeout(hideId);
+    };
+  }, []);
+
   useEffect(() => {
     if (!shouldLogMazeStateDebug()) return;
 
@@ -1176,6 +1193,10 @@ export function FullscreenMazePlayer({
   ) {
     e.stopPropagation();
     if (state.status === 'paused') return;
+    if (!minimapHintDismissedRef.current) {
+      minimapHintDismissedRef.current = true;
+      setMinimapHintVisible(false);
+    }
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsMinimapDragging(true);
     if (cameraMode !== 'look') {
@@ -1188,6 +1209,27 @@ export function FullscreenMazePlayer({
           : null;
     }
     setLookTargetPx(minimapPointerToLookTarget(e, bounds));
+    setCameraMode('look');
+  }
+
+  // Keyboard activation: Enter or Space enters look mode at maze center.
+  function handleMinimapKeyDown(
+    e: React.KeyboardEvent<HTMLDivElement>,
+  ) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    if (state.status === 'paused') return;
+    if (!minimapHintDismissedRef.current) {
+      minimapHintDismissedRef.current = true;
+      setMinimapHintVisible(false);
+    }
+    if (cameraMode !== 'look') {
+      previousCameraRef.current =
+        camXRef.current !== null && camYRef.current !== null
+          ? { x: camXRef.current, y: camYRef.current }
+          : null;
+    }
+    setLookTargetPx({ x: mazeW / 2, y: mazeH / 2 });
     setCameraMode('look');
   }
 
@@ -1226,26 +1268,49 @@ export function FullscreenMazePlayer({
       style={minimapCenterGutterStyle}
     >
       <div
-        className="flex min-w-0 items-center justify-center"
+        className="relative flex min-w-0 items-center justify-center"
         style={{
           width: minimapSlotW,
           maxWidth: '100%',
           height: mobileMiniMapSlotH,
         }}
       >
+        {/* Session-transient hint — floats above the minimap, fades out after ~5s */}
         <div
-          className="relative overflow-visible border-2 border-stone-800 bg-white shadow-sm"
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            marginBottom: 5,
+            pointerEvents: 'none',
+            opacity: minimapHintVisible && cameraMode !== 'look' && state.status !== 'paused' ? 1 : 0,
+            transition: 'opacity 0.5s ease',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <span style={{ fontSize: 11, color: 'var(--color-muted)', letterSpacing: '0.01em' }}>
+            Tap minimap to explore
+          </span>
+        </div>
+
+        <div
+          role="button"
+          tabIndex={0}
+          className="relative overflow-visible border-2 border-stone-800 bg-white shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
           style={{
             width: minimapContainerW,
             height: minimapContainerH,
             borderRadius: isRailMinimap ? 16 : 12,
-            cursor: 'crosshair',
+            cursor: 'pointer',
           }}
-          aria-label="Minimap — tap or drag to pan view"
+          aria-label="Minimap — tap or drag to explore camera view"
           onPointerDown={(e) => handleMinimapPointerDown(e, minimapRenderedBounds)}
           onPointerMove={(e) => handleMinimapPointerMove(e, minimapRenderedBounds)}
           onPointerUp={handleMinimapPointerUp}
           onPointerCancel={handleMinimapPointerUp}
+          onKeyDown={handleMinimapKeyDown}
         >
           <MazeRenderer
             maze={maze}
@@ -1286,6 +1351,29 @@ export function FullscreenMazePlayer({
               markerSize={minimapPlayerMarkerSize}
             />
           )}
+          {/* Camera icon badge — permanent affordance that the minimap is interactive */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              bottom: 4,
+              right: 4,
+              width: 16,
+              height: 16,
+              borderRadius: '50%',
+              background: 'rgba(15,23,42,0.42)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+              zIndex: 20,
+            }}
+          >
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
+          </div>
         </div>
       </div>
     </div>
@@ -1592,13 +1680,26 @@ export function FullscreenMazePlayer({
             >
             {/* Minimap card — sized to maze aspect ratio, centered inside stage */}
             <div
-              aria-label="Minimap — click or drag to pan view"
-              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)]"
-              style={{ width: sidebarMinimapContainerW, height: sidebarMinimapContainerH, cursor: 'crosshair' }}
+              role="button"
+              tabIndex={0}
+              aria-label="Minimap — click or drag to explore camera view"
+              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white shadow-[0_2px_0_rgba(28,28,30,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              style={{
+                width: sidebarMinimapContainerW,
+                height: sidebarMinimapContainerH,
+                cursor: 'pointer',
+                boxShadow: minimapHovered
+                  ? '0 2px 0 rgba(28,28,30,0.15), 0 0 0 3px rgba(79,70,229,0.18)'
+                  : '0 2px 0 rgba(28,28,30,0.15)',
+                transition: 'box-shadow 0.18s ease',
+              }}
               onPointerDown={(e) => handleMinimapPointerDown(e, sidebarMinimapRenderedBounds)}
               onPointerMove={(e) => handleMinimapPointerMove(e, sidebarMinimapRenderedBounds)}
               onPointerUp={handleMinimapPointerUp}
               onPointerCancel={handleMinimapPointerUp}
+              onKeyDown={handleMinimapKeyDown}
+              onMouseEnter={() => setMinimapHovered(true)}
+              onMouseLeave={() => setMinimapHovered(false)}
             >
               <MazeRenderer
                 maze={maze}
@@ -1637,8 +1738,50 @@ export function FullscreenMazePlayer({
                   }}
                 />
               )}
+              {/* Camera icon badge — permanent affordance that the minimap is interactive */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  bottom: 5,
+                  right: 5,
+                  width: 18,
+                  height: 18,
+                  borderRadius: '50%',
+                  background: minimapHovered ? 'rgba(15,23,42,0.65)' : 'rgba(15,23,42,0.38)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  pointerEvents: 'none',
+                  zIndex: 20,
+                  transition: 'background 0.18s ease',
+                }}
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+              </div>
             </div>
             </div>{/* end minimap stage */}
+
+            {/* Session-transient hint — reserved 20px slot below stage, no layout shift */}
+            <div style={{ height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              <span
+                aria-hidden="true"
+                style={{
+                  fontSize: 11,
+                  color: 'var(--color-muted)',
+                  opacity: minimapHintVisible && cameraMode !== 'look' && state.status !== 'paused' ? 0.85 : 0,
+                  transition: 'opacity 0.5s ease',
+                  pointerEvents: 'none',
+                  whiteSpace: 'nowrap',
+                  letterSpacing: '0.01em',
+                }}
+              >
+                Click minimap to explore
+              </span>
+            </div>
 
             {/* Divider */}
             <div className="h-px mb-3" style={{ backgroundColor: 'var(--color-border)' }} />
