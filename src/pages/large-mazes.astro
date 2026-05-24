@@ -8,9 +8,82 @@ import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
 const category = getCategoryBySlug('large-mazes')!;
 const mazes = getLibraryMazesByDifficulty('large');
 const allIds = mazes.map((m) => m.id);
+
+const BASE = 'https://mazethis.com';
+const pageUrl = `${BASE}/large-mazes`;
+
+const faqItems = [
+  {
+    q: 'What are Large Mazes?',
+    a: 'Large Mazes are puzzle games on a 60×60 grid. They are dense labyrinths with extensive branching — genuinely easy to get lost in. The Large Maze collection on MazeThis contains 40 curated puzzles, each with a fixed unique layout that is always available at the same URL.',
+  },
+  {
+    q: 'How many Large Mazes are there?',
+    a: 'There are 40 Large Mazes in the collection, numbered Large #001 through Large #040. Every maze has a fixed layout — the same puzzle is always at the same URL.',
+  },
+  {
+    q: 'Are Large Mazes free to play?',
+    a: 'Yes. Every Large Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
+  },
+  {
+    q: 'How do I track my progress in Large Mazes?',
+    a: "Progress is saved on your device. After solving a maze, a green checkmark badge appears on the card and the progress bar updates. Your completions are stored in your browser's local storage, so they persist between visits without requiring an account.",
+  },
+  {
+    q: 'How long does it take to solve a Large Maze?',
+    a: 'Solve times vary widely. Many players finish a Large Maze in 10–30 minutes; others take longer. Every maze in the collection has a unique layout with a different solution path, so times vary across puzzles as well.',
+  },
+];
+
+const schemaLD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': pageUrl,
+      url: pageUrl,
+      name: category.title,
+      description: category.description,
+      isPartOf: { '@id': `${BASE}/#website` },
+      breadcrumb: { '@id': `${pageUrl}#breadcrumb` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${pageUrl}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${BASE}/` },
+        { '@type': 'ListItem', position: 2, name: 'Maze Library', item: `${BASE}/maze-library` },
+        { '@type': 'ListItem', position: 3, name: 'Large Mazes' },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
+    {
+      '@type': 'ItemList',
+      name: 'Large Mazes',
+      itemListElement: mazes.map((m, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${BASE}/play/library/${m.id}`,
+      })),
+    },
+  ],
+});
 ---
 
-<CategoryLayout category={category} totalCount={mazes.length}>
+<CategoryLayout
+  category={category}
+  totalCount={mazes.length}
+  schemaLD={schemaLD}
+  tagline="40 free large maze puzzles on a 60×60 grid. Dense labyrinths that are genuinely easy to get lost in — play in your browser and track your progress."
+>
+  <!-- Progress row -->
   <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div class="min-w-0 flex-1 max-w-xs">
       <LibraryProgress client:load total={mazes.length} difficulty={category.difficulty} />
@@ -25,10 +98,24 @@ const allIds = mazes.map((m) => m.id);
     </a>
   </div>
 
+  <!-- Card grid -->
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
     {mazes.map((entry, i) => (
       <LibraryMazeCard entry={entry} index={i} />
     ))}
+  </div>
+
+  <!-- FAQ -->
+  <div class="mt-12 max-w-2xl">
+    <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">About Large Mazes</h2>
+    <dl class="space-y-5">
+      {faqItems.map(({ q, a }) => (
+        <div>
+          <dt class="font-semibold text-slate-800">{q}</dt>
+          <dd class="mt-1 text-slate-600 text-sm">{a}</dd>
+        </div>
+      ))}
+    </dl>
   </div>
 </CategoryLayout>
 

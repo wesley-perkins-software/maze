@@ -8,9 +8,82 @@ import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
 const category = getCategoryBySlug('medium-mazes')!;
 const mazes = getLibraryMazesByDifficulty('medium');
 const allIds = mazes.map((m) => m.id);
+
+const BASE = 'https://mazethis.com';
+const pageUrl = `${BASE}/medium-mazes`;
+
+const faqItems = [
+  {
+    q: 'What are Medium Mazes?',
+    a: 'Medium Mazes are puzzle games on a 40×40 grid. They introduce real branching paths and genuine decision points — a noticeable step up from Small Mazes in complexity and solve time. The Medium Maze collection on MazeThis contains 40 curated puzzles, each with a fixed unique layout.',
+  },
+  {
+    q: 'How many Medium Mazes are there?',
+    a: 'There are 40 Medium Mazes in the collection, numbered Medium #001 through Medium #040. Every maze has a fixed layout — the same puzzle is always at the same URL.',
+  },
+  {
+    q: 'Are Medium Mazes free to play?',
+    a: 'Yes. Every Medium Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
+  },
+  {
+    q: 'How do I track my progress in Medium Mazes?',
+    a: "Progress is saved on your device. After solving a maze, a green checkmark badge appears on the card and the progress bar updates. Your completions are stored in your browser's local storage, so they persist between visits without requiring an account.",
+  },
+  {
+    q: 'How hard are Medium Mazes compared to Small?',
+    a: 'Noticeably more complex. The 40×40 grid creates longer paths, more dead ends, and more decision points than Small Mazes. Expect solve times of several minutes rather than under a minute — a satisfying jump in challenge without being overwhelming.',
+  },
+];
+
+const schemaLD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': pageUrl,
+      url: pageUrl,
+      name: category.title,
+      description: category.description,
+      isPartOf: { '@id': `${BASE}/#website` },
+      breadcrumb: { '@id': `${pageUrl}#breadcrumb` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${pageUrl}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${BASE}/` },
+        { '@type': 'ListItem', position: 2, name: 'Maze Library', item: `${BASE}/maze-library` },
+        { '@type': 'ListItem', position: 3, name: 'Medium Mazes' },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
+    {
+      '@type': 'ItemList',
+      name: 'Medium Mazes',
+      itemListElement: mazes.map((m, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${BASE}/play/library/${m.id}`,
+      })),
+    },
+  ],
+});
 ---
 
-<CategoryLayout category={category} totalCount={mazes.length}>
+<CategoryLayout
+  category={category}
+  totalCount={mazes.length}
+  schemaLD={schemaLD}
+  tagline="40 free medium maze puzzles on a 40×40 grid. Real branching paths and genuine decision points — play in your browser and track your progress."
+>
+  <!-- Progress row -->
   <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div class="min-w-0 flex-1 max-w-xs">
       <LibraryProgress client:load total={mazes.length} difficulty={category.difficulty} />
@@ -25,10 +98,24 @@ const allIds = mazes.map((m) => m.id);
     </a>
   </div>
 
+  <!-- Card grid -->
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
     {mazes.map((entry, i) => (
       <LibraryMazeCard entry={entry} index={i} />
     ))}
+  </div>
+
+  <!-- FAQ -->
+  <div class="mt-12 max-w-2xl">
+    <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">About Medium Mazes</h2>
+    <dl class="space-y-5">
+      {faqItems.map(({ q, a }) => (
+        <div>
+          <dt class="font-semibold text-slate-800">{q}</dt>
+          <dd class="mt-1 text-slate-600 text-sm">{a}</dd>
+        </div>
+      ))}
+    </dl>
   </div>
 </CategoryLayout>
 
