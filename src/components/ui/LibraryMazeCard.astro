@@ -23,16 +23,14 @@ const label = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.sli
   aria-label={`Play ${label}`}
 >
   <div
-    class="completed-badge absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-emerald-500 items-center justify-center shadow-sm"
-    style="display:none;"
+    class="completed-badge absolute top-2 right-2 z-10 items-center gap-0.5 px-2 py-0.5 text-white font-semibold rounded-sm shadow"
     aria-hidden="true"
+    style="font-family: 'IBM Plex Mono', monospace; background-color: #10b981; font-size: 0.6875rem; letter-spacing: 0.02em;"
   >
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="20 6 9 17 4 12"/>
-    </svg>
+    ✓ Complete
   </div>
   <div
-    class="flex items-center justify-center p-2 aspect-square overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
+    class="maze-thumbnail flex items-center justify-center p-2 aspect-square overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
     style="background-color: var(--color-bg);"
     set:html={svg}
   />
@@ -55,3 +53,22 @@ const label = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.sli
     </div>
   </div>
 </a>
+
+<style is:global>
+  .completed-badge {
+    display: none;
+  }
+
+  [data-maze-id].maze-card-completed {
+    border-color: #10b981;
+    box-shadow: 0 0 0 1px #10b981;
+  }
+
+  [data-maze-id].maze-card-completed .completed-badge {
+    display: inline-flex;
+  }
+
+  [data-maze-id].maze-card-completed .maze-thumbnail {
+    opacity: 0.88;
+  }
+</style>
