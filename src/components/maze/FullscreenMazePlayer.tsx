@@ -1325,7 +1325,7 @@ export function FullscreenMazePlayer({
         {/* Permanent hint — sits below minimap card inside the dock, never over the canvas.
             Suppressed when camera exploration is not meaningful, for vertical-rail mazes
             where vertical space is exhausted, and while look mode is active. */}
-        {canExploreCamera && minimapLayout !== 'vertical-rail' && cameraMode !== 'look' && (
+        {canExploreCamera && minimapLayout !== 'vertical-rail' && (
           <span
             aria-hidden="true"
             style={{
@@ -1335,6 +1335,7 @@ export function FullscreenMazePlayer({
               whiteSpace: 'nowrap',
               letterSpacing: '0.01em',
               flexShrink: 0,
+              visibility: cameraMode === 'look' ? 'hidden' : 'visible',
             }}
           >
             Tap minimap to explore
