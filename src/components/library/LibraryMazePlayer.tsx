@@ -6,7 +6,7 @@
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { generateMazeFromLibraryCatalog } from '../../lib/maze/generator';
-import { getNextLibraryMaze } from '../../lib/library/catalog';
+import { getNextLibraryMaze, getLibraryMazesByDifficulty } from '../../lib/library/catalog';
 import { markLibraryMazeComplete, isLibraryMazeComplete } from '../../lib/library/progress';
 import { MazeRenderer } from '../maze/MazeRenderer';
 import { FullscreenMazePlayer } from '../maze/FullscreenMazePlayer';
@@ -29,6 +29,12 @@ function formatNum(n: number): string {
   return n.toLocaleString();
 }
 
+function mazeShortLabel(e: LibraryCatalogEntry): string {
+  const n = String(parseInt(e.id.split('-')[1] ?? '1', 10)).padStart(3, '0');
+  const tier = e.difficulty.charAt(0).toUpperCase() + e.difficulty.slice(1);
+  return `${tier} #${n}`;
+}
+
 export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   const maze = useMemo(() => generateMazeFromLibraryCatalog(entry), [entry.id]);
 
@@ -38,6 +44,15 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   const [isComplete, setIsComplete] = useState<boolean | null>(null);
 
   const nextEntry = useMemo(() => getNextLibraryMaze(entry.id), [entry.id]);
+
+  const adjacentMazes = useMemo(() => {
+    const group = getLibraryMazesByDifficulty(entry.difficulty);
+    const idx = group.findIndex((m) => m.id === entry.id);
+    return {
+      prev: idx > 0 ? group[idx - 1]! : null,
+      next: idx !== -1 && idx < group.length - 1 ? group[idx + 1]! : null,
+    };
+  }, [entry.id, entry.difficulty]);
 
   useEffect(() => {
     setIsComplete(isLibraryMazeComplete(entry.id));
@@ -83,9 +98,9 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
               <h1 className="text-2xl font-bold text-slate-900 leading-tight">
                 {tierLabel} Maze #{num}
               </h1>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-base text-slate-600">
                 Part of the{' '}
-                <a href={collectionHref} className="hover:text-slate-800 transition-colors">
+                <a href={collectionHref} className="hover:text-slate-900 transition-colors">
                   {collectionLabel}
                 </a>{' '}
                 collection.
@@ -102,12 +117,12 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
                     Complete
                   </span>
                 ) : (
-                  <span className="text-slate-400">Not started</span>
+                  <span className="text-slate-500">Not started</span>
                 )}
               </div>
             )}
 
-            {/* Desktop-only CTA + secondary nav */}
+            {/* Desktop-only: CTA, prev/next, broader nav */}
             <div className="hidden md:flex flex-col gap-3 mt-2">
               <button
                 onClick={() => { setPlaying(true); setSolveStats(null); }}
@@ -118,9 +133,28 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
                 </svg>
                 {isComplete === true ? 'Play Again' : `Play ${label}`}
               </button>
-              <nav className="flex items-center gap-5 text-sm text-slate-500" aria-label="Collection navigation">
-                <a href={collectionHref} className="hover:text-slate-700 transition-colors">← {collectionLabel}</a>
-                <a href="/maze-library" className="hover:text-slate-700 transition-colors">Maze Library</a>
+
+              <div className="flex items-center justify-between gap-4 text-sm font-medium text-slate-800">
+                {adjacentMazes.prev ? (
+                  <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-black hover:underline transition-colors">
+                    ← {mazeShortLabel(adjacentMazes.prev)}
+                  </a>
+                ) : (
+                  <span aria-hidden="true" />
+                )}
+                {adjacentMazes.next ? (
+                  <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-black hover:underline transition-colors">
+                    {mazeShortLabel(adjacentMazes.next)} →
+                  </a>
+                ) : (
+                  <span aria-hidden="true" />
+                )}
+              </div>
+
+              <nav className="flex items-center gap-3 text-sm text-slate-600" aria-label="Collection navigation">
+                <a href={collectionHref} className="hover:text-slate-900 transition-colors">{collectionLabel}</a>
+                <span aria-hidden="true">·</span>
+                <a href="/maze-library" className="hover:text-slate-900 transition-colors">Maze Library</a>
               </nav>
             </div>
           </div>
@@ -136,7 +170,7 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
             </div>
           </div>
 
-          {/* Mobile-only CTA + secondary nav — below preview */}
+          {/* Mobile-only: CTA, prev/next, broader nav — below preview */}
           <div className="md:hidden flex flex-col items-center gap-3">
             <button
               onClick={() => { setPlaying(true); setSolveStats(null); }}
@@ -147,9 +181,28 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
               </svg>
               {isComplete === true ? 'Play Again' : `Play ${label}`}
             </button>
-            <nav className="flex items-center gap-5 text-sm text-slate-500" aria-label="Collection navigation">
-              <a href={collectionHref} className="hover:text-slate-700 transition-colors">← {collectionLabel}</a>
-              <a href="/maze-library" className="hover:text-slate-700 transition-colors">Maze Library</a>
+
+            <div className="flex items-center justify-between w-full gap-4 text-sm font-medium text-slate-800">
+              {adjacentMazes.prev ? (
+                <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-black hover:underline transition-colors">
+                  ← {mazeShortLabel(adjacentMazes.prev)}
+                </a>
+              ) : (
+                <span aria-hidden="true" />
+              )}
+              {adjacentMazes.next ? (
+                <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-black hover:underline transition-colors">
+                  {mazeShortLabel(adjacentMazes.next)} →
+                </a>
+              ) : (
+                <span aria-hidden="true" />
+              )}
+            </div>
+
+            <nav className="flex items-center gap-3 text-sm text-slate-600" aria-label="Collection navigation">
+              <a href={collectionHref} className="hover:text-slate-900 transition-colors">{collectionLabel}</a>
+              <span aria-hidden="true">·</span>
+              <a href="/maze-library" className="hover:text-slate-900 transition-colors">Maze Library</a>
             </nav>
           </div>
         </div>
