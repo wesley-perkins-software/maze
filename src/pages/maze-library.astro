@@ -107,7 +107,7 @@ const schemaLD = JSON.stringify({
     <!-- Hero -->
     <div class="mt-6 mb-10">
       <h1 class="mb-3">Maze Library</h1>
-      <p class="text-slate-500 text-lg max-w-2xl">
+      <p class="text-lg max-w-2xl" style="color: var(--color-muted-strong);">
         {totalCount} curated maze puzzles across five sizes. Complete every maze in the MazeThis collection — play free in your browser, no account required.
       </p>
     </div>
@@ -127,25 +127,26 @@ const schemaLD = JSON.stringify({
             data-tier-first-id={firstId}
           >
             <div>
-              <p class="text-xs font-mono text-slate-400 mb-1">{gridSize} grid</p>
+              <p class="text-xs mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">{gridSize} grid</p>
               <h2 class="text-lg font-bold" style="color: var(--color-charcoal);">{cat.label}</h2>
-              <p class="text-slate-500 text-sm mt-1">{desc}</p>
+              <p class="text-sm mt-1" style="color: var(--color-muted-strong);">{desc}</p>
             </div>
 
             <!-- Progress (updated client-side) -->
             <div class="mt-auto space-y-1.5">
               <div class="flex items-baseline justify-between gap-1">
                 <span
-                  class="tier-progress-text text-xs font-semibold text-slate-600"
+                  class="tier-progress-text text-xs font-semibold"
+                  style="color: var(--color-muted-strong);"
                   data-total={count}
                 >
                   0 / {count}
                 </span>
-                <span class="text-xs text-slate-400">complete</span>
+                <span class="text-xs" style="color: var(--color-muted);">complete</span>
               </div>
-              <div class="h-1 rounded-full bg-slate-100 overflow-hidden">
+              <div class="tier-progress-container h-1 rounded-full overflow-hidden">
                 <div
-                  class="tier-progress-bar h-full rounded-full bg-emerald-500 transition-all duration-500"
+                  class="tier-progress-bar h-full rounded-full transition-all duration-500"
                   style="width:0%"
                 />
               </div>
@@ -154,8 +155,10 @@ const schemaLD = JSON.stringify({
             <div class="flex items-center gap-2 pt-1">
               <a
                 href={`/${cat.slug}`}
-                class="flex-1 text-center rounded-lg border py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                style="border-color: var(--color-border);"
+                class="flex-1 text-center rounded-lg border py-1.5 text-xs font-medium transition-colors"
+                style="border-color: var(--color-border); color: var(--color-muted-strong);"
+                onmouseover="this.style.backgroundColor='var(--color-border)'; this.style.color='var(--color-charcoal)';"
+                onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-muted-strong)';"
               >
                 Browse
               </a>
@@ -177,32 +180,32 @@ const schemaLD = JSON.stringify({
       <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">About the Maze Library</h2>
       <dl class="space-y-5">
         <div>
-          <dt class="font-semibold text-slate-800">What is the Maze Library?</dt>
-          <dd class="mt-1 text-slate-600 text-sm">
+          <dt class="font-semibold" style="color: var(--color-charcoal);">What is the Maze Library?</dt>
+          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
             The Maze Library is a curated collection of {totalCount} maze puzzles across five sizes — Small (20×20), Medium (40×40), Large (60×60), Expert (80×80), and Monster (100×100). Each maze is uniquely generated and permanently available to play in your browser.
           </dd>
         </div>
         <div>
-          <dt class="font-semibold text-slate-800">How many mazes are there?</dt>
-          <dd class="mt-1 text-slate-600 text-sm">
+          <dt class="font-semibold" style="color: var(--color-charcoal);">How many mazes are there?</dt>
+          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
             160 in total: 40 Small, 40 Medium, 40 Large, 25 Expert, and 15 Monster. Every maze has a fixed layout — the same maze is always at the same URL.
           </dd>
         </div>
         <div>
-          <dt class="font-semibold text-slate-800">Is the Maze Library free?</dt>
-          <dd class="mt-1 text-slate-600 text-sm">
+          <dt class="font-semibold" style="color: var(--color-charcoal);">Is the Maze Library free?</dt>
+          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
             Yes. Every maze is free to play directly in your browser — no account, no download, no sign-up required.
           </dd>
         </div>
         <div>
-          <dt class="font-semibold text-slate-800">How do I track my progress?</dt>
-          <dd class="mt-1 text-slate-600 text-sm">
+          <dt class="font-semibold" style="color: var(--color-charcoal);">How do I track my progress?</dt>
+          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
             Progress is saved on your device. After solving a maze, your completion is recorded so you can see which mazes you have finished across each collection.
           </dd>
         </div>
         <div>
-          <dt class="font-semibold text-slate-800">What is the hardest tier?</dt>
-          <dd class="mt-1 text-slate-600 text-sm">
+          <dt class="font-semibold" style="color: var(--color-charcoal);">What is the hardest tier?</dt>
+          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
             Monster mazes are the hardest in the collection — 100×100 grids with extremely long solution paths. Expert mazes (80×80) are a solid step up from Large before tackling Monster.
           </dd>
         </div>
@@ -210,9 +213,9 @@ const schemaLD = JSON.stringify({
     </div>
 
     <!-- Secondary CTA -->
-    <div class="mt-12 rounded-2xl bg-blue-50 border border-blue-100 p-8 text-center">
-      <h2 class="text-xl font-bold text-slate-800 mb-2">Want an infinite challenge?</h2>
-      <p class="text-slate-600 mb-4">
+    <div class="mt-12 cta-callout rounded-2xl p-8 text-center">
+      <h2 class="text-xl font-bold mb-2" style="color: var(--color-charcoal);">Want an infinite challenge?</h2>
+      <p class="mb-4" style="color: var(--color-muted-strong);">
         Use the free maze generator to create mazes in any size — from tiny 5×5 grids to custom giants.
       </p>
       <a href="/maze-generator" class="btn-primary">Open Maze Generator</a>

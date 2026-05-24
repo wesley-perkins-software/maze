@@ -18,9 +18,10 @@ export default {
           400:           '#9A9892',
           600:           '#5C5A55',
           // Dark mode surfaces
-          'dark-bg':     '#111110',
-          'dark-surface':'#1C1C1E',
-          'dark-border': '#2E2E30',
+          'dark-bg':            '#111110',
+          'dark-surface':       '#1A1918',
+          'dark-surface-raised':'#222120',
+          'dark-border':        '#2A2927',
         },
         // ── Keep brand/accent tokens — gameplay components use them ─
         brand: {
@@ -55,6 +56,10 @@ export default {
         'card-lg': '0 10px 30px -4px rgb(0 0 0 / .12), 0 4px 10px -4px rgb(0 0 0 / .07)',
         'glow':    '0 0 0 3px rgb(37 99 235 / .25)',
         'glow-sm': '0 0 0 2px rgb(37 99 235 / .20)',
+        // Adaptive shadows — reference CSS vars that switch between light/dark values
+        'adaptive':    'var(--shadow-card)',
+        'adaptive-md': 'var(--shadow-card-md)',
+        'adaptive-lg': 'var(--shadow-card-lg)',
       },
       backgroundImage: {
         // Keep for any gameplay/other pages that reference these
