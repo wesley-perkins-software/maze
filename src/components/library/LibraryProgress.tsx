@@ -31,15 +31,12 @@ export function LibraryProgress({ difficulty, total }: LibraryProgressProps) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-baseline justify-between gap-2">
-        <span className="text-sm font-semibold text-slate-700">
-          {completed} / {total} complete
-        </span>
-        <span className="text-xs text-slate-400 font-mono">{pct}%</span>
-      </div>
-      <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+      <span className="text-sm font-semibold text-slate-700">
+        {completed} / {total} complete
+      </span>
+      <div className="h-2 rounded-full bg-slate-200 overflow-hidden">
         <div
-          className="h-full rounded-full bg-blue-500 transition-all duration-500"
+          className="h-full rounded-full bg-emerald-500 transition-all duration-500"
           style={{ width: `${pct}%` }}
         />
       </div>
