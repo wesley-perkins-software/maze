@@ -556,21 +556,7 @@ export function FullscreenMazePlayer({
   const [isMinimapDragging, setIsMinimapDragging] = useState(false);
 
   // ── Minimap discoverability hint ─────────────────────────────────────────────
-  // Appears once per player mount (no localStorage). Fades in after 800ms,
-  // fades out after ~5s total. Dismissed immediately on first minimap interaction.
-  const [minimapHintVisible, setMinimapHintVisible] = useState(false);
-  const minimapHintDismissedRef = useRef(false);
   const [minimapHovered, setMinimapHovered] = useState(false);
-
-  // Show the minimap hint briefly on every player mount.
-  useEffect(() => {
-    const showId = window.setTimeout(() => setMinimapHintVisible(true), 800);
-    const hideId = window.setTimeout(() => setMinimapHintVisible(false), 5800);
-    return () => {
-      window.clearTimeout(showId);
-      window.clearTimeout(hideId);
-    };
-  }, []);
 
   useEffect(() => {
     if (!shouldLogMazeStateDebug()) return;
@@ -1193,10 +1179,6 @@ export function FullscreenMazePlayer({
   ) {
     e.stopPropagation();
     if (state.status === 'paused') return;
-    if (!minimapHintDismissedRef.current) {
-      minimapHintDismissedRef.current = true;
-      setMinimapHintVisible(false);
-    }
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsMinimapDragging(true);
     if (cameraMode !== 'look') {
@@ -1219,10 +1201,6 @@ export function FullscreenMazePlayer({
     if (e.key !== 'Enter' && e.key !== ' ') return;
     e.preventDefault();
     if (state.status === 'paused') return;
-    if (!minimapHintDismissedRef.current) {
-      minimapHintDismissedRef.current = true;
-      setMinimapHintVisible(false);
-    }
     if (cameraMode !== 'look') {
       previousCameraRef.current =
         camXRef.current !== null && camYRef.current !== null
@@ -1274,7 +1252,7 @@ export function FullscreenMazePlayer({
           width: minimapSlotW,
           maxWidth: '100%',
           height: mobileMiniMapSlotH,
-          gap: 3,
+          gap: 6,
         }}
       >
         <div
@@ -1337,16 +1315,16 @@ export function FullscreenMazePlayer({
           )}
         </div>
 
-        {/* Session-transient hint — sits below minimap card, inside the dock (not over canvas).
-            Suppressed for vertical-rail mazes where vertical space is exhausted. */}
-        {minimapLayout !== 'vertical-rail' && (
+        {/* Permanent hint — sits below minimap card inside the dock, never over the canvas.
+            Suppressed for vertical-rail mazes where vertical space is exhausted, and
+            while camera/look mode is active to avoid conflicting messages. */}
+        {minimapLayout !== 'vertical-rail' && cameraMode !== 'look' && (
           <span
             aria-hidden="true"
             style={{
               fontSize: 11,
               color: 'var(--color-charcoal)',
-              opacity: minimapHintVisible && cameraMode !== 'look' && state.status !== 'paused' ? 0.7 : 0,
-              transition: 'opacity 0.5s ease',
+              opacity: 0.65,
               pointerEvents: 'none',
               whiteSpace: 'nowrap',
               letterSpacing: '0.01em',
@@ -1723,23 +1701,24 @@ export function FullscreenMazePlayer({
             </div>
             </div>{/* end minimap stage */}
 
-            {/* Permanent hint — reserved 20px slot below the minimap stage, no layout shift.
-                Hidden while in camera/look mode (already using the feature) or paused. */}
-            <div style={{ height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              <span
-                aria-hidden="true"
-                style={{
-                  fontSize: 11,
-                  color: 'var(--color-charcoal)',
-                  opacity: cameraMode !== 'look' && state.status !== 'paused' ? 0.55 : 0,
-                  transition: 'opacity 0.3s ease',
-                  pointerEvents: 'none',
-                  whiteSpace: 'nowrap',
-                  letterSpacing: '0.01em',
-                }}
-              >
-                Click minimap to explore
-              </span>
+            {/* Permanent hint — reserved 24px slot below the minimap stage, no layout shift.
+                Hidden while camera/look mode is active to avoid conflicting messages. */}
+            <div style={{ height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              {cameraMode !== 'look' && (
+                <span
+                  aria-hidden="true"
+                  style={{
+                    fontSize: 12,
+                    color: 'var(--color-charcoal)',
+                    opacity: 0.7,
+                    pointerEvents: 'none',
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.01em',
+                  }}
+                >
+                  Click minimap to explore
+                </span>
+              )}
             </div>
 
             {/* Divider */}
