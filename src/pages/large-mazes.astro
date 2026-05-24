@@ -6,16 +6,28 @@ import { getCategoryBySlug } from '../types/maze.js';
 import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
 
 const category = getCategoryBySlug('large-mazes')!;
+const nextCategory = getCategoryBySlug('expert-mazes')!;
 const mazes = getLibraryMazesByDifficulty('large');
 const allIds = mazes.map((m) => m.id);
+const firstLabel = 'Start Large #001';
 
 const BASE = 'https://mazethis.com';
 const pageUrl = `${BASE}/large-mazes`;
 
 const faqItems = [
   {
+    open: true,
     q: 'What are Large Mazes?',
-    a: 'Large Mazes are puzzle games on a 60×60 grid. They are dense labyrinths with extensive branching — genuinely easy to get lost in. The Large Maze collection on MazeThis contains 40 curated puzzles, each with a fixed unique layout that is always available at the same URL.',
+    a: 'Large Mazes are puzzle games on a 60×60 grid. The extra size creates dense labyrinths with long corridors and deep branching — it is genuinely easy to get turned around. The Large Maze collection on MazeThis contains 40 curated puzzles, each with a fixed unique layout.',
+  },
+  {
+    open: true,
+    q: 'Who are Large Mazes for?',
+    a: 'Large Mazes are for players who have worked through Medium Mazes and want a noticeably harder experience. They reward methodical navigation and are satisfying to complete. They are also a good choice for anyone who enjoys longer puzzle sessions.',
+  },
+  {
+    q: 'What makes Large Mazes different?',
+    a: 'Large Mazes are built for longer, more satisfying solves. The 60×60 grid produces more complex branching than Medium Mazes, and the longer paths mean backtracking takes more time. A well-planned route matters much more here than in the smaller tiers.',
   },
   {
     q: 'How many Large Mazes are there?',
@@ -26,12 +38,20 @@ const faqItems = [
     a: 'Yes. Every Large Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
   },
   {
-    q: 'How do I track my progress in Large Mazes?',
+    q: 'Can I play Large Mazes on mobile?',
+    a: 'Yes. Large Mazes work on any modern phone or tablet. The on-screen d-pad and touch navigation both work well, though you may find a larger screen more comfortable for the 60×60 grid.',
+  },
+  {
+    q: 'How is my progress saved?',
     a: "Progress is saved on your device. After solving a maze, a green checkmark badge appears on the card and the progress bar updates. Your completions are stored in your browser's local storage, so they persist between visits without requiring an account.",
   },
   {
-    q: 'How long does it take to solve a Large Maze?',
-    a: 'Solve times vary widely. Many players finish a Large Maze in 10–30 minutes; others take longer. Every maze in the collection has a unique layout with a different solution path, so times vary across puzzles as well.',
+    q: 'Can I print Large Mazes?',
+    a: 'Yes. Visit the Printable Mazes page to download and print maze puzzles in a range of sizes, including large mazes.',
+  },
+  {
+    q: 'What should I try after Large Mazes?',
+    a: 'After completing the Large Maze collection, Expert Mazes are the next tier up. They use an 80×80 grid with longer paths and more demanding navigation — a significant step up from Large.',
   },
 ];
 
@@ -67,6 +87,7 @@ const schemaLD = JSON.stringify({
     {
       '@type': 'ItemList',
       name: 'Large Mazes',
+      numberOfItems: mazes.length,
       itemListElement: mazes.map((m, i) => ({
         '@type': 'ListItem',
         position: i + 1,
@@ -81,7 +102,8 @@ const schemaLD = JSON.stringify({
   category={category}
   totalCount={mazes.length}
   schemaLD={schemaLD}
-  tagline="40 maze puzzles on a 60×60 grid. Play free online and track your progress."
+  tagline="40 maze puzzles on a 60×60 grid. Play free online and complete the collection."
+  nextCategory={nextCategory}
 >
   <!-- Progress row -->
   <div class="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
@@ -92,9 +114,10 @@ const schemaLD = JSON.stringify({
       id="play-next-link"
       href={`/play/library/${allIds[0]}`}
       data-all-ids={JSON.stringify(allIds)}
+      data-first-label={firstLabel}
       class="btn-primary text-sm px-4 py-2 shrink-0 w-full sm:w-auto"
     >
-      Play Next
+      {firstLabel}
     </a>
   </div>
 
@@ -108,14 +131,27 @@ const schemaLD = JSON.stringify({
   <!-- FAQ -->
   <div class="mt-12 max-w-2xl">
     <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">About Large Mazes</h2>
-    <dl class="space-y-5">
-      {faqItems.map(({ q, a }) => (
-        <div>
-          <dt class="font-semibold text-slate-800">{q}</dt>
-          <dd class="mt-1 text-slate-600 text-sm">{a}</dd>
-        </div>
+    <div class="space-y-2">
+      {faqItems.map(({ q, a, open }) => (
+        <details open={open} class="group border rounded-lg" style="border-color: var(--color-border);">
+          <summary class="flex cursor-pointer items-center justify-between px-4 py-3 font-semibold select-none list-none [&::-webkit-details-marker]:hidden" style="color: var(--color-charcoal);">
+            {q}
+            <svg class="h-4 w-4 shrink-0 ml-3 transition-transform duration-200 group-open:rotate-180" style="color: var(--color-muted);" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+            </svg>
+          </summary>
+          <div class="px-4 pb-4 text-sm leading-relaxed" style="color: var(--color-muted-strong);">
+            {q === 'What should I try after Large Mazes?' ? (
+              <p>After completing the Large Maze collection, <a href="/expert-mazes" class="underline hover:opacity-80">Expert Mazes</a> are the next tier up. They use an 80×80 grid with longer paths and more demanding navigation — a significant step up from Large.</p>
+            ) : q === 'Can I print Large Mazes?' ? (
+              <p>Yes. Visit the <a href="/printable-mazes" class="underline hover:opacity-80">Printable Mazes</a> page to download and print maze puzzles in a range of sizes, including large mazes.</p>
+            ) : (
+              <p>{a}</p>
+            )}
+          </div>
+        </details>
       ))}
-    </dl>
+    </div>
   </div>
 </CategoryLayout>
 
@@ -137,13 +173,22 @@ const schemaLD = JSON.stringify({
       if (!link) return;
       var allIds = JSON.parse(link.getAttribute('data-all-ids') ?? '[]');
       var next = allIds.find(function (id) { return !done.has(id); });
+
       if (next) {
+        var nextCard = document.querySelector('[data-maze-id="' + next + '"]');
+        if (nextCard) nextCard.classList.add('maze-card-next');
+      }
+
+      var firstLabel = link.getAttribute('data-first-label') ?? 'Play Next';
+
+      if (done.size === 0) {
+        link.textContent = firstLabel;
+      } else if (next) {
+        link.textContent = 'Play Next';
         link.setAttribute('href', '/play/library/' + next);
       } else {
-        link.textContent = 'All Complete ✓';
-        link.removeAttribute('href');
-        link.style.opacity = '0.55';
-        link.style.pointerEvents = 'none';
+        link.textContent = 'Collection Complete ✓';
+        link.setAttribute('href', '/play/library/' + allIds[0]);
       }
     } catch (_) {}
   })();

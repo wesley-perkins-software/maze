@@ -21,12 +21,21 @@ const label = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.sli
   data-maze-id={entry.id}
   aria-label={`Play ${label}`}
 >
+  <!-- Completed badge — top-right, shown when maze-card-completed class is applied -->
   <div
     class="completed-badge absolute top-2 right-2 z-10 items-center gap-0.5 px-2 py-0.5 text-white font-semibold rounded-sm shadow"
     aria-hidden="true"
     style="font-family: 'IBM Plex Mono', monospace; background-color: #10b981; font-size: 0.6875rem; letter-spacing: 0.02em;"
   >
     ✓ Complete
+  </div>
+  <!-- Next badge — top-left, shown when maze-card-next class is applied -->
+  <div
+    class="next-badge absolute top-2 left-2 z-10 items-center gap-0.5 px-2 py-0.5 text-white font-semibold rounded-sm shadow"
+    aria-hidden="true"
+    style="font-family: 'IBM Plex Mono', monospace; background-color: #E03B24; font-size: 0.6875rem; letter-spacing: 0.02em;"
+  >
+    → Next
   </div>
   <div
     class="maze-thumbnail flex items-center justify-center p-2 aspect-square overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
@@ -43,11 +52,21 @@ const label = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.sli
     >
       {label}
     </p>
+    <p
+      class="play-hint text-xs mt-0.5 transition-opacity duration-150 group-hover:opacity-0"
+      style="color: var(--color-muted);"
+    >
+      Play →
+    </p>
   </div>
 </a>
 
 <style is:global>
   .completed-badge {
+    display: none;
+  }
+
+  .next-badge {
     display: none;
   }
 
@@ -62,5 +81,9 @@ const label = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.sli
 
   [data-maze-id].maze-card-completed .maze-thumbnail {
     opacity: 0.88;
+  }
+
+  [data-maze-id].maze-card-next .next-badge {
+    display: inline-flex;
   }
 </style>

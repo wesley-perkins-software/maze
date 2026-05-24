@@ -6,16 +6,28 @@ import { getCategoryBySlug } from '../types/maze.js';
 import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
 
 const category = getCategoryBySlug('expert-mazes')!;
+const nextCategory = getCategoryBySlug('monster-mazes')!;
 const mazes = getLibraryMazesByDifficulty('expert');
 const allIds = mazes.map((m) => m.id);
+const firstLabel = 'Start Expert #001';
 
 const BASE = 'https://mazethis.com';
 const pageUrl = `${BASE}/expert-mazes`;
 
 const faqItems = [
   {
+    open: true,
     q: 'What are Expert Mazes?',
     a: 'Expert Mazes are puzzle games on an 80×80 grid featuring long corridors and deep branching. They are a serious challenge designed for experienced maze solvers who have worked through the Large collection and are ready for a significant step up.',
+  },
+  {
+    open: true,
+    q: 'Who are Expert Mazes for?',
+    a: 'Expert Mazes are for committed solvers who have completed Large Mazes and want a noticeably harder experience. They require sustained attention and methodical navigation — casual play sessions are less likely to reach the end.',
+  },
+  {
+    q: 'What makes Expert Mazes different?',
+    a: 'Expert Mazes require more demanding navigation than any smaller tier. The 80×80 grid produces longer solution paths and deeper branching, making backtracking more time-consuming and route planning more important. The jump from Large to Expert is one of the biggest difficulty increases in the Maze Library.',
   },
   {
     q: 'How many Expert Mazes are there?',
@@ -26,12 +38,20 @@ const faqItems = [
     a: 'Yes. Every Expert Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
   },
   {
-    q: 'How do I track my progress in Expert Mazes?',
+    q: 'Can I play Expert Mazes on mobile?',
+    a: 'Yes. Expert Mazes work on any modern phone or tablet, though a larger screen is more comfortable for navigating the dense 80×80 grid. The on-screen d-pad and touch navigation both work.',
+  },
+  {
+    q: 'How is my progress saved?',
     a: "Progress is saved on your device. After solving a maze, a green checkmark badge appears on the card and the progress bar updates. Your completions are stored in your browser's local storage, so they persist between visits without requiring an account.",
   },
   {
-    q: 'What makes Expert Mazes harder than Large?',
-    a: 'The 80×80 grid is 78% larger than the Large 60×60 grid, producing proportionally longer solution paths and more complex branching. Expert Mazes also feature deeper corridor networks that make backtracking more time-consuming. Expect a significant jump from Large in both solve time and difficulty.',
+    q: 'Can I print Expert Mazes?',
+    a: 'Yes. Visit the Printable Mazes page to download and print maze puzzles in a range of sizes, including expert mazes.',
+  },
+  {
+    q: 'What should I try after Expert Mazes?',
+    a: 'After completing the Expert Maze collection, Monster Mazes are the final tier — the hardest puzzles in the Maze Library. They use a 100×100 grid and are intended for committed solvers ready for the ultimate challenge.',
   },
 ];
 
@@ -67,6 +87,7 @@ const schemaLD = JSON.stringify({
     {
       '@type': 'ItemList',
       name: 'Expert Mazes',
+      numberOfItems: mazes.length,
       itemListElement: mazes.map((m, i) => ({
         '@type': 'ListItem',
         position: i + 1,
@@ -81,7 +102,8 @@ const schemaLD = JSON.stringify({
   category={category}
   totalCount={mazes.length}
   schemaLD={schemaLD}
-  tagline="25 maze puzzles on an 80×80 grid. Play free online and track your progress."
+  tagline="25 maze puzzles on an 80×80 grid. Play free online and complete the collection."
+  nextCategory={nextCategory}
 >
   <!-- Progress row -->
   <div class="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
@@ -92,14 +114,15 @@ const schemaLD = JSON.stringify({
       id="play-next-link"
       href={`/play/library/${allIds[0]}`}
       data-all-ids={JSON.stringify(allIds)}
+      data-first-label={firstLabel}
       class="btn-primary text-sm px-4 py-2 shrink-0 w-full sm:w-auto"
     >
-      Play Next
+      {firstLabel}
     </a>
   </div>
 
   <!-- Card grid -->
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+  <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     {mazes.map((entry, i) => (
       <LibraryMazeCard entry={entry} index={i} />
     ))}
@@ -108,14 +131,27 @@ const schemaLD = JSON.stringify({
   <!-- FAQ -->
   <div class="mt-12 max-w-2xl">
     <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">About Expert Mazes</h2>
-    <dl class="space-y-5">
-      {faqItems.map(({ q, a }) => (
-        <div>
-          <dt class="font-semibold text-slate-800">{q}</dt>
-          <dd class="mt-1 text-slate-600 text-sm">{a}</dd>
-        </div>
+    <div class="space-y-2">
+      {faqItems.map(({ q, a, open }) => (
+        <details open={open} class="group border rounded-lg" style="border-color: var(--color-border);">
+          <summary class="flex cursor-pointer items-center justify-between px-4 py-3 font-semibold select-none list-none [&::-webkit-details-marker]:hidden" style="color: var(--color-charcoal);">
+            {q}
+            <svg class="h-4 w-4 shrink-0 ml-3 transition-transform duration-200 group-open:rotate-180" style="color: var(--color-muted);" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+            </svg>
+          </summary>
+          <div class="px-4 pb-4 text-sm leading-relaxed" style="color: var(--color-muted-strong);">
+            {q === 'What should I try after Expert Mazes?' ? (
+              <p>After completing the Expert Maze collection, <a href="/monster-mazes" class="underline hover:opacity-80">Monster Mazes</a> are the final tier — the hardest puzzles in the Maze Library. They use a 100×100 grid and are intended for committed solvers ready for the ultimate challenge.</p>
+            ) : q === 'Can I print Expert Mazes?' ? (
+              <p>Yes. Visit the <a href="/printable-mazes" class="underline hover:opacity-80">Printable Mazes</a> page to download and print maze puzzles in a range of sizes, including expert mazes.</p>
+            ) : (
+              <p>{a}</p>
+            )}
+          </div>
+        </details>
       ))}
-    </dl>
+    </div>
   </div>
 </CategoryLayout>
 
@@ -137,13 +173,22 @@ const schemaLD = JSON.stringify({
       if (!link) return;
       var allIds = JSON.parse(link.getAttribute('data-all-ids') ?? '[]');
       var next = allIds.find(function (id) { return !done.has(id); });
+
       if (next) {
+        var nextCard = document.querySelector('[data-maze-id="' + next + '"]');
+        if (nextCard) nextCard.classList.add('maze-card-next');
+      }
+
+      var firstLabel = link.getAttribute('data-first-label') ?? 'Play Next';
+
+      if (done.size === 0) {
+        link.textContent = firstLabel;
+      } else if (next) {
+        link.textContent = 'Play Next';
         link.setAttribute('href', '/play/library/' + next);
       } else {
-        link.textContent = 'All Complete ✓';
-        link.removeAttribute('href');
-        link.style.opacity = '0.55';
-        link.style.pointerEvents = 'none';
+        link.textContent = 'Collection Complete ✓';
+        link.setAttribute('href', '/play/library/' + allIds[0]);
       }
     } catch (_) {}
   })();
