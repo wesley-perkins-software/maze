@@ -219,16 +219,16 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
                   {ctaLabel}
                 </button>
 
-                <div className="flex items-center justify-between gap-4 mt-4 pt-4 border-t border-slate-200 text-sm font-medium text-slate-700">
+                <div className="flex items-center justify-between gap-2 mt-4 pt-4 border-t border-slate-200">
                   {adjacentMazes.prev ? (
-                    <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-slate-900 hover:underline transition-colors">
+                    <a href={`/play/library/${adjacentMazes.prev.id}`} className="inline-flex items-center rounded border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 hover:border-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
                       ← {mazeShortLabel(adjacentMazes.prev)}
                     </a>
                   ) : (
                     <span aria-hidden="true" />
                   )}
                   {adjacentMazes.next ? (
-                    <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-slate-900 hover:underline transition-colors">
+                    <a href={`/play/library/${adjacentMazes.next.id}`} className="inline-flex items-center rounded border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 hover:border-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
                       {mazeShortLabel(adjacentMazes.next)} →
                     </a>
                   ) : (
@@ -268,16 +268,16 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
               {ctaLabel}
             </button>
 
-            <div className="flex items-center justify-between w-full gap-4 text-sm font-medium text-slate-800">
+            <div className="flex items-center justify-between w-full gap-2">
               {adjacentMazes.prev ? (
-                <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-black hover:underline transition-colors">
+                <a href={`/play/library/${adjacentMazes.prev.id}`} className="inline-flex items-center rounded border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 hover:border-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
                   ← {mazeShortLabel(adjacentMazes.prev)}
                 </a>
               ) : (
                 <span aria-hidden="true" />
               )}
               {adjacentMazes.next ? (
-                <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-black hover:underline transition-colors">
+                <a href={`/play/library/${adjacentMazes.next.id}`} className="inline-flex items-center rounded border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 hover:border-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
                   {mazeShortLabel(adjacentMazes.next)} →
                 </a>
               ) : (
