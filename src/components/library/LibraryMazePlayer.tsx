@@ -4,10 +4,10 @@
  * Follows the DailyMazePlayer pattern:
  *   static preview → fullscreen player on "Play" → custom post-solve overlay.
  */
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { generateMazeFromLibraryCatalog } from '../../lib/maze/generator';
-import { getNextLibraryMaze } from '../../lib/library/catalog';
-import { markLibraryMazeComplete } from '../../lib/library/progress';
+import { getNextLibraryMaze, getLibraryMazesByDifficulty } from '../../lib/library/catalog';
+import { markLibraryMazeComplete, isLibraryMazeComplete } from '../../lib/library/progress';
 import { MazeRenderer } from '../maze/MazeRenderer';
 import { FullscreenMazePlayer } from '../maze/FullscreenMazePlayer';
 import type { SolveStats } from '../maze/FullscreenMazePlayer';
@@ -29,27 +29,52 @@ function formatNum(n: number): string {
   return n.toLocaleString();
 }
 
+function mazeShortLabel(e: LibraryCatalogEntry): string {
+  const n = String(parseInt(e.id.split('-')[1] ?? '1', 10)).padStart(3, '0');
+  const tier = e.difficulty.charAt(0).toUpperCase() + e.difficulty.slice(1);
+  return `${tier} #${n}`;
+}
+
 export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   const maze = useMemo(() => generateMazeFromLibraryCatalog(entry), [entry.id]);
 
   const [playing, setPlaying] = useState(false);
   const [playerKey, setPlayerKey] = useState(0);
   const [solveStats, setSolveStats] = useState<SolveStats | null>(null);
+  const [isComplete, setIsComplete] = useState<boolean | null>(null);
 
   const nextEntry = useMemo(() => getNextLibraryMaze(entry.id), [entry.id]);
 
+  const adjacentMazes = useMemo(() => {
+    const group = getLibraryMazesByDifficulty(entry.difficulty);
+    const idx = group.findIndex((m) => m.id === entry.id);
+    return {
+      prev: idx > 0 ? group[idx - 1]! : null,
+      next: idx !== -1 && idx < group.length - 1 ? group[idx + 1]! : null,
+    };
+  }, [entry.id, entry.difficulty]);
+
+  useEffect(() => {
+    setIsComplete(isLibraryMazeComplete(entry.id));
+  }, [entry.id]);
+
+  const previewMaxWidth = entry.difficulty === 'small' || entry.difficulty === 'medium' ? 480 : 440;
+
   const previewCellSize = useMemo(() => {
     if (typeof window === 'undefined') return 6;
-    const w = Math.min(window.innerWidth - 32, 880);
+    const w = Math.min(window.innerWidth - 32, previewMaxWidth);
     return Math.max(4, Math.floor(w / maze.width));
-  }, [maze.width]);
+  }, [maze.width, previewMaxWidth]);
 
   const num = String(parseInt(entry.id.split('-')[1] ?? '1', 10)).padStart(3, '0');
-  const label = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.slice(1)} #${num}`;
+  const tierLabel = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.slice(1)}`;
+  const label = `${tierLabel} #${num}`;
   const collectionHref = `/${entry.difficulty}-mazes`;
+  const collectionLabel = `${tierLabel} Mazes`;
 
   const handleSolve = useCallback((stats: SolveStats) => {
     markLibraryMazeComplete(entry.id);
+    setIsComplete(true);
     setSolveStats(stats);
   }, [entry.id]);
 
@@ -66,14 +91,87 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   return (
     <div>
       {!playing && (
-        <>
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
-            <div className="flex justify-center p-4">
-              <MazeRenderer maze={maze} cellSize={previewCellSize} />
+        <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
+          {/* Left column (desktop) / top (mobile): heading, context, badge, desktop CTA+nav */}
+          <div className="flex flex-col gap-2 md:flex-1">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 leading-tight">
+                {tierLabel} Maze #{num}
+              </h1>
+              <p className="mt-1 text-base text-slate-600">
+                Part of the{' '}
+                <a href={collectionHref} className="hover:text-slate-900 transition-colors">
+                  {collectionLabel}
+                </a>{' '}
+                collection.
+              </p>
+            </div>
+
+            {isComplete !== null && (
+              <div className="text-sm">
+                {isComplete ? (
+                  <span className="inline-flex items-center gap-1.5 font-medium text-emerald-600">
+                    <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                    </svg>
+                    Complete
+                  </span>
+                ) : (
+                  <span className="text-slate-500">Not started</span>
+                )}
+              </div>
+            )}
+
+            {/* Desktop-only: CTA, prev/next, broader nav */}
+            <div className="hidden md:flex flex-col gap-3 mt-2">
+              <button
+                onClick={() => { setPlaying(true); setSolveStats(null); }}
+                className="btn-primary self-start rounded-lg px-6 py-3 text-base shadow-sm"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                {isComplete === true ? 'Play Again' : `Play ${label}`}
+              </button>
+
+              <div className="flex items-center justify-between gap-4 text-sm font-medium text-slate-800">
+                {adjacentMazes.prev ? (
+                  <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-black hover:underline transition-colors">
+                    ← {mazeShortLabel(adjacentMazes.prev)}
+                  </a>
+                ) : (
+                  <span aria-hidden="true" />
+                )}
+                {adjacentMazes.next ? (
+                  <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-black hover:underline transition-colors">
+                    {mazeShortLabel(adjacentMazes.next)} →
+                  </a>
+                ) : (
+                  <span aria-hidden="true" />
+                )}
+              </div>
+
+              <nav className="flex items-center gap-3 text-sm text-slate-600" aria-label="Collection navigation">
+                <a href={collectionHref} className="hover:text-slate-900 transition-colors">{collectionLabel}</a>
+                <span aria-hidden="true">·</span>
+                <a href="/maze-library" className="hover:text-slate-900 transition-colors">Maze Library</a>
+              </nav>
             </div>
           </div>
 
-          <div className="mt-4 flex justify-center">
+          {/* Preview card — right column (desktop) / middle (mobile) */}
+          <div className={`shrink-0 mx-auto md:mx-0 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden ${
+            previewMaxWidth === 480
+              ? 'w-full max-w-[480px] md:w-[480px]'
+              : 'w-full max-w-[440px] md:w-[440px]'
+          }`}>
+            <div className="flex justify-center p-4">
+              <MazeRenderer maze={maze} cellSize={previewCellSize} showEndpointMarkers={false} />
+            </div>
+          </div>
+
+          {/* Mobile-only: CTA, prev/next, broader nav — below preview */}
+          <div className="md:hidden flex flex-col items-center gap-3">
             <button
               onClick={() => { setPlaying(true); setSolveStats(null); }}
               className="btn-primary rounded-lg px-6 py-3 text-base shadow-sm"
@@ -81,10 +179,33 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M8 5v14l11-7z" />
               </svg>
-              Play {label}
+              {isComplete === true ? 'Play Again' : `Play ${label}`}
             </button>
+
+            <div className="flex items-center justify-between w-full gap-4 text-sm font-medium text-slate-800">
+              {adjacentMazes.prev ? (
+                <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-black hover:underline transition-colors">
+                  ← {mazeShortLabel(adjacentMazes.prev)}
+                </a>
+              ) : (
+                <span aria-hidden="true" />
+              )}
+              {adjacentMazes.next ? (
+                <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-black hover:underline transition-colors">
+                  {mazeShortLabel(adjacentMazes.next)} →
+                </a>
+              ) : (
+                <span aria-hidden="true" />
+              )}
+            </div>
+
+            <nav className="flex items-center gap-3 text-sm text-slate-600" aria-label="Collection navigation">
+              <a href={collectionHref} className="hover:text-slate-900 transition-colors">{collectionLabel}</a>
+              <span aria-hidden="true">·</span>
+              <a href="/maze-library" className="hover:text-slate-900 transition-colors">Maze Library</a>
+            </nav>
           </div>
-        </>
+        </div>
       )}
 
       {playing && (
