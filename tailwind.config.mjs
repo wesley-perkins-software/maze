@@ -6,18 +6,21 @@ export default {
     extend: {
       colors: {
         // ── Architect palette ──────────────────────────────────────
+        // Core tokens point to CSS variables so they adapt with dark mode.
+        // 400 stays static (opacity modifier /60 used in skeleton; CSS vars break that).
         arch: {
-          bg:            '#F6F5F0',
-          surface:       '#FFFFFF',
-          charcoal:      '#1C1C1E',
-          'charcoal-2':  '#2A2A2C',
-          accent:        '#E03B24',
-          'accent-dark': '#C42E18',
-          100:           '#EEECEA',
-          200:           '#D6D4CF',
+          bg:            'var(--color-bg)',
+          surface:       'var(--color-surface)',
+          'surface-raised': 'var(--color-surface-raised)',
+          charcoal:      'var(--color-charcoal)',
+          'charcoal-2':  'var(--color-charcoal-2)',
+          accent:        'var(--color-accent)',
+          'accent-dark': 'var(--color-accent-dark)',
+          100:           'var(--color-border)',
+          200:           'var(--color-border)',
           400:           '#9A9892',
-          600:           '#5C5A55',
-          // Dark mode surfaces
+          600:           'var(--color-muted-strong)',
+          // Static dark-context values for explicit dark-surface usage
           'dark-bg':            '#111110',
           'dark-surface':       '#1A1918',
           'dark-surface-raised':'#222120',
