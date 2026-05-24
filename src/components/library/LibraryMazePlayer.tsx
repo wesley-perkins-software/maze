@@ -173,7 +173,7 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   return (
     <div>
       {!playing && (
-        <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
+        <div className="flex flex-col md:flex-row md:items-stretch gap-4 md:gap-8">
           {/* Left column (desktop) / top (mobile): heading, context, badge, desktop CTA+nav */}
           <div className="flex flex-col gap-2 md:flex-1">
             <div>
@@ -206,42 +206,40 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
               </div>
             )}
 
-            {/* Desktop-only: CTA, prev/next, broader nav — constrained to one aligned stack */}
-            <div className="hidden md:flex flex-col gap-3 mt-2">
-              <div className="flex flex-col gap-3 w-fit min-w-[220px]">
-                <button
-                  onClick={handleCTA}
-                  className="btn-primary w-full rounded-lg px-6 py-3 text-base shadow-sm"
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                  {ctaLabel}
-                </button>
+            {/* Desktop-only: CTA + nav pushed to bottom of stretched left column */}
+            <div className="hidden md:flex flex-col gap-4 mt-auto pt-6">
+              <button
+                onClick={handleCTA}
+                className="btn-primary self-start rounded-lg px-6 py-3 text-base shadow-sm"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                {ctaLabel}
+              </button>
 
-                <div className="flex items-center justify-between gap-4 text-sm font-medium text-slate-800">
-                  {adjacentMazes.prev ? (
-                    <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-black hover:underline transition-colors">
-                      ← {mazeShortLabel(adjacentMazes.prev)}
-                    </a>
-                  ) : (
-                    <span aria-hidden="true" />
-                  )}
-                  {adjacentMazes.next ? (
-                    <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-black hover:underline transition-colors">
-                      {mazeShortLabel(adjacentMazes.next)} →
-                    </a>
-                  ) : (
-                    <span aria-hidden="true" />
-                  )}
-                </div>
-
-                <nav className="flex items-center gap-3 text-sm text-slate-600" aria-label="Collection navigation">
-                  <a href={collectionHref} className="hover:text-slate-900 transition-colors">{collectionLabel}</a>
-                  <span aria-hidden="true">·</span>
-                  <a href="/maze-library" className="hover:text-slate-900 transition-colors">Maze Library</a>
-                </nav>
+              <div className="flex items-center justify-between gap-4 text-sm font-medium text-slate-700 border-t border-slate-200 pt-4">
+                {adjacentMazes.prev ? (
+                  <a href={`/play/library/${adjacentMazes.prev.id}`} className="hover:text-slate-900 hover:underline transition-colors">
+                    ← {mazeShortLabel(adjacentMazes.prev)}
+                  </a>
+                ) : (
+                  <span aria-hidden="true" />
+                )}
+                {adjacentMazes.next ? (
+                  <a href={`/play/library/${adjacentMazes.next.id}`} className="hover:text-slate-900 hover:underline transition-colors">
+                    {mazeShortLabel(adjacentMazes.next)} →
+                  </a>
+                ) : (
+                  <span aria-hidden="true" />
+                )}
               </div>
+
+              <nav className="flex items-center gap-3 text-sm text-slate-500" aria-label="Collection navigation">
+                <a href={collectionHref} className="hover:text-slate-700 transition-colors">{collectionLabel}</a>
+                <span aria-hidden="true">·</span>
+                <a href="/maze-library" className="hover:text-slate-700 transition-colors">Maze Library</a>
+              </nav>
             </div>
           </div>
 
