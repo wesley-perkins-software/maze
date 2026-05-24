@@ -236,10 +236,10 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
                   )}
                 </div>
 
-                <nav className="flex items-center justify-center gap-3 mt-2 text-sm text-slate-700" aria-label="Collection navigation">
-                  <a href={collectionHref} className="hover:text-slate-900 transition-colors">{collectionLabel}</a>
-                  <span aria-hidden="true">·</span>
-                  <a href="/maze-library" className="hover:text-slate-900 transition-colors">Maze Library</a>
+                <nav className="flex items-center justify-center gap-3 mt-2 text-sm" aria-label="Collection navigation">
+                  <a href={collectionHref} className="font-medium text-slate-800 underline-offset-4 hover:text-slate-900 hover:underline transition-colors">← Back to {collectionLabel}</a>
+                  <span aria-hidden="true" className="text-slate-400">·</span>
+                  <a href="/maze-library" className="font-medium text-slate-800 underline-offset-4 hover:text-slate-900 hover:underline transition-colors">Maze Library</a>
                 </nav>
               </div>
             </div>
@@ -285,10 +285,10 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
               )}
             </div>
 
-            <nav className="flex items-center gap-3 text-sm text-slate-600" aria-label="Collection navigation">
-              <a href={collectionHref} className="hover:text-slate-900 transition-colors">{collectionLabel}</a>
-              <span aria-hidden="true">·</span>
-              <a href="/maze-library" className="hover:text-slate-900 transition-colors">Maze Library</a>
+            <nav className="flex items-center gap-3 text-sm" aria-label="Collection navigation">
+              <a href={collectionHref} className="font-medium text-slate-800 underline-offset-4 hover:text-slate-900 hover:underline transition-colors">← Back to {collectionLabel}</a>
+              <span aria-hidden="true" className="text-slate-400">·</span>
+              <a href="/maze-library" className="font-medium text-slate-800 underline-offset-4 hover:text-slate-900 hover:underline transition-colors">Maze Library</a>
             </nav>
           </div>
         </div>
