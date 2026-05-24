@@ -212,6 +212,7 @@ export function renderThumbnail(maze: MazeData): string {
     wallThickness: 1.5,
     padding: 2,
     showSolution: false,
+    showEndpointMarkers: false,
   });
 }
 

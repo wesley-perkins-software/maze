@@ -81,18 +81,18 @@ const schemaLD = JSON.stringify({
   category={category}
   totalCount={mazes.length}
   schemaLD={schemaLD}
-  tagline="25 free expert maze puzzles on an 80×80 grid. Long corridors and deep branching — a serious challenge for experienced solvers."
+  tagline="25 maze puzzles on an 80×80 grid. Play free online and track your progress."
 >
   <!-- Progress row -->
-  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-    <div class="min-w-0 flex-1 max-w-xs">
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+    <div class="min-w-0 flex-1 max-w-sm">
       <LibraryProgress client:load total={mazes.length} difficulty={category.difficulty} />
     </div>
     <a
       id="play-next-link"
       href={`/play/library/${allIds[0]}`}
       data-all-ids={JSON.stringify(allIds)}
-      class="btn-primary text-sm px-4 py-2 shrink-0 self-start sm:self-auto"
+      class="btn-primary text-sm px-4 py-2 shrink-0 w-full sm:w-auto"
     >
       Play Next
     </a>
