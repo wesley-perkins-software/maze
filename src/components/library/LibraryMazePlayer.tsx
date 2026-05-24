@@ -43,11 +43,13 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
     setIsComplete(isLibraryMazeComplete(entry.id));
   }, [entry.id]);
 
+  const previewMaxWidth = entry.difficulty === 'small' || entry.difficulty === 'medium' ? 480 : 440;
+
   const previewCellSize = useMemo(() => {
     if (typeof window === 'undefined') return 6;
-    const w = Math.min(window.innerWidth - 32, 440);
+    const w = Math.min(window.innerWidth - 32, previewMaxWidth);
     return Math.max(4, Math.floor(w / maze.width));
-  }, [maze.width]);
+  }, [maze.width, previewMaxWidth]);
 
   const num = String(parseInt(entry.id.split('-')[1] ?? '1', 10)).padStart(3, '0');
   const tierLabel = `${entry.difficulty.charAt(0).toUpperCase()}${entry.difficulty.slice(1)}`;
@@ -74,9 +76,9 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   return (
     <div>
       {!playing && (
-        <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-10">
+        <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
           {/* Left column (desktop) / top (mobile): heading, context, badge, desktop CTA+nav */}
-          <div className="flex flex-col gap-3 md:flex-1">
+          <div className="flex flex-col gap-2 md:flex-1">
             <div>
               <h1 className="text-2xl font-bold text-slate-900 leading-tight">
                 {tierLabel} Maze #{num}
@@ -106,7 +108,7 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
             )}
 
             {/* Desktop-only CTA + secondary nav */}
-            <div className="hidden md:flex flex-col gap-3 mt-1">
+            <div className="hidden md:flex flex-col gap-3 mt-2">
               <button
                 onClick={() => { setPlaying(true); setSolveStats(null); }}
                 className="btn-primary self-start rounded-lg px-6 py-3 text-base shadow-sm"
@@ -124,7 +126,11 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
           </div>
 
           {/* Preview card — right column (desktop) / middle (mobile) */}
-          <div className="w-full max-w-[440px] md:w-[440px] shrink-0 mx-auto md:mx-0 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className={`shrink-0 mx-auto md:mx-0 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden ${
+            previewMaxWidth === 480
+              ? 'w-full max-w-[480px] md:w-[480px]'
+              : 'w-full max-w-[440px] md:w-[440px]'
+          }`}>
             <div className="flex justify-center p-4">
               <MazeRenderer maze={maze} cellSize={previewCellSize} showEndpointMarkers={false} />
             </div>
