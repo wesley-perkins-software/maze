@@ -1638,7 +1638,7 @@ export function FullscreenMazePlayer({
         {/* Desktop sidebar — quiet utility rail */}
         <aside
           className="hidden md:flex flex-col w-56 shrink-0 border-l architect-dot-grid"
-          style={{ backgroundColor: 'var(--color-bg)', borderColor: 'var(--color-border)', color: 'var(--color-charcoal)' }}
+          style={{ backgroundColor: 'var(--color-surface-raised)', borderColor: 'var(--color-border-strong)', color: 'var(--color-charcoal)' }}
         >
           <div className="flex flex-col p-4">
 
@@ -1667,7 +1667,10 @@ export function FullscreenMazePlayer({
                     'aria-label': 'Minimap overview',
                   }
               )}
-              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="relative rounded-xl overflow-visible border-2 bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              style={{
+                borderColor: 'var(--color-border-strong)',
+              }}
               style={{
                 width: sidebarMinimapContainerW,
                 height: sidebarMinimapContainerH,
@@ -1756,7 +1759,7 @@ export function FullscreenMazePlayer({
               {state.status !== 'solved' && (
                 <button
                   onClick={handleHint}
-                  className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                  className="btn-secondary play-sidebar-btn w-full rounded text-left px-3 py-2.5 gap-2.5"
                   aria-pressed={isHintActive}
                 >
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1767,7 +1770,7 @@ export function FullscreenMazePlayer({
               )}
               <button
                 onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
-                className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                className="btn-secondary play-sidebar-btn w-full rounded text-left px-3 py-2.5 gap-2.5"
                 style={state.solutionVisible ? {
                   backgroundColor: 'var(--color-charcoal)',
                   color: 'var(--color-bg)',
@@ -1788,7 +1791,7 @@ export function FullscreenMazePlayer({
               </button>
               <button
                 onClick={toggleShowTrail}
-                className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                className="btn-secondary play-sidebar-btn w-full rounded text-left px-3 py-2.5 gap-2.5"
                 aria-pressed={showTrail}
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1806,7 +1809,7 @@ export function FullscreenMazePlayer({
               {(state.status === 'playing' || state.status === 'paused') && (
                 <button
                   onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
-                  className="btn-ghost w-full rounded text-left px-3 py-2.5 gap-2.5"
+                  className="btn-ghost play-sidebar-ghost w-full rounded text-left px-3 py-2.5 gap-2.5"
                   aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
                 >
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -1820,19 +1823,24 @@ export function FullscreenMazePlayer({
                 </button>
               )}
               {resetConfirming ? (
-                <div className="rounded border border-red-200 bg-red-50 px-3 py-2.5 space-y-2.5">
-                  <p className="text-sm font-medium text-red-800">Reset Progress?</p>
-                  <div className="flex items-center gap-2">
+                <div className="rounded px-3 py-2.5 space-y-2 border bg-red-50 border-red-200 dark:bg-[rgba(127,29,29,0.18)] dark:border-[rgba(248,113,113,0.30)]">
+                  <p className="font-semibold text-[15px] text-red-800 dark:text-red-300 leading-tight">
+                    Reset progress?
+                  </p>
+                  <p className="text-sm text-red-700/70 dark:text-red-400/70 leading-snug">
+                    This will clear your current run.
+                  </p>
+                  <div className="flex items-center gap-2 pt-0.5">
                     <button
                       onClick={handleResetCancel}
-                      className="btn-ghost flex-1 rounded text-xs px-2 py-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-600"
                       autoFocus
+                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors bg-transparent border border-red-300 text-red-800 hover:bg-red-100 dark:border-[rgba(248,113,113,0.40)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleResetConfirm}
-                      className="flex-1 rounded border border-red-300 bg-red-100 px-2 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:bg-red-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors border border-red-300 bg-red-100 text-red-700 hover:bg-red-200 dark:border-[rgba(248,113,113,0.50)] dark:bg-[rgba(127,29,29,0.35)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
                     >
                       Reset
                     </button>
@@ -1841,7 +1849,7 @@ export function FullscreenMazePlayer({
               ) : (
                 <button
                   onClick={handleResetRequest}
-                  className="btn-ghost w-full rounded text-left px-3 py-2.5 gap-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
+                  className="btn-ghost play-sidebar-ghost w-full rounded text-left px-3 py-2.5 gap-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
                 >
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
@@ -1879,7 +1887,16 @@ export function FullscreenMazePlayer({
       <div
         ref={controlStripRef}
         className="md:hidden relative bg-[#F6F5F0] border-t border-[#DDD8CF] shrink-0 overflow-visible pb-[env(safe-area-inset-bottom,0px)]"
-        style={{ height: mobileDockH }}
+        style={{
+          height: mobileDockH,
+          // Freeze this subtree to light-mode control tokens so D-pad borders,
+          // divider lines, and minimap hint text stay readable on the light dock surface
+          // even when the global .dark theme is active.
+          ['--color-border' as string]:        '#D6D4CF',
+          ['--color-border-strong' as string]: '#B0AEA8',
+          ['--color-muted-strong' as string]:  '#5C5A55',
+          ['--color-charcoal' as string]:      '#1C1C1E',
+        }}
       >
         <div className="grid h-full w-full grid-cols-2 items-stretch overflow-visible">
           {leftHanded ? dpadPanel : minimapPanel}
@@ -1950,18 +1967,18 @@ export function FullscreenMazePlayer({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                color: 'var(--color-muted-strong)',
+                color: 'var(--color-charcoal)',
                 fontSize: 15,
                 fontWeight: 500,
                 marginBottom: 20,
               }}
             >
               <span>{formatPauseTime(state.elapsedMs)}</span>
-              <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
+              <span aria-hidden="true" style={{ color: 'var(--color-muted-strong)' }}>·</span>
               <span>{pauseMetaLabel}</span>
               {(normalizedLabel.length === 0 || isGeneratorSizeLabel) && (
                 <>
-                  <span aria-hidden="true" style={{ color: 'var(--color-border-strong)' }}>·</span>
+                  <span aria-hidden="true" style={{ color: 'var(--color-muted-strong)' }}>·</span>
                   <span>Generated</span>
                 </>
               )}
@@ -2042,7 +2059,8 @@ export function FullscreenMazePlayer({
                     <button
                       onClick={handleResetCancel}
                       autoFocus
-                      className="btn-ghost flex-1 rounded-lg text-sm py-1.5 justify-center"
+                      className="flex-1 rounded-lg py-1.5 flex items-center justify-center transition-colors"
+                      style={{ color: 'var(--color-charcoal)', fontSize: 15, fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer' }}
                     >
                       Cancel
                     </button>
@@ -2055,7 +2073,7 @@ export function FullscreenMazePlayer({
                         border: '1px solid rgba(220, 38, 38, 0.3)',
                         background: 'rgba(220, 38, 38, 0.1)',
                         color: '#b91c1c',
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: 600,
                         cursor: 'pointer',
                       }}
@@ -2068,7 +2086,7 @@ export function FullscreenMazePlayer({
                 <button
                   onClick={handleResetRequest}
                   className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
-                  style={{ fontSize: 15 }}
+                  style={{ fontSize: 15, color: 'var(--color-charcoal)' }}
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
@@ -2079,7 +2097,7 @@ export function FullscreenMazePlayer({
               <button
                 onClick={handleClose}
                 className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
-                style={{ fontSize: 15 }}
+                style={{ fontSize: 15, color: 'var(--color-charcoal)' }}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
