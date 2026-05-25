@@ -1974,7 +1974,7 @@ export function FullscreenMazePlayer({
                 width: '100%',
                 height: 52,
                 borderRadius: 14,
-                background: 'var(--color-charcoal)',
+                background: 'var(--color-accent)',
                 color: 'white',
                 border: 'none',
                 fontSize: 18,
@@ -1987,8 +1987,8 @@ export function FullscreenMazePlayer({
                 marginBottom: 8,
                 transition: 'background 0.15s',
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-charcoal-2)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-charcoal)'; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-accent-dark)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-accent)'; }}
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <polygon points="5,3 19,12 5,21" />
