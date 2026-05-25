@@ -1,5 +1,11 @@
 ---
 import HeroMazePreview from './HeroMazePreview.jsx';
+
+interface Props {
+  todaysMazeLabel?: string;
+}
+
+const { todaysMazeLabel } = Astro.props;
 ---
 
 <section
@@ -94,6 +100,10 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
         <!-- Left: headline + daily state + CTA + secondary links -->
         <div class="flex flex-col items-start">
+          <p
+            class="mb-3 text-[0.67rem] sm:text-xs uppercase tracking-[0.22em] font-semibold"
+            style="color: var(--color-muted-strong);"
+          >THE BEST MAZE EXPERIENCE ON THE INTERNET</p>
           <h1
             class="font-display uppercase mb-4"
             style="font-size: clamp(3.5rem, 9vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
@@ -133,6 +143,14 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
         <!-- Right: maze preview with corner-bracket frame -->
         <div class="pt-1">
+          {todaysMazeLabel && (
+            <p
+              class="mb-2 text-[0.68rem] uppercase tracking-[0.18em]"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+            >
+              Today's Maze · {todaysMazeLabel}
+            </p>
+          )}
           <div class="relative">
             <!-- Corner brackets — 3px border weight so they register as intentional -->
             <div class="absolute -top-2 -left-2 w-6 h-6 z-10" style="border-top: 3px solid var(--color-charcoal); border-left: 3px solid var(--color-charcoal);"></div>
