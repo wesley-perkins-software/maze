@@ -26,78 +26,92 @@ const gridSizes: Record<string, string> = {
 };
 
 const tierDescriptions: Record<string, string> = {
-  small:   'Quick, approachable puzzles. Great for warm-ups and casual play.',
-  medium:  'Real branching paths and genuine decision points.',
-  large:   'Dense labyrinths that are genuinely easy to get lost in.',
-  expert:  'Long corridors and deep branching. Serious challenge.',
-  monster: 'The hardest mazes in the collection. Extreme scale.',
+  small:   'Quick 20×20 maze puzzles for fast solves.',
+  medium:  'Balanced 40×40 mazes with more room to explore.',
+  large:   'Bigger 60×60 maze challenges for longer sessions.',
+  expert:  'Demanding 80×80 mazes for experienced solvers.',
+  monster: 'Huge 100×100 maze puzzles built for serious focus.',
 };
+
+const faqItems = [
+  {
+    q: 'Are these mazes free?',
+    a: 'Yes. Every maze in the Maze Library is free to play — no account, no sign-up, and no payment required. All 160 mazes are available in your browser at any time.',
+  },
+  {
+    q: 'Can I play the mazes online?',
+    a: 'Yes. All mazes play directly in your browser. Use the arrow keys or WASD on desktop, or the on-screen D-pad on mobile and tablet. No download or app is needed.',
+  },
+  {
+    q: 'Do the mazes save my progress?',
+    a: 'Yes. After you solve a maze, your completion is saved to your device. The progress bars on this page update to show how many mazes you have finished in each size tier. Progress is stored in your browser and persists between visits without an account.',
+  },
+  {
+    q: 'What maze size should I start with?',
+    a: 'If you are new to maze puzzles, start with Small Mazes. The 20×20 grid is quick to complete and easy to orient yourself. Once you are comfortable, Medium Mazes (40×40) are a natural step up with more branching paths.',
+  },
+  {
+    q: 'What is the hardest maze in the library?',
+    a: 'Monster Mazes are the hardest — 100×100 grids with extremely long solution paths. Expert Mazes (80×80) are a significant challenge in their own right and a good step before tackling Monster.',
+  },
+  {
+    q: 'Can I print these mazes?',
+    a: 'The library mazes are optimized for online play. For print-ready puzzles, visit the Printable Mazes page or use the Maze Generator to create and download a maze in any size.',
+  },
+  {
+    q: 'How many mazes are in the Maze Library?',
+    a: 'There are 160 mazes in total: 40 Small, 40 Medium, 40 Large, 25 Expert, and 15 Monster. Every maze has a fixed layout — the same puzzle is always at the same URL.',
+  },
+  {
+    q: 'What is the difference between the Maze Library and the Maze Generator?',
+    a: 'The Maze Library is a curated collection of 160 fixed mazes — each one is permanent, numbered, and completable as part of a set. The Maze Generator creates a new unique maze on demand, in any size, with no fixed layout. Use the Library to work through a collection; use the Generator for infinite variety.',
+  },
+];
 
 const schemaLD = JSON.stringify({
   '@context': 'https://schema.org',
   '@graph': [
     {
-      '@type': 'WebPage',
+      '@type': 'CollectionPage',
       '@id': 'https://mazethis.com/maze-library',
       url: 'https://mazethis.com/maze-library',
-      name: 'Maze Library — Play & Complete 160 Curated Mazes | MazeThis',
+      name: 'Free Online Mazes - Play Maze Puzzles by Size | MazeThis',
       description:
-        'Browse 160 curated maze puzzles across five sizes. Track your progress and complete the full MazeThis collection — free to play in your browser.',
+        'Play free online mazes in five sizes, track your progress, and choose from 160 maze puzzles. Start with small mazes or take on larger MazeThis challenges.',
       isPartOf: { '@id': 'https://mazethis.com/#website' },
       breadcrumb: { '@id': 'https://mazethis.com/maze-library#breadcrumb' },
+      about: {
+        '@type': 'Dataset',
+        name: 'MazeThis Maze Library',
+        description:
+          'A curated collection of 160 free online maze puzzles across five sizes: 40 Small (20×20), 40 Medium (40×40), 40 Large (60×60), 25 Expert (80×80), and 15 Monster (100×100).',
+        url: 'https://mazethis.com/maze-library',
+        publisher: { '@type': 'Organization', name: 'MazeThis', url: 'https://mazethis.com' },
+      },
     },
     {
       '@type': 'BreadcrumbList',
       '@id': 'https://mazethis.com/maze-library#breadcrumb',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://mazethis.com/' },
-        { '@type': 'ListItem', position: 2, name: 'Maze Library' },
+        { '@type': 'ListItem', position: 2, name: 'Maze Library', item: 'https://mazethis.com/maze-library' },
       ],
     },
     {
       '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'What is the Maze Library?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'The Maze Library is a curated collection of 160 maze puzzles across five sizes: Small, Medium, Large, Expert, and Monster. Each maze is uniquely generated and permanently available to play in your browser.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'How many mazes are in the Maze Library?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'There are 160 mazes in total: 40 Small, 40 Medium, 40 Large, 25 Expert, and 15 Monster.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Is the Maze Library free?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Yes. Every maze in the Maze Library is free to play directly in your browser — no account or download required.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'How do I track my progress?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Progress is saved on your device. After solving a maze, your completion is recorded so you can see which mazes you have finished across each collection.',
-          },
-        },
-      ],
+      mainEntity: faqItems.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
     },
   ],
 });
 ---
 
 <BaseLayout
-  title="Maze Library — Play & Complete 160 Curated Mazes | MazeThis"
-  description="Browse 160 curated maze puzzles across five sizes. Track your progress and complete the full MazeThis collection — free to play in your browser."
+  title="Free Online Mazes - Play Maze Puzzles by Size | MazeThis"
+  description="Play free online mazes in five sizes, track your progress, and choose from 160 maze puzzles. Start with small mazes or take on larger MazeThis challenges."
   schemaLD={schemaLD}
 >
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -106,9 +120,17 @@ const schemaLD = JSON.stringify({
 
     <!-- Hero -->
     <div class="mt-6 mb-10">
-      <h1 class="mb-3">Maze Library</h1>
+      <h1 class="mb-3">Free Online Mazes</h1>
       <p class="text-lg max-w-2xl" style="color: var(--color-muted-strong);">
-        {totalCount} curated maze puzzles across five sizes. Complete every maze in the MazeThis collection — play free in your browser, no account required.
+        Play free maze puzzles online — choose a size, track your progress, or generate your own maze.
+      </p>
+      <div class="mt-5 flex flex-wrap items-center gap-3">
+        <a href="/small-mazes" class="btn-primary">Browse Small Mazes</a>
+        <a href="/play/maze-of-the-day/" class="btn-secondary">Play Today's Maze</a>
+        <a href="/maze-generator" class="btn-secondary">Make a Maze</a>
+      </div>
+      <p class="mt-3 text-xs" style="color: var(--color-muted);">
+        Progress saves on your device — no account required.
       </p>
     </div>
 
@@ -175,50 +197,98 @@ const schemaLD = JSON.stringify({
       })}
     </div>
 
-    <!-- FAQ -->
-    <div class="max-w-2xl">
-      <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">About the Maze Library</h2>
-      <dl class="space-y-5">
-        <div>
-          <dt class="font-semibold" style="color: var(--color-charcoal);">What is the Maze Library?</dt>
-          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
-            The Maze Library is a curated collection of {totalCount} maze puzzles across five sizes — Small (20×20), Medium (40×40), Large (60×60), Expert (80×80), and Monster (100×100). Each maze is uniquely generated and permanently available to play in your browser.
-          </dd>
+    <!-- How to choose a maze -->
+    <div class="mb-10 max-w-2xl">
+      <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">How to Choose a Maze</h2>
+      <div class="card rounded-xl">
+        <div class="flex items-start gap-4 p-4">
+          <div class="shrink-0 w-1.5 self-stretch rounded-full" style="background-color: var(--color-progress);"></div>
+          <div>
+            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">New to mazes?</p>
+            <p class="text-sm mt-0.5" style="color: var(--color-muted-strong);">
+              Start with <a href="/small-mazes" style="color: var(--color-accent);">Small Mazes</a> — 20×20 grids, quick to complete, easy to orient yourself.
+            </p>
+          </div>
         </div>
-        <div>
-          <dt class="font-semibold" style="color: var(--color-charcoal);">How many mazes are there?</dt>
-          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
-            160 in total: 40 Small, 40 Medium, 40 Large, 25 Expert, and 15 Monster. Every maze has a fixed layout — the same maze is always at the same URL.
-          </dd>
+        <div class="flex items-start gap-4 p-4" style="border-top: 1px solid var(--color-border);">
+          <div class="shrink-0 w-1.5 self-stretch rounded-full" style="background-color: var(--color-accent);"></div>
+          <div>
+            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Want a balanced challenge?</p>
+            <p class="text-sm mt-0.5" style="color: var(--color-muted-strong);">
+              Try <a href="/medium-mazes" style="color: var(--color-accent);">Medium Mazes</a> — 40×40 grids with real decision points and more room to get lost.
+            </p>
+          </div>
         </div>
-        <div>
-          <dt class="font-semibold" style="color: var(--color-charcoal);">Is the Maze Library free?</dt>
-          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
-            Yes. Every maze is free to play directly in your browser — no account, no download, no sign-up required.
-          </dd>
+        <div class="flex items-start gap-4 p-4" style="border-top: 1px solid var(--color-border);">
+          <div class="shrink-0 w-1.5 self-stretch rounded-full" style="background-color: var(--color-accent);"></div>
+          <div>
+            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Want a longer solve?</p>
+            <p class="text-sm mt-0.5" style="color: var(--color-muted-strong);">
+              <a href="/large-mazes" style="color: var(--color-accent);">Large Mazes</a> use a 60×60 grid — dense enough that wall-following stops working reliably.
+            </p>
+          </div>
         </div>
-        <div>
-          <dt class="font-semibold" style="color: var(--color-charcoal);">How do I track my progress?</dt>
-          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
-            Progress is saved on your device. After solving a maze, your completion is recorded so you can see which mazes you have finished across each collection.
-          </dd>
+        <div class="flex items-start gap-4 p-4" style="border-top: 1px solid var(--color-border);">
+          <div class="shrink-0 w-1.5 self-stretch rounded-full" style="background-color: var(--color-charcoal);"></div>
+          <div>
+            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Want a serious challenge?</p>
+            <p class="text-sm mt-0.5" style="color: var(--color-muted-strong);">
+              <a href="/expert-mazes" style="color: var(--color-accent);">Expert</a> (80×80) or <a href="/monster-mazes" style="color: var(--color-accent);">Monster</a> (100×100) — for experienced solvers with time to spare.
+            </p>
+          </div>
         </div>
-        <div>
-          <dt class="font-semibold" style="color: var(--color-charcoal);">What is the hardest tier?</dt>
-          <dd class="mt-1 text-sm" style="color: var(--color-muted-strong);">
-            Monster mazes are the hardest in the collection — 100×100 grids with extremely long solution paths. Expert mazes (80×80) are a solid step up from Large before tackling Monster.
-          </dd>
-        </div>
-      </dl>
+      </div>
     </div>
 
-    <!-- Secondary CTA -->
-    <div class="mt-12 cta-callout rounded-2xl p-8 text-center">
-      <h2 class="text-xl font-bold mb-2" style="color: var(--color-charcoal);">Want an infinite challenge?</h2>
-      <p class="mb-4" style="color: var(--color-muted-strong);">
-        Use the free maze generator to create mazes in any size — from tiny 5×5 grids to custom giants.
-      </p>
-      <a href="/maze-generator" class="btn-primary">Open Maze Generator</a>
+    <!-- More ways to play -->
+    <div class="mb-10 max-w-2xl">
+      <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">More Ways to Play</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a href="/maze-of-the-day" class="card-hover flex flex-col p-4 gap-1 no-underline">
+          <p class="text-xs uppercase tracking-widest mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">Daily</p>
+          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Maze of the Day</p>
+          <p class="text-xs" style="color: var(--color-muted-strong);">A new maze every day.</p>
+        </a>
+        <a href="/maze-generator" class="card-hover flex flex-col p-4 gap-1 no-underline">
+          <p class="text-xs uppercase tracking-widest mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">Generator</p>
+          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Maze Generator</p>
+          <p class="text-xs" style="color: var(--color-muted-strong);">Create custom mazes in any size.</p>
+        </a>
+        <a href="/printable-mazes" class="card-hover flex flex-col p-4 gap-1 no-underline">
+          <p class="text-xs uppercase tracking-widest mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">Print</p>
+          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Printable Mazes</p>
+          <p class="text-xs" style="color: var(--color-muted-strong);">Find printable mazes for paper solves and classroom use.</p>
+        </a>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="max-w-2xl mb-12">
+      <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">About the Maze Library</h2>
+      <div class="space-y-2">
+        {faqItems.map(({ q, a }) => (
+          <details class="group border rounded-lg" style="border-color: var(--color-border);">
+            <summary
+              class="flex cursor-pointer items-center justify-between px-4 py-3 font-semibold select-none list-none [&::-webkit-details-marker]:hidden"
+              style="color: var(--color-charcoal);"
+            >
+              {q}
+              <svg
+                class="h-4 w-4 shrink-0 ml-3 transition-transform duration-200 group-open:rotate-180"
+                style="color: var(--color-muted);"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="px-4 pb-4 text-sm leading-relaxed" style="color: var(--color-muted-strong);">
+              {a}
+            </div>
+          </details>
+        ))}
+      </div>
     </div>
 
   </div>
