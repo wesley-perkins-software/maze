@@ -3,8 +3,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/home/Hero.astro';
 import FeatureMazes from '../components/home/FeatureMazes.astro';
 import HowItWorks from '../components/home/HowItWorks.astro';
+import { getDailyNow } from '../lib/utils/dailyNow';
 
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const todaysMazeLabel = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
+}).format(getDailyNow());
 
 const websiteSchema = JSON.stringify({
   '@context': 'https://schema.org',
@@ -38,7 +45,7 @@ const organizationSchema = JSON.stringify({
 >
 
   <!-- 1. Hero -->
-  <Hero />
+  <Hero todaysMazeLabel={todaysMazeLabel} />
 
   <!-- 2. Maze Library — combined section -->
   <FeatureMazes />
