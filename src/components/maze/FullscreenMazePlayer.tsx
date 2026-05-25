@@ -1474,8 +1474,8 @@ export function FullscreenMazePlayer({
             </button>
           )}
 
-          {/* Desktop Reset + confirmation popover — hidden on mobile */}
-          {(state.status === 'playing' || state.status === 'paused') && (
+          {/* Desktop Reset + confirmation popover — hidden on mobile and after solve */}
+          {state.status !== 'solved' && (
             <div ref={resetPopoverWrapperRef} className="relative hidden md:block">
               <button
                 onClick={handleResetRequest}
