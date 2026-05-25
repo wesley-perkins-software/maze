@@ -505,6 +505,7 @@ export function FullscreenMazePlayer({
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetConfirming, setResetConfirming] = useState(false);
   const resetConfirmTimerRef = useRef<number | null>(null);
+  const resetPopoverWrapperRef = useRef<HTMLDivElement>(null);
   const initialCameraReadyMazeKeyRef = useRef<string | null>(null);
 
   // Left-handed mode: D-pad on left, minimap on right (persisted)
@@ -940,6 +941,36 @@ export function FullscreenMazePlayer({
       if (resetConfirmTimerRef.current) clearTimeout(resetConfirmTimerRef.current);
     };
   }, []);
+
+  // Close desktop reset popover on Escape
+  useEffect(() => {
+    if (!resetConfirming) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        handleResetCancel();
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [resetConfirming, handleResetCancel]);
+
+  // Close desktop reset popover on outside click/touch
+  useEffect(() => {
+    if (!resetConfirming) return;
+    function onPointerDown(e: MouseEvent | TouchEvent) {
+      if (resetPopoverWrapperRef.current &&
+          !resetPopoverWrapperRef.current.contains(e.target as Node)) {
+        handleResetCancel();
+      }
+    }
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+    };
+  }, [resetConfirming, handleResetCancel]);
 
   // ── Follow-camera math ───────────────────────────────────────────────────────
   const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
@@ -1424,6 +1455,74 @@ export function FullscreenMazePlayer({
 
         {/* Right: pause + overflow menu */}
         <div className="flex items-center gap-1 shrink-0">
+
+          {/* Desktop Pause/Resume — hidden on mobile (mobile has its own ⏸ below) */}
+          {(state.status === 'playing' || state.status === 'paused') && (
+            <button
+              onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
+              aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
+            >
+              <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                {state.status === 'playing' ? (
+                  <><rect x="3" y="2" width="3.5" height="12" rx="0.5" /><rect x="9.5" y="2" width="3.5" height="12" rx="0.5" /></>
+                ) : (
+                  <polygon points="3,1 14,8 3,15" />
+                )}
+              </svg>
+              <span>{state.status === 'playing' ? 'Pause' : 'Resume'}</span>
+            </button>
+          )}
+
+          {/* Desktop Reset + confirmation popover — hidden on mobile */}
+          {(state.status === 'playing' || state.status === 'paused') && (
+            <div ref={resetPopoverWrapperRef} className="relative hidden md:block">
+              <button
+                onClick={handleResetRequest}
+                aria-expanded={resetConfirming}
+                aria-haspopup="dialog"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400"
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+                </svg>
+                <span>Reset</span>
+              </button>
+
+              {resetConfirming && (
+                <div
+                  role="dialog"
+                  aria-label="Reset confirmation"
+                  aria-modal="false"
+                  className="absolute top-full right-0 mt-1.5 w-52 z-50 rounded-lg px-3 py-2.5 space-y-2 border shadow-lg bg-white border-slate-200 dark:bg-[rgba(30,28,26,0.98)] dark:border-[rgba(80,78,76,0.60)]"
+                >
+                  <p className="font-semibold text-[15px] text-red-800 dark:text-red-300 leading-tight">
+                    Reset progress?
+                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                    This will clear your current run.
+                  </p>
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <button
+                      onClick={handleResetCancel}
+                      autoFocus
+                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors bg-transparent border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-[rgba(248,113,113,0.40)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleResetConfirm}
+                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors border border-red-300 bg-red-100 text-red-700 hover:bg-red-200 dark:border-[rgba(248,113,113,0.50)] dark:bg-[rgba(127,29,29,0.35)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Mobile Pause ⏸ — hidden on desktop */}
           {(state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={handleMobilePauseToggle}
@@ -1799,64 +1898,6 @@ export function FullscreenMazePlayer({
                 </svg>
                 <span>{showTrail ? 'Hide Traveled Path' : 'Show Traveled Path'}</span>
               </button>
-            </div>
-
-            {/* Divider */}
-            <div className="h-px my-3" style={{ backgroundColor: 'var(--color-border)' }} />
-
-            {/* Group 2: Game controls */}
-            <div className="space-y-2">
-              {(state.status === 'playing' || state.status === 'paused') && (
-                <button
-                  onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
-                  className="btn-ghost play-sidebar-ghost w-full rounded text-left px-3 py-2.5 gap-2.5"
-                  aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
-                >
-                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                    {state.status === 'playing' ? (
-                      <><rect x="3" y="2" width="3.5" height="12" rx="0.5" /><rect x="9.5" y="2" width="3.5" height="12" rx="0.5" /></>
-                    ) : (
-                      <polygon points="3,1 14,8 3,15" />
-                    )}
-                  </svg>
-                  <span>{state.status === 'playing' ? 'Pause' : 'Resume'}</span>
-                </button>
-              )}
-              {resetConfirming ? (
-                <div className="rounded px-3 py-2.5 space-y-2 border bg-red-50 border-red-200 dark:bg-[rgba(127,29,29,0.18)] dark:border-[rgba(248,113,113,0.30)]">
-                  <p className="font-semibold text-[15px] text-red-800 dark:text-red-300 leading-tight">
-                    Reset progress?
-                  </p>
-                  <p className="text-sm text-red-700/70 dark:text-red-400/70 leading-snug">
-                    This will clear your current run.
-                  </p>
-                  <div className="flex items-center gap-2 pt-0.5">
-                    <button
-                      onClick={handleResetCancel}
-                      autoFocus
-                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors bg-transparent border border-red-300 text-red-800 hover:bg-red-100 dark:border-[rgba(248,113,113,0.40)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleResetConfirm}
-                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors border border-red-300 bg-red-100 text-red-700 hover:bg-red-200 dark:border-[rgba(248,113,113,0.50)] dark:bg-[rgba(127,29,29,0.35)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={handleResetRequest}
-                  className="btn-ghost play-sidebar-ghost w-full rounded text-left px-3 py-2.5 gap-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
-                >
-                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
-                  </svg>
-                  <span>Reset Progress</span>
-                </button>
-              )}
             </div>
 
           </div>
