@@ -25,6 +25,14 @@ const gridSizes: Record<string, string> = {
   monster: '100×100',
 };
 
+const tierPositioning: Record<string, string> = {
+  small:   'Best for quick solves',
+  medium:  'Balanced challenge',
+  large:   'Longer sessions',
+  expert:  'Experienced solvers',
+  monster: 'Serious focus',
+};
+
 const tierDescriptions: Record<string, string> = {
   small:   'Quick 20×20 maze puzzles for fast solves.',
   medium:  'Balanced 40×40 mazes with more room to explore.',
@@ -114,122 +122,142 @@ const schemaLD = JSON.stringify({
   description="Play free online maze puzzles in five sizes — small, medium, large, expert, and monster. Track your progress and work through each collection at your own pace."
   schemaLD={schemaLD}
 >
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
     <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Maze Library' }]} />
 
     <!-- Hero -->
-    <div class="mt-6 mb-10">
-      <h1 class="mb-3">Free Online Mazes</h1>
-      <p class="text-lg max-w-2xl" style="color: var(--color-muted-strong);">
-        Explore free maze puzzles by size. Play online, track your progress, and work through each collection at your own pace.
+    <div class="mt-6 mb-12 md:mb-16 lg:mb-20">
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mb-5">Free Online Mazes</h1>
+      <p class="text-base sm:text-lg md:text-xl max-w-2xl leading-relaxed" style="color: var(--color-muted-strong);">
+        Choose a maze by size and start playing instantly. Track your progress through each collection, play today's maze, or generate a custom maze anytime.
       </p>
-      <div class="mt-5 flex flex-wrap items-center gap-3">
-        <a href="#maze-collections" class="btn-primary">Choose a Maze</a>
-        <a href="/play/maze-of-the-day/" class="btn-secondary">Play Today's Maze</a>
-        <a href="/maze-generator" class="btn-secondary">Make a Maze</a>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <a href="#maze-collections" class="btn-primary px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base">Choose a Maze</a>
+        <a href="/play/maze-of-the-day/" class="btn-secondary px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base">Play Today's Maze</a>
+        <a href="/maze-generator" class="btn-secondary px-5 md:px-7 py-3 md:py-3.5 text-sm md:text-base">Make a Maze</a>
       </div>
-      <p class="mt-3 text-sm" style="color: var(--color-muted-strong);">
+      <p class="mt-4 text-sm" style="color: var(--color-muted-strong);">
         Progress saves on your device — no account required.
       </p>
     </div>
 
-    <!-- Tier cards -->
-    <div id="maze-collections" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-12">
-      {CATEGORIES.map((cat) => {
-        const count = tierCounts[cat.difficulty] ?? 0;
-        const gridSize = gridSizes[cat.difficulty] ?? '';
-        const desc = tierDescriptions[cat.difficulty] ?? '';
-        const firstId = tierFirstIds[cat.difficulty] ?? '';
-        return (
-          <div
-            class="card flex flex-col p-5 gap-3"
-            data-tier={cat.difficulty}
-            data-tier-total={count}
-            data-tier-first-id={firstId}
-          >
-            <div>
-              <p class="text-xs mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);">{gridSize} grid</p>
-              <h2 class="text-lg font-bold" style="color: var(--color-charcoal);">{cat.label}</h2>
-              <p class="text-sm mt-1" style="color: var(--color-muted-strong);">{desc}</p>
-            </div>
+    <!-- Maze Collections -->
+    <div id="maze-collections" class="mb-14 lg:mb-16">
+      <h2 class="text-2xl md:text-3xl mb-6 lg:mb-8" style="color: var(--color-charcoal);">Maze Collections</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-5">
+        {CATEGORIES.map((cat) => {
+          const count = tierCounts[cat.difficulty] ?? 0;
+          const gridSize = gridSizes[cat.difficulty] ?? '';
+          const desc = tierDescriptions[cat.difficulty] ?? '';
+          const positioning = tierPositioning[cat.difficulty] ?? '';
+          const firstId = tierFirstIds[cat.difficulty] ?? '';
+          return (
+            <div
+              class="card flex flex-col p-5 lg:p-6 gap-3"
+              data-tier={cat.difficulty}
+              data-tier-total={count}
+              data-tier-first-id={firstId}
+            >
+              <div class="flex-1">
+                <p
+                  class="text-xs font-semibold uppercase tracking-wider mb-2"
+                  style="font-family: 'IBM Plex Mono', monospace; color: var(--color-accent);"
+                >{positioning}</p>
+                <p
+                  class="text-xs mb-1.5"
+                  style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+                >{gridSize} grid</p>
+                <h3
+                  class="text-xl md:text-2xl tracking-tight leading-none mb-2"
+                  style="font-family: 'Bebas Neue', sans-serif; color: var(--color-charcoal);"
+                >{cat.label}</h3>
+                <p class="text-sm leading-snug" style="color: var(--color-muted-strong);">{desc}</p>
+              </div>
 
-            <!-- Progress (updated client-side) -->
-            <div class="mt-auto space-y-1.5">
-              <div class="flex items-baseline justify-between gap-1">
-                <span
-                  class="tier-progress-text text-xs font-semibold"
-                  style="color: var(--color-muted-strong);"
-                  data-total={count}
+              <!-- Progress (updated client-side) -->
+              <div class="space-y-1.5">
+                <div class="flex items-baseline justify-between gap-1">
+                  <span
+                    class="tier-progress-text text-xs font-semibold"
+                    style="color: var(--color-muted-strong);"
+                    data-total={count}
+                  >
+                    0 / {count}
+                  </span>
+                  <span class="text-xs" style="color: var(--color-muted-strong);">complete</span>
+                </div>
+                <div class="tier-progress-container h-1.5 rounded-full overflow-hidden">
+                  <div
+                    class="tier-progress-bar h-full rounded-full transition-all duration-500"
+                    style="width:0%"
+                  />
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <a
+                  href={`/${cat.slug}`}
+                  class="flex-1 text-center rounded-lg border py-2 text-xs font-medium transition-colors"
+                  style="border-color: var(--color-border); color: var(--color-muted-strong);"
+                  onmouseover="this.style.backgroundColor='var(--color-border)'; this.style.color='var(--color-charcoal)';"
+                  onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-muted-strong)';"
                 >
-                  0 / {count}
-                </span>
-                <span class="text-xs" style="color: var(--color-muted-strong);">complete</span>
-              </div>
-              <div class="tier-progress-container h-1 rounded-full overflow-hidden">
-                <div
-                  class="tier-progress-bar h-full rounded-full transition-all duration-500"
-                  style="width:0%"
-                />
+                  Browse
+                </a>
+                <a
+                  href={firstId ? `/play/library/${firstId}` : `/${cat.slug}`}
+                  class="tier-play-next flex-1 text-center rounded-lg py-2 text-xs font-semibold transition-colors"
+                  style="border: 1px solid var(--color-accent); color: var(--color-accent);"
+                  data-all-ids={JSON.stringify(tierAllIds[cat.difficulty] ?? [])}
+                  onmouseover="this.style.backgroundColor='var(--color-accent)'; this.style.color='#ffffff';"
+                  onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-accent)';"
+                >
+                  Play Next
+                </a>
               </div>
             </div>
-
-            <div class="flex items-center gap-2 pt-1">
-              <a
-                href={`/${cat.slug}`}
-                class="flex-1 text-center rounded-lg border py-1.5 text-xs font-medium transition-colors"
-                style="border-color: var(--color-border); color: var(--color-muted-strong);"
-                onmouseover="this.style.backgroundColor='var(--color-border)'; this.style.color='var(--color-charcoal)';"
-                onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-muted-strong)';"
-              >
-                Browse
-              </a>
-              <a
-                href={firstId ? `/play/library/${firstId}` : `/${cat.slug}`}
-                class="tier-play-next flex-1 text-center btn-primary rounded-lg py-1.5 text-xs"
-                data-all-ids={JSON.stringify(tierAllIds[cat.difficulty] ?? [])}
-              >
-                Play Next
-              </a>
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
 
-    <!-- Supplementary links -->
-    <div class="mb-10 flex flex-wrap gap-3">
-      <a
-        href="/maze-of-the-day"
-        class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
-        style="border-color: var(--color-border); color: var(--color-muted-strong);"
-        onmouseover="this.style.backgroundColor='var(--color-border)'; this.style.color='var(--color-charcoal)';"
-        onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-muted-strong)';"
-      >Daily Challenge</a>
-      <a
-        href="/maze-generator"
-        class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
-        style="border-color: var(--color-border); color: var(--color-muted-strong);"
-        onmouseover="this.style.backgroundColor='var(--color-border)'; this.style.color='var(--color-charcoal)';"
-        onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-muted-strong)';"
-      >Maze Generator</a>
-      <a
-        href="/printable-mazes"
-        class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
-        style="border-color: var(--color-border); color: var(--color-muted-strong);"
-        onmouseover="this.style.backgroundColor='var(--color-border)'; this.style.color='var(--color-charcoal)';"
-        onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-muted-strong)';"
-      >Printable Mazes</a>
+    <!-- More Ways to Play -->
+    <div class="mb-14 lg:mb-16">
+      <h2 class="text-2xl md:text-3xl mb-6" style="color: var(--color-charcoal);">More Ways to Play</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
+        <a href="/maze-of-the-day" class="card-hover flex flex-col p-5 lg:p-6 gap-3 no-underline">
+          <div>
+            <p class="font-semibold text-base mb-1.5" style="color: var(--color-charcoal);">Daily Challenge</p>
+            <p class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Play one new maze each day.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Play today →</span>
+        </a>
+        <a href="/maze-generator" class="card-hover flex flex-col p-5 lg:p-6 gap-3 no-underline">
+          <div>
+            <p class="font-semibold text-base mb-1.5" style="color: var(--color-charcoal);">Maze Generator</p>
+            <p class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Create a custom maze by size.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Try it →</span>
+        </a>
+        <a href="/printable-mazes" class="card-hover flex flex-col p-5 lg:p-6 gap-3 no-underline">
+          <div>
+            <p class="font-semibold text-base mb-1.5" style="color: var(--color-charcoal);">Printable Mazes</p>
+            <p class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Print maze puzzles for paper solves and classroom use.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Browse →</span>
+        </a>
+      </div>
     </div>
 
     <!-- FAQ -->
     <div class="max-w-2xl mb-12">
-      <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">About the Maze Library</h2>
+      <h2 class="text-2xl md:text-3xl mb-6" style="color: var(--color-charcoal);">About the Maze Library</h2>
       <div class="space-y-2">
         {faqItems.map(({ q, a }) => (
           <details class="group border rounded-lg" style="border-color: var(--color-border);">
             <summary
-              class="flex cursor-pointer items-center justify-between px-4 py-3 font-semibold select-none list-none [&::-webkit-details-marker]:hidden"
+              class="flex cursor-pointer items-center justify-between px-4 py-3.5 font-semibold select-none list-none [&::-webkit-details-marker]:hidden"
               style="color: var(--color-charcoal);"
             >
               {q}
