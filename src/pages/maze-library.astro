@@ -197,35 +197,29 @@ const schemaLD = JSON.stringify({
       })}
     </div>
 
-    <!-- Not sure where to start? -->
-    <div class="mb-10 max-w-2xl">
-      <div class="card rounded-lg p-5">
-        <p class="font-semibold mb-3" style="color: var(--color-charcoal);">Not sure where to start?</p>
-        <ul class="space-y-2 text-sm" style="color: var(--color-muted-strong);">
-          <li>New here? Start with <a href="/small-mazes" style="color: var(--color-accent);">Small</a> or <a href="/medium-mazes" style="color: var(--color-accent);">Medium</a>.</li>
-          <li>Want a longer session? Try <a href="/large-mazes" style="color: var(--color-accent);">Large</a>.</li>
-          <li>Want the hardest puzzles? Try <a href="/expert-mazes" style="color: var(--color-accent);">Expert</a> or <a href="/monster-mazes" style="color: var(--color-accent);">Monster</a>.</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- More ways to play -->
-    <div class="mb-10 max-w-2xl">
-      <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">More Ways to Play</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <a href="/maze-of-the-day" class="card-hover flex flex-col p-4 gap-2 no-underline">
-          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Daily Challenge</p>
-          <p class="text-sm" style="color: var(--color-muted-strong);">Play one new maze each day.</p>
-        </a>
-        <a href="/maze-generator" class="card-hover flex flex-col p-4 gap-2 no-underline">
-          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Maze Generator</p>
-          <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze by size.</p>
-        </a>
-        <a href="/printable-mazes" class="card-hover flex flex-col p-4 gap-2 no-underline">
-          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Printable Mazes</p>
-          <p class="text-sm" style="color: var(--color-muted-strong);">Print maze puzzles for paper solves and classroom use.</p>
-        </a>
-      </div>
+    <!-- Supplementary links -->
+    <div class="mb-10 flex flex-wrap gap-3">
+      <a
+        href="/maze-of-the-day"
+        class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
+        style="border-color: var(--color-border); color: var(--color-muted-strong);"
+        onmouseover="this.style.backgroundColor='var(--color-border)'; this.style.color='var(--color-charcoal)';"
+        onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-muted-strong)';"
+      >Daily Challenge</a>
+      <a
+        href="/maze-generator"
+        class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
+        style="border-color: var(--color-border); color: var(--color-muted-strong);"
+        onmouseover="this.style.backgroundColor='var(--color-border)'; this.style.color='var(--color-charcoal)';"
+        onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-muted-strong)';"
+      >Maze Generator</a>
+      <a
+        href="/printable-mazes"
+        class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
+        style="border-color: var(--color-border); color: var(--color-muted-strong);"
+        onmouseover="this.style.backgroundColor='var(--color-border)'; this.style.color='var(--color-charcoal)';"
+        onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-muted-strong)';"
+      >Printable Mazes</a>
     </div>
 
     <!-- FAQ -->
