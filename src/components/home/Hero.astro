@@ -96,14 +96,15 @@ const { todaysMazeLabel } = Astro.props;
   <!-- ─── DESKTOP: split editorial layout ───────────────────────────────── -->
   <div class="hidden md:block relative">
     <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-4 pb-8 lg:pt-6 lg:pb-10">
+      <p
+        class="mb-5 lg:mb-7 text-center font-display uppercase"
+        style="font-size: clamp(2.2rem, 4.4vw, 4.25rem); line-height: 0.94; color: var(--color-charcoal);"
+      >THE BEST MAZE EXPERIENCE ON THE INTERNET</p>
+
       <div class="grid grid-cols-[1fr_540px] lg:grid-cols-[1fr_580px] gap-10 lg:gap-14 items-start">
 
         <!-- Left: headline + daily state + CTA + secondary links -->
         <div class="flex flex-col items-start">
-          <p
-            class="mb-3 text-[0.67rem] sm:text-xs uppercase tracking-[0.22em] font-semibold"
-            style="color: var(--color-muted-strong);"
-          >THE BEST MAZE EXPERIENCE ON THE INTERNET</p>
           <h1
             class="font-display uppercase mb-4"
             style="font-size: clamp(3.5rem, 9vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
@@ -145,10 +146,10 @@ const { todaysMazeLabel } = Astro.props;
         <div class="pt-1">
           {todaysMazeLabel && (
             <p
-              class="mb-2 text-[0.68rem] uppercase tracking-[0.18em]"
-              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+              class="mb-3 text-sm lg:text-base uppercase font-semibold tracking-[0.06em]"
+              style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
             >
-              Today's Maze · {todaysMazeLabel}
+              TODAY'S MAZE · {todaysMazeLabel.toUpperCase()}
             </p>
           )}
           <div class="relative">
