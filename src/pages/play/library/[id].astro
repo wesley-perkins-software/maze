@@ -30,12 +30,12 @@ const collectionSlug = `${entry.difficulty}-mazes`;
   noindex={true}
 >
   <div class="mx-auto max-w-4xl px-4 pt-6 pb-14">
-    <div class="mb-6 flex items-center gap-2 text-sm text-slate-500">
-      <a href="/maze-library" class="hover:text-slate-800 transition-colors">Maze Library</a>
+    <div class="mb-6 flex items-center gap-2 text-sm" style="color: var(--color-muted-strong);">
+      <a href="/maze-library" class="transition-colors" onmouseover="this.style.color='var(--color-charcoal)';" onmouseout="this.style.color='var(--color-muted-strong)';">Maze Library</a>
       <span aria-hidden="true">›</span>
-      <a href={`/${collectionSlug}`} class="hover:text-slate-800 transition-colors">{tierLabel} Mazes</a>
+      <a href={`/${collectionSlug}`} class="transition-colors" onmouseover="this.style.color='var(--color-charcoal)';" onmouseout="this.style.color='var(--color-muted-strong)';">{tierLabel} Mazes</a>
       <span aria-hidden="true">›</span>
-      <span class="text-slate-700 font-medium">{label}</span>
+      <span class="font-medium" style="color: var(--color-charcoal);">{label}</span>
     </div>
 
     <LibraryMazePlayer client:only="react" entry={entry} />

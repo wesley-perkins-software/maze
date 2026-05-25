@@ -553,7 +553,7 @@ export function MazeGenerator() {
   const cellSize = Math.max(8, Math.min(28, Math.floor(400 / Math.max(width, height))));
 
   const btnBase    = 'rounded-sm border py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent';
-  const activeBtn  = 'border-arch-charcoal bg-arch-charcoal text-white';
+  const activeBtn  = 'border-arch-charcoal bg-arch-charcoal text-white dark:bg-arch-dark-surface-raised dark:border-arch-400 dark:text-arch-charcoal';
   const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
 
   const presetLabel = showCustom ? 'Custom' : sizePreset.charAt(0).toUpperCase() + sizePreset.slice(1);
@@ -725,7 +725,7 @@ export function MazeGenerator() {
                 aria-pressed={!showCustom && sizePreset === value}
               >
                 <span>{label}</span>
-                <span className={`text-xs font-mono font-medium ${!showCustom && sizePreset === value ? 'text-white/85' : 'text-arch-600'}`}>{detail}</span>
+                <span className={`text-xs font-mono font-medium ${!showCustom && sizePreset === value ? 'text-white/85 dark:text-arch-charcoal/70' : 'text-arch-600'}`}>{detail}</span>
               </button>
             ))}
             {/* Custom — sixth slot */}
@@ -737,7 +737,7 @@ export function MazeGenerator() {
               aria-pressed={showCustom}
             >
               <span>Custom</span>
-              <span className={`text-xs font-mono font-medium ${showCustom ? 'text-white/85' : 'text-arch-600'}`}>Up to 100</span>
+              <span className={`text-xs font-mono font-medium ${showCustom ? 'text-white/85 dark:text-arch-charcoal/70' : 'text-arch-600'}`}>Up to 100</span>
             </button>
           </div>
 

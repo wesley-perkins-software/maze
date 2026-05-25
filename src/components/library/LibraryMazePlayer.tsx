@@ -178,12 +178,12 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
           <div className="flex flex-col">
             <div className="max-w-[340px] w-full flex flex-col">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900 leading-tight">
+                <h1 className="text-2xl font-bold leading-tight text-[var(--color-charcoal)]">
                   {tierLabel} Maze #{num}
                 </h1>
-                <p className="mt-1 text-base text-slate-600">
+                <p className="mt-1 text-base text-[var(--color-muted-strong)]">
                   Part of the{' '}
-                  <a href={collectionHref} className="hover:text-slate-900 transition-colors">
+                  <a href={collectionHref} className="hover:text-[var(--color-charcoal)] transition-colors">
                     {collectionLabel}
                   </a>{' '}
                   collection.
@@ -202,7 +202,7 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
                   ) : hasInProgress ? (
                     <span className="text-amber-600 font-medium">In progress</span>
                   ) : (
-                    <span className="text-slate-500">Not started</span>
+                    <span className="text-[var(--color-muted)]">Not started</span>
                   )}
                 </div>
               )}
@@ -219,16 +219,16 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
                   {ctaLabel}
                 </button>
 
-                <div className="flex items-center justify-between gap-2 mt-4 pt-4 border-t border-slate-200">
+                <div className="flex items-center justify-between gap-2 mt-4 pt-4 border-t border-[var(--color-border)]">
                   {adjacentMazes.prev ? (
-                    <a href={`/play/library/${adjacentMazes.prev.id}`} className="inline-flex items-center rounded border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 hover:border-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                    <a href={`/play/library/${adjacentMazes.prev.id}`} className="inline-flex items-center rounded border border-[var(--color-border-strong)] px-3 py-1.5 text-sm font-medium text-[var(--color-charcoal)] hover:border-[var(--color-charcoal)] hover:bg-[var(--color-border)] transition-colors">
                       ← {mazeShortLabel(adjacentMazes.prev)}
                     </a>
                   ) : (
                     <span aria-hidden="true" />
                   )}
                   {adjacentMazes.next ? (
-                    <a href={`/play/library/${adjacentMazes.next.id}`} className="inline-flex items-center rounded border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 hover:border-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                    <a href={`/play/library/${adjacentMazes.next.id}`} className="inline-flex items-center rounded border border-[var(--color-border-strong)] px-3 py-1.5 text-sm font-medium text-[var(--color-charcoal)] hover:border-[var(--color-charcoal)] hover:bg-[var(--color-border)] transition-colors">
                       {mazeShortLabel(adjacentMazes.next)} →
                     </a>
                   ) : (
@@ -237,16 +237,16 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
                 </div>
 
                 <nav className="flex items-center justify-center gap-3 mt-2 text-sm" aria-label="Collection navigation">
-                  <a href={collectionHref} className="font-medium text-slate-800 underline-offset-4 hover:text-slate-900 hover:underline transition-colors">← Back to {collectionLabel}</a>
-                  <span aria-hidden="true" className="text-slate-400">·</span>
-                  <a href="/maze-library" className="font-medium text-slate-800 underline-offset-4 hover:text-slate-900 hover:underline transition-colors">Maze Library</a>
+                  <a href={collectionHref} className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">← Back to {collectionLabel}</a>
+                  <span aria-hidden="true" className="text-[var(--color-muted)]">·</span>
+                  <a href="/maze-library" className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">Maze Library</a>
                 </nav>
               </div>
             </div>
           </div>
 
           {/* Preview card — right column (desktop) / middle (mobile) */}
-          <div className={`shrink-0 mx-auto md:mx-0 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden ${
+          <div className={`shrink-0 mx-auto md:mx-0 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-adaptive overflow-hidden ${
             previewMaxWidth === 480
               ? 'w-full max-w-[480px] md:w-[480px]'
               : 'w-full max-w-[440px] md:w-[440px]'
@@ -270,14 +270,14 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
 
             <div className="flex items-center justify-between w-full gap-2">
               {adjacentMazes.prev ? (
-                <a href={`/play/library/${adjacentMazes.prev.id}`} className="inline-flex items-center rounded border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 hover:border-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                <a href={`/play/library/${adjacentMazes.prev.id}`} className="inline-flex items-center rounded border border-[var(--color-border-strong)] px-3 py-1.5 text-sm font-medium text-[var(--color-charcoal)] hover:border-[var(--color-charcoal)] hover:bg-[var(--color-border)] transition-colors">
                   ← {mazeShortLabel(adjacentMazes.prev)}
                 </a>
               ) : (
                 <span aria-hidden="true" />
               )}
               {adjacentMazes.next ? (
-                <a href={`/play/library/${adjacentMazes.next.id}`} className="inline-flex items-center rounded border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 hover:border-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                <a href={`/play/library/${adjacentMazes.next.id}`} className="inline-flex items-center rounded border border-[var(--color-border-strong)] px-3 py-1.5 text-sm font-medium text-[var(--color-charcoal)] hover:border-[var(--color-charcoal)] hover:bg-[var(--color-border)] transition-colors">
                   {mazeShortLabel(adjacentMazes.next)} →
                 </a>
               ) : (
@@ -286,9 +286,9 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
             </div>
 
             <nav className="flex items-center gap-3 text-sm" aria-label="Collection navigation">
-              <a href={collectionHref} className="font-medium text-slate-800 underline-offset-4 hover:text-slate-900 hover:underline transition-colors">← Back to {collectionLabel}</a>
-              <span aria-hidden="true" className="text-slate-400">·</span>
-              <a href="/maze-library" className="font-medium text-slate-800 underline-offset-4 hover:text-slate-900 hover:underline transition-colors">Maze Library</a>
+              <a href={collectionHref} className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">← Back to {collectionLabel}</a>
+              <span aria-hidden="true" className="text-[var(--color-muted)]">·</span>
+              <a href="/maze-library" className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">Maze Library</a>
             </nav>
           </div>
         </div>

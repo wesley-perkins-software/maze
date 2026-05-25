@@ -6,21 +6,25 @@ export default {
     extend: {
       colors: {
         // ── Architect palette ──────────────────────────────────────
+        // Core tokens point to CSS variables so they adapt with dark mode.
+        // 400 stays static (opacity modifier /60 used in skeleton; CSS vars break that).
         arch: {
-          bg:            '#F6F5F0',
-          surface:       '#FFFFFF',
-          charcoal:      '#1C1C1E',
-          'charcoal-2':  '#2A2A2C',
-          accent:        '#E03B24',
-          'accent-dark': '#C42E18',
-          100:           '#EEECEA',
-          200:           '#D6D4CF',
+          bg:            'var(--color-bg)',
+          surface:       'var(--color-surface)',
+          'surface-raised': 'var(--color-surface-raised)',
+          charcoal:      'var(--color-charcoal)',
+          'charcoal-2':  'var(--color-charcoal-2)',
+          accent:        'var(--color-accent)',
+          'accent-dark': 'var(--color-accent-dark)',
+          100:           'var(--color-border)',
+          200:           'var(--color-border)',
           400:           '#9A9892',
-          600:           '#5C5A55',
-          // Dark mode surfaces
-          'dark-bg':     '#111110',
-          'dark-surface':'#1C1C1E',
-          'dark-border': '#2E2E30',
+          600:           'var(--color-muted-strong)',
+          // Static dark-context values for explicit dark-surface usage
+          'dark-bg':            '#111110',
+          'dark-surface':       '#1A1918',
+          'dark-surface-raised':'#222120',
+          'dark-border':        '#2A2927',
         },
         // ── Keep brand/accent tokens — gameplay components use them ─
         brand: {
@@ -55,6 +59,10 @@ export default {
         'card-lg': '0 10px 30px -4px rgb(0 0 0 / .12), 0 4px 10px -4px rgb(0 0 0 / .07)',
         'glow':    '0 0 0 3px rgb(37 99 235 / .25)',
         'glow-sm': '0 0 0 2px rgb(37 99 235 / .20)',
+        // Adaptive shadows — reference CSS vars that switch between light/dark values
+        'adaptive':    'var(--shadow-card)',
+        'adaptive-md': 'var(--shadow-card-md)',
+        'adaptive-lg': 'var(--shadow-card-lg)',
       },
       backgroundImage: {
         // Keep for any gameplay/other pages that reference these

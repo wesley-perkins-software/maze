@@ -26,8 +26,8 @@ const emojiMap: Record<string, string> = {
           class:list={[
             'badge border',
             activeDifficulty === cat.difficulty
-              ? 'bg-slate-900 border-slate-900 text-white'
-              : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50 hover:border-slate-400 transition-colors',
+              ? 'bg-arch-accent border-arch-accent text-white'
+              : 'bg-arch-surface border-arch-100 text-arch-charcoal hover:border-arch-charcoal transition-colors',
           ]}
           aria-current={activeDifficulty === cat.difficulty ? 'page' : undefined}
         >
@@ -41,15 +41,15 @@ const emojiMap: Record<string, string> = {
         <a
           href={`/${cat.slug}`}
           class:list={[
-            'flex flex-col items-center gap-1 rounded-xl border p-4 text-center transition-all hover:shadow-md',
+            'flex flex-col items-center gap-1 rounded-xl border p-4 text-center transition-all',
             activeDifficulty === cat.difficulty
-              ? 'border-blue-400 bg-blue-50'
-              : 'border-slate-200 bg-white hover:border-blue-300',
+              ? 'border-arch-accent bg-arch-surface'
+              : 'border-arch-100 bg-arch-surface hover:border-arch-charcoal transition-colors',
           ]}
           aria-current={activeDifficulty === cat.difficulty ? 'page' : undefined}
         >
           <span class="text-2xl" aria-hidden="true">{emojiMap[cat.difficulty]}</span>
-          <span class="text-sm font-semibold text-slate-700">{cat.label}</span>
+          <span class="text-sm font-semibold text-arch-charcoal">{cat.label}</span>
         </a>
       ))}
     </div>

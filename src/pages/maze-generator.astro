@@ -140,28 +140,28 @@ const schema = JSON.stringify({
     </MazeGenerator>
 
     <!-- ── How to Use ─────────────────────────────────────────────────────── -->
-    <section class="mt-16 border-t border-slate-200 pt-10">
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-6">How to Create Your Maze</h2>
       <ol class="grid grid-cols-1 sm:grid-cols-3 gap-6 list-none">
         <li class="flex gap-4">
-          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-charcoal text-white text-sm font-bold flex items-center justify-center">1</span>
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">1</span>
           <div>
-            <p class="font-semibold text-slate-700">Pick a size</p>
-            <p class="text-sm text-slate-500 mt-1">Small for quick fun, Large for a serious challenge. Complexity scales automatically.</p>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Pick a size</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Small for quick fun, Large for a serious challenge. Complexity scales automatically.</p>
           </div>
         </li>
         <li class="flex gap-4">
-          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-charcoal text-white text-sm font-bold flex items-center justify-center">2</span>
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">2</span>
           <div>
-            <p class="font-semibold text-slate-700">Generate</p>
-            <p class="text-sm text-slate-500 mt-1">Each maze is unique and seeded — hit Generate New Maze as many times as you like.</p>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Generate</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Each maze is unique and seeded — hit Generate New Maze as many times as you like.</p>
           </div>
         </li>
         <li class="flex gap-4">
-          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-charcoal text-white text-sm font-bold flex items-center justify-center">3</span>
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">3</span>
           <div>
-            <p class="font-semibold text-slate-700">Play, print, or download</p>
-            <p class="text-sm text-slate-500 mt-1">Solve it in your browser with arrow keys, or export for printing.</p>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Play, print, or download</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Solve it in your browser with arrow keys, or export for printing.</p>
           </div>
         </li>
       </ol>
@@ -204,7 +204,7 @@ const schema = JSON.stringify({
         </div>
         <div class="rounded-sm border border-arch-200 bg-arch-surface p-4">
           <div class="flex items-center gap-2 mb-2">
-            <span class="inline-block rounded-sm bg-arch-charcoal px-2 py-0.5 text-xs font-semibold text-white">Monster</span>
+            <span class="inline-block rounded-sm px-2 py-0.5 text-xs font-semibold text-white" style="background-color: #1C1C1E;">Monster</span>
           </div>
           <p class="text-xs font-mono text-arch-400 mb-2">100×100 · 90+ min</p>
           <p class="text-sm text-arch-600">The hardest maze we generate. Print it. Block off an afternoon. Not for the faint-hearted.</p>
@@ -215,21 +215,21 @@ const schema = JSON.stringify({
     <!-- ── Use Cases ──────────────────────────────────────────────────────── -->
     <section class="mt-12">
       <h2 class="text-xl font-bold text-arch-charcoal mb-6">Ways to Use Your Maze</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-slate-600">
-        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <p class="font-semibold text-slate-700 mb-1">🏫 Classroom worksheets</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm" style="color: var(--color-muted-strong);">
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">🏫 Classroom worksheets</p>
           <p>Print a fresh maze for every student. Small mazes work well for younger kids; Medium for primary school.</p>
         </div>
-        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <p class="font-semibold text-slate-700 mb-1">🧒 Kids activity</p>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">🧒 Kids activity</p>
           <p>Keep kids entertained on car trips, rainy days, or waiting rooms. Generate a Small maze for ages 4–8.</p>
         </div>
-        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <p class="font-semibold text-slate-700 mb-1">🎮 Play online</p>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">🎮 Play online</p>
           <p>Solve with arrow keys on desktop or swipe on mobile. The timer and hint system keep it engaging for all ages.</p>
         </div>
-        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <p class="font-semibold text-slate-700 mb-1">🧩 Puzzle challenge</p>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">🧩 Puzzle challenge</p>
           <p>Try a Large maze for a serious mental workout. Download as SVG to share or print at any resolution.</p>
         </div>
       </div>
@@ -240,9 +240,9 @@ const schema = JSON.stringify({
       <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently Asked Questions</h2>
       <dl class="space-y-5">
         {faqItems.map(({ q, a }) => (
-          <div class="border-b border-slate-100 pb-5 last:border-0">
-            <dt class="font-semibold text-slate-800 mb-1">{q}</dt>
-            <dd class="text-sm text-slate-600">{a}</dd>
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
           </div>
         ))}
       </dl>

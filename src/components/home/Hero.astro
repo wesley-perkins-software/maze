@@ -20,7 +20,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     <!-- Full-width maze with headline overlaid -->
     <div class="hero-maze-poster">
       <!-- Maze at confident opacity — it IS the product -->
-      <div style="opacity: 0.60;">
+      <div class="hero-maze-wrap" style="opacity: 0.60;">
         <HeroMazePreview client:only="react" className="hero-maze-preview-mobile" />
       </div>
 
@@ -146,7 +146,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
               aria-label="Play today's maze"
               tabindex="-1"
             >
-              <div class="maze-fill-square w-full h-full transition-transform duration-500 group-hover:scale-[1.02]">
+              <div class="hero-maze-wrap maze-fill-square w-full h-full transition-transform duration-500 group-hover:scale-[1.02]">
                 <HeroMazePreview client:only="react" className="hero-maze-preview-desktop" />
               </div>
             </a>
@@ -487,6 +487,20 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   :global(.hero-daily-confirm-restart:focus-visible) {
     outline:        2px solid var(--color-charcoal);
     outline-offset: 2px;
+  }
+
+  /* ── Dark mode: invert maze to blueprint, swap scrim to dark center ─────── */
+  :global(.dark) .hero-maze-wrap {
+    filter: invert(1) brightness(0.75);
+  }
+  :global(.dark) .hero-scrim {
+    background: radial-gradient(
+      ellipse 78% 56% at 50% 45%,
+      rgba(0, 0, 0, 0.65)  0%,
+      rgba(0, 0, 0, 0.38) 42%,
+      rgba(0, 0, 0, 0.12) 65%,
+      transparent          85%
+    );
   }
 
 </style>

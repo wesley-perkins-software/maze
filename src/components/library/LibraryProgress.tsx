@@ -31,12 +31,12 @@ export function LibraryProgress({ difficulty, total }: LibraryProgressProps) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-sm font-semibold text-slate-700">
+      <span className="text-sm font-semibold" style={{ color: 'var(--color-charcoal)' }}>
         {completed} / {total} complete
       </span>
-      <div className="h-2 rounded-full bg-slate-200 overflow-hidden">
+      <div className="tier-progress-container h-2 rounded-full overflow-hidden">
         <div
-          className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+          className="tier-progress-bar h-full rounded-full transition-all duration-500"
           style={{ width: `${pct}%` }}
         />
       </div>

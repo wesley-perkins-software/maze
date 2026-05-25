@@ -17,20 +17,42 @@
     --color-muted:        #9A9892;
     --color-muted-strong: #5C5A55;
 
+    /* Extended surface scale */
+    --color-surface-raised:  #F8F7F2;
+    --color-surface-inset:   #EDECEA;
+    --color-surface-overlay: #FFFFFF;
+
+    /* Progress indicator colors */
+    --color-progress:        #10b981;
+    --color-progress-bg:     #f0fdf4;
+
+    /* Adaptive shadows — .dark overrides these for dark-mode depth */
+    --shadow-card:    0 1px 3px 0 rgb(0 0 0 / .08), 0 1px 2px -1px rgb(0 0 0 / .06);
+    --shadow-card-md: 0 4px 12px -2px rgb(0 0 0 / .10), 0 2px 6px -2px rgb(0 0 0 / .06);
+    --shadow-card-lg: 0 10px 30px -4px rgb(0 0 0 / .12), 0 4px 10px -4px rgb(0 0 0 / .07);
+
     /* Legacy brand vars — gameplay components reference these */
     --color-brand:      #2563eb;
     --color-brand-dark: #1d4ed8;
   }
 
   .dark {
-    --color-bg:           #111110;
-    --color-surface:      #1C1C1E;
-    --color-charcoal:     #F0EFE9;
-    --color-charcoal-2:   #D8D6D0;
-    --color-border:       #2E2E30;
-    --color-border-strong:#4A4A4C;
-    --color-muted:        #6A6A6C;
-    --color-muted-strong: #9A9A9C;
+    --color-bg:              #111110;
+    --color-surface:         #1A1918;
+    --color-surface-raised:  #222120;
+    --color-surface-inset:   #141312;
+    --color-surface-overlay: #2C2A28;
+    --color-charcoal:        #F0EFE9;
+    --color-charcoal-2:      #D8D6D0;
+    --color-border:          #2A2927;
+    --color-border-strong:   #3E3D3A;
+    --color-muted:           #7A7A78;
+    --color-muted-strong:    #A8A8A4;
+    --color-progress:        #34d399;
+    --color-progress-bg:     rgba(52, 211, 153, 0.12);
+    --shadow-card:    0 1px 0 0 rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.45);
+    --shadow-card-md: 0 1px 0 0 rgba(255,255,255,0.06), 0 4px 14px rgba(0,0,0,0.55);
+    --shadow-card-lg: 0 1px 0 0 rgba(255,255,255,0.05), 0 10px 28px rgba(0,0,0,0.65);
   }
 
   html {
@@ -63,7 +85,7 @@
   background-size: 22px 22px;
 }
 .dark .architect-dot-grid {
-  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255,255,255,0.09) 1px, transparent 1px);
 }
 
 /* ── Legacy maze-path background — kept for gameplay pages ────────────────── */
@@ -210,6 +232,7 @@
   .card {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
     @apply overflow-hidden;
   }
   .card-hover {
@@ -217,10 +240,11 @@
   }
   .card-hover:hover {
     border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-card-md);
     transform: translateY(-1px);
   }
   .dark .card {
-    background-color: var(--color-surface);
+    background-color: var(--color-surface-raised);
     border-color: var(--color-border);
   }
 
@@ -274,6 +298,37 @@
   .dark .arch-section-dark {
     background-color: var(--color-bg);
     border-top: 1px solid var(--color-border);
+  }
+  .dark .arch-section-surface {
+    background-color: var(--color-surface-raised);
+  }
+
+  /* Footer — elevated surface in dark mode for clear visual separation */
+  .arch-footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+  }
+  .dark .arch-footer {
+    background-color: var(--color-surface-raised);
+    border-top-color: var(--color-border-strong);
+  }
+
+  /* CTA callout block — blue-tinted in light, themed surface in dark */
+  .cta-callout {
+    background-color: #eff6ff;
+    border: 1px solid #dbeafe;
+  }
+  .dark .cta-callout {
+    background-color: var(--color-surface-raised);
+    border-color: var(--color-border);
+  }
+
+  /* Library progress indicators — CSS-managed so JS width updates don't clobber color */
+  .tier-progress-container {
+    background-color: var(--color-progress-bg);
+  }
+  .tier-progress-bar {
+    background-color: var(--color-progress);
   }
 }
 
