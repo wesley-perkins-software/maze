@@ -240,6 +240,15 @@
     border-color: var(--color-border-strong);
   }
 
+  /* Sidebar ghost buttons (Pause, Reset Progress) — white text in dark mode */
+  .dark .play-sidebar-ghost {
+    color: var(--color-charcoal);
+  }
+  .dark .play-sidebar-ghost:hover {
+    color: var(--color-charcoal);
+    background-color: var(--color-border);
+  }
+
   /* Cards ─────────────────────────────────────────────────────────────────── */
   .card {
     background-color: var(--color-surface);
