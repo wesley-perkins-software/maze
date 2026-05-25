@@ -36,7 +36,7 @@ const tierDescriptions: Record<string, string> = {
 const faqItems = [
   {
     q: 'Are these mazes free?',
-    a: 'Yes. Every maze in the Maze Library is free to play — no account, no sign-up, and no payment required. All 160 mazes are available in your browser at any time.',
+    a: `Yes. Every maze in the Maze Library is free to play — no account, no sign-up, and no payment required. All ${totalCount} mazes are available in your browser at any time.`,
   },
   {
     q: 'Can I play the mazes online?',
@@ -60,11 +60,11 @@ const faqItems = [
   },
   {
     q: 'How many mazes are in the Maze Library?',
-    a: 'There are 160 mazes in total: 40 Small, 40 Medium, 40 Large, 25 Expert, and 15 Monster. Every maze has a fixed layout — the same puzzle is always at the same URL.',
+    a: `There are ${totalCount} mazes in total: ${tierCounts.small} Small, ${tierCounts.medium} Medium, ${tierCounts.large} Large, ${tierCounts.expert} Expert, and ${tierCounts.monster} Monster. Every maze has a fixed layout — the same puzzle is always at the same URL.`,
   },
   {
     q: 'What is the difference between the Maze Library and the Maze Generator?',
-    a: 'The Maze Library is a curated collection of 160 fixed mazes — each one is permanent, numbered, and completable as part of a set. The Maze Generator creates a new unique maze on demand, in any size, with no fixed layout. Use the Library to work through a collection; use the Generator for infinite variety.',
+    a: `The Maze Library is a curated collection of ${totalCount} fixed mazes — each one is permanent, numbered, and completable as part of a set. The Maze Generator creates a new unique maze on demand, in any size, with no fixed layout. Use the Library to work through a collection; use the Generator for infinite variety.`,
   },
 ];
 
@@ -77,14 +77,14 @@ const schemaLD = JSON.stringify({
       url: 'https://mazethis.com/maze-library',
       name: 'Free Online Mazes - Play Maze Puzzles by Size | MazeThis',
       description:
-        'Play free online mazes in five sizes, track your progress, and choose from 160 maze puzzles. Start with small mazes or take on larger MazeThis challenges.',
+        'Play free online maze puzzles in five sizes — small, medium, large, expert, and monster. Track your progress and work through each collection at your own pace.',
       isPartOf: { '@id': 'https://mazethis.com/#website' },
       breadcrumb: { '@id': 'https://mazethis.com/maze-library#breadcrumb' },
       about: {
         '@type': 'Dataset',
         name: 'MazeThis Maze Library',
         description:
-          'A curated collection of 160 free online maze puzzles across five sizes: 40 Small (20×20), 40 Medium (40×40), 40 Large (60×60), 25 Expert (80×80), and 15 Monster (100×100).',
+          `A curated collection of ${totalCount} free online maze puzzles across five sizes: ${tierCounts.small} Small (20×20), ${tierCounts.medium} Medium (40×40), ${tierCounts.large} Large (60×60), ${tierCounts.expert} Expert (80×80), and ${tierCounts.monster} Monster (100×100).`,
         url: 'https://mazethis.com/maze-library',
         publisher: { '@type': 'Organization', name: 'MazeThis', url: 'https://mazethis.com' },
       },
@@ -111,7 +111,7 @@ const schemaLD = JSON.stringify({
 
 <BaseLayout
   title="Free Online Mazes - Play Maze Puzzles by Size | MazeThis"
-  description="Play free online mazes in five sizes, track your progress, and choose from 160 maze puzzles. Start with small mazes or take on larger MazeThis challenges."
+  description="Play free online maze puzzles in five sizes — small, medium, large, expert, and monster. Track your progress and work through each collection at your own pace."
   schemaLD={schemaLD}
 >
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -122,20 +122,20 @@ const schemaLD = JSON.stringify({
     <div class="mt-6 mb-10">
       <h1 class="mb-3">Free Online Mazes</h1>
       <p class="text-lg max-w-2xl" style="color: var(--color-muted-strong);">
-        Play free maze puzzles online — choose a size, track your progress, or generate your own maze.
+        Explore free maze puzzles by size. Play online, track your progress, and work through each collection at your own pace.
       </p>
       <div class="mt-5 flex flex-wrap items-center gap-3">
-        <a href="/small-mazes" class="btn-primary">Browse Small Mazes</a>
+        <a href="#maze-collections" class="btn-primary">Choose a Maze</a>
         <a href="/play/maze-of-the-day/" class="btn-secondary">Play Today's Maze</a>
         <a href="/maze-generator" class="btn-secondary">Make a Maze</a>
       </div>
-      <p class="mt-3 text-xs" style="color: var(--color-muted);">
+      <p class="mt-3 text-sm" style="color: var(--color-muted-strong);">
         Progress saves on your device — no account required.
       </p>
     </div>
 
     <!-- Tier cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-12">
+    <div id="maze-collections" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-12">
       {CATEGORIES.map((cat) => {
         const count = tierCounts[cat.difficulty] ?? 0;
         const gridSize = gridSizes[cat.difficulty] ?? '';
@@ -149,7 +149,7 @@ const schemaLD = JSON.stringify({
             data-tier-first-id={firstId}
           >
             <div>
-              <p class="text-xs mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">{gridSize} grid</p>
+              <p class="text-xs mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);">{gridSize} grid</p>
               <h2 class="text-lg font-bold" style="color: var(--color-charcoal);">{cat.label}</h2>
               <p class="text-sm mt-1" style="color: var(--color-muted-strong);">{desc}</p>
             </div>
@@ -164,7 +164,7 @@ const schemaLD = JSON.stringify({
                 >
                   0 / {count}
                 </span>
-                <span class="text-xs" style="color: var(--color-muted);">complete</span>
+                <span class="text-xs" style="color: var(--color-muted-strong);">complete</span>
               </div>
               <div class="tier-progress-container h-1 rounded-full overflow-hidden">
                 <div
@@ -197,46 +197,15 @@ const schemaLD = JSON.stringify({
       })}
     </div>
 
-    <!-- How to choose a maze -->
+    <!-- Not sure where to start? -->
     <div class="mb-10 max-w-2xl">
-      <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">How to Choose a Maze</h2>
-      <div class="card rounded-xl">
-        <div class="flex items-start gap-4 p-4">
-          <div class="shrink-0 w-1.5 self-stretch rounded-full" style="background-color: var(--color-progress);"></div>
-          <div>
-            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">New to mazes?</p>
-            <p class="text-sm mt-0.5" style="color: var(--color-muted-strong);">
-              Start with <a href="/small-mazes" style="color: var(--color-accent);">Small Mazes</a> — 20×20 grids, quick to complete, easy to orient yourself.
-            </p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4 p-4" style="border-top: 1px solid var(--color-border);">
-          <div class="shrink-0 w-1.5 self-stretch rounded-full" style="background-color: var(--color-accent);"></div>
-          <div>
-            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Want a balanced challenge?</p>
-            <p class="text-sm mt-0.5" style="color: var(--color-muted-strong);">
-              Try <a href="/medium-mazes" style="color: var(--color-accent);">Medium Mazes</a> — 40×40 grids with real decision points and more room to get lost.
-            </p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4 p-4" style="border-top: 1px solid var(--color-border);">
-          <div class="shrink-0 w-1.5 self-stretch rounded-full" style="background-color: var(--color-accent);"></div>
-          <div>
-            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Want a longer solve?</p>
-            <p class="text-sm mt-0.5" style="color: var(--color-muted-strong);">
-              <a href="/large-mazes" style="color: var(--color-accent);">Large Mazes</a> use a 60×60 grid — dense enough that wall-following stops working reliably.
-            </p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4 p-4" style="border-top: 1px solid var(--color-border);">
-          <div class="shrink-0 w-1.5 self-stretch rounded-full" style="background-color: var(--color-charcoal);"></div>
-          <div>
-            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Want a serious challenge?</p>
-            <p class="text-sm mt-0.5" style="color: var(--color-muted-strong);">
-              <a href="/expert-mazes" style="color: var(--color-accent);">Expert</a> (80×80) or <a href="/monster-mazes" style="color: var(--color-accent);">Monster</a> (100×100) — for experienced solvers with time to spare.
-            </p>
-          </div>
-        </div>
+      <div class="card rounded-lg p-5">
+        <p class="font-semibold mb-3" style="color: var(--color-charcoal);">Not sure where to start?</p>
+        <ul class="space-y-2 text-sm" style="color: var(--color-muted-strong);">
+          <li>New here? Start with <a href="/small-mazes" style="color: var(--color-accent);">Small</a> or <a href="/medium-mazes" style="color: var(--color-accent);">Medium</a>.</li>
+          <li>Want a longer session? Try <a href="/large-mazes" style="color: var(--color-accent);">Large</a>.</li>
+          <li>Want the hardest puzzles? Try <a href="/expert-mazes" style="color: var(--color-accent);">Expert</a> or <a href="/monster-mazes" style="color: var(--color-accent);">Monster</a>.</li>
+        </ul>
       </div>
     </div>
 
@@ -244,20 +213,17 @@ const schemaLD = JSON.stringify({
     <div class="mb-10 max-w-2xl">
       <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">More Ways to Play</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <a href="/maze-of-the-day" class="card-hover flex flex-col p-4 gap-1 no-underline">
-          <p class="text-xs uppercase tracking-widest mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">Daily</p>
-          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Maze of the Day</p>
-          <p class="text-xs" style="color: var(--color-muted-strong);">A new maze every day.</p>
+        <a href="/maze-of-the-day" class="card-hover flex flex-col p-4 gap-2 no-underline">
+          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Daily Challenge</p>
+          <p class="text-sm" style="color: var(--color-muted-strong);">Play one new maze each day.</p>
         </a>
-        <a href="/maze-generator" class="card-hover flex flex-col p-4 gap-1 no-underline">
-          <p class="text-xs uppercase tracking-widest mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">Generator</p>
+        <a href="/maze-generator" class="card-hover flex flex-col p-4 gap-2 no-underline">
           <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Maze Generator</p>
-          <p class="text-xs" style="color: var(--color-muted-strong);">Create custom mazes in any size.</p>
+          <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze by size.</p>
         </a>
-        <a href="/printable-mazes" class="card-hover flex flex-col p-4 gap-1 no-underline">
-          <p class="text-xs uppercase tracking-widest mb-1" style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);">Print</p>
+        <a href="/printable-mazes" class="card-hover flex flex-col p-4 gap-2 no-underline">
           <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Printable Mazes</p>
-          <p class="text-xs" style="color: var(--color-muted-strong);">Find printable mazes for paper solves and classroom use.</p>
+          <p class="text-sm" style="color: var(--color-muted-strong);">Print maze puzzles for paper solves and classroom use.</p>
         </a>
       </div>
     </div>
@@ -275,7 +241,7 @@ const schemaLD = JSON.stringify({
               {q}
               <svg
                 class="h-4 w-4 shrink-0 ml-3 transition-transform duration-200 group-open:rotate-180"
-                style="color: var(--color-muted);"
+                style="color: var(--color-muted-strong);"
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 aria-hidden="true"
