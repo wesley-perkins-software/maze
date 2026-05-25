@@ -1638,7 +1638,7 @@ export function FullscreenMazePlayer({
         {/* Desktop sidebar — quiet utility rail */}
         <aside
           className="hidden md:flex flex-col w-56 shrink-0 border-l architect-dot-grid"
-          style={{ backgroundColor: 'var(--color-bg)', borderColor: 'var(--color-border)', color: 'var(--color-charcoal)' }}
+          style={{ backgroundColor: 'var(--color-surface-raised)', borderColor: 'var(--color-border-strong)', color: 'var(--color-charcoal)' }}
         >
           <div className="flex flex-col p-4">
 
@@ -1667,7 +1667,10 @@ export function FullscreenMazePlayer({
                     'aria-label': 'Minimap overview',
                   }
               )}
-              className="relative rounded-xl overflow-visible border-2 border-[#1C1C1E] bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="relative rounded-xl overflow-visible border-2 bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              style={{
+                borderColor: 'var(--color-border-strong)',
+              }}
               style={{
                 width: sidebarMinimapContainerW,
                 height: sidebarMinimapContainerH,
@@ -1756,7 +1759,7 @@ export function FullscreenMazePlayer({
               {state.status !== 'solved' && (
                 <button
                   onClick={handleHint}
-                  className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                  className="btn-secondary play-sidebar-btn w-full rounded text-left px-3 py-2.5 gap-2.5"
                   aria-pressed={isHintActive}
                 >
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1767,7 +1770,7 @@ export function FullscreenMazePlayer({
               )}
               <button
                 onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
-                className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                className="btn-secondary play-sidebar-btn w-full rounded text-left px-3 py-2.5 gap-2.5"
                 style={state.solutionVisible ? {
                   backgroundColor: 'var(--color-charcoal)',
                   color: 'var(--color-bg)',
@@ -1788,7 +1791,7 @@ export function FullscreenMazePlayer({
               </button>
               <button
                 onClick={toggleShowTrail}
-                className="btn-secondary w-full rounded text-left px-3 py-2.5 gap-2.5"
+                className="btn-secondary play-sidebar-btn w-full rounded text-left px-3 py-2.5 gap-2.5"
                 aria-pressed={showTrail}
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1879,7 +1882,16 @@ export function FullscreenMazePlayer({
       <div
         ref={controlStripRef}
         className="md:hidden relative bg-[#F6F5F0] border-t border-[#DDD8CF] shrink-0 overflow-visible pb-[env(safe-area-inset-bottom,0px)]"
-        style={{ height: mobileDockH }}
+        style={{
+          height: mobileDockH,
+          // Freeze this subtree to light-mode control tokens so D-pad borders,
+          // divider lines, and minimap hint text stay readable on the light dock surface
+          // even when the global .dark theme is active.
+          ['--color-border' as string]:        '#D6D4CF',
+          ['--color-border-strong' as string]: '#B0AEA8',
+          ['--color-muted-strong' as string]:  '#5C5A55',
+          ['--color-charcoal' as string]:      '#1C1C1E',
+        }}
       >
         <div className="grid h-full w-full grid-cols-2 items-stretch overflow-visible">
           {leftHanded ? dpadPanel : minimapPanel}
