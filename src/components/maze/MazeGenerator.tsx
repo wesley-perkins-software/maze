@@ -270,13 +270,13 @@ function ResumeBanner({
       <div className="flex gap-2">
         <button
           onClick={onResume}
-          className="flex-1 rounded-sm bg-arch-charcoal px-3 py-2 text-sm font-semibold text-white hover:bg-arch-charcoal/85 active:bg-arch-charcoal/85 transition-colors"
+          className="btn-primary flex-1 justify-center rounded-sm px-3 py-2 text-sm font-semibold"
         >
           Resume
         </button>
         <button
           onClick={onDiscard}
-          className="flex-1 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
+          className="btn-secondary flex-1 justify-center rounded-sm px-3 py-2 text-sm font-medium"
         >
           Discard
         </button>
