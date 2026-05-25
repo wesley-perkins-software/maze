@@ -1828,7 +1828,7 @@ export function FullscreenMazePlayer({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleResetCancel}
-                      className="btn-ghost flex-1 rounded text-xs px-2 py-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-600"
+                      className="btn-ghost flex-1 rounded text-xs px-2 py-1.5 text-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-600"
                       autoFocus
                     >
                       Cancel

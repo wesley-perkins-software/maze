@@ -231,7 +231,7 @@
   /* Sidebar action buttons — softer dark-mode outline so they don't look like
      stark white borders on the raised-surface sidebar. */
   .dark .play-sidebar-btn {
-    color: var(--color-muted-strong);
+    color: var(--color-charcoal);
     border-color: var(--color-border-strong);
   }
   .dark .play-sidebar-btn:hover {
