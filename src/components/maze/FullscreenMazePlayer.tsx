@@ -1823,19 +1823,24 @@ export function FullscreenMazePlayer({
                 </button>
               )}
               {resetConfirming ? (
-                <div className="rounded border border-red-200 bg-red-50 px-3 py-2.5 space-y-2.5">
-                  <p className="text-sm font-medium text-red-800">Reset Progress?</p>
-                  <div className="flex items-center gap-2">
+                <div className="rounded px-3 py-2.5 space-y-2 border bg-red-50 border-red-200 dark:bg-[rgba(127,29,29,0.18)] dark:border-[rgba(248,113,113,0.30)]">
+                  <p className="font-semibold text-[15px] text-red-800 dark:text-red-300 leading-tight">
+                    Reset progress?
+                  </p>
+                  <p className="text-sm text-red-700/70 dark:text-red-400/70 leading-snug">
+                    This will clear your current run.
+                  </p>
+                  <div className="flex items-center gap-2 pt-0.5">
                     <button
                       onClick={handleResetCancel}
-                      className="btn-ghost flex-1 rounded text-xs px-2 py-1.5 text-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-600"
                       autoFocus
+                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors bg-transparent border border-red-300 text-red-800 hover:bg-red-100 dark:border-[rgba(248,113,113,0.40)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleResetConfirm}
-                      className="flex-1 rounded border border-red-300 bg-red-100 px-2 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:bg-red-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors border border-red-300 bg-red-100 text-red-700 hover:bg-red-200 dark:border-[rgba(248,113,113,0.50)] dark:bg-[rgba(127,29,29,0.35)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
                     >
                       Reset
                     </button>
