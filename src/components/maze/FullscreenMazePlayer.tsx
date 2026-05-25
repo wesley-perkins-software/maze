@@ -504,8 +504,8 @@ export function FullscreenMazePlayer({
   const [controlStripH, setControlStripH] = useState(168);
   const [menuOpen, setMenuOpen] = useState(false);
   const [resetConfirming, setResetConfirming] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
   const resetConfirmTimerRef = useRef<number | null>(null);
-  const resetPopoverWrapperRef = useRef<HTMLDivElement>(null);
   const initialCameraReadyMazeKeyRef = useRef<string | null>(null);
 
   // Left-handed mode: D-pad on left, minimap on right (persisted)
@@ -942,7 +942,7 @@ export function FullscreenMazePlayer({
     };
   }, []);
 
-  // Close desktop reset popover on Escape
+  // Close mobile/pause-modal inline reset confirmation on Escape
   useEffect(() => {
     if (!resetConfirming) return;
     function onKeyDown(e: KeyboardEvent) {
@@ -955,22 +955,18 @@ export function FullscreenMazePlayer({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [resetConfirming, handleResetCancel]);
 
-  // Close desktop reset popover on outside click/touch
+  // Close desktop reset modal on Escape
   useEffect(() => {
-    if (!resetConfirming) return;
-    function onPointerDown(e: MouseEvent | TouchEvent) {
-      if (resetPopoverWrapperRef.current &&
-          !resetPopoverWrapperRef.current.contains(e.target as Node)) {
-        handleResetCancel();
+    if (!showResetModal) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setShowResetModal(false);
       }
     }
-    document.addEventListener('mousedown', onPointerDown);
-    document.addEventListener('touchstart', onPointerDown);
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown);
-      document.removeEventListener('touchstart', onPointerDown);
-    };
-  }, [resetConfirming, handleResetCancel]);
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [showResetModal]);
 
   // ── Follow-camera math ───────────────────────────────────────────────────────
   const mazeW = maze.width  * PLAY_CELL_SIZE + MAZE_PADDING * 2;
@@ -1474,13 +1470,11 @@ export function FullscreenMazePlayer({
             </button>
           )}
 
-          {/* Desktop Reset + confirmation popover — hidden on mobile and after solve */}
+          {/* Desktop Reset — hidden on mobile and after solve; opens centered modal */}
           {state.status !== 'solved' && (
-            <div ref={resetPopoverWrapperRef} className="relative hidden md:block">
+            <div className="hidden md:block">
               <button
-                onClick={handleResetRequest}
-                aria-expanded={resetConfirming}
-                aria-haspopup="dialog"
+                onClick={() => setShowResetModal(true)}
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400"
               >
                 <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1488,38 +1482,6 @@ export function FullscreenMazePlayer({
                 </svg>
                 <span>Reset</span>
               </button>
-
-              {resetConfirming && (
-                <div
-                  role="dialog"
-                  aria-label="Reset confirmation"
-                  aria-modal="false"
-                  style={{ top: TOP_BAR_H, right: 0, width: SIDEBAR_W, zIndex: 50 }}
-                  className="fixed px-4 py-3 space-y-2 border-b border-l shadow-md bg-red-50 border-red-200 dark:bg-[rgba(127,29,29,0.22)] dark:border-[rgba(248,113,113,0.30)]"
-                >
-                  <p className="font-semibold text-[15px] text-red-800 dark:text-red-300 leading-tight">
-                    Reset progress?
-                  </p>
-                  <p className="text-sm text-red-700/70 dark:text-red-400/70 leading-snug">
-                    This will clear your current run.
-                  </p>
-                  <div className="flex items-center gap-2 pt-0.5">
-                    <button
-                      onClick={handleResetCancel}
-                      autoFocus
-                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors bg-transparent border border-red-300 text-red-800 hover:bg-red-100 dark:border-[rgba(248,113,113,0.40)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleResetConfirm}
-                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors border border-red-300 bg-red-100 text-red-700 hover:bg-red-200 dark:border-[rgba(248,113,113,0.50)] dark:bg-[rgba(127,29,29,0.35)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
@@ -2084,58 +2046,16 @@ export function FullscreenMazePlayer({
 
             {/* Secondary actions */}
             <div style={{ width: '100%' }}>
-              {resetConfirming ? (
-                <div
-                  style={{
-                    background: 'rgba(220, 38, 38, 0.06)',
-                    border: '1px solid rgba(220, 38, 38, 0.2)',
-                    borderRadius: 10,
-                    padding: '10px 12px',
-                    marginBottom: 2,
-                  }}
-                >
-                  <p style={{ color: '#b91c1c', fontWeight: 600, fontSize: 14, marginBottom: 8 }}>
-                    Reset Progress?
-                  </p>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button
-                      onClick={handleResetCancel}
-                      autoFocus
-                      className="flex-1 rounded-lg py-1.5 flex items-center justify-center transition-colors"
-                      style={{ color: 'var(--color-charcoal)', fontSize: 15, fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleResetConfirm}
-                      style={{
-                        flex: 1,
-                        padding: '6px 0',
-                        borderRadius: 8,
-                        border: '1px solid rgba(220, 38, 38, 0.3)',
-                        background: 'rgba(220, 38, 38, 0.1)',
-                        color: '#b91c1c',
-                        fontSize: 15,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={handleResetRequest}
-                  className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
-                  style={{ fontSize: 15, color: 'var(--color-charcoal)' }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
-                  </svg>
-                  Reset Progress
-                </button>
-              )}
+              <button
+                onClick={() => setShowResetModal(true)}
+                className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
+                style={{ fontSize: 15, color: 'var(--color-charcoal)' }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+                </svg>
+                Reset Progress
+              </button>
               <button
                 onClick={handleClose}
                 className="btn-ghost w-full rounded-lg px-3 py-2.5 gap-2"
@@ -2145,6 +2065,102 @@ export function FullscreenMazePlayer({
                   <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
                 </svg>
                 Exit Maze
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset confirmation modal — z-50 so it overlays the pause modal when opened from within it.
+          Cancel restores context: if game was paused, pause modal re-appears automatically.
+          If game was playing, game continues. No extra source-tracking state needed. */}
+      {showResetModal && (
+        <div
+          className="absolute inset-0 z-50 flex items-center justify-center"
+          style={{
+            background: 'rgba(10, 10, 14, 0.30)',
+            backdropFilter: 'blur(2px)',
+            WebkitBackdropFilter: 'blur(2px)',
+            paddingTop: TOP_BAR_H,
+          }}
+          onClick={() => setShowResetModal(false)}
+        >
+          <div
+            style={{
+              width: 'calc(100vw - 40px)',
+              maxWidth: 360,
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 20,
+              boxShadow: '0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.10)',
+              padding: '28px 32px 24px',
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reset-modal-title"
+            onClick={e => e.stopPropagation()}
+          >
+            <p
+              id="reset-modal-title"
+              style={{
+                color: 'var(--color-charcoal)',
+                fontWeight: 700,
+                fontSize: 18,
+                letterSpacing: '-0.3px',
+                marginBottom: 8,
+              }}
+            >
+              Reset progress?
+            </p>
+            <p
+              style={{
+                color: 'var(--color-muted-strong)',
+                fontSize: 15,
+                marginBottom: 24,
+                lineHeight: 1.4,
+              }}
+            >
+              This will clear your current run.
+            </p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={() => setShowResetModal(false)}
+                autoFocus
+                style={{
+                  flex: 1,
+                  height: 44,
+                  borderRadius: 12,
+                  border: '1px solid var(--color-border)',
+                  background: 'transparent',
+                  color: 'var(--color-charcoal)',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'background 0.15s',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowResetModal(false);
+                  dispatch({ type: 'RESET', startPosition: maze.entry });
+                  onReset?.();
+                }}
+                style={{
+                  flex: 1,
+                  height: 44,
+                  borderRadius: 12,
+                  border: '1px solid rgba(185, 28, 28, 0.35)',
+                  background: 'rgba(220, 38, 38, 0.10)',
+                  color: '#b91c1c',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'background 0.15s',
+                }}
+              >
+                Reset
               </button>
             </div>
           </div>
