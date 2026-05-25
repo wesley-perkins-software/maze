@@ -1494,19 +1494,20 @@ export function FullscreenMazePlayer({
                   role="dialog"
                   aria-label="Reset confirmation"
                   aria-modal="false"
-                  className="absolute top-full right-0 mt-1.5 w-52 z-50 rounded-lg px-3 py-2.5 space-y-2 border shadow-lg bg-white border-slate-200 dark:bg-[rgba(30,28,26,0.98)] dark:border-[rgba(80,78,76,0.60)]"
+                  style={{ top: TOP_BAR_H, right: 0, width: SIDEBAR_W, zIndex: 50 }}
+                  className="fixed px-4 py-3 space-y-2 border-b border-l shadow-md bg-red-50 border-red-200 dark:bg-[rgba(127,29,29,0.22)] dark:border-[rgba(248,113,113,0.30)]"
                 >
                   <p className="font-semibold text-[15px] text-red-800 dark:text-red-300 leading-tight">
                     Reset progress?
                   </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                  <p className="text-sm text-red-700/70 dark:text-red-400/70 leading-snug">
                     This will clear your current run.
                   </p>
                   <div className="flex items-center gap-2 pt-0.5">
                     <button
                       onClick={handleResetCancel}
                       autoFocus
-                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors bg-transparent border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-[rgba(248,113,113,0.40)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
+                      className="flex-1 rounded px-2 py-1.5 text-sm font-semibold transition-colors bg-transparent border border-red-300 text-red-800 hover:bg-red-100 dark:border-[rgba(248,113,113,0.40)] dark:text-red-300 dark:hover:bg-[rgba(127,29,29,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400"
                     >
                       Cancel
                     </button>
