@@ -1417,7 +1417,7 @@ export function FullscreenMazePlayer({
           {cameraMode !== 'look' && (state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
-              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
               aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
             >
               <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -1996,7 +1996,6 @@ export function FullscreenMazePlayer({
             background: 'rgba(10, 10, 14, 0.30)',
             backdropFilter: 'blur(2px)',
             WebkitBackdropFilter: 'blur(2px)',
-            paddingTop: TOP_BAR_H,
           }}
           onClick={() => setShowResetModal(false)}
         >
