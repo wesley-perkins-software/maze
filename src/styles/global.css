@@ -228,6 +228,24 @@
     background-color: var(--color-border);
   }
 
+  /* Desktop sidebar surface — elevated charcoal in dark mode, unchanged in light */
+  .play-sidebar {
+    background-color: var(--color-surface-raised);
+    border-color: var(--color-border-strong);
+    color: var(--color-charcoal);
+  }
+  .dark .play-sidebar {
+    background-color: var(--color-surface-overlay); /* #2C2A28 — warmer elevated charcoal, not a flat slab */
+  }
+
+  /* Sidebar divider — visible in dark mode against the elevated sidebar surface */
+  .play-sidebar-divider {
+    background-color: var(--color-border);
+  }
+  .dark .play-sidebar-divider {
+    background-color: var(--color-border-strong); /* #3E3D3A — readable on #2C2A28 */
+  }
+
   /* Sidebar action buttons — softer dark-mode outline so they don't look like
      stark white borders on the raised-surface sidebar. */
   .dark .play-sidebar-btn {
@@ -236,7 +254,7 @@
   }
   .dark .play-sidebar-btn:hover {
     color: var(--color-charcoal);
-    background-color: var(--color-surface-overlay);
+    background-color: var(--color-surface-raised); /* #222120 — slightly darker than sidebar bg, subtle fill */
     border-color: var(--color-border-strong);
   }
 

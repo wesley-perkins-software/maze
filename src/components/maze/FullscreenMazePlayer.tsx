@@ -1614,8 +1614,7 @@ export function FullscreenMazePlayer({
 
         {/* Desktop sidebar — quiet utility rail */}
         <aside
-          className="hidden md:flex flex-col w-56 shrink-0 border-l architect-dot-grid"
-          style={{ backgroundColor: 'var(--color-surface-raised)', borderColor: 'var(--color-border-strong)', color: 'var(--color-charcoal)' }}
+          className="hidden md:flex flex-col w-56 shrink-0 border-l architect-dot-grid play-sidebar"
         >
           <div className="flex flex-col p-4">
 
@@ -1647,8 +1646,6 @@ export function FullscreenMazePlayer({
               className="relative rounded-xl overflow-visible border-2 bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
               style={{
                 borderColor: 'var(--color-border-strong)',
-              }}
-              style={{
                 width: sidebarMinimapContainerW,
                 height: sidebarMinimapContainerH,
                 flexShrink: 0,
@@ -1729,7 +1726,7 @@ export function FullscreenMazePlayer({
             </div>
 
             {/* Divider */}
-            <div className="h-px mb-3" style={{ backgroundColor: 'var(--color-border)' }} />
+            <div className="h-px mb-3 play-sidebar-divider" />
 
             {/* Group 1: Assist */}
             <div className="space-y-2">
