@@ -251,10 +251,11 @@
   .dark .play-sidebar-btn {
     color: var(--color-charcoal);
     border-color: var(--color-border-strong);
+    background-color: var(--color-surface-raised); /* #222120 — inset against sidebar #2C2A28; crisper text contrast */
   }
   .dark .play-sidebar-btn:hover {
     color: var(--color-charcoal);
-    background-color: var(--color-surface-raised); /* #222120 — slightly darker than sidebar bg, subtle fill */
+    background-color: var(--color-surface-inset); /* #141312 — deeper on hover for clear feedback */
     border-color: var(--color-border-strong);
   }
 

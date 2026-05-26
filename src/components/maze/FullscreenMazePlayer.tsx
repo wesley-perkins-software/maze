@@ -1417,10 +1417,10 @@ export function FullscreenMazePlayer({
           {cameraMode !== 'look' && (state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
+              className="hidden md:flex items-center gap-1.5 px-3.5 py-2 rounded text-[15px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
               aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
             >
-              <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 {state.status === 'playing' ? (
                   <><rect x="3" y="2" width="3.5" height="12" rx="0.5" /><rect x="9.5" y="2" width="3.5" height="12" rx="0.5" /></>
                 ) : (
