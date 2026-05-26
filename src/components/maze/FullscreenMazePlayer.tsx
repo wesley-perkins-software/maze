@@ -1417,10 +1417,10 @@ export function FullscreenMazePlayer({
           {cameraMode !== 'look' && (state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
+              className="hidden md:flex items-center gap-1.5 px-3.5 py-2 rounded text-[15px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
               aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
             >
-              <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 {state.status === 'playing' ? (
                   <><rect x="3" y="2" width="3.5" height="12" rx="0.5" /><rect x="9.5" y="2" width="3.5" height="12" rx="0.5" /></>
                 ) : (
@@ -1614,8 +1614,7 @@ export function FullscreenMazePlayer({
 
         {/* Desktop sidebar — quiet utility rail */}
         <aside
-          className="hidden md:flex flex-col w-56 shrink-0 border-l architect-dot-grid"
-          style={{ backgroundColor: 'var(--color-surface-raised)', borderColor: 'var(--color-border-strong)', color: 'var(--color-charcoal)' }}
+          className="hidden md:flex flex-col w-56 shrink-0 border-l architect-dot-grid play-sidebar"
         >
           <div className="flex flex-col p-4">
 
@@ -1647,8 +1646,6 @@ export function FullscreenMazePlayer({
               className="relative rounded-xl overflow-visible border-2 bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
               style={{
                 borderColor: 'var(--color-border-strong)',
-              }}
-              style={{
                 width: sidebarMinimapContainerW,
                 height: sidebarMinimapContainerH,
                 flexShrink: 0,
@@ -1729,7 +1726,7 @@ export function FullscreenMazePlayer({
             </div>
 
             {/* Divider */}
-            <div className="h-px mb-3" style={{ backgroundColor: 'var(--color-border)' }} />
+            <div className="h-px mb-3 play-sidebar-divider" />
 
             {/* Group 1: Assist */}
             <div className="space-y-2">
