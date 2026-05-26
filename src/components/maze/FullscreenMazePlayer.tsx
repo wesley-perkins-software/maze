@@ -1360,7 +1360,7 @@ export function FullscreenMazePlayer({
               left: '50%',
               transform: `translateX(-50%) translateY(${minimapContainerH / 2 + 6}px)`,
               fontSize: 11,
-              color: 'var(--color-muted-strong)',
+              color: '#111111',
               opacity: 1,
               pointerEvents: 'none',
               whiteSpace: 'nowrap',
