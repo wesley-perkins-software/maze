@@ -1419,7 +1419,7 @@ export function FullscreenMazePlayer({
         <div className="flex-1 flex justify-center items-center gap-1.5 text-sm">
           {cameraMode === 'look' ? (
             <span className="font-semibold text-sm" style={{ color: '#4f46e5' }}>
-              Camera view — movement paused
+              Camera View — Movement Paused
             </span>
           ) : (
             <>
@@ -1453,7 +1453,7 @@ export function FullscreenMazePlayer({
         <div className="flex items-center gap-1 shrink-0">
 
           {/* Desktop Pause/Resume — hidden on mobile (mobile has its own ⏸ below) */}
-          {(state.status === 'playing' || state.status === 'paused') && (
+          {cameraMode !== 'look' && (state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
               className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
@@ -1468,6 +1468,22 @@ export function FullscreenMazePlayer({
               </svg>
               <span>{state.status === 'playing' ? 'Pause' : 'Resume'}</span>
             </button>
+          )}
+
+          {/* Desktop Return to Play — shown only during camera view */}
+          {cameraMode === 'look' && (
+            <div className="hidden md:block">
+              <button
+                onClick={exitLookMode}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
+                aria-label="Return camera to player"
+              >
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <polygon points="3,1 14,8 3,15" />
+                </svg>
+                Return to Play
+              </button>
+            </div>
           )}
 
           {/* Desktop Reset — hidden on mobile and after solve; opens centered modal */}
@@ -1485,8 +1501,8 @@ export function FullscreenMazePlayer({
             </div>
           )}
 
-          {/* Mobile Pause ⏸ — hidden on desktop */}
-          {(state.status === 'playing' || state.status === 'paused') && (
+          {/* Mobile Pause ⏸ — hidden on desktop and during camera view */}
+          {cameraMode !== 'look' && (state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={handleMobilePauseToggle}
               className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors text-sm"
@@ -1586,6 +1602,36 @@ export function FullscreenMazePlayer({
         </div>
       </div>
 
+      {/* Mobile camera view strip — sits flush under the header, above the maze */}
+      {cameraMode === 'look' && (
+        <div className="md:hidden flex justify-center items-center py-1.5 bg-white border-b border-indigo-100 shrink-0">
+          <button
+            onClick={exitLookMode}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              backgroundColor: 'rgba(15, 23, 42, 0.90)',
+              color: 'white',
+              fontSize: 13,
+              fontWeight: 600,
+              padding: '5px 14px 5px 11px',
+              borderRadius: 20,
+              border: '1px solid rgba(79, 70, 229, 0.55)',
+              cursor: 'pointer',
+              letterSpacing: '0.01em',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.22)',
+            }}
+            aria-label="Return camera to player"
+          >
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <polygon points="3,1 14,8 3,15" />
+            </svg>
+            Return to Play
+          </button>
+        </div>
+      )}
+
       {/* Middle row: maze viewport + desktop sidebar */}
       <div className="flex flex-1 overflow-hidden">
 
@@ -1646,52 +1692,6 @@ export function FullscreenMazePlayer({
             />
           )}
 
-          {/* Look-mode pill — shown when camera is panned away from the player */}
-          {cameraMode === 'look' && (
-            <button
-              onClick={exitLookMode}
-              style={{
-                position: 'absolute',
-                top: 12,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: 20,
-                whiteSpace: 'nowrap',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                backgroundColor: 'rgba(15, 23, 42, 0.90)',
-                color: 'white',
-                fontSize: 13,
-                fontWeight: 600,
-                padding: '6px 13px 6px 10px',
-                borderRadius: 20,
-                border: '1px solid rgba(79, 70, 229, 0.55)',
-                cursor: 'pointer',
-                letterSpacing: '0.01em',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.05)',
-              }}
-              aria-label="Return camera to player"
-            >
-              {/* Camera icon — stroke style matching the project icon set */}
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#818cf8"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-                style={{ flexShrink: 0 }}
-              >
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
-              Return to play
-            </button>
-          )}
 
 
 
