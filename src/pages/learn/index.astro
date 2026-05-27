@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const guides = [
+  {
+    title: 'How to Solve a Maze',
+    href: '/learn/how-to-solve-a-maze',
+    category: 'MAZE SOLVING',
+    description: 'Maze-solving strategies for beginners, kids, and experienced solvers.',
+    available: true,
+  },
+  {
+    title: 'How Mazes Work',
+    category: 'MAZE BASICS',
+    description: 'Learn how maze paths, walls, dead ends, loops, and generation algorithms work.',
+    available: false,
+  },
+  {
+    title: 'Maze Types',
+    category: 'MAZE BASICS',
+    description: 'A guide to square, circular, hexagonal, triangular, and other maze styles.',
+    available: false,
+  },
+  {
+    title: 'Maze Difficulty',
+    category: 'MAZE BASICS',
+    description: 'What makes a maze easy, hard, dense, or confusing.',
+    available: false,
+  },
+  {
+    title: 'Mazes for Kids',
+    category: 'AUDIENCES',
+    description: 'How to choose maze puzzles for children by age and skill level.',
+    available: false,
+  },
+  {
+    title: 'Mazes for the Classroom',
+    category: 'AUDIENCES',
+    description: 'Ways teachers can use printable mazes for warm-ups, quiet work, and problem-solving.',
+    available: false,
+  },
+  {
+    title: 'Mazes for Seniors',
+    category: 'AUDIENCES',
+    description: 'How maze puzzles can support focus, routine, and low-pressure cognitive activity.',
+    available: false,
+  },
+];
+
+const topicLinks = [
+  { href: '/printable-mazes',     label: 'Printable Mazes',      description: 'Generate and print free maze worksheets.' },
+  { href: '/mazes-for-classroom', label: 'Classroom Mazes',       description: 'Pre-made maze sets for teachers.' },
+  { href: '/mazes-for-seniors',   label: 'Mazes for Seniors',     description: 'Calm, low-pressure puzzle collections.' },
+  { href: '/faq',                 label: 'FAQ',                   description: 'Common questions about MazeThis.' },
+];
+
+const schemaLD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${siteUrl}/learn`,
+      url: `${siteUrl}/learn`,
+      name: 'Learn About Mazes',
+      description: 'Guides for solving mazes, choosing the right difficulty, printing maze worksheets, and understanding how maze puzzles work.',
+      isPartOf: { '@id': `${siteUrl}/#website` },
+      breadcrumb: { '@id': `${siteUrl}/learn#breadcrumb` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${siteUrl}/learn#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'Learn', item: `${siteUrl}/learn` },
+      ],
+    },
+  ],
+});
+---
+
+<BaseLayout
+  title="Learn About Mazes — Guides & Strategies | MazeThis"
+  description="Guides for solving mazes, choosing the right difficulty, printing maze worksheets, and understanding how maze puzzles work."
+  canonical={`${siteUrl}/learn`}
+  schemaLD={schemaLD}
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Learn' }]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">Maze Guides</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">Learn About Mazes</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        Guides for solving mazes, choosing the right difficulty, printing maze worksheets, and understanding how maze puzzles work.
+      </p>
+    </div>
+
+    <!-- Guide cards -->
+    <section>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {guides.map((guide) =>
+          guide.available ? (
+            <a href={guide.href} class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+              <div>
+                <p class="text-xs tracking-widest uppercase font-semibold mb-1 text-arch-accent">{guide.category}</p>
+                <p class="font-semibold mb-1" style="color: var(--color-charcoal);">{guide.title}</p>
+                <p class="text-sm" style="color: var(--color-muted-strong);">{guide.description}</p>
+              </div>
+              <span class="text-sm font-medium mt-auto text-arch-accent">Read guide →</span>
+            </a>
+          ) : (
+            <div class="card rounded-lg p-5 flex flex-col gap-3" style="opacity: 0.55;">
+              <div>
+                <p class="text-xs tracking-widest uppercase font-semibold mb-1" style="color: var(--color-muted);">Coming soon</p>
+                <p class="font-semibold mb-1" style="color: var(--color-charcoal);">{guide.title}</p>
+                <p class="text-sm" style="color: var(--color-muted-strong);">{guide.description}</p>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    </section>
+
+    <!-- Explore by topic -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Explore by topic</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {topicLinks.map(({ href, label, description }) => (
+          <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-2 no-underline">
+            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{description}</p>
+            <span class="text-sm font-medium mt-auto text-arch-accent">→</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready to play?</h2>
+      <p class="text-sm text-arch-600 mb-5">Browse the full maze library or generate your own custom maze in seconds.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library"   class="btn-secondary">Maze Library</a>
+        <a href="/maze-generator" class="btn-secondary">Maze Generator</a>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>
