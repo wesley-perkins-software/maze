@@ -502,14 +502,4 @@
     break-after: auto;
     page-break-after: auto;
   }
-
-  .print-page-heading {
-    font-size: 10pt;
-    font-weight: 700;
-    text-align: center;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #000;
-    margin: 0 0 6pt 0;
-  }
 }

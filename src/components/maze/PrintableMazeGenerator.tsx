@@ -110,13 +110,11 @@ export function PrintableMazeGenerator() {
        clips content to one page via overflow:hidden. */
     <div className="print-pages" aria-hidden="true">
       <section className="print-page">
-        <p className="print-page-heading">Maze Worksheet</p>
         <div className="print-maze-art">
           {cleanMazeRenderer}
         </div>
       </section>
       <section className="print-page">
-        <p className="print-page-heading">Answer Key</p>
         <div className="print-maze-art print-with-solution">
           <MazeRenderer
             maze={maze}
