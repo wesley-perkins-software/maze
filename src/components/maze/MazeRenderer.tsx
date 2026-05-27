@@ -36,6 +36,7 @@ export interface MazeRendererProps {
   markerRadius?: number;       // override entry/exit marker radius
   showEndpointMarkers?: boolean; // render entry/exit markers inside the SVG
   markersOutside?: boolean;    // place entry/exit icons outside the perimeter wall
+  endpointOutsideGap?: number; // gap between marker edge and maze wall for outside placement (default 2)
   showPlayerGlow?: boolean;    // render the animated glow ring around the player dot (default true)
   hideTitle?: boolean;         // suppress the SVG <title> element (prevents browser tooltip on minimap)
 }
@@ -62,6 +63,7 @@ export function MazeRenderer({
   markerRadius,
   showEndpointMarkers = true,
   markersOutside = false,
+  endpointOutsideGap,
   showPlayerGlow = true,
   hideTitle = false,
 }: MazeRendererProps) {
@@ -115,6 +117,7 @@ export function MazeRenderer({
           portalSide: entrySide,
           markerRadius: markerR,
           placementMode: 'outside',
+          outsideGap: endpointOutsideGap,
         })
       : null
     : { x: entryCx, y: entryCy };
@@ -129,6 +132,7 @@ export function MazeRenderer({
           portalSide: exitSide,
           markerRadius: markerR,
           placementMode: 'outside',
+          outsideGap: endpointOutsideGap,
         })
       : null
     : { x: exitCx, y: exitCy };

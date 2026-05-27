@@ -124,6 +124,8 @@ export function PrintableMazeGenerator() {
             solution={maze.solution}
             showSolution={true}
             markersOutside={true}
+            markerRadius={0}
+            endpointOutsideGap={0}
             showEndpointMarkers={false}
             showPlayer={false}
             showTrail={false}
