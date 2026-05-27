@@ -2,6 +2,33 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/home/Hero.astro';
 import HowItWorks from '../components/home/HowItWorks.astro';
+import type { Difficulty } from '../types/maze.js';
+import { getMazesByDifficulty } from '../lib/catalog/index.js';
+import { generateMazeFromCatalog } from '../lib/maze/index.js';
+import { renderThumbnail } from '../lib/svg/renderToString.js';
+
+const librarySizes: Array<{
+  difficulty: Difficulty;
+  grid: string;
+  name: string;
+  href: string;
+  cta: string;
+  desc: string;
+}> = [
+  { difficulty: 'small',   grid: '20×20',   name: 'Small',   href: '/small-mazes',   cta: 'Browse Small',   desc: 'Quick mazes for beginners, kids, and short sessions.' },
+  { difficulty: 'medium',  grid: '40×40',   name: 'Medium',  href: '/medium-mazes',  cta: 'Browse Medium',  desc: 'A balanced maze size with more room to explore.' },
+  { difficulty: 'large',   grid: '60×60',   name: 'Large',   href: '/large-mazes',   cta: 'Browse Large',   desc: 'Bigger challenges for longer solving sessions.' },
+  { difficulty: 'expert',  grid: '80×80',   name: 'Expert',  href: '/expert-mazes',  cta: 'Browse Expert',  desc: 'Dense maze puzzles for experienced solvers.' },
+  { difficulty: 'monster', grid: '100×100', name: 'Monster', href: '/monster-mazes', cta: 'Browse Monster', desc: 'The largest preset collection for serious focus.' },
+];
+
+const librarySvgs = Object.fromEntries(
+  librarySizes.map(({ difficulty }) => {
+    const mazes = getMazesByDifficulty(difficulty);
+    const svg = mazes.length ? renderThumbnail(generateMazeFromCatalog(mazes[0])) : '';
+    return [difficulty, svg];
+  })
+) as Record<Difficulty, string>;
 
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
 
@@ -114,7 +141,79 @@ const organizationSchema = JSON.stringify({
     </div>
   </section>
 
-  <!-- 3. How MazeThis Works (dark section) -->
+  <!-- 3. Maze Library size preview -->
+  <section
+    class="py-16 sm:py-20"
+    style="background-color: var(--color-bg); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);"
+    aria-labelledby="library-sizes-heading"
+  >
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+      <div class="flex items-end justify-between mb-10">
+        <div>
+          <p
+            class="text-xs uppercase tracking-widest mb-2"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+          >Maze Library</p>
+          <h2
+            id="library-sizes-heading"
+            class="font-display text-5xl sm:text-6xl uppercase"
+            style="color: var(--color-charcoal);"
+          >Pick Your<br />Challenge</h2>
+          <p
+            class="mt-3 text-sm leading-relaxed max-w-md"
+            style="color: var(--color-muted-strong);"
+          >Start small, move up, and complete each collection at your own pace.</p>
+        </div>
+        <a
+          href="/maze-library"
+          class="hidden sm:inline-flex items-center gap-1 text-xs uppercase tracking-widest no-underline"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal); text-decoration: underline; text-decoration-color: var(--color-border-strong); text-underline-offset: 3px;"
+        >View Maze Library →</a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {librarySizes.map(({ difficulty, grid, name, href, cta, desc }) => (
+          <a
+            href={href}
+            class="card-hover rounded-lg flex flex-col no-underline overflow-hidden"
+          >
+            <div class="lib-preview-thumb" aria-hidden="true" set:html={librarySvgs[difficulty]} />
+            <div class="p-4 flex flex-col gap-2 flex-1">
+              <div>
+                <p
+                  class="font-semibold text-sm leading-tight"
+                  style="color: var(--color-charcoal);"
+                >{name}</p>
+                <p
+                  class="text-xs mt-0.5"
+                  style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+                >{grid}</p>
+              </div>
+              <p
+                class="text-xs leading-relaxed flex-1"
+                style="color: var(--color-muted-strong);"
+              >{desc}</p>
+              <span
+                class="text-xs font-medium mt-auto"
+                style="color: var(--color-accent);"
+              >{cta} →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="mt-6 sm:hidden text-center">
+        <a
+          href="/maze-library"
+          class="text-xs uppercase tracking-widest"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); text-decoration: underline; text-underline-offset: 3px;"
+        >View Maze Library →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. How MazeThis Works (dark section) -->
   <HowItWorks />
 
   <!-- 4. Generator CTA (light section) -->
@@ -248,16 +347,16 @@ const organizationSchema = JSON.stringify({
         id="learn-heading"
         class="font-display text-4xl sm:text-5xl uppercase mb-4"
         style="color: var(--color-charcoal);"
-      >Want to Get Better at Mazes?</h2>
+      >Improve Your Maze Skills</h2>
       <p
         class="text-sm leading-relaxed max-w-md mx-auto mb-8"
         style="color: var(--color-muted-strong);"
-      >Read maze-solving strategies, difficulty guides, and maze basics in Learn.</p>
+      >Read simple guides on maze-solving strategies, difficulty, maze types, and choosing the right puzzle.</p>
       <a
         href="/learn"
         class="btn-secondary text-sm px-7 py-3 inline-flex items-center gap-2"
       >
-        Explore Learn →
+        Read Maze Guides →
       </a>
     </div>
   </section>
@@ -345,6 +444,24 @@ const organizationSchema = JSON.stringify({
   </div>
 
 </BaseLayout>
+
+<style>
+  .lib-preview-thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 150ms ease;
+  }
+  .card-hover:hover .lib-preview-thumb {
+    border-color: var(--color-border-strong);
+  }
+  .lib-preview-thumb :global(svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
 
 <script>
   import { getDailyNow } from '../lib/utils/dailyNow';
