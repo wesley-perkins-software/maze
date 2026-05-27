@@ -471,8 +471,11 @@
   .print-maze-art .maze-endpoint-marker,
   .print-maze-art .maze-player-cursor,
   .print-maze-art .maze-traversal-path,
-  .print-maze-art .maze-hint-path,
-  .print-maze-art .maze-solution-path {
+  .print-maze-art .maze-hint-path {
+    display: none !important;
+  }
+  /* Solution path hidden by default; opt-in via .print-with-solution on the wrapper. */
+  .print-maze-art:not(.print-with-solution) .maze-solution-path {
     display: none !important;
   }
 }

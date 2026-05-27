@@ -51,6 +51,7 @@ const PREVIEW_PADDING = 6;
 export function PrintableMazeGenerator() {
   const [selectedSize, setSelectedSize] = useState<SizePreset>('small');
   const [maze, setMaze] = useState<MazeData>(() => generateForPreset('small'));
+  const [showSolution, setShowSolution] = useState(false);
   const [printRoot, setPrintRoot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -91,17 +92,18 @@ export function PrintableMazeGenerator() {
   const printMaze = (
     <div className="print-only" aria-hidden="true">
       <div className="print-maze-sheet">
-        <div className="print-maze-art">
+        <div className={`print-maze-art${showSolution ? ' print-with-solution' : ''}`}>
           <MazeRenderer
             maze={maze}
             cellSize={12}
             wallThickness={2}
             padding={6}
+            solution={maze.solution}
+            showSolution={showSolution}
             showEndpointMarkers={false}
             showPlayer={false}
             showTrail={false}
             showHintPath={false}
-            showSolution={false}
             showPlayerGlow={false}
           />
         </div>
@@ -141,11 +143,12 @@ export function PrintableMazeGenerator() {
                 cellSize={cellSize}
                 padding={PREVIEW_PADDING}
                 fillContainer
+                solution={maze.solution}
+                showSolution={showSolution}
                 showEndpointMarkers={false}
                 showPlayer={false}
                 showTrail={false}
                 showHintPath={false}
-                showSolution={false}
                 showPlayerGlow={false}
               />
             </div>
@@ -220,6 +223,17 @@ export function PrintableMazeGenerator() {
             ))}
           </div>
         </fieldset>
+
+        {/* Answer key toggle */}
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={showSolution}
+            onChange={(e) => setShowSolution(e.target.checked)}
+            className="w-4 h-4 accent-arch-accent"
+          />
+          <span className="text-sm font-medium text-arch-600">Include answer key</span>
+        </label>
 
         {/* Divider */}
         <div className="border-t border-arch-200" />
