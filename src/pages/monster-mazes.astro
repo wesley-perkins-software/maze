@@ -12,45 +12,39 @@ const firstLabel = 'Start Monster #001';
 
 const BASE = 'https://mazethis.com';
 const pageUrl = `${BASE}/monster-mazes`;
+const pageTitle = 'Monster Mazes | Free Online 100×100 Maze Puzzles | MazeThis';
+const pageDescription = 'Play free Monster Mazes online. Solve huge 100×100 maze puzzles, track your progress, and work through the hardest MazeThis collection.';
 
 const faqItems = [
   {
-    open: true,
     q: 'What are Monster Mazes?',
-    a: 'Monster Mazes are puzzle games on a 100×100 grid — the hardest mazes in the MazeThis collection. With 10,000 cells to navigate, Monster Mazes are built for committed solvers who want an extreme challenge. The collection contains 15 curated puzzles, each with a fixed unique layout.',
+    a: 'Monster Mazes are 100×100 grid maze puzzles on MazeThis — the largest preset collection on the site. Built for committed solvers who want an extreme, long-form challenge. The collection contains 15 puzzles, each with a fixed unique layout.',
   },
   {
-    open: true,
-    q: 'Who are Monster Mazes for?',
-    a: 'Monster Mazes are intended for experienced solvers who have completed smaller tiers and are ready for the ultimate challenge. The 100×100 grid demands sustained focus and a systematic approach — these are not casual puzzles.',
-  },
-  {
-    q: 'What makes Monster Mazes different?',
-    a: 'Monster Mazes are the largest puzzles in the Maze Library. The 100×100 grid produces extremely long solution paths and highly complex branching — you can spend a long time exploring dead ends. Completing all 15 Monster Mazes is the ultimate achievement in the MazeThis collection.',
-  },
-  {
-    q: 'How many Monster Mazes are there?',
-    a: 'There are 15 Monster Mazes in the collection, numbered Monster #001 through Monster #015. Every maze has a fixed layout — the same puzzle is always at the same URL.',
-  },
-  {
-    q: 'Are Monster Mazes free to play?',
+    q: 'Are these mazes free?',
     a: 'Yes. Every Monster Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
   },
   {
-    q: 'Can I play Monster Mazes on mobile?',
-    a: 'Yes. Monster Mazes work on any modern phone or tablet. Because the 100×100 grid is very dense, a larger screen or tablet is more comfortable. The on-screen d-pad and touch navigation both work.',
+    q: 'Does my progress save?',
+    a: "Yes. Progress is saved on your device using browser storage. Completed mazes show a green checkmark badge and the progress bar updates automatically. No account is required.",
   },
   {
-    q: 'How is my progress saved?',
-    a: "Progress is saved on your device. After solving a maze, a green checkmark badge appears on the card and the progress bar updates. Your completions are stored in your browser's local storage, so they persist between visits without requiring an account.",
+    q: 'Can I play these mazes online?',
+    a: 'Yes. All Monster Mazes work in any modern browser on desktop, tablet, or phone. Use keyboard arrows, swipe, or the on-screen D-pad to navigate.',
   },
   {
-    q: 'Can I print Monster Mazes?',
-    a: 'Yes. Visit the Printable Mazes page to download and print maze puzzles in a range of sizes, including monster mazes.',
+    q: 'Can I print these mazes?',
+    a: 'These collection pages are optimized for online solving. For worksheet-style printouts and optional answer key pages, use Printable Mazes.',
+    aHtml: 'These collection pages are optimized for online solving. For worksheet-style printouts and optional answer key pages, use <a href="/printable-mazes" class="underline hover:opacity-80">Printable Mazes</a>.',
   },
   {
-    q: 'What should I try after Monster Mazes?',
-    a: 'Monster Mazes are the highest tier in the Maze Library. After completing them, you can explore the full library — 160 curated puzzles across five difficulty tiers — or challenge yourself with the daily Maze of the Day for a fresh puzzle every day.',
+    q: 'What size should I try next?',
+    a: 'Monster Mazes are the largest preset collection on MazeThis. For custom sizes beyond 100×100, use the Maze Generator.',
+    aHtml: 'Monster Mazes are the largest preset collection on MazeThis. For custom sizes beyond 100×100, use the <a href="/maze-generator" class="underline hover:opacity-80">Maze Generator</a>.',
+  },
+  {
+    q: 'What is the difference between this collection and the Maze Generator?',
+    a: 'This collection contains fixed, numbered mazes with progress tracking — each maze has a permanent URL and stays the same every visit. The Maze Generator creates a unique random maze on demand with no fixed layout or progress tracking.',
   },
 ];
 
@@ -61,8 +55,8 @@ const schemaLD = JSON.stringify({
       '@type': 'WebPage',
       '@id': pageUrl,
       url: pageUrl,
-      name: category.title,
-      description: category.description,
+      name: pageTitle,
+      description: pageDescription,
       isPartOf: { '@id': `${BASE}/#website` },
       breadcrumb: { '@id': `${pageUrl}#breadcrumb` },
     },
@@ -80,7 +74,7 @@ const schemaLD = JSON.stringify({
       mainEntity: faqItems.map(({ q, a }) => ({
         '@type': 'Question',
         name: q,
-        acceptedAnswer: { '@type': 'Answer', text: a },
+        acceptedAnswer: { '@type': 'Answer', text: a ?? '' },
       })),
     },
     {
@@ -101,7 +95,24 @@ const schemaLD = JSON.stringify({
   category={category}
   totalCount={mazes.length}
   schemaLD={schemaLD}
-  tagline="15 maze puzzles on a 100×100 grid. Play free online and complete the collection."
+  pageTitle={pageTitle}
+  pageDescription={pageDescription}
+  heroLabel="MONSTER MAZE COLLECTION"
+  heroDescription="Huge 100×100 maze puzzles built for serious focus and long-form maze solving."
+  benefitCards={[
+    { title: 'Maximum preset size', body: 'The largest fixed collection on MazeThis.' },
+    { title: 'Serious focus', body: 'Built for long, careful solving sessions.' },
+    { title: 'Dense exploration', body: 'A full 100×100 maze with a lot of ground to cover.' },
+    { title: 'Completion challenge', body: 'Work through the hardest collection one maze at a time.' },
+  ]}
+  faqItems={faqItems}
+  ctaHeading="Want a custom challenge?"
+  ctaDescription="Use the Maze Generator for custom sizes, or explore the full Maze Library and Printable Mazes."
+  ctaLinks={[
+    { label: 'Maze Generator', href: '/maze-generator' },
+    { label: 'Maze Library', href: '/maze-library' },
+    { label: 'Printable Mazes', href: '/printable-mazes' },
+  ]}
 >
   <!-- Progress row -->
   <div class="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
@@ -124,32 +135,6 @@ const schemaLD = JSON.stringify({
     {mazes.map((entry, i) => (
       <LibraryMazeCard entry={entry} index={i} />
     ))}
-  </div>
-
-  <!-- FAQ -->
-  <div class="mt-12 max-w-2xl">
-    <h2 class="text-xl font-bold mb-5" style="color: var(--color-charcoal);">About Monster Mazes</h2>
-    <div class="space-y-2">
-      {faqItems.map(({ q, a, open }) => (
-        <details open={open} class="group border rounded-lg" style="border-color: var(--color-border);">
-          <summary class="flex cursor-pointer items-center justify-between px-4 py-3 font-semibold select-none list-none [&::-webkit-details-marker]:hidden" style="color: var(--color-charcoal);">
-            {q}
-            <svg class="h-4 w-4 shrink-0 ml-3 transition-transform duration-200 group-open:rotate-180" style="color: var(--color-muted);" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-            </svg>
-          </summary>
-          <div class="px-4 pb-4 leading-relaxed" style="color: var(--color-charcoal);">
-            {q === 'What should I try after Monster Mazes?' ? (
-              <p>Monster Mazes are the highest tier in the Maze Library. After completing them, you can explore the <a href="/maze-library" class="underline hover:opacity-80">full Maze Library</a> — 160 curated puzzles across five difficulty tiers — or challenge yourself with the <a href="/maze-of-the-day" class="underline hover:opacity-80">Maze of the Day</a> for a fresh puzzle every day.</p>
-            ) : q === 'Can I print Monster Mazes?' ? (
-              <p>Yes. Visit the <a href="/printable-mazes" class="underline hover:opacity-80">Printable Mazes</a> page to download and print maze puzzles in a range of sizes, including monster mazes.</p>
-            ) : (
-              <p>{a}</p>
-            )}
-          </div>
-        </details>
-      ))}
-    </div>
   </div>
 </CategoryLayout>
 
