@@ -63,7 +63,7 @@ const breadcrumbSchema = JSON.stringify({
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-    { '@type': 'ListItem', position: 2, name: 'Learn', item: `${siteUrl}/learn` },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/learn` },
     { '@type': 'ListItem', position: 3, name: 'How to Solve a Maze' },
   ],
 });
@@ -79,7 +79,7 @@ const breadcrumbSchema = JSON.stringify({
 
     <Breadcrumb crumbs={[
       { label: 'Home', href: '/' },
-      { label: 'Learn', href: '/learn' },
+      { label: 'Maze Guides', href: '/learn' },
       { label: 'How to Solve a Maze' },
     ]} />
 
@@ -252,7 +252,7 @@ const breadcrumbSchema = JSON.stringify({
     <!-- CTA -->
     <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
       <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready to practice?</h2>
-      <p class="text-sm text-arch-600 mb-5">Start with a fixed maze collection, print a worksheet, or generate a custom maze.</p>
+      <p class="text-sm text-arch-600 mb-5">Start with a Maze Library collection, print a worksheet, or generate a custom maze.</p>
       <div class="flex flex-wrap gap-3">
         <a href="/maze-library"   class="btn-secondary">Maze Library</a>
         <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
