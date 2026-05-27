@@ -28,20 +28,24 @@ const faqs = [
     a: 'Yes. The daily maze is designed for online play in your browser. Use the arrow keys or WASD on desktop, or swipe in any direction on mobile and tablet. An on-screen D-pad is also available.',
   },
   {
-    q: 'Can I print the daily maze?',
-    a: 'The daily maze is optimised for online play. For print-ready maze PDFs, visit the Printable Mazes collection or use the Maze Generator to create and print a custom maze.',
+    q: 'Does my progress save?',
+    a: 'Yes. Your progress is saved automatically on this device. If you leave and come back later on the same day, you can resume from where you left off.',
   },
   {
     q: 'Can I use hints?',
     a: 'Yes. Hints are available while playing. You can also reveal the full solution at any time. There is no penalty for using hints.',
   },
   {
-    q: 'Is today\'s maze the same every time I reload?',
+    q: "Is today's maze the same every time I reload?",
     a: 'Yes. The maze is generated from the current calendar date, so it is the same maze for the entire day. Reloading the page on the same date gives you the same maze.',
   },
   {
     q: 'What difficulty is the daily maze?',
     a: 'The daily maze is a Large challenge — a 60×60 grid with complex corridors. It is more substantial than a small or medium maze but still completable in a single sitting.',
+  },
+  {
+    q: 'Can I print the daily maze?',
+    a: 'Maze of the Day is optimised for online play. For worksheet-style printouts and optional answer key pages, visit Printable Mazes.',
   },
 ];
 
@@ -105,15 +109,10 @@ const schemaLD = JSON.stringify({
           <span id="motd-date-label">Today's Challenge</span>
         </div>
 
-        <h1 class="text-4xl sm:text-5xl">Maze of the Day</h1>
-        <p class="mt-2 text-lg font-semibold text-slate-700">
-          Can you solve today's maze?
-        </p>
-        <p class="mt-1 text-sm text-slate-500 leading-relaxed max-w-lg">
-          Play a new free maze puzzle every day. Today's challenge is a Large maze built for a satisfying online solve.
-        </p>
-        <p class="mt-2 text-xs text-slate-400">
-          Large challenge &nbsp;·&nbsp; New at midnight &nbsp;·&nbsp; Free to play online
+        <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">Daily Maze Challenge</p>
+        <h1 class="text-5xl text-arch-charcoal mb-3">Maze of the Day</h1>
+        <p class="text-arch-600 text-base max-w-xl">
+          A new maze appears every day. Play today's challenge online, save your progress on this device, and come back tomorrow for a fresh maze.
         </p>
       </div>
 
@@ -132,113 +131,119 @@ const schemaLD = JSON.stringify({
       </div>
     </div>
 
-    <!-- Maze player — generated client-side from today's local date seed -->
-    <div class="mb-6">
+    <!-- Maze player — constrained preview, generated client-side from today's local date seed -->
+    <div class="max-w-[640px] mx-auto mb-6">
       <DailyMazePlayer client:only="react" />
     </div>
 
     <!-- Return / countdown row -->
     <div class="text-center mb-10">
-      <p class="text-sm text-slate-500">Come back tomorrow for a new daily maze</p>
-      <p class="text-xs text-slate-400 mt-1">
+      <p class="text-sm text-arch-600">Come back tomorrow for a new daily maze</p>
+      <p class="text-xs text-arch-400 mt-1">
         Next maze in <span id="motd-countdown" class="font-mono">…</span> · New maze at midnight
       </p>
     </div>
 
-    <!-- How it works -->
-    <section class="border-t border-slate-200 pt-10 mt-2">
-      <h2 class="text-2xl sm:text-3xl mb-3">How the Maze of the Day Works</h2>
-      <p class="text-slate-600 text-sm leading-relaxed max-w-2xl">
-        A new maze is available every day. The daily maze is generated from the current calendar date,
-        so it changes at midnight based on your local time. Each day brings a fresh Large puzzle you
-        can solve entirely in your browser — no download or account required. The maze is the same
-        for every player on the same local date.
-      </p>
+    <!-- How the Maze of the Day Works -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">How the Maze of the Day Works</h2>
+      <ol class="grid grid-cols-1 sm:grid-cols-3 gap-6 list-none">
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">1</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Open today's maze</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">A new daily maze is generated from the current date.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">2</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Solve online</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Play with keyboard, swipe, or D-pad controls.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">3</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Come back tomorrow</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">The challenge changes at midnight, giving you a fresh maze every day.</p>
+          </div>
+        </li>
+      </ol>
     </section>
 
-    <!-- Why play -->
-    <section class="border-t border-slate-200 pt-10 mt-10">
-      <h2 class="text-2xl sm:text-3xl mb-3">Why Play Today's Maze?</h2>
-      <p class="text-slate-600 text-sm leading-relaxed max-w-2xl">
-        The Maze of the Day is designed as a daily puzzle habit: one maze, one challenge, once per day.
-        It is more substantial than a quick small maze, but still completable in a single sitting.
-        Hints are always available if you get stuck, and your progress is saved automatically so you
-        can pick up where you left off.
-      </p>
-    </section>
-
-    <!-- FAQ -->
-    <section class="border-t border-slate-200 pt-10 mt-10">
-      <h2 class="text-2xl sm:text-3xl mb-6">Frequently Asked Questions</h2>
-      <div class="space-y-3" itemscope itemtype="https://schema.org/FAQPage">
-        {faqs.map(({ q, a }) => (
-          <details
-            class="group rounded-xl border border-slate-200 bg-white overflow-hidden"
-            itemscope
-            itemprop="mainEntity"
-            itemtype="https://schema.org/Question"
-          >
-            <summary
-              class="flex cursor-pointer items-center justify-between gap-4 p-5 font-semibold text-slate-800 hover:bg-slate-50 transition-colors list-none"
-              itemprop="name"
-            >
-              <span>{q}</span>
-              <svg
-                class="w-5 h-5 text-slate-400 shrink-0 transition-transform group-open:rotate-180"
-                fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </summary>
-            <div
-              class="px-5 pb-5 text-slate-600 text-sm leading-relaxed border-t border-slate-100"
-              itemscope
-              itemprop="acceptedAnswer"
-              itemtype="https://schema.org/Answer"
-            >
-              <div class="pt-4" itemprop="text">{a}</div>
-            </div>
-          </details>
-        ))}
+    <!-- Why Play Today's Maze? -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Why Play Today's Maze?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm" style="color: var(--color-muted-strong);">
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Daily habit</p>
+          <p>One fresh maze every day.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Same challenge for everyone</p>
+          <p>Today's maze is based on the date, so everyone gets the same daily puzzle.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Progress saves locally</p>
+          <p>Leave and come back without losing your current run.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Quick way to play</p>
+          <p>No setup, no account, no maze selection required.</p>
+        </div>
       </div>
     </section>
 
-    <!-- More free mazes -->
-    <section class="border-t border-slate-200 pt-10 mt-10">
-      <h2 class="text-2xl sm:text-3xl mb-6">More Free Mazes</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <a
-          href="/large-mazes"
-          class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-5 text-center hover:border-[var(--color-accent)] transition-colors group"
-        >
-          <span class="text-2xl" aria-hidden="true">🗺️</span>
-          <span class="font-semibold text-slate-800 group-hover:text-[var(--color-accent)] text-sm transition-colors">Browse Large Mazes</span>
-          <span class="text-xs text-slate-500">40 large mazes in the library</span>
+    <!-- Comparison section -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">Maze of the Day, Maze Library, and Maze Generator</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">Three ways to play, each built for a different kind of maze session.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="card rounded-lg p-5 flex flex-col gap-3">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze of the Day</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Play one fresh daily maze challenge.</p>
+          </div>
+          <span class="text-xs text-arch-400 mt-auto">You are here</span>
+        </div>
+        <a href="/maze-library" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Library</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Work through fixed online maze collections and track your progress.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Library →</span>
         </a>
-        <a
-          href="/maze-generator"
-          class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-5 text-center hover:border-[var(--color-accent)] transition-colors group"
-        >
-          <span class="text-2xl" aria-hidden="true">⚙️</span>
-          <span class="font-semibold text-slate-800 group-hover:text-[var(--color-accent)] text-sm transition-colors">Maze Generator</span>
-          <span class="text-xs text-slate-500">Custom size, instant play or print</span>
+        <a href="/maze-generator" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Generator</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze and decide whether to play, print, or download it.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Generator →</span>
         </a>
-        <a
-          href="/printable-mazes"
-          class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-5 text-center hover:border-[var(--color-accent)] transition-colors group"
-        >
-          <span class="text-2xl" aria-hidden="true">🖨️</span>
-          <span class="font-semibold text-slate-800 group-hover:text-[var(--color-accent)] text-sm transition-colors">Printable Mazes</span>
-          <span class="text-xs text-slate-500">150+ mazes, print-ready PDFs</span>
-        </a>
-        <a
-          href="/blog/how-to-solve-a-maze"
-          class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-5 text-center hover:border-[var(--color-accent)] transition-colors group"
-        >
-          <span class="text-2xl" aria-hidden="true">💡</span>
-          <span class="font-semibold text-slate-800 group-hover:text-[var(--color-accent)] text-sm transition-colors">How to Solve a Maze</span>
-          <span class="text-xs text-slate-500">Tips, strategies, and techniques</span>
-        </a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently Asked Questions</h2>
+      <dl class="space-y-5">
+        {faqs.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Want more than one maze?</h2>
+      <p class="text-sm text-arch-600 mb-5">Use the Maze Library to complete fixed collections, or use the Maze Generator to create a custom maze anytime.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library" class="btn-secondary">Maze Library</a>
+        <a href="/maze-generator" class="btn-secondary">Maze Generator</a>
       </div>
     </section>
 
