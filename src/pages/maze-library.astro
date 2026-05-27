@@ -132,23 +132,21 @@ const schemaLD = JSON.stringify({
 
     <!-- Hero -->
     <div class="mt-6 mb-12 md:mb-16 lg:mb-20">
+      <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">Free Online Maze Library</p>
       <h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mb-5">Free Online Maze Library</h1>
       <p class="text-lg sm:text-xl md:text-2xl max-w-2xl leading-relaxed" style="color: var(--color-muted-strong);">
-        Choose a maze collection and start solving. The Maze Library is a set of fixed online maze puzzles you can complete at your own pace — progress saves on your device.
+        Choose a maze collection and solve each puzzle at your own pace. Your progress saves on this device, so you can come back and keep going.
       </p>
       <div class="mt-6 flex flex-wrap items-center gap-3">
         <a href="#maze-collections" class="btn-primary px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base">Choose a Maze</a>
         <a href="/play/maze-of-the-day/" class="btn-secondary px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base">Play Today's Maze</a>
         <a href="/maze-generator" class="btn-secondary px-5 md:px-7 py-3 md:py-3.5 text-sm md:text-base">Make a Maze</a>
       </div>
-      <p class="mt-4 text-base" style="color: var(--color-muted-strong);">
-        Progress saves on your device — no account required.
-      </p>
     </div>
 
     <!-- Maze Collections -->
     <div id="maze-collections" class="mb-14 lg:mb-16">
-      <h2 class="text-2xl md:text-3xl mb-6 lg:mb-8" style="color: var(--color-charcoal);">Maze Collections</h2>
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6 lg:mb-8">Maze Collections</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-5">
         {CATEGORIES.map((cat) => {
           const count = tierCounts[cat.difficulty] ?? 0;
@@ -225,78 +223,108 @@ const schemaLD = JSON.stringify({
       </div>
     </div>
 
-    <!-- Completionist callout -->
-    <div class="mb-14 lg:mb-16 max-w-2xl">
-      <h2 class="text-2xl md:text-3xl mb-4" style="color: var(--color-charcoal);">Complete every maze</h2>
-      <p class="text-base md:text-lg leading-relaxed" style="color: var(--color-muted-strong);">
-        Work through each collection at your own pace. Start with Small Mazes, move through Medium and Large, then take on Expert and Monster when you want the hardest challenges. Your progress is saved on this device so you can come back and keep going.
-      </p>
-    </div>
+    <!-- How the Maze Library Works -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">How the Maze Library Works</h2>
+      <ol class="grid grid-cols-1 sm:grid-cols-3 gap-6 list-none">
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">1</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Choose a collection</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Pick Small, Medium, Large, Expert, or Monster.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">2</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Solve each maze</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Play online with keyboard, swipe, or D-pad controls.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">3</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Track completion</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Finished mazes are saved on this device so you can work through every collection over time.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
 
-    <!-- Choose how you want to play -->
-    <div class="mb-14 lg:mb-16">
-      <h2 class="text-2xl md:text-3xl mb-6" style="color: var(--color-charcoal);">Choose how you want to play</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
-        <a href="#maze-collections" class="card-hover flex flex-col p-5 lg:p-6 gap-3 no-underline">
+    <!-- Why Complete the Library? -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Why Complete the Library?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm" style="color: var(--color-muted-strong);">
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Completionist progress</p>
+          <p>Work through each collection and see what you have finished.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Fixed challenges</p>
+          <p>Every library maze has a stable place, so you can replay or resume specific puzzles.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">All skill levels</p>
+          <p>Start with Small mazes and move up to larger, denser collections.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">No account required</p>
+          <p>Progress saves locally on your device.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tool Comparison -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">Maze Library, Maze Generator, and Printable Mazes</h2>
+      <p class="text-sm text-arch-600 mb-6">Three tools, each built for a different use. Choose the one that fits.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="card rounded-lg p-5 flex flex-col gap-3">
           <div>
-            <p class="font-semibold text-lg mb-1.5" style="color: var(--color-charcoal);">Maze Library</p>
-            <p class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Complete fixed collections and track your progress.</p>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Library</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Work through fixed online maze collections and track your progress.</p>
           </div>
-          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Browse collections →</span>
+          <span class="text-xs text-arch-400 mt-auto">You are here</span>
+        </div>
+        <a href="/maze-generator" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Generator</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze and decide whether to play, print, or download it.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Generator →</span>
         </a>
-        <a href="/maze-of-the-day" class="card-hover flex flex-col p-5 lg:p-6 gap-3 no-underline">
+        <a href="/printable-mazes" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
           <div>
-            <p class="font-semibold text-lg mb-1.5" style="color: var(--color-charcoal);">Maze of the Day</p>
-            <p class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Play one fresh daily maze challenge.</p>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Printable Mazes</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">A print-first worksheet tool with optional answer key pages.</p>
           </div>
-          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Play today →</span>
-        </a>
-        <a href="/maze-generator" class="card-hover flex flex-col p-5 lg:p-6 gap-3 no-underline">
-          <div>
-            <p class="font-semibold text-lg mb-1.5" style="color: var(--color-charcoal);">Maze Generator</p>
-            <p class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Create a custom maze whenever you want.</p>
-          </div>
-          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Try it →</span>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Free Maze Printables →</span>
         </a>
       </div>
-    </div>
-
-    <!-- What is the Maze Library? -->
-    <div class="max-w-2xl mb-12">
-      <h2 class="text-2xl md:text-3xl mb-4" style="color: var(--color-charcoal);">What is the Maze Library?</h2>
-      <p class="text-base md:text-lg leading-relaxed" style="color: var(--color-muted-strong);">
-        The Maze Library is a set of fixed maze collections you can solve over time. Unlike the Maze of the Day, these puzzles stay available. Unlike the Maze Generator, each library maze has a stable place in a collection, so you can track what you have finished and work toward completing them all.
-      </p>
-    </div>
+    </section>
 
     <!-- FAQ -->
-    <div class="max-w-2xl mb-12">
-      <h2 class="text-2xl md:text-3xl mb-6" style="color: var(--color-charcoal);">Frequently asked questions</h2>
-      <div class="space-y-2">
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
         {faqItems.map(({ q, a }) => (
-          <details class="group border rounded-lg" style="border-color: var(--color-border);">
-            <summary
-              class="flex cursor-pointer items-center justify-between px-4 py-4 font-semibold select-none list-none [&::-webkit-details-marker]:hidden"
-              style="color: var(--color-charcoal);"
-            >
-              {q}
-              <svg
-                class="h-4 w-4 shrink-0 ml-3 transition-transform duration-200 group-open:rotate-180"
-                style="color: var(--color-muted-strong);"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-              </svg>
-            </summary>
-            <div class="px-4 pb-4 text-base leading-relaxed" style="color: var(--color-muted-strong);">
-              {a}
-            </div>
-          </details>
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
         ))}
+      </dl>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Want to make your own maze?</h2>
+      <p class="text-sm text-arch-600 mb-5">Use the Maze Generator to create a custom maze, or use Printable Mazes when you want worksheet-style printouts with optional answer key pages.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-generator" class="btn-secondary">Maze Generator</a>
+        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
       </div>
-    </div>
+    </section>
 
   </div>
 </BaseLayout>
