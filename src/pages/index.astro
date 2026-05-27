@@ -1,8 +1,62 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/home/Hero.astro';
-import FeatureMazes from '../components/home/FeatureMazes.astro';
 import HowItWorks from '../components/home/HowItWorks.astro';
+import type { Difficulty } from '../types/maze.js';
+import { getMazesByDifficulty } from '../lib/catalog/index.js';
+import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
+import { generateMazeFromCatalog, generateMazeFromLibraryCatalog } from '../lib/maze/index.js';
+import { renderMazeToSVGString } from '../lib/svg/renderToString.js';
+
+// cellSize/wallThickness tuned so walls stay visible when SVG scales to ~240px card
+const thumbnailParams: Record<Difficulty, { cellSize: number; wallThickness: number }> = {
+  small:   { cellSize: 10, wallThickness: 2.0 }, // viewBox ~204  — bold corridors
+  medium:  { cellSize:  5, wallThickness: 1.5 }, // viewBox ~204  — balanced density
+  large:   { cellSize:  3, wallThickness: 1.2 }, // viewBox ~184  — more corridors
+  expert:  { cellSize:  2, wallThickness: 1.0 }, // viewBox ~164  — fine grid, visible
+  monster: { cellSize:  2, wallThickness: 1.0 }, // viewBox ~204  — finest grid, visible
+};
+
+const librarySizes: Array<{
+  difficulty: Difficulty;
+  grid: string;
+  name: string;
+  href: string;
+  cta: string;
+  desc: string;
+}> = [
+  { difficulty: 'small',   grid: '20×20',   name: 'Small',   href: '/small-mazes',   cta: 'Browse Small',   desc: 'Quick mazes for beginners, kids, and short sessions.' },
+  { difficulty: 'medium',  grid: '40×40',   name: 'Medium',  href: '/medium-mazes',  cta: 'Browse Medium',  desc: 'A balanced maze size with more room to explore.' },
+  { difficulty: 'large',   grid: '60×60',   name: 'Large',   href: '/large-mazes',   cta: 'Browse Large',   desc: 'Bigger challenges for longer solving sessions.' },
+  { difficulty: 'expert',  grid: '80×80',   name: 'Expert',  href: '/expert-mazes',  cta: 'Browse Expert',  desc: 'Dense maze puzzles for experienced solvers.' },
+  { difficulty: 'monster', grid: '100×100', name: 'Monster', href: '/monster-mazes', cta: 'Browse Monster', desc: 'The largest preset collection for serious focus.' },
+];
+
+// Small/Medium/Large are in catalog.json; Expert/Monster are in libraryCatalog.json
+function getMazeThumbnail(difficulty: Difficulty): string {
+  const { cellSize, wallThickness } = thumbnailParams[difficulty];
+  let mazeData;
+  if (difficulty === 'expert' || difficulty === 'monster') {
+    const entries = getLibraryMazesByDifficulty(difficulty);
+    if (!entries.length) return '';
+    mazeData = generateMazeFromLibraryCatalog(entries[0]);
+  } else {
+    const entries = getMazesByDifficulty(difficulty);
+    if (!entries.length) return '';
+    mazeData = generateMazeFromCatalog(entries[0]);
+  }
+  return renderMazeToSVGString(mazeData, {
+    cellSize,
+    wallThickness,
+    padding: 2,
+    showSolution: false,
+    showEndpointMarkers: false,
+  });
+}
+
+const librarySvgs = Object.fromEntries(
+  librarySizes.map(({ difficulty }) => [difficulty, getMazeThumbnail(difficulty)])
+) as Record<Difficulty, string>;
 
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
 
@@ -11,7 +65,7 @@ const websiteSchema = JSON.stringify({
   '@type': 'WebSite',
   name: 'MazeThis',
   url: siteUrl,
-  description: 'Free printable maze puzzles and daily maze challenge. 420+ mazes for kids and adults.',
+  description: 'Free online mazes, daily maze challenge, maze generator, and printable maze worksheets.',
   potentialAction: {
     '@type': 'SearchAction',
     target: `${siteUrl}/maze-generator`,
@@ -25,25 +79,169 @@ const organizationSchema = JSON.stringify({
   name: 'MazeThis',
   url: siteUrl,
   logo: `${siteUrl}/favicon.svg`,
-  description: 'Free printable mazes and interactive maze puzzles for kids and adults. Daily maze challenge, maze library, and custom maze generator.',
+  description: 'Free online mazes and interactive maze puzzles for all skill levels. Daily maze challenge, fixed collections, custom maze generator, and printable worksheets.',
   foundingDate: '2024',
   knowsAbout: ['maze puzzles', 'printable mazes', 'daily maze challenge', 'maze generation', 'brain games', 'educational puzzles'],
 });
 ---
 
 <BaseLayout
-  title="Free Maze Puzzles — Daily Challenge & Printable Mazes | MazeThis"
-  description="Play a new free maze puzzle every day. Browse 420+ printable mazes for kids and adults, or generate your own. No account needed — free forever."
+  title="MazeThis | Free Online Mazes, Maze Generator, and Printable Mazes"
+  description="Play a fresh daily maze, browse free online maze collections, generate custom mazes, and print clean maze worksheets with MazeThis."
   schemaLD={[websiteSchema, organizationSchema]}
 >
 
   <!-- 1. Hero -->
   <Hero />
 
-  <!-- 2. Maze Library — combined section -->
-  <FeatureMazes />
+  <!-- 2. Choose How You Want to Play — 4-card product-path grid -->
+  <section
+    class="py-16 sm:py-20"
+    style="background-color: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);"
+    aria-labelledby="products-heading"
+  >
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
-  <!-- 3. How It Works (dark section) -->
+      <div class="mb-10">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+        >The Best Maze Experience on the Internet</p>
+        <h2
+          id="products-heading"
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >Choose How You<br />Want to Play</h2>
+        <p
+          class="mt-3 text-sm leading-relaxed max-w-lg"
+          style="color: var(--color-muted-strong);"
+        >Start with today's maze, work through a collection, generate a custom maze, or print a worksheet.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            title: 'Maze of the Day',
+            desc: 'Play one fresh daily maze challenge.',
+            cta: 'Play today →',
+            href: '/maze-of-the-day',
+          },
+          {
+            title: 'Maze Library',
+            desc: 'Complete fixed online maze collections and track your progress.',
+            cta: 'Browse library →',
+            href: '/maze-library',
+          },
+          {
+            title: 'Maze Generator',
+            desc: 'Create a custom maze to play, print, or download.',
+            cta: 'Generate a maze →',
+            href: '/maze-generator',
+          },
+          {
+            title: 'Printable Mazes',
+            desc: 'Generate clean maze worksheets with optional answer key pages.',
+            cta: 'Print mazes →',
+            href: '/printable-mazes',
+          },
+        ].map(({ title, desc, cta, href }) => (
+          <a
+            href={href}
+            class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline"
+          >
+            <div>
+              <p
+                class="font-semibold mb-1"
+                style="color: var(--color-charcoal);"
+              >{title}</p>
+              <p
+                class="text-sm"
+                style="color: var(--color-muted-strong);"
+              >{desc}</p>
+            </div>
+            <span
+              class="text-sm font-medium mt-auto"
+              style="color: var(--color-accent);"
+            >{cta}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Maze Library size preview -->
+  <section
+    class="py-16 sm:py-20"
+    style="background-color: var(--color-bg); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);"
+    aria-labelledby="library-sizes-heading"
+  >
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+      <div class="flex items-end justify-between mb-10">
+        <div>
+          <p
+            class="text-xs uppercase tracking-widest mb-2"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+          >Maze Library</p>
+          <h2
+            id="library-sizes-heading"
+            class="font-display text-5xl sm:text-6xl uppercase"
+            style="color: var(--color-charcoal);"
+          >Pick Your<br />Challenge</h2>
+          <p
+            class="mt-3 text-sm leading-relaxed max-w-md"
+            style="color: var(--color-muted-strong);"
+          >Start small, move up, and complete each collection at your own pace.</p>
+        </div>
+        <a
+          href="/maze-library"
+          class="hidden sm:inline-flex items-center gap-1 text-xs uppercase tracking-widest no-underline"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal); text-decoration: underline; text-decoration-color: var(--color-border-strong); text-underline-offset: 3px;"
+        >View Maze Library →</a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {librarySizes.map(({ difficulty, grid, name, href, cta, desc }) => (
+          <a
+            href={href}
+            class="card-hover rounded-lg flex flex-col no-underline overflow-hidden"
+          >
+            <div class="lib-preview-thumb" aria-hidden="true" set:html={librarySvgs[difficulty]} />
+            <div class="p-4 flex flex-col gap-2 flex-1">
+              <div>
+                <p
+                  class="font-semibold text-sm leading-tight"
+                  style="color: var(--color-charcoal);"
+                >{name}</p>
+                <p
+                  class="text-xs mt-0.5"
+                  style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+                >{grid}</p>
+              </div>
+              <p
+                class="text-xs leading-relaxed flex-1"
+                style="color: var(--color-muted-strong);"
+              >{desc}</p>
+              <span
+                class="text-xs font-medium mt-auto"
+                style="color: var(--color-accent);"
+              >{cta} →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="mt-6 sm:hidden text-center">
+        <a
+          href="/maze-library"
+          class="text-xs uppercase tracking-widest"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong); text-decoration: underline; text-underline-offset: 3px;"
+        >View Maze Library →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. How MazeThis Works (dark section) -->
   <HowItWorks />
 
   <!-- 4. Generator CTA (light section) -->
@@ -70,7 +268,7 @@ const organizationSchema = JSON.stringify({
           class="text-sm leading-relaxed mb-8 max-w-md"
           style="color: var(--color-muted-strong);"
         >
-          Create a unique maze in seconds — Small, Medium, or Large. Download as SVG or print from your browser. No account, no limit.
+          Choose a size, generate a unique maze, then play online, print, or download the SVG.
         </p>
         <a
           href="/maze-generator"
@@ -85,7 +283,7 @@ const organizationSchema = JSON.stringify({
     </div>
   </section>
 
-  <!-- 5. Made for Maze Lovers (dark section) -->
+  <!-- 5. Built for Maze Lovers (dark section) -->
   <section
     class="relative overflow-hidden py-14 sm:py-20"
     style="background-color: var(--color-charcoal);"
@@ -105,7 +303,11 @@ const organizationSchema = JSON.stringify({
           id="features-heading"
           class="font-display text-5xl sm:text-6xl uppercase"
           style="color: var(--color-bg);"
-        >Made for<br />Maze Lovers</h2>
+        >Built for<br />Maze Lovers</h2>
+        <p
+          class="mt-3 text-sm leading-relaxed max-w-lg"
+          style="color: color-mix(in srgb, var(--color-bg) 60%, transparent);"
+        >MazeThis gives you more than one way to solve: daily challenges, fixed collections, custom generation, and printable worksheets.</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-8">
@@ -113,32 +315,32 @@ const organizationSchema = JSON.stringify({
           {
             id: '01',
             title: 'Daily Maze Challenge',
-            body: 'A fresh maze every day, shared by everyone.',
+            body: 'A fresh maze every day.',
           },
           {
             id: '02',
-            title: 'Print-Perfect Worksheets',
-            body: 'Clean printable mazes for classrooms, folders, and puzzle books.',
+            title: 'Track Your Progress',
+            body: 'Complete fixed collections over time on the same device.',
           },
           {
             id: '03',
-            title: 'Play Online on Any Device',
-            body: 'Solve instantly on desktop, tablet, or phone.',
+            title: 'Generate Unlimited Mazes',
+            body: 'Create a new custom maze whenever you want.',
           },
           {
             id: '04',
-            title: 'Unlimited Unique Mazes',
-            body: 'Generate new mazes whenever you want.',
+            title: 'Print Clean Worksheets',
+            body: 'Make printable mazes with optional answer key pages.',
           },
           {
             id: '05',
-            title: 'For Kids, Adults & Classrooms',
-            body: 'Simple enough for kids, challenging enough for grown-ups.',
+            title: 'Play on Any Device',
+            body: 'Use keyboard, swipe, or on-screen controls.',
           },
           {
             id: '06',
-            title: 'Always Free',
-            body: 'Play, print, and generate mazes without an account.',
+            title: 'No Account Required',
+            body: 'Start solving immediately.',
           },
         ].map(({ id, title, body }) => (
           <div class="flex gap-5">
@@ -158,6 +360,78 @@ const organizationSchema = JSON.stringify({
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Learn section -->
+  <section
+    class="py-14 sm:py-20"
+    style="background-color: var(--color-bg); border-top: 1px solid var(--color-border);"
+    aria-labelledby="learn-heading"
+  >
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2
+        id="learn-heading"
+        class="font-display text-4xl sm:text-5xl uppercase mb-4"
+        style="color: var(--color-charcoal);"
+      >Improve Your Maze Skills</h2>
+      <p
+        class="text-sm leading-relaxed max-w-md mx-auto mb-8"
+        style="color: var(--color-muted-strong);"
+      >Read simple guides on maze-solving strategies, difficulty, maze types, and choosing the right puzzle.</p>
+      <a
+        href="/learn"
+        class="btn-secondary text-sm px-7 py-3 inline-flex items-center gap-2"
+      >
+        Read Maze Guides →
+      </a>
+    </div>
+  </section>
+
+  <!-- 7. Final CTA -->
+  <section
+    class="relative overflow-hidden py-16 sm:py-24"
+    style="background-color: var(--color-charcoal);"
+    aria-labelledby="final-cta-heading"
+  >
+    <div class="absolute inset-0 architect-dot-grid opacity-20 pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute top-0 left-0 right-0 h-0.5" style="background-color: var(--color-accent);" aria-hidden="true"></div>
+
+    <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2
+        id="final-cta-heading"
+        class="font-display text-5xl sm:text-6xl lg:text-7xl uppercase leading-none mb-4"
+        style="color: var(--color-bg);"
+      >Ready to Solve<br />a Maze?</h2>
+      <p
+        class="text-sm leading-relaxed mb-10 max-w-sm mx-auto"
+        style="color: color-mix(in srgb, var(--color-bg) 65%, transparent);"
+      >Start with today's maze, browse the library, or generate your own.</p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a
+          href="/maze-of-the-day"
+          class="btn-primary text-sm px-7 py-3.5 inline-flex items-center gap-2 w-full sm:w-auto justify-center"
+        >
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Play Today's Maze
+        </a>
+        <a
+          href="/maze-library"
+          class="btn-secondary text-sm px-7 py-3.5 w-full sm:w-auto text-center"
+          style="color: var(--color-bg); border-color: color-mix(in srgb, var(--color-bg) 35%, transparent);"
+        >
+          Maze Library
+        </a>
+        <a
+          href="/maze-generator"
+          class="btn-secondary text-sm px-7 py-3.5 w-full sm:w-auto text-center"
+          style="color: var(--color-bg); border-color: color-mix(in srgb, var(--color-bg) 35%, transparent);"
+        >
+          Maze Generator
+        </a>
       </div>
     </div>
   </section>
@@ -198,6 +472,24 @@ const organizationSchema = JSON.stringify({
   </div>
 
 </BaseLayout>
+
+<style>
+  .lib-preview-thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 150ms ease;
+  }
+  .card-hover:hover .lib-preview-thumb {
+    border-color: var(--color-border-strong);
+  }
+  .lib-preview-thumb :global(svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
 
 <script>
   import { getDailyNow } from '../lib/utils/dailyNow';
