@@ -195,10 +195,10 @@ export function PrintableMazeGenerator() {
           style={{ width: 'min(100%, calc(100vh - 140px))' }}
           aria-label="Maze info"
         >
-          <span className="text-sm font-mono font-medium text-arch-600 sm:text-base">
+          <span className="text-[13px] font-mono font-medium text-arch-600 sm:text-sm">
             {maze.width} × {maze.height}
           </span>
-          <span className="text-sm font-mono font-medium text-arch-600 sm:text-base">
+          <span className="text-[13px] font-mono font-medium text-arch-600 sm:text-sm">
             {selectedLabel}
           </span>
         </div>
@@ -227,27 +227,28 @@ export function PrintableMazeGenerator() {
           <div className="font-display text-5xl text-arch-charcoal leading-none mb-2" aria-hidden="true">
             Print Your Own<br />Maze Worksheet
           </div>
-          <p className="text-base text-arch-600 leading-relaxed mb-4">
+          <p className="text-sm text-arch-600 leading-relaxed mb-4">
             Choose a size, generate a clean maze, then print an ad-free worksheet or download the SVG.
           </p>
         </div>
 
         {/* Size selector */}
         <fieldset>
-          <legend className="block text-sm tracking-widest uppercase font-semibold text-arch-600 mb-2">
+          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-600 mb-2">
             Size
           </legend>
-          <div className="grid grid-cols-3 gap-1.5">
-            {SIZE_OPTIONS.map(({ value, label, detail }) => (
+          <div className="grid grid-cols-6 gap-1.5">
+            {/* Row 1: Small / Medium / Large — each spans 2 of 6 columns */}
+            {SIZE_OPTIONS.slice(0, 3).map(({ value, label, detail }) => (
               <button
                 key={value}
                 onClick={() => handleSizeChange(value)}
-                className={`${btnBase} flex flex-col items-center leading-tight px-1 py-2.5 ${
+                className={`col-span-2 ${btnBase} flex flex-col items-center leading-tight px-1 ${
                   selectedSize === value ? activeBtn : inactiveBtn
                 }`}
                 aria-pressed={selectedSize === value}
               >
-                <span className="text-sm font-semibold">{label}</span>
+                <span>{label}</span>
                 <span className={`text-xs font-mono font-medium ${
                   selectedSize === value ? 'text-white/85 dark:text-arch-charcoal/70' : 'text-arch-600'
                 }`}>
@@ -255,22 +256,39 @@ export function PrintableMazeGenerator() {
                 </span>
               </button>
             ))}
+            {/* Row 2: 1-col spacer + Expert + Monster + 1-col spacer = centered pair */}
+            <div className="col-span-1" aria-hidden="true" />
+            {SIZE_OPTIONS.slice(3).map(({ value, label, detail }) => (
+              <button
+                key={value}
+                onClick={() => handleSizeChange(value)}
+                className={`col-span-2 ${btnBase} flex flex-col items-center leading-tight px-1 ${
+                  selectedSize === value ? activeBtn : inactiveBtn
+                }`}
+                aria-pressed={selectedSize === value}
+              >
+                <span>{label}</span>
+                <span className={`text-xs font-mono font-medium ${
+                  selectedSize === value ? 'text-white/85 dark:text-arch-charcoal/70' : 'text-arch-600'
+                }`}>
+                  {detail}
+                </span>
+              </button>
+            ))}
+            <div className="col-span-1" aria-hidden="true" />
           </div>
         </fieldset>
 
         {/* Answer key toggle */}
-        <div className="flex flex-col gap-1">
-          <label className="flex items-center gap-2.5 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={showSolution}
-              onChange={(e) => setShowSolution(e.target.checked)}
-              className="w-4 h-4 accent-arch-accent shrink-0"
-            />
-            <span className="text-sm font-medium text-arch-charcoal">Include Answer Key</span>
-          </label>
-          <p className="text-sm text-arch-600 pl-[26px]">Prints a second page with the solution.</p>
-        </div>
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={showSolution}
+            onChange={(e) => setShowSolution(e.target.checked)}
+            className="w-4 h-4 accent-arch-accent shrink-0"
+          />
+          <span className="text-sm font-medium text-arch-charcoal">Include Answer Key</span>
+        </label>
 
         {/* Divider */}
         <div className="border-t border-arch-200" />
@@ -308,7 +326,7 @@ export function PrintableMazeGenerator() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Download SVG
+            Download Maze SVG
           </button>
 
           {/* Mobile note — print unavailable on mobile */}
