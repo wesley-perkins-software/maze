@@ -374,7 +374,8 @@
 
 /* Maze generator print sheet ─────────────────────────────────────────────── */
 @media screen {
-  .print-only {
+  .print-only,
+  .print-pages {
     display: none !important;
   }
 }
@@ -391,7 +392,8 @@
     height: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    /* visible so multi-page print portals can flow across pages */
+    overflow: visible !important;
     background: #fff !important;
     color: #000 !important;
   }
@@ -471,8 +473,33 @@
   .print-maze-art .maze-endpoint-marker,
   .print-maze-art .maze-player-cursor,
   .print-maze-art .maze-traversal-path,
-  .print-maze-art .maze-hint-path,
-  .print-maze-art .maze-solution-path {
+  .print-maze-art .maze-hint-path {
     display: none !important;
+  }
+  /* Solution path hidden by default; opt-in via .print-with-solution on the wrapper. */
+  .print-maze-art:not(.print-with-solution) .maze-solution-path {
+    display: none !important;
+  }
+
+  /* Multi-page print portal (answer key). Uses normal document flow so
+     the browser can paginate across pages. .print-only (single-page) is
+     unchanged — its position:fixed approach is still used when no answer key. */
+  .print-pages {
+    display: block !important;
+    background: #fff;
+  }
+
+  .print-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .print-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
   }
 }
