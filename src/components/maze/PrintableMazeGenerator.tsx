@@ -123,6 +123,7 @@ export function PrintableMazeGenerator() {
             padding={6}
             solution={maze.solution}
             showSolution={true}
+            markersOutside={true}
             showEndpointMarkers={false}
             showPlayer={false}
             showTrail={false}
