@@ -7,18 +7,20 @@ import DifficultyBadge from './DifficultyBadge.astro';
 
 export interface Props {
   entry: MazeCatalogEntry;
+  href?: string;
 }
 
-const { entry } = Astro.props;
+const { entry, href } = Astro.props;
 const maze = generateMazeFromCatalog(entry);
 const svg = renderThumbnail(maze);
 const title = generateMazeTitle(entry);
+const cardHref = href ?? `/mazes/${entry.slug}`;
 ---
 
 <a
-  href={`/mazes/${entry.slug}`}
+  href={cardHref}
   class="card card-hover group block"
-  aria-label={`Play or print: ${title}`}
+  aria-label={`Browse: ${title}`}
 >
   <!-- SVG Thumbnail — rendered at build time -->
   <div

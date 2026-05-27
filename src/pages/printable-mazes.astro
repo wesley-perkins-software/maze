@@ -1,67 +1,222 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/nav/Breadcrumb.astro';
-import CategoryNav from '../components/nav/CategoryNav.astro';
 import MazeCard from '../components/ui/MazeCard.astro';
-import { getMazesByDifficulty } from '../lib/catalog/index.js';
+import { getMazesByDifficulty, getAllMazes } from '../lib/catalog/index.js';
 
 const smallMazes  = getMazesByDifficulty('small').slice(0, 5);
 const mediumMazes = getMazesByDifficulty('medium').slice(0, 5);
 const largeMazes  = getMazesByDifficulty('large').slice(0, 5);
 
+const smallCount  = getMazesByDifficulty('small').length;
+const mediumCount = getMazesByDifficulty('medium').length;
+const largeCount  = getMazesByDifficulty('large').length;
+const totalCount  = getAllMazes().length;
+
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const sizeCards = [
+  {
+    slug:        'small',
+    label:       'Small',
+    grid:        '20×20',
+    count:       smallCount,
+    href:        '/small-mazes',
+    positioning: 'Quick & approachable',
+    desc:        'Fast solves for all ages. Great for kids, classrooms, and warm-ups.',
+  },
+  {
+    slug:        'medium',
+    label:       'Medium',
+    grid:        '40×40',
+    count:       mediumCount,
+    href:        '/medium-mazes',
+    positioning: 'Balanced challenge',
+    desc:        'More branching paths and a longer solve. A satisfying paper maze.',
+  },
+  {
+    slug:        'large',
+    label:       'Large',
+    grid:        '60×60',
+    count:       largeCount,
+    href:        '/large-mazes',
+    positioning: 'Dense labyrinth',
+    desc:        'Serious paper puzzles that fill a full page. Easy to get lost.',
+  },
+];
+
+const howSteps = [
+  { n: '1', text: 'Choose a size — Small, Medium, or Large.' },
+  { n: '2', text: 'Open a maze from the collection page.' },
+  { n: '3', text: 'Click <strong>Print Maze</strong> on the maze page for a clean, ad-free printout.' },
+  { n: '4', text: 'Print on standard Letter or A4 paper.' },
+];
+
+const whyItems = [
+  {
+    heading: 'No screens required',
+    body:    'A printed maze works anywhere — at a table, in the car, or in a classroom with no devices.',
+  },
+  {
+    heading: 'Fine motor and focus',
+    body:    'Tracing a pencil through a maze builds fine motor skills and sustained attention in children.',
+  },
+  {
+    heading: 'Unlimited copies',
+    body:    'Each maze can be printed as many times as you need — ideal for classroom sets or family activity packs.',
+  },
+  {
+    heading: 'Clean, portable fun',
+    body:    'Completed puzzles can be kept, shared, or displayed. A solved paper maze has a satisfying finality.',
+  },
+];
+
+const faqItems = [
+  {
+    q: 'What are maze printables?',
+    a: 'Maze printables are ready-made maze puzzles designed to print on standard paper and solve with a pencil. Each maze on MazeThis prints as a clean single-page worksheet — no ads, no extra content, just the maze.',
+  },
+  {
+    q: 'Are these maze printables free?',
+    a: 'Yes. Every maze on MazeThis is free to browse and print — no account, no sign-up, and no payment required.',
+  },
+  {
+    q: 'How do I print a maze?',
+    a: 'Browse by size (Small, Medium, or Large), open a maze, and use the Print Maze button on the maze page. Your browser shows a clean print view with just the maze. Print on standard Letter or A4 paper.',
+  },
+  {
+    q: 'Can I print mazes without ads?',
+    a: 'Yes. The print view is completely ad-free — only the maze appears on the printed page.',
+  },
+  {
+    q: 'Can I print maze solutions?',
+    a: 'Solution printing is not yet available. Printable mazes currently focus on clean, puzzle-only worksheets. Solution printing is planned for a future update.',
+  },
+  {
+    q: 'What size maze should I print for kids?',
+    a: 'Small Mazes (20×20 grid) are the best choice for children and beginners — quick to complete and easy to orient on the page. Medium Mazes (40×40) work well for older kids and teens who want more of a challenge.',
+  },
+  {
+    q: 'Can teachers use these maze worksheets?',
+    a: 'Yes. Every maze can be printed as many times as needed — great for classroom sets, warm-up activities, or take-home worksheets. No license or permission is required for educational use.',
+  },
+  {
+    q: 'Can I make a custom printable maze?',
+    a: 'Yes. The Maze Generator lets you create a maze in any size, then download the SVG or print it directly from your browser. Use it when you want a specific size or layout not in the ready-made collection.',
+  },
+  {
+    q: 'Are the mazes black and white?',
+    a: 'Yes. All mazes print in black and white. Use your printer\'s grayscale mode to save ink.',
+  },
+];
 
 const schemaLD = JSON.stringify({
   '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
-  name: 'Free Printable Mazes',
-  description: 'Download and print 150+ free maze puzzles in small, medium, and large sizes. Clean print layouts — no ads.',
-  url: `${siteUrl}/printable-mazes`,
-  publisher: { '@type': 'Organization', name: 'MazeThis', url: siteUrl },
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${siteUrl}/printable-mazes`,
+      url: `${siteUrl}/printable-mazes`,
+      name: 'Free Maze Printables',
+      description: `Print free maze worksheets in small, medium, and large sizes. ${totalCount} mazes available. Clean ad-free printouts — no sign-up required.`,
+      isPartOf: { '@id': `${siteUrl}/#website` },
+      breadcrumb: { '@id': `${siteUrl}/printable-mazes#breadcrumb` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${siteUrl}/printable-mazes#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'Printable Mazes', item: `${siteUrl}/printable-mazes` },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
+  ],
 });
 ---
 
 <BaseLayout
-  title="Free Printable Mazes — 150+ to Download & Print | MazeThis"
-  description="Download and print 150+ free maze puzzles. Small mazes for quick fun, medium mazes for a real challenge, and large mazes for serious solvers. Clean print layouts — no ads, no sign-up required."
+  title="Free Maze Printables — Print Maze Worksheets | MazeThis"
+  description="Print free maze worksheets in small, medium, and large sizes. Clean ad-free printouts — no sign-up required. Browse ready-made mazes and print from any device."
   schemaLD={schemaLD}
 >
-  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+
     <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Printable Mazes' }]} />
 
-    <div class="mt-4 mb-8">
-      <h1 class="mb-3">Free Printable Mazes</h1>
-      <p class="text-slate-500 text-lg max-w-3xl">
-        150+ free printable maze puzzles in three sizes. Click any maze, then
-        hit "Print Maze" for a clean, ad-free printout — ready in seconds, no account needed.
+    <!-- Hero -->
+    <div class="mt-6 mb-12 md:mb-16 lg:mb-20">
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mb-5">Free Maze Printables</h1>
+      <p class="text-lg sm:text-xl md:text-2xl max-w-2xl leading-relaxed" style="color: var(--color-muted-strong);">
+        Print clean maze worksheets on any printer. Choose a size, open a maze, and print an ad-free page — no account required.
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <a href="#browse" class="btn-primary px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base">Browse Printable Mazes</a>
+        <a href="/maze-generator" class="btn-secondary px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base">Make a Custom Maze</a>
+      </div>
+      <p class="mt-4 text-base" style="color: var(--color-muted-strong);">
+        Ad-free printouts — no account required.
       </p>
     </div>
 
-    <!-- Quick category nav -->
-    <div class="mb-10">
-      <CategoryNav />
+    <!-- Size cards -->
+    <div id="browse" class="mb-14 lg:mb-16">
+      <h2 class="text-2xl md:text-3xl mb-6 lg:mb-8" style="color: var(--color-charcoal);">Choose a printable maze</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
+        {sizeCards.map((tier) => (
+          <div class="card flex flex-col p-5 lg:p-6 gap-3">
+            <div class="flex-1">
+              <p
+                class="text-xs font-semibold uppercase tracking-wider mb-2"
+                style="font-family: 'IBM Plex Mono', monospace; color: var(--color-accent);"
+              >{tier.positioning}</p>
+              <p
+                class="text-sm mb-1.5"
+                style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+              >{tier.grid} grid</p>
+              <h3
+                class="text-2xl md:text-3xl tracking-tight leading-none mb-2"
+                style="font-family: 'Bebas Neue', sans-serif; color: var(--color-charcoal);"
+              >{tier.label} Mazes</h3>
+              <p class="text-base leading-snug" style="color: var(--color-muted-strong);">{tier.desc}</p>
+            </div>
+            <p class="text-sm font-semibold" style="color: var(--color-muted-strong);">
+              {tier.count} mazes
+            </p>
+            <a
+              href={tier.href}
+              class="block text-center rounded-lg py-2.5 text-sm font-semibold transition-colors"
+              style="border: 1px solid var(--color-accent); color: var(--color-accent);"
+              onmouseover="this.style.backgroundColor='var(--color-accent)'; this.style.color='#ffffff';"
+              onmouseout="this.style.backgroundColor=''; this.style.color='var(--color-accent)';"
+            >
+              Browse {tier.label} Mazes
+            </a>
+          </div>
+        ))}
+      </div>
     </div>
 
-    <!-- How to print -->
-    <div class="mb-12 rounded-xl bg-blue-50 border border-blue-100 p-6">
-      <h2 class="text-lg font-bold text-slate-800 mb-3">How to Print a Maze</h2>
-      <ol class="space-y-2 text-sm text-slate-600">
-        <li class="flex gap-3">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
-          <span>Click any maze below (or browse by size above)</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
-          <span>Click the <strong>"Print Maze"</strong> button on the maze page</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">3</span>
-          <span>Your browser opens a clean print view — no ads, no navigation, just the maze</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">4</span>
-          <span>Print on standard 8.5×11 (Letter) or A4 paper and you're done</span>
-        </li>
+    <!-- How printing works -->
+    <div class="mb-14 lg:mb-16 max-w-2xl">
+      <h2 class="text-2xl md:text-3xl mb-6" style="color: var(--color-charcoal);">How printing works</h2>
+      <ol class="space-y-4">
+        {howSteps.map(({ n, text }) => (
+          <li class="flex gap-4 items-start">
+            <span
+              class="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full text-white text-xs font-bold"
+              style="background-color: var(--color-accent);"
+            >{n}</span>
+            <span class="text-base pt-0.5 leading-relaxed" style="color: var(--color-muted-strong);" set:html={text} />
+          </li>
+        ))}
       </ol>
     </div>
 
@@ -69,15 +224,17 @@ const schemaLD = JSON.stringify({
     <section class="mb-12">
       <div class="flex items-center justify-between mb-5">
         <div>
-          <h2 class="text-xl font-bold text-slate-800">Small Printable Mazes</h2>
-          <p class="text-slate-500 text-sm mt-1">20×20 grid — quick and approachable for all ages</p>
+          <h2 class="text-xl md:text-2xl" style="color: var(--color-charcoal);">Small Printable Mazes</h2>
+          <p class="text-sm mt-1" style="color: var(--color-muted-strong);">20×20 grid — quick and approachable for all ages</p>
         </div>
-        <a href="/small-mazes" class="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap">
-          All 60 small mazes →
-        </a>
+        <a
+          href="/small-mazes"
+          class="text-sm font-medium whitespace-nowrap"
+          style="color: var(--color-accent);"
+        >All {smallCount} small mazes →</a>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-        {smallMazes.map((entry) => <MazeCard entry={entry} />)}
+        {smallMazes.map((entry) => <MazeCard entry={entry} href="/small-mazes" />)}
       </div>
     </section>
 
@@ -85,58 +242,134 @@ const schemaLD = JSON.stringify({
     <section class="mb-12">
       <div class="flex items-center justify-between mb-5">
         <div>
-          <h2 class="text-xl font-bold text-slate-800">Medium Printable Mazes</h2>
-          <p class="text-slate-500 text-sm mt-1">40×40 grid — a focused challenge with real decision points</p>
+          <h2 class="text-xl md:text-2xl" style="color: var(--color-charcoal);">Medium Printable Mazes</h2>
+          <p class="text-sm mt-1" style="color: var(--color-muted-strong);">40×40 grid — a focused challenge with real decision points</p>
         </div>
-        <a href="/medium-mazes" class="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap">
-          All 50 medium mazes →
-        </a>
+        <a
+          href="/medium-mazes"
+          class="text-sm font-medium whitespace-nowrap"
+          style="color: var(--color-accent);"
+        >All {mediumCount} medium mazes →</a>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-        {mediumMazes.map((entry) => <MazeCard entry={entry} />)}
+        {mediumMazes.map((entry) => <MazeCard entry={entry} href="/medium-mazes" />)}
       </div>
     </section>
 
     <!-- Large mazes preview -->
-    <section class="mb-12">
+    <section class="mb-14 lg:mb-16">
       <div class="flex items-center justify-between mb-5">
         <div>
-          <h2 class="text-xl font-bold text-slate-800">Large Printable Mazes</h2>
-          <p class="text-slate-500 text-sm mt-1">60×60 grid — dense labyrinth, easy to get lost</p>
+          <h2 class="text-xl md:text-2xl" style="color: var(--color-charcoal);">Large Printable Mazes</h2>
+          <p class="text-sm mt-1" style="color: var(--color-muted-strong);">60×60 grid — dense labyrinth, easy to get lost</p>
         </div>
-        <a href="/large-mazes" class="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap">
-          All 40 large mazes →
-        </a>
+        <a
+          href="/large-mazes"
+          class="text-sm font-medium whitespace-nowrap"
+          style="color: var(--color-accent);"
+        >All {largeCount} large mazes →</a>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-        {largeMazes.map((entry) => <MazeCard entry={entry} />)}
+        {largeMazes.map((entry) => <MazeCard entry={entry} href="/large-mazes" />)}
       </div>
     </section>
 
-    <!-- Content section -->
-    <section class="mt-8 prose prose-slate max-w-none">
-      <h2>Why Print Mazes?</h2>
-      <p>
-        Printed mazes have advantages that screens can't replicate: the physical act of tracing with a pencil
-        develops fine motor skills in children, and the tangible paper copy can be kept, shared, or displayed.
-        There's also something satisfying about a completed paper maze that a solved digital one can't quite match.
-      </p>
-      <p>
-        For teachers and homeschool parents, printed mazes are invaluable: self-contained activities that require
-        no devices, no internet, no setup. A stack of maze worksheets can occupy a classroom for an extended period
-        and serve as both entertainment and genuine skills practice.
-      </p>
-      <h2>Printing Tips</h2>
-      <ul>
-        <li><strong>Paper size:</strong> Standard 8.5×11 (Letter) or A4 paper works for all mazes</li>
-        <li><strong>Color vs. grayscale:</strong> All mazes are black and white — use grayscale mode to save ink</li>
-        <li><strong>Scale:</strong> Print at 100% (actual size) for correct line thickness</li>
-        <li><strong>Multiple copies:</strong> Each maze page can be printed unlimited times — great for classroom sets</li>
+    <!-- Why print mazes -->
+    <div class="mb-14 lg:mb-16">
+      <h2 class="text-2xl md:text-3xl mb-6" style="color: var(--color-charcoal);">Why print mazes?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5 max-w-3xl">
+        {whyItems.map(({ heading, body }) => (
+          <div class="card p-5">
+            <p class="font-semibold mb-1.5" style="color: var(--color-charcoal);">{heading}</p>
+            <p class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">{body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Printing tips -->
+    <div class="mb-14 lg:mb-16 max-w-2xl">
+      <h2 class="text-2xl md:text-3xl mb-5" style="color: var(--color-charcoal);">Printing tips</h2>
+      <ul class="space-y-3">
+        {[
+          { label: 'Paper size', tip: 'Standard 8.5×11 (Letter) or A4 works for all maze sizes.' },
+          { label: 'Black and white', tip: 'All mazes are black and white. Use grayscale mode to save ink.' },
+          { label: 'Fit to page', tip: 'Print at 100% scale for correct line thickness. Avoid "fit to page" scaling.' },
+          { label: 'Classroom copies', tip: 'Every maze can be printed as many times as needed — no limits.' },
+        ].map(({ label, tip }) => (
+          <li class="flex gap-3 items-start text-sm" style="color: var(--color-muted-strong);">
+            <span
+              class="flex-shrink-0 mt-0.5 w-1.5 h-1.5 rounded-full"
+              style="background-color: var(--color-accent); margin-top: 6px;"
+            />
+            <span><strong style="color: var(--color-charcoal);">{label}:</strong> {tip}</span>
+          </li>
+        ))}
       </ul>
-      <p>
-        Need something specific? Use the <a href="/maze-generator">free maze generator</a> to create
-        a custom maze in any size — then print or download it.
-      </p>
-    </section>
+    </div>
+
+    <!-- Comparison: Printable vs Library vs Generator -->
+    <div class="mb-14 lg:mb-16">
+      <h2 class="text-2xl md:text-3xl mb-6" style="color: var(--color-charcoal);">Printable Mazes vs. Maze Library vs. Maze Generator</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
+        <div class="card p-5 lg:p-6">
+          <p
+            class="text-xs font-semibold uppercase tracking-wider mb-2"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-accent);"
+          >You are here</p>
+          <p class="font-semibold text-lg mb-1.5" style="color: var(--color-charcoal);">Printable Mazes</p>
+          <p class="text-sm leading-relaxed mb-4" style="color: var(--color-muted-strong);">Ready-made mazes designed for paper. Browse by size and print a clean worksheet — no account needed.</p>
+          <span class="text-sm font-medium" style="color: var(--color-accent);">Print on paper →</span>
+        </div>
+        <a href="/maze-library" class="card-hover flex flex-col p-5 lg:p-6 no-underline">
+          <p
+            class="text-xs font-semibold uppercase tracking-wider mb-2"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+          >Track progress</p>
+          <p class="font-semibold text-lg mb-1.5" style="color: var(--color-charcoal);">Maze Library</p>
+          <p class="text-sm leading-relaxed mb-4" style="color: var(--color-muted-strong);">Fixed online collections you can play and track over time. Progress saves on your device.</p>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Browse the library →</span>
+        </a>
+        <a href="/maze-generator" class="card-hover flex flex-col p-5 lg:p-6 no-underline">
+          <p
+            class="text-xs font-semibold uppercase tracking-wider mb-2"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+          >Custom size</p>
+          <p class="font-semibold text-lg mb-1.5" style="color: var(--color-charcoal);">Maze Generator</p>
+          <p class="text-sm leading-relaxed mb-4" style="color: var(--color-muted-strong);">Generate a unique maze in any size on demand. Download as SVG or print directly from your browser.</p>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Create a maze →</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="max-w-2xl mb-12">
+      <h2 class="text-2xl md:text-3xl mb-6" style="color: var(--color-charcoal);">Frequently asked questions</h2>
+      <div class="space-y-2">
+        {faqItems.map(({ q, a }) => (
+          <details class="group border rounded-lg" style="border-color: var(--color-border);">
+            <summary
+              class="flex cursor-pointer items-center justify-between px-4 py-4 font-semibold select-none list-none [&::-webkit-details-marker]:hidden"
+              style="color: var(--color-charcoal);"
+            >
+              {q}
+              <svg
+                class="h-4 w-4 shrink-0 ml-3 transition-transform duration-200 group-open:rotate-180"
+                style="color: var(--color-muted-strong);"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="px-4 pb-4 text-base leading-relaxed" style="color: var(--color-muted-strong);">
+              {a}
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+
   </div>
 </BaseLayout>
