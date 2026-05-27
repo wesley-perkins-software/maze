@@ -4,144 +4,281 @@ import Breadcrumb from '../components/nav/Breadcrumb.astro';
 
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
 
-const faqs = [
-  {
-    q: 'Are all mazes on MazeThis free to use?',
-    a: 'Yes. Every maze on MazeThis — including the generator and all 420+ pre-made mazes — is completely free to use, print, and share for personal and educational purposes. No account or sign-up is required.',
-  },
-  {
-    q: 'Can I print mazes for my classroom?',
-    a: 'Absolutely. All mazes on MazeThis are free to print for classroom use. Click "Print Maze" on any maze page to get a clean, print-optimized version with no ads or navigation chrome. Print as many copies as you need.',
-  },
-  {
-    q: 'How do I play a maze online?',
-    a: 'Open any maze and use the arrow keys (or WASD) on desktop to move your character. On mobile and tablet, swipe in any direction or use the on-screen D-pad. Your path is shown as a trail so you can see where you\'ve been.',
-  },
-  {
-    q: 'How do I see the solution to a maze?',
-    a: 'Click the "Show Solution" button above the maze to reveal the shortest solution path in green. Click "Hide Solution" to hide it again. The solution is available for all mazes, including generated ones.',
-  },
-  {
-    q: 'How are mazes generated?',
-    a: 'MazeThis uses a Recursive Backtracker (depth-first search) algorithm to generate mazes. This produces perfect mazes — every cell is reachable and there is exactly one solution path. Difficulty is controlled by how many additional walls are removed after generation: easier mazes have more openings (less backtracking required); harder mazes preserve maximum dead ends.',
-  },
-  {
-    q: 'Can I generate infinite mazes?',
-    a: 'Yes. The maze generator creates a new unique maze every time you click "New Maze." You can set the size and difficulty and generate as many mazes as you want. Each maze can be downloaded as an SVG file or printed directly.',
-  },
-  {
-    q: 'What is the hardest maze on the site?',
-    a: 'The hardest pre-made mazes are in the Adults and Hard difficulty categories, specifically the 25×25 grids. Hard mazes have zero extra wall removals (maximum dead ends) while Adults mazes are similar in size but slightly more open. You can also generate custom mazes at any size — a 40×40 hard maze is possible with the generator.',
-  },
-  {
-    q: 'What are the maze difficulty levels?',
-    a: 'MazeThis has five difficulty levels: Kids (5×5–8×8, very open corridors), Easy (5×5–10×10, beginner-friendly), Medium (10×10–15×15, moderate challenge), Adults (15×15–25×25, large complex mazes), and Hard (15×15–25×25, maximum dead ends). Kids and Easy are great for children; Medium suits most adults; Adults and Hard are for experienced solvers.',
-  },
-  {
-    q: 'Are the mazes different every time I visit?',
-    a: 'Pre-made mazes are always the same (they\'re generated from a fixed seed, so they\'re consistent and sharable). The maze generator creates a new unique maze each time you use it. You can also use a specific seed number in the generator to reproduce the same maze.',
-  },
-  {
-    q: 'Can I download mazes?',
-    a: 'Yes. On the maze generator page, click "Download SVG" to save the current maze as an SVG vector file. SVG files print at any size without quality loss and can be edited in design tools like Inkscape, Figma, or Illustrator.',
-  },
-  {
-    q: 'Do mazes work on mobile phones?',
-    a: 'Yes. All mazes work on smartphones and tablets. You can swipe in any direction to move your character, or use the on-screen D-pad. The mazes automatically resize for smaller screens.',
-  },
-  {
-    q: 'Are mazes good for children\'s development?',
-    a: 'Yes. Maze puzzles support several areas of child development: fine motor control (pencil tracing), spatial reasoning (mental navigation), problem-solving (backtracking and trying new paths), and persistence (tolerating dead ends without frustration). Research consistently links early spatial activity with improved math performance in later years.',
-  },
-  {
-    q: 'Are mazes good for seniors?',
-    a: 'Research supports maze puzzles as a form of cognitive exercise for older adults, particularly for spatial memory and sustained attention — cognitive domains that are important to maintain as we age. Regular puzzle engagement as part of a broader cognitively active lifestyle is associated with slower cognitive decline. See our article on mazes for seniors for more detail.',
-  },
-  {
-    q: 'What is the difference between a maze and a labyrinth?',
-    a: 'A labyrinth is unicursal — it has a single path with no dead ends or choices. You simply follow the path to the center. A maze is multicursal — it has multiple paths, dead ends, and junctions where you must choose. All the puzzles on MazeThis are mazes (multicursal), not labyrinths. The terms are often used interchangeably in everyday English, but they describe fundamentally different structures.',
-  },
-  {
-    q: 'Can I use mazes for commercial purposes?',
-    a: 'Pre-made mazes on MazeThis are free for personal and educational use. For commercial use (publishing, merchandise, commercial products), please contact us to discuss licensing. Custom mazes you generate yourself with our generator may be used freely — they\'re unique to your generation.',
-  },
-  {
-    q: 'How do I reset a maze mid-solve?',
-    a: 'Click the "Reset" button above the maze to return to the start and clear your trail. Your timer will also reset. There is no penalty for resetting.',
-  },
-  {
-    q: 'Is there a daily maze challenge?',
-    a: 'Yes! Each day features a unique "Maze of the Day" on the home page — a new maze derived from the current date. See if you can maintain a solving streak.',
-  },
+const faqItems = [
+  // General
+  { q: 'Are mazes on MazeThis free?', a: 'Yes. MazeThis is free to use for personal and educational maze solving. You can play online, generate custom mazes, and print worksheet-style mazes without creating an account.' },
+  { q: 'Do I need an account?', a: 'No. MazeThis does not require an account. Progress saves locally on your device when a page supports saved progress.' },
+  { q: 'What can I do on MazeThis?', a: 'You can play the Maze of the Day, work through fixed Maze Library collections, generate custom mazes, and print maze worksheets.' },
+  // Playing Mazes
+  { q: 'How do I play a maze online?', a: 'Open a playable maze and move with arrow keys, WASD, swipe controls, or the on-screen D-pad depending on your device.' },
+  { q: 'Can I use hints?', a: 'Yes. Playable mazes include tools such as hints, solutions, and traveled-path display where available.' },
+  { q: 'How do I see the solution?', a: 'Use the Show Solution option during play. It reveals the solution path for the current maze.' },
+  { q: 'Can I reset a maze?', a: 'Yes. Pause the maze and choose Reset Progress to clear the current run.' },
+  { q: 'Do mazes work on phones and tablets?', a: 'Yes. MazeThis works on mobile devices. You can swipe to move, use touch controls, and use the minimap to explore larger mazes.' },
+  // Printing Mazes
+  { q: 'Can I print mazes?', a: 'Yes. Use Printable Mazes for worksheet-style printouts. You can generate a maze, choose a size, and print a clean page.' },
+  { q: 'Can I include an answer key?', a: 'Yes. On Printable Mazes, choose Include Answer Key before printing. The printout includes the maze worksheet and a second page with the solution.' },
+  { q: 'Can I download mazes as SVG files?', a: 'Yes. Maze Generator and Printable Mazes can download the current maze as an SVG file. SVG files scale cleanly and can be used in design or document tools.' },
+  { q: 'Can teachers print mazes for classrooms?', a: 'Yes. MazeThis mazes can be used for classroom activities, warm-ups, quiet work, and printable practice.' },
+  // Progress and Daily Maze
+  { q: 'Does my progress save?', a: 'On supported pages, progress saves locally on your device. This lets you leave and return without creating an account.' },
+  { q: 'Where is my progress stored?', a: 'Progress is stored in your browser on the device you are using. It is not tied to an account.' },
+  { q: 'Is there a daily maze challenge?', a: 'Yes. MazeThis has a Maze of the Day with one fresh daily maze challenge.' },
+  { q: 'When does the Maze of the Day change?', a: 'The Maze of the Day changes at midnight based on the current date.' },
+  { q: 'Is the daily maze the same for everyone?', a: 'The daily maze is generated from the date, so players on the same local date receive the same daily challenge.' },
+  // Maze Collections
+  { q: 'What are the maze difficulty levels?', a: 'MazeThis uses size-based collections: Small 20×20, Medium 40×40, Large 60×60, Expert 80×80, and Monster 100×100. Larger mazes generally take more focus and navigation.' },
+  { q: 'What is the easiest maze size?', a: 'Small Mazes are the easiest starting point. They are quick, readable, and good for beginners or short sessions.' },
+  { q: 'What is the hardest maze size?', a: 'Monster Mazes are the largest preset collection on MazeThis. They use 100×100 grids and are built for serious focus.' },
+  { q: 'What is the Maze Library?', a: 'The Maze Library contains fixed online maze collections you can work through over time. Your progress saves on this device so you can complete each collection.' },
+  { q: 'How is the Maze Generator different from the Maze Library?', a: 'The Maze Generator creates a new custom maze whenever you want. The Maze Library contains fixed collections with progress tracking.' },
+  { q: 'What is the difference between a maze and a labyrinth?', a: 'A maze usually has branching paths, choices, and dead ends. A labyrinth usually has one continuous path to the center and back out.' },
 ];
 
-const faqSchema = JSON.stringify({
+const schemaLD = JSON.stringify({
   '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqs.map(({ q, a }) => ({
-    '@type': 'Question',
-    name: q,
-    acceptedAnswer: { '@type': 'Answer', text: a },
-  })),
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${siteUrl}/faq#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'FAQ', item: `${siteUrl}/faq` },
+      ],
+    },
+  ],
 });
 ---
 
 <BaseLayout
-  title="Frequently Asked Questions | MazeThis"
-  description="Answers to common questions about MazeThis — how to print mazes, play online, use the generator, difficulty levels, and more."
-  schemaLD={faqSchema}
+  title="FAQ | MazeThis"
+  description="Answers to common questions about playing mazes online, printing maze worksheets, saving progress, using hints, downloading SVGs, and choosing maze sizes on MazeThis."
+  canonical={`${siteUrl}/faq`}
+  schemaLD={schemaLD}
 >
-  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
     <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'FAQ' }]} />
 
-    <div class="mt-4 mb-10">
-      <h1 class="mb-2">Frequently Asked Questions</h1>
-      <p class="text-slate-500 text-lg">
-        Everything you need to know about MazeThis.
+    <!-- Hero -->
+    <div class="mt-6 mb-12 md:mb-16 lg:mb-20">
+      <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">HELP CENTER</p>
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mb-5">Frequently Asked Questions</h1>
+      <p class="text-lg sm:text-xl md:text-2xl max-w-2xl leading-relaxed" style="color: var(--color-muted-strong);">
+        Answers to common questions about playing mazes, printing maze worksheets, saving progress, and using MazeThis tools.
       </p>
     </div>
 
-    <div class="space-y-4" itemscope itemtype="https://schema.org/FAQPage">
-      {faqs.map(({ q, a }, i) => (
-        <details
-          class="group rounded-xl border border-slate-200 bg-white overflow-hidden"
-          itemscope
-          itemprop="mainEntity"
-          itemtype="https://schema.org/Question"
-        >
-          <summary
-            class="flex cursor-pointer items-center justify-between gap-4 p-5 font-semibold text-slate-800 hover:bg-slate-50 transition-colors list-none"
-            itemprop="name"
-          >
-            <span>{q}</span>
-            <svg
-              class="w-5 h-5 text-slate-400 shrink-0 transition-transform group-open:rotate-180"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </summary>
-          <div
-            class="px-5 pb-5 text-slate-600 text-sm leading-relaxed border-t border-slate-100"
-            itemscope
-            itemprop="acceptedAnswer"
-            itemtype="https://schema.org/Answer"
-          >
-            <div class="pt-4" itemprop="text">{a}</div>
+    <!-- Quick Links -->
+    <section class="mb-14">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">What do you need help with?</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">Jump to the area that matches your question.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <a href="#playing-mazes" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Playing Mazes</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">How to move, use hints, view solutions, and solve mazes online.</p>
           </div>
-        </details>
-      ))}
-    </div>
-
-    <div class="mt-12 rounded-2xl bg-blue-50 border border-blue-100 p-8 text-center">
-      <h2 class="text-xl font-bold text-slate-800 mb-2">Still have questions?</h2>
-      <p class="text-slate-600 mb-4 text-sm">
-        Can't find what you're looking for? Browse our guides and articles for more detail.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="/learn" class="btn-primary">Explore Guides</a>
-        <a href="/maze-generator" class="btn-secondary">Try the Generator</a>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Jump to section →</span>
+        </a>
+        <a href="#printing-mazes" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Printing Mazes</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">How printable mazes, answer keys, and SVG downloads work.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Jump to section →</span>
+        </a>
+        <a href="#progress-daily" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Progress and Daily Maze</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">How saved progress, reset, and the daily maze work.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Jump to section →</span>
+        </a>
+        <a href="#maze-collections" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Collections</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">How sizes, difficulty, and the Maze Library work.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Jump to section →</span>
+        </a>
       </div>
-    </div>
+    </section>
+
+    <!-- FAQ: General -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">General</h2>
+      <dl class="space-y-5">
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Are mazes on MazeThis free?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Yes. MazeThis is free to use for personal and educational maze solving. You can play online, generate custom mazes, and print worksheet-style mazes without creating an account.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Do I need an account?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">No. MazeThis does not require an account. Progress saves locally on your device when a page supports saved progress.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">What can I do on MazeThis?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">You can play the Maze of the Day, work through fixed Maze Library collections, generate custom mazes, and print maze worksheets.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- FAQ: Playing Mazes -->
+    <section id="playing-mazes" class="mt-16 pt-10 scroll-mt-20" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Playing Mazes</h2>
+      <dl class="space-y-5">
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">How do I play a maze online?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Open a playable maze and move with arrow keys, WASD, swipe controls, or the on-screen D-pad depending on your device.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Can I use hints?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Yes. Playable mazes include tools such as hints, solutions, and traveled-path display where available.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">How do I see the solution?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Use the Show Solution option during play. It reveals the solution path for the current maze.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Can I reset a maze?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Yes. Pause the maze and choose Reset Progress to clear the current run.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Do mazes work on phones and tablets?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Yes. MazeThis works on mobile devices. You can swipe to move, use touch controls, and use the minimap to explore larger mazes.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- FAQ: Printing Mazes -->
+    <section id="printing-mazes" class="mt-16 pt-10 scroll-mt-20" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Printing Mazes</h2>
+      <dl class="space-y-5">
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Can I print mazes?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Yes. Use <a href="/printable-mazes" style="color: var(--color-accent);">Printable Mazes</a> for worksheet-style printouts. You can generate a maze, choose a size, and print a clean page.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Can I include an answer key?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Yes. On Printable Mazes, choose Include Answer Key before printing. The printout includes the maze worksheet and a second page with the solution.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Can I download mazes as SVG files?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Yes. Maze Generator and Printable Mazes can download the current maze as an SVG file. SVG files scale cleanly and can be used in design or document tools.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Can teachers print mazes for classrooms?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Yes. MazeThis mazes can be used for classroom activities, warm-ups, quiet work, and printable practice.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- FAQ: Progress and Daily Maze -->
+    <section id="progress-daily" class="mt-16 pt-10 scroll-mt-20" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Progress and Daily Maze</h2>
+      <dl class="space-y-5">
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Does my progress save?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">On supported pages, progress saves locally on your device. This lets you leave and return without creating an account.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Where is my progress stored?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Progress is stored in your browser on the device you are using. It is not tied to an account.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Is there a daily maze challenge?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">Yes. MazeThis has a <a href="/maze-of-the-day" style="color: var(--color-accent);">Maze of the Day</a> with one fresh daily maze challenge.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">When does the Maze of the Day change?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">The Maze of the Day changes at midnight based on the current date.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">Is the daily maze the same for everyone?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">The daily maze is generated from the date, so players on the same local date receive the same daily challenge.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- FAQ: Maze Collections and Difficulty -->
+    <section id="maze-collections" class="mt-16 pt-10 scroll-mt-20" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Maze Collections and Difficulty</h2>
+      <dl class="space-y-5">
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">What are the maze difficulty levels?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">MazeThis uses size-based collections: Small 20&times;20, Medium 40&times;40, Large 60&times;60, Expert 80&times;80, and Monster 100&times;100. Larger mazes generally take more focus and navigation.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">What is the easiest maze size?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);"><a href="/small-mazes" style="color: var(--color-accent);">Small Mazes</a> are the easiest starting point. They are quick, readable, and good for beginners or short sessions.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">What is the hardest maze size?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);"><a href="/monster-mazes" style="color: var(--color-accent);">Monster Mazes</a> are the largest preset collection on MazeThis. They use 100&times;100 grids and are built for serious focus.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">What is the Maze Library?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">The <a href="/maze-library" style="color: var(--color-accent);">Maze Library</a> contains fixed online maze collections you can work through over time. Your progress saves on this device so you can complete each collection.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">How is the Maze Generator different from the Maze Library?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">The <a href="/maze-generator" style="color: var(--color-accent);">Maze Generator</a> creates a new custom maze whenever you want. The Maze Library contains fixed collections with progress tracking.</dd>
+        </div>
+        <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+          <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">What is the difference between a maze and a labyrinth?</dt>
+          <dd class="text-sm leading-relaxed" style="color: var(--color-muted-strong);">A maze usually has branching paths, choices, and dead ends. A labyrinth usually has one continuous path to the center and back out.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- MazeThis Tools -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">MazeThis Tools</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">Choose the tool that matches what you want to do next.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a href="/maze-library" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Library</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Work through fixed online maze collections and track your progress.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Library →</span>
+        </a>
+        <a href="/maze-generator" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Generator</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze and decide whether to play, print, or download it.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Generator →</span>
+        </a>
+        <a href="/printable-mazes" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Printable Mazes</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">A print-first worksheet tool with optional answer key pages.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Printable Mazes →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready to solve a maze?</h2>
+      <p class="text-sm text-arch-600 mb-5">Start with a fixed collection, generate a custom maze, or print a worksheet-style maze.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library"    class="btn-secondary">Maze Library</a>
+        <a href="/maze-generator"  class="btn-secondary">Maze Generator</a>
+        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
+      </div>
+    </section>
+
   </div>
 </BaseLayout>
