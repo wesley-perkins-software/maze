@@ -213,25 +213,31 @@ const schemaLD = JSON.stringify({
     </section>
 
     <!-- ── Comparison ─────────────────────────────────────────────────────── -->
-    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
-      <h2 class="text-lg font-bold text-arch-charcoal mb-4">Printable Mazes vs. Maze Library vs. Maze Generator</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-        <div style="color: var(--color-muted-strong);">
-          <p class="font-semibold mb-1 text-arch-accent">Printable Mazes — you are here</p>
-          <p>Generate maze worksheets and print them on paper. Unlimited mazes, no account needed. Print-first, no play mode.</p>
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">Printable Mazes, Maze Generator, and Maze Library</h2>
+      <p class="text-sm text-arch-600 mb-6">Three tools, each built for a different use. Choose the one that fits.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="card rounded-lg p-5 flex flex-col gap-3">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Printable Mazes</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">A print-first worksheet tool with optional answer key pages.</p>
+          </div>
+          <span class="text-xs text-arch-400 mt-auto">You are here</span>
         </div>
-        <div style="color: var(--color-muted-strong);">
-          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">
-            <a href="/maze-library" class="hover:underline">Maze Library →</a>
-          </p>
-          <p>Fixed online collections you can play and track over time. Progress saves on your device. Optimized for screen, not paper.</p>
-        </div>
-        <div style="color: var(--color-muted-strong);">
-          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">
-            <a href="/maze-generator" class="hover:underline">Maze Generator →</a>
-          </p>
-          <p>Generate a maze in any size, play it online with arrow keys, download as SVG, or print. Includes custom dimensions up to 100×100.</p>
-        </div>
+        <a href="/maze-generator" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Generator</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze and decide whether to play, print, or download it.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Generator →</span>
+        </a>
+        <a href="/maze-library" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Library</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Work through fixed online maze collections and track your progress.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Library →</span>
+        </a>
       </div>
     </section>
 
@@ -246,6 +252,16 @@ const schemaLD = JSON.stringify({
           </div>
         ))}
       </dl>
+    </section>
+
+    <!-- ── Want to play online? ──────────────────────────────────────────── -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Want to play online?</h2>
+      <p class="text-sm text-arch-600 mb-5">Use the Maze Generator to create a maze you can play in your browser, or use the Maze Library to work through fixed collections and track your progress.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-generator" class="btn-secondary">Maze Generator</a>
+        <a href="/maze-library"   class="btn-secondary">Maze Library</a>
+      </div>
     </section>
 
   </div>
