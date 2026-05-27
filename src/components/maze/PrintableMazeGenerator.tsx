@@ -158,10 +158,10 @@ export function PrintableMazeGenerator() {
           style={{ width: 'min(100%, calc(100vh - 140px))' }}
           aria-label="Maze info"
         >
-          <span className="text-[13px] font-mono font-medium text-arch-600 sm:text-sm">
+          <span className="text-sm font-mono font-medium text-arch-600 sm:text-base">
             {maze.width} × {maze.height}
           </span>
-          <span className="text-[13px] font-mono font-medium text-arch-600 sm:text-sm">
+          <span className="text-sm font-mono font-medium text-arch-600 sm:text-base">
             {selectedLabel}
           </span>
         </div>
@@ -190,14 +190,14 @@ export function PrintableMazeGenerator() {
           <div className="font-display text-5xl text-arch-charcoal leading-none mb-2" aria-hidden="true">
             Print Your Own<br />Maze Worksheet
           </div>
-          <p className="text-sm text-arch-600 leading-relaxed mb-4">
+          <p className="text-base text-arch-600 leading-relaxed mb-4">
             Choose a size, generate a clean maze, then print an ad-free worksheet or download the SVG.
           </p>
         </div>
 
         {/* Size selector */}
         <fieldset>
-          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-600 mb-2">
+          <legend className="block text-sm tracking-widest uppercase font-semibold text-arch-600 mb-2">
             Size
           </legend>
           <div className="grid grid-cols-3 gap-1.5">
@@ -205,12 +205,12 @@ export function PrintableMazeGenerator() {
               <button
                 key={value}
                 onClick={() => handleSizeChange(value)}
-                className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
+                className={`${btnBase} flex flex-col items-center leading-tight px-1 py-2.5 ${
                   selectedSize === value ? activeBtn : inactiveBtn
                 }`}
                 aria-pressed={selectedSize === value}
               >
-                <span>{label}</span>
+                <span className="text-sm font-semibold">{label}</span>
                 <span className={`text-xs font-mono font-medium ${
                   selectedSize === value ? 'text-white/85 dark:text-arch-charcoal/70' : 'text-arch-600'
                 }`}>
@@ -224,21 +224,10 @@ export function PrintableMazeGenerator() {
         {/* Divider */}
         <div className="border-t border-arch-200" />
 
-        {/* Actions — print-first hierarchy */}
+        {/* Actions — generate → print → download */}
         <div className="space-y-2.5">
 
-          {/* Primary: Print Maze — desktop only */}
-          <button
-            onClick={handlePrint}
-            className="hidden lg:flex w-full items-center justify-center gap-2 rounded-sm px-5 py-3 text-base font-semibold transition-colors bg-arch-accent text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            Print Maze
-          </button>
-
-          {/* Secondary: Generate New Maze */}
+          {/* Primary: Generate New Maze */}
           <button
             onClick={handleGenerate}
             className="w-full inline-flex items-center justify-center gap-2 rounded-sm border-2 border-arch-charcoal bg-arch-surface px-5 py-3 text-base font-semibold text-arch-charcoal hover:bg-arch-bg active:bg-arch-bg transition-colors"
@@ -249,10 +238,21 @@ export function PrintableMazeGenerator() {
             Generate New Maze
           </button>
 
+          {/* Primary action: Print Maze — desktop only */}
+          <button
+            onClick={handlePrint}
+            className="hidden lg:flex w-full items-center justify-center gap-2 rounded-sm px-5 py-3 text-base font-semibold transition-colors bg-arch-accent text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Print Maze
+          </button>
+
           {/* Tertiary: Download SVG */}
           <button
             onClick={handleDownloadSVG}
-            className="w-full inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
+            className="w-full inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2.5 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
