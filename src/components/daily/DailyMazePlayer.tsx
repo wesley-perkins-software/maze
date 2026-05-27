@@ -98,8 +98,8 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
 
     setDateLabel(formatDateLabel(today));
 
-    // Scale the preview to fill the content area (max ~880px) responsively.
-    const containerW = Math.min(window.innerWidth - 32, 880);
+    // Scale the preview to fit the constrained preview card (max ~580px) responsively.
+    const containerW = Math.min(window.innerWidth - 32, 580);
     setPreviewCellSize(Math.max(6, Math.floor(containerW / generated.width)));
 
     mazeRef.current = generated;
@@ -246,9 +246,15 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
       {/* Static preview — only shown when not in autoPlay mode */}
       {!autoPlay && (
         <>
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
             <div className="flex justify-center p-4">
-              <MazeRenderer maze={maze} cellSize={previewCellSize} />
+              <MazeRenderer
+                maze={maze}
+                cellSize={previewCellSize}
+                showEndpointMarkers={false}
+                showPlayer={false}
+                showTrail={false}
+              />
             </div>
           </div>
 
