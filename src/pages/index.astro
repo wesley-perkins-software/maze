@@ -4,8 +4,18 @@ import Hero from '../components/home/Hero.astro';
 import HowItWorks from '../components/home/HowItWorks.astro';
 import type { Difficulty } from '../types/maze.js';
 import { getMazesByDifficulty } from '../lib/catalog/index.js';
-import { generateMazeFromCatalog } from '../lib/maze/index.js';
-import { renderThumbnail } from '../lib/svg/renderToString.js';
+import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
+import { generateMazeFromCatalog, generateMazeFromLibraryCatalog } from '../lib/maze/index.js';
+import { renderMazeToSVGString } from '../lib/svg/renderToString.js';
+
+// cellSize/wallThickness tuned so walls stay visible when SVG scales to ~240px card
+const thumbnailParams: Record<Difficulty, { cellSize: number; wallThickness: number }> = {
+  small:   { cellSize: 10, wallThickness: 2.0 }, // viewBox ~204  — bold corridors
+  medium:  { cellSize:  5, wallThickness: 1.5 }, // viewBox ~204  — balanced density
+  large:   { cellSize:  3, wallThickness: 1.2 }, // viewBox ~184  — more corridors
+  expert:  { cellSize:  2, wallThickness: 1.0 }, // viewBox ~164  — fine grid, visible
+  monster: { cellSize:  2, wallThickness: 1.0 }, // viewBox ~204  — finest grid, visible
+};
 
 const librarySizes: Array<{
   difficulty: Difficulty;
@@ -22,12 +32,30 @@ const librarySizes: Array<{
   { difficulty: 'monster', grid: '100×100', name: 'Monster', href: '/monster-mazes', cta: 'Browse Monster', desc: 'The largest preset collection for serious focus.' },
 ];
 
+// Small/Medium/Large are in catalog.json; Expert/Monster are in libraryCatalog.json
+function getMazeThumbnail(difficulty: Difficulty): string {
+  const { cellSize, wallThickness } = thumbnailParams[difficulty];
+  let mazeData;
+  if (difficulty === 'expert' || difficulty === 'monster') {
+    const entries = getLibraryMazesByDifficulty(difficulty);
+    if (!entries.length) return '';
+    mazeData = generateMazeFromLibraryCatalog(entries[0]);
+  } else {
+    const entries = getMazesByDifficulty(difficulty);
+    if (!entries.length) return '';
+    mazeData = generateMazeFromCatalog(entries[0]);
+  }
+  return renderMazeToSVGString(mazeData, {
+    cellSize,
+    wallThickness,
+    padding: 2,
+    showSolution: false,
+    showEndpointMarkers: false,
+  });
+}
+
 const librarySvgs = Object.fromEntries(
-  librarySizes.map(({ difficulty }) => {
-    const mazes = getMazesByDifficulty(difficulty);
-    const svg = mazes.length ? renderThumbnail(generateMazeFromCatalog(mazes[0])) : '';
-    return [difficulty, svg];
-  })
+  librarySizes.map(({ difficulty }) => [difficulty, getMazeThumbnail(difficulty)])
 ) as Record<Difficulty, string>;
 
 const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
