@@ -27,6 +27,7 @@ export const GET: APIRoute = async () => {
     url('/faq', '0.7', 'monthly'),
     url('/learn', '0.8', 'weekly'),
     url('/learn/how-to-solve-a-maze', '0.7', 'monthly', '2024-11-20'),
+    url('/learn/how-mazes-work', '0.7', 'monthly', '2024-11-01'),
     url('/mazes-for-classroom', '0.7', 'monthly'),
     url('/mazes-for-seniors', '0.7', 'monthly'),
     url('/about', '0.5', 'monthly'),
