@@ -58,14 +58,14 @@ const pathname = Astro.url.pathname;
           Maze Library
         </a>
         <a
-          href="/blog"
+          href="/learn"
           class:list={[
             'btn-ghost text-sm px-3 py-1.5',
-            pathname.startsWith('/blog') ? 'font-semibold' : '',
+            pathname.startsWith('/learn') ? 'font-semibold' : '',
           ]}
-          style={pathname.startsWith('/blog') ? 'color: var(--color-accent);' : ''}
+          style={pathname.startsWith('/learn') ? 'color: var(--color-accent);' : ''}
         >
-          Blog
+          Learn
         </a>
 
         <!-- Primary CTA -->
@@ -121,7 +121,7 @@ const pathname = Astro.url.pathname;
     <a href="/large-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Large Mazes</a>
     <a href="/expert-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Expert Mazes</a>
     <a href="/monster-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Monster Mazes</a>
-    <a href="/blog" class="block btn-ghost w-full text-left py-2.5">Blog</a>
+    <a href="/learn" class="block btn-ghost w-full text-left py-2.5">Learn</a>
     <a href="/faq" class="block btn-ghost w-full text-left py-2.5">FAQ</a>
   </div>
 </header>

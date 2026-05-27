@@ -30,6 +30,93 @@
   to     = "/maze-library"
   status = 301
 
+# Blog → Learn redirects (force = true overrides the still-built /dist/blog/* pages)
+# TODO: Once individual /learn/* guides are published, update the /learn fallbacks
+#       (e.g. /blog/how-maze-generation-algorithms-work → /learn/how-mazes-work)
+[[redirects]]
+  from   = "/blog/how-to-solve-a-maze"
+  to     = "/learn/how-to-solve-a-maze"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/how-to-use-mazes-in-the-classroom"
+  to     = "/mazes-for-classroom"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/mazes-for-seniors-cognitive-health"
+  to     = "/mazes-for-seniors"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/printable-mazes-complete-guide"
+  to     = "/printable-mazes"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/how-to-make-a-maze"
+  to     = "/maze-generator"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/how-maze-generation-algorithms-work"
+  to     = "/learn"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/types-of-mazes-explained"
+  to     = "/learn"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/maze-difficulty-explained"
+  to     = "/learn"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/maze-puzzles-for-all-ages"
+  to     = "/learn"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/benefits-of-mazes-for-kids"
+  to     = "/learn"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/brain-training-with-mazes"
+  to     = "/learn"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/history-of-mazes-and-labyrinths"
+  to     = "/learn"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog/mazes-vs-labyrinths"
+  to     = "/learn"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/blog"
+  to     = "/learn"
+  status = 301
+  force  = true
+
 [[redirects]]
   from   = "/*"
   to     = "/404"
