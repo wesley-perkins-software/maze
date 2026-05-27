@@ -89,18 +89,42 @@ export function PrintableMazeGenerator() {
   const cellSize = Math.max(8, Math.min(28, Math.floor(400 / Math.max(maze.width, maze.height))));
   const selectedLabel = SIZE_OPTIONS.find(o => o.value === selectedSize)?.label ?? '';
 
-  const printMaze = (
-    <div className={`print-only${showSolution ? ' print-two-page' : ''}`} aria-hidden="true">
-      {/* Page 1: clean maze worksheet — always printed */}
-      <div className="print-maze-sheet">
-        {showSolution && <p className="print-page-label">Maze Worksheet</p>}
+  const cleanMazeRenderer = (
+    <MazeRenderer
+      maze={maze}
+      cellSize={12}
+      wallThickness={2}
+      padding={6}
+      showSolution={false}
+      showEndpointMarkers={false}
+      showPlayer={false}
+      showTrail={false}
+      showHintPath={false}
+      showPlayerGlow={false}
+    />
+  );
+
+  const printMaze = showSolution ? (
+    /* Two-page: uses .print-pages (normal document flow) so break-after:page works.
+       .print-only (position:fixed) is intentionally NOT used here — that approach
+       clips content to one page via overflow:hidden. */
+    <div className="print-pages" aria-hidden="true">
+      <section className="print-page">
+        <p className="print-page-heading">Maze Worksheet</p>
         <div className="print-maze-art">
+          {cleanMazeRenderer}
+        </div>
+      </section>
+      <section className="print-page">
+        <p className="print-page-heading">Answer Key</p>
+        <div className="print-maze-art print-with-solution">
           <MazeRenderer
             maze={maze}
             cellSize={12}
             wallThickness={2}
             padding={6}
-            showSolution={false}
+            solution={maze.solution}
+            showSolution={true}
             showEndpointMarkers={false}
             showPlayer={false}
             showTrail={false}
@@ -108,28 +132,16 @@ export function PrintableMazeGenerator() {
             showPlayerGlow={false}
           />
         </div>
-      </div>
-      {/* Page 2: answer key — only when "Include answer key page" is checked */}
-      {showSolution && (
-        <div className="print-maze-sheet">
-          <p className="print-page-label">Answer Key</p>
-          <div className="print-maze-art print-with-solution">
-            <MazeRenderer
-              maze={maze}
-              cellSize={12}
-              wallThickness={2}
-              padding={6}
-              solution={maze.solution}
-              showSolution={true}
-              showEndpointMarkers={false}
-              showPlayer={false}
-              showTrail={false}
-              showHintPath={false}
-              showPlayerGlow={false}
-            />
-          </div>
+      </section>
+    </div>
+  ) : (
+    /* Single-page: original .print-only (position:fixed) approach unchanged */
+    <div className="print-only" aria-hidden="true">
+      <div className="print-maze-sheet">
+        <div className="print-maze-art">
+          {cleanMazeRenderer}
         </div>
-      )}
+      </div>
     </div>
   );
 
@@ -254,9 +266,9 @@ export function PrintableMazeGenerator() {
               onChange={(e) => setShowSolution(e.target.checked)}
               className="w-4 h-4 accent-arch-accent shrink-0"
             />
-            <span className="text-sm font-medium text-arch-600">Include answer key page</span>
+            <span className="text-sm font-medium text-arch-charcoal">Include Answer Key</span>
           </label>
-          <p className="text-sm text-arch-600 pl-[26px]">Adds a second printed page with the solution.</p>
+          <p className="text-sm text-arch-600 pl-[26px]">Prints a second page with the solution.</p>
         </div>
 
         {/* Divider */}

@@ -374,11 +374,9 @@
 
 /* Maze generator print sheet ─────────────────────────────────────────────── */
 @media screen {
-  .print-only {
+  .print-only,
+  .print-pages {
     display: none !important;
-  }
-  .print-page-label {
-    display: none;
   }
 }
 
@@ -394,7 +392,8 @@
     height: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    /* visible so multi-page print portals can flow across pages */
+    overflow: visible !important;
     background: #fff !important;
     color: #000 !important;
   }
@@ -482,35 +481,35 @@
     display: none !important;
   }
 
-  /* Two-page answer key layout: switch from fixed overlay to paginated flow. */
-  .print-only.print-two-page {
-    position: static !important;
+  /* Multi-page print portal (answer key). Uses normal document flow so
+     the browser can paginate across pages. .print-only (single-page) is
+     unchanged — its position:fixed approach is still used when no answer key. */
+  .print-pages {
     display: block !important;
-    height: auto !important;
-    overflow: visible !important;
+    background: #fff;
   }
 
-  .print-only.print-two-page .print-maze-sheet {
-    height: 100vh;
+  .print-page {
+    display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     break-after: page;
     page-break-after: always;
   }
 
-  .print-only.print-two-page .print-maze-sheet:last-child {
-    break-after: avoid;
-    page-break-after: avoid;
+  .print-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
   }
 
-  .print-page-label {
-    display: block;
-    font-family: sans-serif;
+  .print-page-heading {
     font-size: 10pt;
     font-weight: 700;
     text-align: center;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #000;
-    margin-bottom: 6pt;
+    margin: 0 0 6pt 0;
   }
 }
