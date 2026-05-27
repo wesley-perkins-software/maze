@@ -8,11 +8,11 @@ import { renderDownloadSVG } from '../../lib/svg/renderToString';
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
 
 const SIZE_OPTIONS: { value: SizePreset; label: string; detail: string }[] = [
-  { value: 'small',   label: 'Small',   detail: '20×20' },
-  { value: 'medium',  label: 'Medium',  detail: '40×40' },
-  { value: 'large',   label: 'Large',   detail: '60×60' },
-  { value: 'expert',  label: 'Expert',  detail: '80×80' },
-  { value: 'monster', label: 'Monster', detail: '100×100' },
+  { value: 'small',   label: 'Small',   detail: '20 × 20' },
+  { value: 'medium',  label: 'Medium',  detail: '40 × 40' },
+  { value: 'large',   label: 'Large',   detail: '60 × 60' },
+  { value: 'expert',  label: 'Expert',  detail: '80 × 80' },
+  { value: 'monster', label: 'Monster', detail: '100 × 100' },
 ];
 
 const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
@@ -46,23 +46,7 @@ function generateForPreset(preset: SizePreset): MazeData {
   });
 }
 
-const PrintIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-  </svg>
-);
-
-const RefreshIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-  </svg>
-);
-
-const DownloadIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-  </svg>
-);
+const PREVIEW_PADDING = 6;
 
 export function PrintableMazeGenerator() {
   const [selectedSize, setSelectedSize] = useState<SizePreset>('small');
@@ -79,11 +63,7 @@ export function PrintableMazeGenerator() {
   }, []);
 
   const handleGenerate = useCallback(() => {
-    setMaze((prev) => {
-      const next = generateForPreset(selectedSize);
-      // Ensure different maze each time (extremely unlikely collision, but guard it)
-      return next.seed !== prev.seed ? next : generateForPreset(selectedSize);
-    });
+    setMaze(generateForPreset(selectedSize));
   }, [selectedSize]);
 
   const handlePrint = useCallback(() => {
@@ -101,9 +81,12 @@ export function PrintableMazeGenerator() {
     URL.revokeObjectURL(url);
   }, [maze]);
 
-  const btnBase = 'rounded-sm border px-4 py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent flex flex-col items-center gap-0.5 min-w-[72px]';
-  const activeBtn = 'border-arch-charcoal bg-arch-charcoal text-white';
+  const btnBase = 'rounded-sm border py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent';
+  const activeBtn = 'border-arch-charcoal bg-arch-charcoal text-white dark:bg-arch-dark-surface-raised dark:border-arch-400 dark:text-arch-charcoal';
   const inactiveBtn = 'border-arch-200 bg-arch-surface text-arch-600 hover:border-arch-charcoal hover:text-arch-charcoal hover:bg-arch-bg';
+
+  const cellSize = Math.max(8, Math.min(28, Math.floor(400 / Math.max(maze.width, maze.height))));
+  const selectedLabel = SIZE_OPTIONS.find(o => o.value === selectedSize)?.label ?? '';
 
   const printMaze = (
     <div className="print-only" aria-hidden="true">
@@ -127,110 +110,167 @@ export function PrintableMazeGenerator() {
   );
 
   return (
-    <div className="screen-only">
-      {/* Size picker */}
-      <div className="mb-5">
-        <p className="text-sm font-medium mb-3 text-arch-600">Choose a size:</p>
-        <div className="flex flex-wrap gap-2">
-          {SIZE_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => handleSizeChange(opt.value)}
-              className={`${btnBase} ${selectedSize === opt.value ? activeBtn : inactiveBtn}`}
-              aria-pressed={selectedSize === opt.value}
-            >
-              <span className="font-semibold leading-tight">{opt.label}</span>
-              <span className="text-xs opacity-70 font-normal leading-tight"
-                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
-              >{opt.detail}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+    <>
+    <div className="screen-only flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-7 lg:gap-10 lg:items-start">
 
-      {/* Maze preview */}
-      <div
-        className="relative border bg-arch-surface overflow-hidden mx-auto mb-5"
-        style={{
-          width: 'min(100%, 520px)',
-          aspectRatio: '1 / 1',
-          borderColor: 'var(--color-border)',
-          boxShadow: 'inset 0 0 0 6px #FFFFFF, inset 0 0 0 7px var(--color-border)',
-        }}
-      >
-        <div className="absolute inset-3">
-          <MazeRenderer
-            maze={maze}
-            fillContainer={true}
-            showPlayer={false}
-            showTrail={false}
-            showEndpointMarkers={false}
-            showHintPath={false}
-            showSolution={false}
-            showPlayerGlow={false}
-          />
-        </div>
-      </div>
+      {/* ── Maze preview — top on mobile, right column on desktop ── */}
+      <div className="min-w-0 w-full lg:col-start-2 lg:row-start-1">
 
-      {/* Action row */}
-      <div className="flex flex-wrap gap-3 items-center">
-        {/* Print Maze — primary, desktop only */}
-        <button
-          onClick={handlePrint}
-          className="hidden lg:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-150 active:scale-[0.98]"
-          style={{ backgroundColor: 'var(--color-accent)', border: '1px solid var(--color-accent)' }}
-          onMouseOver={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-accent-dark)'; }}
-          onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-accent)'; }}
-        >
-          <PrintIcon />
-          Print Maze
-        </button>
-
-        {/* Make Another — secondary */}
-        <button
-          onClick={handleGenerate}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all duration-150 active:scale-[0.98]"
+        {/* Preview card */}
+        <div
+          className="border border-arch-400/60 bg-arch-surface overflow-hidden mx-auto"
           style={{
-            color: 'var(--color-charcoal)',
-            border: '1px solid var(--color-charcoal)',
-            backgroundColor: 'transparent',
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--color-charcoal)';
-            e.currentTarget.style.color = 'var(--color-bg)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = 'var(--color-charcoal)';
+            width: 'min(100%, calc(100vh - 140px))',
+            aspectRatio: '1 / 1',
+            boxShadow: 'inset 0 0 0 6px #FFFFFF, inset 0 0 0 7px #B0AEA8',
           }}
         >
-          <RefreshIcon />
-          Make Another
-        </button>
+          <div className="flex justify-center items-center w-full h-full p-3">
+            <div
+              className="relative"
+              style={{
+                aspectRatio: `${maze.width * cellSize + PREVIEW_PADDING * 2} / ${maze.height * cellSize + PREVIEW_PADDING * 2}`,
+                width: maze.width >= maze.height ? '100%' : 'auto',
+                height: maze.width >= maze.height ? 'auto' : '100%',
+                maxWidth: '100%',
+                maxHeight: '100%',
+              }}
+            >
+              <MazeRenderer
+                maze={maze}
+                cellSize={cellSize}
+                padding={PREVIEW_PADDING}
+                fillContainer
+                showEndpointMarkers={false}
+                showPlayer={false}
+                showTrail={false}
+                showHintPath={false}
+                showSolution={false}
+                showPlayerGlow={false}
+              />
+            </div>
+          </div>
+        </div>
 
-        {/* Download SVG — tertiary */}
-        <button
-          onClick={handleDownloadSVG}
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors duration-150"
-          style={{ color: 'var(--color-muted-strong)' }}
-          onMouseOver={(e) => { e.currentTarget.style.color = 'var(--color-charcoal)'; }}
-          onMouseOut={(e) => { e.currentTarget.style.color = 'var(--color-muted-strong)'; }}
+        {/* Caption — dimensions + size label */}
+        <div
+          className="flex items-center justify-between pt-2 pb-1 mx-auto"
+          style={{ width: 'min(100%, calc(100vh - 140px))' }}
+          aria-label="Maze info"
         >
-          <DownloadIcon />
-          Download SVG
-        </button>
+          <span className="text-[13px] font-mono font-medium text-arch-600 sm:text-sm">
+            {maze.width} × {maze.height}
+          </span>
+          <span className="text-[13px] font-mono font-medium text-arch-600 sm:text-sm">
+            {selectedLabel}
+          </span>
+        </div>
       </div>
 
-      {/* Mobile note */}
-      <p
-        className="lg:hidden mt-4 pl-3 text-sm leading-relaxed"
-        style={{ borderLeft: '2px solid var(--color-border)', color: 'var(--color-muted-strong)' }}
-      >
-        Printing works best from a desktop browser. On mobile, download the SVG and print from your device or computer.
-      </p>
+      {/* ── Controls panel — below preview on mobile, left column on desktop ── */}
+      <div className="w-full shrink-0 flex flex-col gap-4 lg:col-start-1 lg:row-start-1">
 
-      {/* Print portal — injected into document.body so print CSS applies */}
-      {printRoot ? createPortal(printMaze, printRoot) : null}
+        {/* Desktop-only editorial header */}
+        <div className="hidden lg:block">
+          <nav aria-label="Breadcrumb" className="mb-3">
+            <ol className="flex items-center gap-1">
+              <li>
+                <a href="/" className="text-xs font-mono text-arch-400 hover:text-arch-600 transition-colors">
+                  Home
+                </a>
+              </li>
+              <li><span className="text-xs font-mono text-arch-400 mx-1.5">/</span></li>
+              <li><span className="text-xs font-mono text-arch-600">Printable Mazes</span></li>
+            </ol>
+          </nav>
+          <p className="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">
+            Free Maze Printables
+          </p>
+          {/* aria-hidden: real H1 lives in the page (lg:hidden) for SEO */}
+          <div className="font-display text-5xl text-arch-charcoal leading-none mb-2" aria-hidden="true">
+            Print Your Own<br />Maze Worksheet
+          </div>
+          <p className="text-sm text-arch-600 leading-relaxed mb-4">
+            Choose a size, generate a clean maze, then print an ad-free worksheet or download the SVG.
+          </p>
+        </div>
+
+        {/* Size selector */}
+        <fieldset>
+          <legend className="block text-xs tracking-widest uppercase font-semibold text-arch-600 mb-2">
+            Size
+          </legend>
+          <div className="grid grid-cols-3 gap-1.5">
+            {SIZE_OPTIONS.map(({ value, label, detail }) => (
+              <button
+                key={value}
+                onClick={() => handleSizeChange(value)}
+                className={`${btnBase} flex flex-col items-center leading-tight px-1 ${
+                  selectedSize === value ? activeBtn : inactiveBtn
+                }`}
+                aria-pressed={selectedSize === value}
+              >
+                <span>{label}</span>
+                <span className={`text-xs font-mono font-medium ${
+                  selectedSize === value ? 'text-white/85 dark:text-arch-charcoal/70' : 'text-arch-600'
+                }`}>
+                  {detail}
+                </span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        {/* Divider */}
+        <div className="border-t border-arch-200" />
+
+        {/* Actions — print-first hierarchy */}
+        <div className="space-y-2.5">
+
+          {/* Primary: Print Maze — desktop only */}
+          <button
+            onClick={handlePrint}
+            className="hidden lg:flex w-full items-center justify-center gap-2 rounded-sm px-5 py-3 text-base font-semibold transition-colors bg-arch-accent text-white hover:bg-arch-accent-dark active:bg-arch-accent-dark"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Print Maze
+          </button>
+
+          {/* Secondary: Generate New Maze */}
+          <button
+            onClick={handleGenerate}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-sm border-2 border-arch-charcoal bg-arch-surface px-5 py-3 text-base font-semibold text-arch-charcoal hover:bg-arch-bg active:bg-arch-bg transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Generate New Maze
+          </button>
+
+          {/* Tertiary: Download SVG */}
+          <button
+            onClick={handleDownloadSVG}
+            className="w-full inline-flex items-center justify-center gap-1.5 rounded-sm border border-arch-200 bg-arch-surface px-3 py-2 text-sm font-medium text-arch-600 hover:bg-arch-bg hover:border-arch-400 hover:text-arch-charcoal transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download SVG
+          </button>
+
+          {/* Mobile note — print unavailable on mobile */}
+          <p className="lg:hidden border-l-2 border-arch-200 pl-3 text-sm leading-relaxed text-arch-600">
+            Printing works best from a desktop browser. On mobile, download the SVG and print from your device or computer.
+          </p>
+        </div>
+
+      </div>
     </div>
+
+    {/* Print portal — appended to body so @media print CSS applies */}
+    {printRoot ? createPortal(printMaze, printRoot) : null}
+    </>
   );
 }
