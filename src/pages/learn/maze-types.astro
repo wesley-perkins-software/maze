@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const faqItems = [
+  {
+    q: 'What is an orthogonal maze?',
+    a: 'An orthogonal maze uses a square grid, with four possible directions per cell: north, south, east, and west. It is the standard maze format — the type used in the vast majority of printed puzzles, worksheets, and maze games. MazeThis generates orthogonal mazes.',
+  },
+  {
+    q: 'What is a hexagonal maze?',
+    a: 'A hexagonal maze uses regular hexagon cells instead of squares. Each cell has six possible neighbors, which creates more branching at each junction and a significantly different navigation feel. Movement is diagonal rather than purely cardinal, making hexagonal mazes harder to orient in than equivalently sized orthogonal mazes.',
+  },
+  {
+    q: 'What is a circular maze?',
+    a: 'A circular maze arranges cells in concentric rings, with the exit typically at the center. Connections exist around each ring and between adjacent rings. The circular structure removes the familiar up/down/left/right mental model, creating a genuinely different kind of disorientation compared to grid mazes.',
+  },
+  {
+    q: 'Which maze type is hardest to solve?',
+    a: 'Hexagonal and triangular mazes tend to be harder than orthogonal mazes at the same scale, because they disrupt standard solving strategies like the wall-following rule. Weave mazes, which include over/under passages, are extremely difficult because they are topologically more complex than flat mazes.',
+  },
+  {
+    q: 'Are MazeThis mazes square grid or something else?',
+    a: 'MazeThis generates orthogonal (square grid) mazes. These offer the broadest accessibility — orthogonal mazes work at any skill level, print cleanly on standard paper, and support all the major solving strategies. The maze generator and library both use the orthogonal format.',
+  },
+  {
+    q: 'What is a weave maze?',
+    a: 'A weave maze is an orthogonal maze with passages that cross over or under each other, like bridges. This makes the maze topologically non-planar — the standard wall-following rule no longer works, because paths can pass through the same visual space at different levels.',
+  },
+  {
+    q: 'Where can I try different maze sizes?',
+    a: 'The Maze Library on MazeThis has over 400 orthogonal mazes organized by size: small (20×20), medium (40×40), large (60×60), expert, and monster. You can also generate a custom maze at any size using the Maze Generator.',
+  },
+];
+
+const articleSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Maze Types',
+  description: 'A guide to the different maze grid types — orthogonal, hexagonal, circular, triangular, and more — and how each changes the way you navigate.',
+  url: `${siteUrl}/learn/maze-types`,
+  datePublished: '2024-12-01',
+  dateModified: '2024-12-01',
+  author: { '@type': 'Organization', name: 'MazeThis', url: siteUrl },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MazeThis',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
+  },
+  isPartOf: { '@id': `${siteUrl}/learn` },
+  isAccessibleForFree: true,
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Learn', item: `${siteUrl}/learn` },
+    { '@type': 'ListItem', position: 3, name: 'Maze Types' },
+  ],
+});
+---
+
+<BaseLayout
+  title="Maze Types — Orthogonal, Hexagonal, Circular & More | MazeThis"
+  description="A guide to the different maze grid types — orthogonal, hexagonal, circular, triangular, and more — and how each changes the way you navigate."
+  canonical={`${siteUrl}/learn/maze-types`}
+  schemaLD={[articleSchema, breadcrumbSchema]}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Learn', href: '/learn' },
+      { label: 'Maze Types' },
+    ]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">Maze Basics</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">Maze Types</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        A guide to the different maze grid types — orthogonal, hexagonal, circular, triangular, and more — and how each changes the way you navigate.
+      </p>
+    </div>
+
+    <!-- Orthogonal -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Orthogonal mazes</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The standard maze. Cells are squares arranged in a rectangular grid, with four possible directions per cell: north, south, east, and west. The vast majority of printed puzzles, maze worksheets, and maze games use this format — including all mazes on MazeThis.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Navigation maps directly to up/down/left/right, making orthogonal mazes immediately intuitive for solvers of any age. The familiar grid structure lets solvers apply systematic strategies efficiently — scanning corridors, tracking position relative to the edges, and using the wall-following rule reliably on perfect mazes.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">Best for</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">All ages and skill levels. The format of choice for printed worksheets, classroom use, and any context where accessibility matters. Works at every scale from a 5×5 kids maze to a 100×100 monster maze.</p>
+      </div>
+    </section>
+
+    <!-- Hexagonal -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Hexagonal mazes</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Hexagonal mazes use regular hexagon cells instead of squares. Each cell has six possible neighbors rather than four, which means more branching at every junction and a substantially different navigation feel. Movement is diagonal rather than purely cardinal — northwest, northeast, east, southeast, southwest, west — which makes it harder to maintain a clear mental model of where you are in the grid.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The extra connectivity per cell means more decision points per unit of path length. Solvers who are used to orthogonal mazes often find hexagonal mazes noticeably more disorienting at the same scale, even before accounting for the unfamiliar grid shape.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">Best for</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">Experienced solvers who want a fresh challenge, or contexts where visual distinctiveness matters. The honeycomb appearance is immediately recognizable and feels more unusual than a plain square grid.</p>
+      </div>
+    </section>
+
+    <!-- Circular -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Circular mazes</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Circular mazes arrange cells in concentric rings, with each ring divided into arc-shaped segments. Connections exist both around each ring and between adjacent rings toward or away from the center. The exit is typically at the center, giving the maze a natural inward goal.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The circular structure removes the up/down/left/right mental model that solvers use in orthogonal mazes. Instead, navigation is oriented inward vs. outward and clockwise vs. counterclockwise — which is genuinely disorienting until you adjust. The innermost rings have fewer cells and create a natural funnel toward the exit.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">Best for</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">Decorative contexts, puzzle books, experienced solvers, or anywhere visual novelty matters. Circular mazes look elegant and distinctive on paper and have an immediate "wow factor" that rectangular grids do not.</p>
+      </div>
+    </section>
+
+    <!-- Triangular, Weave, 3D, Shaped -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-5">Other maze types</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          {
+            title: 'Triangular (delta)',
+            body: 'Uses equilateral triangle cells. Each cell has three sides, but the number of neighbors alternates between two and three depending on triangle orientation. The non-intuitive geometry disrupts standard strategies and makes triangular mazes noticeably harder to navigate than orthogonal mazes of the same scale.',
+          },
+          {
+            title: 'Shaped / irregular',
+            body: 'Orthogonal (or hexagonal) cells arranged to fill a custom outline — an animal silhouette, a letter, a holiday shape. The cells follow the same rules as standard mazes, but the irregular boundary adds visual appeal and disrupts wall-following. Popular for kids\' activities and themed events.',
+          },
+          {
+            title: 'Weave mazes',
+            body: 'Orthogonal mazes where some passages cross over or under others, like bridges. The over/under topology makes the maze non-planar — the wall-following rule does not work because paths cross the same visual space at different levels. Very high difficulty.',
+          },
+          {
+            title: '3D and multi-level',
+            body: 'Include vertical connections between levels, requiring the solver to track position across multiple floors. In print form, arrows or symbols indicate up/down transitions. Cognitively demanding in a qualitatively different way from any flat maze format.',
+          },
+        ].map(({ title, body }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{title}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Choosing -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Choosing the right maze type</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        For most purposes — printing for kids, classrooms, general recreational use, or building a solving practice — orthogonal mazes are the right choice. They are universally understood, scale to any difficulty level, and work for all ages.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        For experienced solvers who want a fresh challenge, hexagonal mazes offer significantly more disorientation at the same grid size. Circular mazes add visual appeal and a unique center-focused navigation challenge. The other types — triangular, weave, 3D — are best treated as speciality puzzles for dedicated enthusiasts rather than everyday practice.
+      </p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Try an orthogonal maze</h2>
+      <p class="text-sm text-arch-600 mb-5">Browse the full library or generate a custom maze at any size.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library"   class="btn-secondary">Maze Library</a>
+        <a href="/maze-generator" class="btn-secondary">Maze Generator</a>
+        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
+      </div>
+    </section>
+
+    <div class="mt-10 text-center">
+      <a
+        href="/learn"
+        class="text-sm transition-colors"
+        style="color: var(--color-muted-strong);"
+        onmouseover="this.style.color='var(--color-charcoal)'"
+        onmouseout="this.style.color='var(--color-muted-strong)'"
+      >← All guides</a>
+    </div>
+
+  </div>
+</BaseLayout>

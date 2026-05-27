@@ -1,0 +1,216 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+
+const faqItems = [
+  {
+    q: 'What size maze is right for a 5-year-old?',
+    a: 'A 5×5 or 6×6 grid with wide corridors is ideal for most 5-year-olds. The goal is a maze that requires real effort but can be completed in one sitting — roughly 3–8 minutes. Once 6×6 feels easy, move up to 8×8.',
+  },
+  {
+    q: 'Are mazes good for kids?',
+    a: 'Yes. Maze puzzles engage spatial reasoning, sustained attention, and trial-and-error problem solving all at once. For younger children (3–6), pencil-traced mazes also build fine motor skills and pencil control that directly support handwriting development.',
+  },
+  {
+    q: 'What age can kids start doing mazes?',
+    a: 'Simple mazes with very wide corridors and few dead ends can work as early as age 3–4. At that age, the goal is tracing within boundaries rather than strategic solving. By age 5–6, most children can approach mazes as genuine puzzles with a plan.',
+  },
+  {
+    q: 'Do mazes help with ADHD?',
+    a: 'Mazes can be a useful attention exercise for children with ADHD because the immediate, unambiguous feedback (can I go forward or not?) keeps engagement high. Short, solvable mazes — ones the child can finish within their attention span — tend to work better than larger mazes that require prolonged concentration.',
+  },
+  {
+    q: 'How do mazes build problem-solving skills?',
+    a: 'A maze is one of the clearest models of trial-and-error problem-solving available to a child. Every dead end is feedback — not failure, but information. The child learns to interpret a wrong path as useful data: it eliminates an option and points toward alternatives. That habit of reasoning transfers to academic and real-world problem-solving.',
+  },
+  {
+    q: 'Should I help my child when they get stuck?',
+    a: 'A short pause before helping is usually better. The productive struggle — sitting with the frustration of being stuck, then finding a way forward — is part of what builds resilience and problem-solving confidence. If the child becomes genuinely distressed, move to a smaller maze rather than solving it for them.',
+  },
+  {
+    q: 'Where can I find printable mazes for kids?',
+    a: 'The MazeThis maze library includes small mazes (20×20) that work well for older children, and the maze generator lets you set any custom size. For very young children (3–6), print the smallest available size and increase as skills grow.',
+  },
+];
+
+const articleSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Mazes for Kids',
+  description: 'How maze puzzles support cognitive, motor, and emotional development in children — and how to choose the right difficulty by age.',
+  url: `${siteUrl}/learn/mazes-for-kids`,
+  datePublished: '2024-11-05',
+  dateModified: '2024-11-05',
+  author: { '@type': 'Organization', name: 'MazeThis', url: siteUrl },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MazeThis',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
+  },
+  isPartOf: { '@id': `${siteUrl}/learn` },
+  isAccessibleForFree: true,
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Learn', item: `${siteUrl}/learn` },
+    { '@type': 'ListItem', position: 3, name: 'Mazes for Kids' },
+  ],
+});
+---
+
+<BaseLayout
+  title="Mazes for Kids — Benefits, Age Guide & Free Printables | MazeThis"
+  description="How maze puzzles support cognitive, motor, and emotional development in children — and how to choose the right difficulty by age."
+  canonical={`${siteUrl}/learn/mazes-for-kids`}
+  schemaLD={[articleSchema, breadcrumbSchema]}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Learn', href: '/learn' },
+      { label: 'Mazes for Kids' },
+    ]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">Audiences</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">Mazes for Kids</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        How maze puzzles support cognitive, motor, and emotional development in children — and how to choose the right difficulty by age.
+      </p>
+    </div>
+
+    <!-- Spatial Reasoning -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Spatial reasoning and navigation</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Solving a maze requires a child to mentally simulate movement through space — to look ahead, anticipate dead ends, and plan a route before committing to a path. This is spatial reasoning, one of the strongest early predictors of performance in STEM fields.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Children who approach mazes systematically — scanning the whole grid before starting, or checking ahead before turning — are developing a form of executive planning that generalizes well beyond puzzles. The same mental machinery underlies how engineers visualize structures, how designers think about layout, and how mathematicians reason about abstract space.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">What to watch for</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">Children who pause to scan the maze before starting are already applying a strategic approach. Encourage this even if they don't find the correct path immediately — the habit of planning before acting is the skill that matters.</p>
+      </div>
+    </section>
+
+    <!-- Fine Motor -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Fine motor skills and pencil control</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        For younger children (ages 3–6), tracing a path through a printed maze is a genuine fine motor exercise. Staying within narrow corridor boundaries requires the same careful pencil control that handwriting demands. Occupational therapists often include maze worksheets in handwriting readiness programs for exactly this reason.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The key is sizing. Very young children (3–4) do best with large, open corridors where the path is wide and forgiving. As hand strength and coordination develop, narrower corridors in larger grids provide more challenge and more developmental benefit.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">Age-appropriate sizing</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">Ages 3–4: wide-corridor mazes. Ages 5–6: moderate dead ends, 6×6 to 8×8 grids. Ages 7–9: more complex routing, 8×8 to 10×10. Ages 10+: adult-style mazes at any size. When in doubt, start smaller — a solvable maze builds enthusiasm; an unsolvable one builds frustration.</p>
+      </div>
+    </section>
+
+    <!-- Problem Solving -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Problem-solving and persistence</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        A maze is one of the clearest models of trial-and-error problem-solving available to a child. The child tries a path, hits a dead end, backtracks, and tries again. The feedback is immediate and unambiguous — either the path continues or it doesn't.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        This structure teaches something important: failure is data, not defeat. Dead ends aren't mistakes — they're information that eliminates wrong options and narrows the search. The child who learns this lesson through mazes at age 6 has a head start on scientific thinking and academic resilience.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">On helping</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">Resist the urge to help too quickly. The productive struggle — sitting with frustration and finding a way forward — is part of what builds confidence and problem-solving skill. If a child becomes genuinely distressed, move to a smaller maze rather than solving it for them.</p>
+      </div>
+    </section>
+
+    <!-- Focus -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Focus and sustained attention</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        To solve a maze, a child must maintain sustained attention on a single goal for several minutes. Mazes have a natural advantage over many attention exercises: they are intrinsically motivating. The child wants to find the exit. This makes maze-solving a more organic attention trainer than most structured interventions.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        For children who struggle with attention — ADHD or otherwise — short, satisfying mazes calibrated to the child's current skill level can serve as a gentle attention-building exercise. The key is matching difficulty to the child's actual ability so that completion is achievable and rewarding rather than frustrating.
+      </p>
+    </section>
+
+    <!-- Emotional -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Frustration tolerance and emotional regulation</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Every maze-solver faces moments of being genuinely stuck. Learning to tolerate that frustration, pause, and try a different approach is an emotional skill that mazes naturally develop — one that carries over to schoolwork, social situations, and life generally.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Adults can reinforce this framing: "That path was a dead end — dead ends are part of maze-solving. Where else could you try?" Normalizing the struggle — presenting it as expected and solvable rather than as a sign of failure — helps children build a growth mindset around difficult problems.
+      </p>
+    </section>
+
+    <!-- Choosing difficulty -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Choosing the right difficulty</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The guiding principle: a maze should be challenging enough to require real effort, but solvable within the child's attention span. A maze completed with satisfaction builds enthusiasm for the next one. A maze that defeats a child produces frustration without payoff.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        {[
+          { label: 'Ages 3–4', detail: '4×4 or 5×5, wide open corridors, few dead ends' },
+          { label: 'Ages 5–6', detail: '6×6 to 8×8, moderate dead ends, some backtracking required' },
+          { label: 'Ages 7–9', detail: '8×8 to 10×10, more complex routing, longer solution paths' },
+          { label: 'Ages 10+', detail: '10×10 and beyond, adult-style mazes at full complexity' },
+        ].map(({ label, detail }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{detail}</p>
+          </div>
+        ))}
+      </div>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        When in doubt, go slightly easier. Progress is faster when children experience frequent wins than when they face repeated defeat.
+      </p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Find a maze for your child</h2>
+      <p class="text-sm text-arch-600 mb-5">Browse the library, generate a custom size, or print a worksheet — all free.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library"    class="btn-secondary">Maze Library</a>
+        <a href="/maze-generator"  class="btn-secondary">Maze Generator</a>
+        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
+      </div>
+    </section>
+
+    <div class="mt-10 text-center">
+      <a
+        href="/learn"
+        class="text-sm transition-colors"
+        style="color: var(--color-muted-strong);"
+        onmouseover="this.style.color='var(--color-charcoal)'"
+        onmouseout="this.style.color='var(--color-muted-strong)'"
+      >← All guides</a>
+    </div>
+
+  </div>
+</BaseLayout>

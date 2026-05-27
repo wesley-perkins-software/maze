@@ -71,7 +71,7 @@
 
 [[redirects]]
   from   = "/blog/types-of-mazes-explained"
-  to     = "/learn"
+  to     = "/learn/maze-types"
   status = 301
   force  = true
 
@@ -83,13 +83,13 @@
 
 [[redirects]]
   from   = "/blog/maze-puzzles-for-all-ages"
-  to     = "/learn"
+  to     = "/learn/mazes-for-kids"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/benefits-of-mazes-for-kids"
-  to     = "/learn"
+  to     = "/learn/mazes-for-kids"
   status = 301
   force  = true
 
@@ -107,7 +107,7 @@
 
 [[redirects]]
   from   = "/blog/mazes-vs-labyrinths"
-  to     = "/learn"
+  to     = "/learn/maze-types"
   status = 301
   force  = true
 
