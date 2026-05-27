@@ -195,10 +195,10 @@ export function PrintableMazeGenerator() {
           style={{ width: 'min(100%, calc(100vh - 140px))' }}
           aria-label="Maze info"
         >
-          <span className="text-sm font-mono font-medium text-arch-600 sm:text-base">
+          <span className="text-[13px] font-mono font-medium text-arch-600 sm:text-sm">
             {maze.width} × {maze.height}
           </span>
-          <span className="text-sm font-mono font-medium text-arch-600 sm:text-base">
+          <span className="text-[13px] font-mono font-medium text-arch-600 sm:text-sm">
             {selectedLabel}
           </span>
         </div>
@@ -243,12 +243,12 @@ export function PrintableMazeGenerator() {
               <button
                 key={value}
                 onClick={() => handleSizeChange(value)}
-                className={`col-span-2 ${btnBase} flex flex-col items-center leading-tight px-1 py-2.5 ${
+                className={`col-span-2 ${btnBase} flex flex-col items-center leading-tight px-1 ${
                   selectedSize === value ? activeBtn : inactiveBtn
                 }`}
                 aria-pressed={selectedSize === value}
               >
-                <span className="text-sm font-semibold">{label}</span>
+                <span>{label}</span>
                 <span className={`text-xs font-mono font-medium ${
                   selectedSize === value ? 'text-white/85 dark:text-arch-charcoal/70' : 'text-arch-600'
                 }`}>
@@ -262,12 +262,12 @@ export function PrintableMazeGenerator() {
               <button
                 key={value}
                 onClick={() => handleSizeChange(value)}
-                className={`col-span-2 ${btnBase} flex flex-col items-center leading-tight px-1 py-2.5 ${
+                className={`col-span-2 ${btnBase} flex flex-col items-center leading-tight px-1 ${
                   selectedSize === value ? activeBtn : inactiveBtn
                 }`}
                 aria-pressed={selectedSize === value}
               >
-                <span className="text-sm font-semibold">{label}</span>
+                <span>{label}</span>
                 <span className={`text-xs font-mono font-medium ${
                   selectedSize === value ? 'text-white/85 dark:text-arch-charcoal/70' : 'text-arch-600'
                 }`}>
