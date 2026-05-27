@@ -377,6 +377,9 @@
   .print-only {
     display: none !important;
   }
+  .print-page-label {
+    display: none;
+  }
 }
 
 @media print {
@@ -477,5 +480,37 @@
   /* Solution path hidden by default; opt-in via .print-with-solution on the wrapper. */
   .print-maze-art:not(.print-with-solution) .maze-solution-path {
     display: none !important;
+  }
+
+  /* Two-page answer key layout: switch from fixed overlay to paginated flow. */
+  .print-only.print-two-page {
+    position: static !important;
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .print-only.print-two-page .print-maze-sheet {
+    height: 100vh;
+    flex-direction: column;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .print-only.print-two-page .print-maze-sheet:last-child {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .print-page-label {
+    display: block;
+    font-family: sans-serif;
+    font-size: 10pt;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #000;
+    margin-bottom: 6pt;
   }
 }

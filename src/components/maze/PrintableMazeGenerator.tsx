@@ -90,16 +90,17 @@ export function PrintableMazeGenerator() {
   const selectedLabel = SIZE_OPTIONS.find(o => o.value === selectedSize)?.label ?? '';
 
   const printMaze = (
-    <div className="print-only" aria-hidden="true">
+    <div className={`print-only${showSolution ? ' print-two-page' : ''}`} aria-hidden="true">
+      {/* Page 1: clean maze worksheet — always printed */}
       <div className="print-maze-sheet">
-        <div className={`print-maze-art${showSolution ? ' print-with-solution' : ''}`}>
+        {showSolution && <p className="print-page-label">Maze Worksheet</p>}
+        <div className="print-maze-art">
           <MazeRenderer
             maze={maze}
             cellSize={12}
             wallThickness={2}
             padding={6}
-            solution={maze.solution}
-            showSolution={showSolution}
+            showSolution={false}
             showEndpointMarkers={false}
             showPlayer={false}
             showTrail={false}
@@ -108,6 +109,27 @@ export function PrintableMazeGenerator() {
           />
         </div>
       </div>
+      {/* Page 2: answer key — only when "Include answer key page" is checked */}
+      {showSolution && (
+        <div className="print-maze-sheet">
+          <p className="print-page-label">Answer Key</p>
+          <div className="print-maze-art print-with-solution">
+            <MazeRenderer
+              maze={maze}
+              cellSize={12}
+              wallThickness={2}
+              padding={6}
+              solution={maze.solution}
+              showSolution={true}
+              showEndpointMarkers={false}
+              showPlayer={false}
+              showTrail={false}
+              showHintPath={false}
+              showPlayerGlow={false}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -143,8 +165,7 @@ export function PrintableMazeGenerator() {
                 cellSize={cellSize}
                 padding={PREVIEW_PADDING}
                 fillContainer
-                solution={maze.solution}
-                showSolution={showSolution}
+                showSolution={false}
                 showEndpointMarkers={false}
                 showPlayer={false}
                 showTrail={false}
@@ -225,15 +246,18 @@ export function PrintableMazeGenerator() {
         </fieldset>
 
         {/* Answer key toggle */}
-        <label className="flex items-center gap-2.5 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={showSolution}
-            onChange={(e) => setShowSolution(e.target.checked)}
-            className="w-4 h-4 accent-arch-accent"
-          />
-          <span className="text-sm font-medium text-arch-600">Include answer key</span>
-        </label>
+        <div className="flex flex-col gap-1">
+          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={showSolution}
+              onChange={(e) => setShowSolution(e.target.checked)}
+              className="w-4 h-4 accent-arch-accent shrink-0"
+            />
+            <span className="text-sm font-medium text-arch-600">Include answer key page</span>
+          </label>
+          <p className="text-sm text-arch-600 pl-[26px]">Adds a second printed page with the solution.</p>
+        </div>
 
         {/* Divider */}
         <div className="border-t border-arch-200" />
