@@ -214,14 +214,14 @@
   .btn-ghost {
     @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
            transition-colors duration-150;
-    color: var(--color-muted-strong);
+    color: var(--color-charcoal);
   }
   .btn-ghost:hover {
     color: var(--color-charcoal);
     background-color: var(--color-border);
   }
   .dark .btn-ghost {
-    color: var(--color-muted-strong);
+    color: var(--color-charcoal);
   }
   .dark .btn-ghost:hover {
     color: var(--color-charcoal);

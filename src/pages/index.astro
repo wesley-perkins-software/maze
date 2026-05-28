@@ -29,7 +29,7 @@ const librarySizes: Array<{
   { difficulty: 'medium',  grid: '40×40',   name: 'Medium',  href: '/medium-mazes',  cta: 'Browse Medium',  desc: 'A balanced maze size with more room to explore.' },
   { difficulty: 'large',   grid: '60×60',   name: 'Large',   href: '/large-mazes',   cta: 'Browse Large',   desc: 'Bigger challenges for longer solving sessions.' },
   { difficulty: 'expert',  grid: '80×80',   name: 'Expert',  href: '/expert-mazes',  cta: 'Browse Expert',  desc: 'Dense maze puzzles for experienced solvers.' },
-  { difficulty: 'monster', grid: '100×100', name: 'Monster', href: '/monster-mazes', cta: 'Browse Monster', desc: 'The largest preset collection for serious focus.' },
+  { difficulty: 'monster', grid: '100×100', name: 'Monster', href: '/monster-mazes', cta: 'Browse Monster', desc: 'The largest maze collection for serious focus.' },
 ];
 
 // Small/Medium/Large are in catalog.json; Expert/Monster are in libraryCatalog.json
@@ -105,7 +105,7 @@ const organizationSchema = JSON.stringify({
       <div class="mb-10">
         <p
           class="text-xs uppercase tracking-widest mb-2"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
         >The Best Maze Experience on the Internet</p>
         <h2
           id="products-heading"
@@ -113,8 +113,8 @@ const organizationSchema = JSON.stringify({
           style="color: var(--color-charcoal);"
         >Choose How You<br />Want to Play</h2>
         <p
-          class="mt-3 text-sm leading-relaxed max-w-lg"
-          style="color: var(--color-muted-strong);"
+          class="mt-3 text-base leading-relaxed max-w-lg"
+          style="color: var(--color-charcoal);"
         >Start with today's maze, work through a collection, generate a custom maze, or print a worksheet.</p>
       </div>
 
@@ -155,8 +155,8 @@ const organizationSchema = JSON.stringify({
                 style="color: var(--color-charcoal);"
               >{title}</p>
               <p
-                class="text-sm"
-                style="color: var(--color-muted-strong);"
+                class="text-[15px]"
+                style="color: var(--color-charcoal);"
               >{desc}</p>
             </div>
             <span
@@ -181,7 +181,7 @@ const organizationSchema = JSON.stringify({
         <div>
           <p
             class="text-xs uppercase tracking-widest mb-2"
-            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
           >Maze Library</p>
           <h2
             id="library-sizes-heading"
@@ -189,8 +189,8 @@ const organizationSchema = JSON.stringify({
             style="color: var(--color-charcoal);"
           >Pick Your<br />Challenge</h2>
           <p
-            class="mt-3 text-sm leading-relaxed max-w-md"
-            style="color: var(--color-muted-strong);"
+            class="mt-3 text-base leading-relaxed max-w-md"
+            style="color: var(--color-charcoal);"
           >Start small, move up, and complete each collection at your own pace.</p>
         </div>
         <a
@@ -219,8 +219,8 @@ const organizationSchema = JSON.stringify({
                 >{grid}</p>
               </div>
               <p
-                class="text-xs leading-relaxed flex-1"
-                style="color: var(--color-muted-strong);"
+                class="text-[15px] leading-relaxed flex-1"
+                style="color: var(--color-charcoal);"
               >{desc}</p>
               <span
                 class="text-xs font-medium mt-auto"
@@ -250,8 +250,8 @@ const organizationSchema = JSON.stringify({
                 >{grid}</p>
               </div>
               <p
-                class="text-xs leading-relaxed flex-1"
-                style="color: var(--color-muted-strong);"
+                class="text-[15px] leading-relaxed flex-1"
+                style="color: var(--color-charcoal);"
               >{desc}</p>
               <span
                 class="text-xs font-medium mt-auto"
@@ -288,7 +288,7 @@ const organizationSchema = JSON.stringify({
       <div class="max-w-2xl">
         <p
           class="text-xs uppercase tracking-widest mb-4"
-          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
         >Maze Generator</p>
         <h2
           id="generator-cta-heading"
@@ -296,8 +296,8 @@ const organizationSchema = JSON.stringify({
           style="color: var(--color-charcoal);"
         >Build Your<br />Own Maze</h2>
         <p
-          class="text-sm leading-relaxed mb-8 max-w-md"
-          style="color: var(--color-muted-strong);"
+          class="text-base leading-relaxed mb-8 max-w-md"
+          style="color: var(--color-charcoal);"
         >
           Choose a size, generate a unique maze, then play online, print, or download the SVG.
         </p>
@@ -408,8 +408,8 @@ const organizationSchema = JSON.stringify({
         style="color: var(--color-charcoal);"
       >Improve Your Maze Skills</h2>
       <p
-        class="text-sm leading-relaxed max-w-md mx-auto mb-8"
-        style="color: var(--color-muted-strong);"
+        class="text-base leading-relaxed max-w-md mx-auto mb-8"
+        style="color: var(--color-charcoal);"
       >Read simple guides on maze-solving strategies, difficulty, maze types, and choosing the right puzzle.</p>
       <a
         href="/learn"
