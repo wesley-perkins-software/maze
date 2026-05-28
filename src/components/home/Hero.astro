@@ -89,7 +89,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
   <!-- ─── DESKTOP: split editorial layout ───────────────────────────────── -->
   <div class="hidden md:block relative">
-    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-4 pb-8 lg:pt-6 lg:pb-10">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-2 pb-6 lg:pt-4 lg:pb-8">
       <div class="grid grid-cols-[1fr_540px] lg:grid-cols-[1fr_580px] gap-10 lg:gap-14 items-start">
 
         <!-- Left: headline + daily state + CTA + secondary links -->
@@ -245,7 +245,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   .hero-status-block {
     width:            100%;
     margin-bottom:    0.75rem;
-    padding:          0.75rem 1rem;
+    padding:          0.5rem 0.875rem;
     background-color: var(--color-surface);
     border:           1px solid var(--color-border);
     border-left:      3px solid var(--color-accent);
@@ -266,7 +266,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   .hero-status-line2 {
     font-family: 'IBM Plex Mono', monospace;
     font-size:   0.8125rem; /* 13px */
-    color:       var(--color-muted-strong);
+    color:       var(--color-charcoal);
     margin-top:  0.2rem;
     line-height: 1.4;
   }
@@ -296,17 +296,18 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     align-items:     center;
     font-family:     'IBM Plex Mono', monospace;
     font-size:       0.9375rem; /* 15px — solid secondary button presence */
+    font-weight:     600;
     color:           var(--color-charcoal);
     text-decoration: none;
     cursor:          pointer;
-    border:          2px solid var(--color-border-strong);
+    border:          2px solid var(--color-charcoal);
     padding:         0.625rem 1.25rem;
     white-space:     nowrap;
-    transition:      color 120ms ease, border-color 120ms ease;
+    transition:      background-color 120ms ease, color 120ms ease;
   }
   .hero-sec-link:hover {
-    color:         var(--color-charcoal);
-    border-color:  var(--color-charcoal);
+    background-color: var(--color-charcoal);
+    color:            var(--color-bg);
   }
   .hero-sec-link:focus-visible {
     outline:        2px solid var(--color-charcoal);
@@ -585,7 +586,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   const renderStatus = (state: DailyState): string => {
     const monoBase = `font-family:'IBM Plex Mono',monospace;`;
     const line1Style = `${monoBase}font-size:0.9375rem;font-weight:600;color:var(--color-charcoal);line-height:1.3;`;
-    const line2Style = `${monoBase}font-size:0.8125rem;color:var(--color-muted-strong);margin-top:0.2rem;line-height:1.4;`;
+    const line2Style = `${monoBase}font-size:0.8125rem;color:var(--color-charcoal);margin-top:0.2rem;line-height:1.4;`;
     const accentStyle = `color:var(--color-accent);`;
 
     if (state.type === 'not-started') {
