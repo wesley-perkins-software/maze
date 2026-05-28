@@ -200,7 +200,7 @@ const organizationSchema = JSON.stringify({
         >View Maze Library →</a>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {librarySizes.slice(0, 3).map(({ difficulty, grid, name, href, cta, desc }) => (
           <a
             href={href}
@@ -231,7 +231,7 @@ const organizationSchema = JSON.stringify({
         ))}
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 lg:max-w-[calc(66.667%-0.333rem)] lg:mx-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 md:max-w-[calc(66.667%-0.333rem)] md:mx-auto">
         {librarySizes.slice(3).map(({ difficulty, grid, name, href, cta, desc }) => (
           <a
             href={href}
