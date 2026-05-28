@@ -175,7 +175,7 @@ const organizationSchema = JSON.stringify({
     style="background-color: var(--color-bg); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);"
     aria-labelledby="library-sizes-heading"
   >
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
 
       <div class="flex items-end justify-between mb-10">
         <div>
@@ -200,8 +200,39 @@ const organizationSchema = JSON.stringify({
         >View Maze Library →</a>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {librarySizes.map(({ difficulty, grid, name, href, cta, desc }) => (
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {librarySizes.slice(0, 3).map(({ difficulty, grid, name, href, cta, desc }) => (
+          <a
+            href={href}
+            class="card-hover rounded-lg flex flex-col no-underline overflow-hidden"
+          >
+            <div class="lib-preview-thumb" aria-hidden="true" set:html={librarySvgs[difficulty]} />
+            <div class="p-4 flex flex-col gap-2 flex-1">
+              <div>
+                <p
+                  class="font-semibold text-sm leading-tight"
+                  style="color: var(--color-charcoal);"
+                >{name}</p>
+                <p
+                  class="text-xs mt-0.5"
+                  style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+                >{grid}</p>
+              </div>
+              <p
+                class="text-xs leading-relaxed flex-1"
+                style="color: var(--color-muted-strong);"
+              >{desc}</p>
+              <span
+                class="text-xs font-medium mt-auto"
+                style="color: var(--color-accent);"
+              >{cta} →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 md:max-w-[calc(66.667%-0.333rem)] md:mx-auto">
+        {librarySizes.slice(3).map(({ difficulty, grid, name, href, cta, desc }) => (
           <a
             href={href}
             class="card-hover rounded-lg flex flex-col no-underline overflow-hidden"
