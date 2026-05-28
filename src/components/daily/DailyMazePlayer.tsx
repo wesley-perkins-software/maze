@@ -332,8 +332,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
             isNewBest={solveStats.isNewBest}
             personalBest={null}
             isDailyMode={true}
-            completionCopy="Nice work — you solved today's maze."
-            returnCopy="Come back tomorrow for a fresh challenge."
+            contextLabel="Today's Maze"
             showCountdown={true}
             onPlayAgain={() => {
               setSolveStats(null);

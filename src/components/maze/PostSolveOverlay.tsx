@@ -10,9 +10,13 @@ export interface PostSolveNav {
   nextSlug: string;
   /** Override the label on the primary "Next" button. Defaults to "Next Maze". */
   nextLabel?: string;
+  /** Direct href for the next maze — used instead of /mazes/{nextSlug} when provided. */
+  nextHref?: string;
   largerSlug?: string;
   randomSlug: string;
   categorySlug: string;
+  /** Direct href for the collection/category page — used instead of /{categorySlug} when provided. */
+  categoryHref?: string;
   categoryLabel: string;
 }
 
@@ -26,9 +30,9 @@ export interface PostSolveOverlayProps {
   onPlayAgain: () => void;
   onClose?: () => void;
   mazeSlug?: string;
-  /** Short positive line shown under the title, e.g. "Nice work — you solved today's challenge." */
+  /** @deprecated No longer rendered. Kept for API compatibility. */
   completionCopy?: string;
-  /** e.g. "Come back tomorrow for a fresh challenge." */
+  /** @deprecated No longer rendered. Kept for API compatibility. */
   returnCopy?: string;
   /** Show a live countdown to the next daily maze */
   showCountdown?: boolean;
@@ -45,9 +49,20 @@ export interface PostSolveOverlayProps {
   mazeLabel?: string;
   /** Daily maze post-solve: daily-specific title, actions, and share text. */
   isDailyMode?: boolean;
+  /** Optional label shown under the title, e.g. "Today's Maze", "Generated Maze · Small", "Small #003" */
+  contextLabel?: string;
 }
 
-function formatTime(ms: number): string {
+function formatTimeCompact(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  if (min === 0) return `${totalSec}s`;
+  if (sec === 0) return `${min}m`;
+  return `${min}m ${sec}s`;
+}
+
+function formatTimeFull(ms: number): string {
   const totalSec = Math.floor(ms / 1000);
   const min = Math.floor(totalSec / 60);
   const sec = totalSec % 60;
@@ -139,8 +154,8 @@ function CountdownLine() {
     ? `${h}h ${String(m).padStart(2, '0')}m`
     : `${m}m ${String(sec).padStart(2, '0')}s`;
   return (
-    <p className="text-slate-500 text-xs mt-0.5">
-      New maze unlocks in {formatted}
+    <p className="text-slate-500 dark:text-slate-400 text-xs text-center">
+      New daily maze unlocks in {formatted}
     </p>
   );
 }
@@ -182,24 +197,32 @@ function ShareButton({
   );
 }
 
+function StatBlock({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="text-center">
+      <p className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">{value}</p>
+      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{label}</p>
+    </div>
+  );
+}
+
 export function PostSolveOverlay({
   elapsedMs,
   stepCount,
-  hintsUsed,
+  hintsUsed: _hintsUsed,
   isNewBest: _isNewBest,
   personalBest: _personalBest,
   nav,
   onPlayAgain,
   onClose,
   mazeSlug,
-  completionCopy,
-  returnCopy,
   showCountdown,
   onNewMaze,
   mazeWidth,
   mazeHeight,
   mazeLabel,
   isDailyMode,
+  contextLabel,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   // On mobile, the browser fires a synthetic click event at the touch position
@@ -217,19 +240,6 @@ export function PostSolveOverlay({
     return () => clearTimeout(id);
   }, []);
 
-  const statsItems: string[] = [`⏱ ${formatTime(elapsedMs)}`];
-  if (!isDailyMode) {
-    if (stepCount > 0) statsItems.push(`${stepCount} steps`);
-    if (hintsUsed > 0) statsItems.push(`${hintsUsed} hint${hintsUsed > 1 ? 's' : ''}`);
-  }
-  if (onNewMaze) {
-    if (mazeLabel && mazeLabel.trim().length > 0) {
-      statsItems.push(mazeLabel);
-    } else if (mazeWidth && mazeHeight) {
-      statsItems.push(`${mazeWidth} × ${mazeHeight}`);
-    }
-  }
-
   const generatorUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/maze-generator`
     : '/maze-generator';
@@ -239,17 +249,28 @@ export function PostSolveOverlay({
     : '/maze-of-the-day';
 
   const shareText = isDailyMode
-    ? `I solved today's MazeThis Maze of the Day in ${formatTime(elapsedMs)}.\n\nCan you solve it?\n${dailyShareUrl}`
+    ? `I solved today's MazeThis Maze of the Day in ${formatTimeFull(elapsedMs)}.\n\nCan you solve it?\n${dailyShareUrl}`
     : onNewMaze && mazeWidth && mazeHeight
-    ? `I solved a ${mazeWidth}×${mazeHeight} maze in ${formatTime(elapsedMs)}${stepCount > 0 ? ` and ${stepCount} steps` : ''}. Try making your own maze: ${generatorUrl}`
+    ? `I solved a ${mazeWidth}×${mazeHeight} maze in ${formatTimeFull(elapsedMs)}${stepCount > 0 ? ` and ${stepCount} steps` : ''}. Try making your own maze: ${generatorUrl}`
     : `I just solved a maze! Try it: ${typeof window !== 'undefined' ? window.location.href : ''}`;
 
-  // Generator layout: New Maze primary, Play Again secondary
   const isGeneratorMode = Boolean(onNewMaze && !nav && !isDailyMode);
+
+  // Resolve nav hrefs
+  const nextHref = nav ? (nav.nextHref || (nav.nextSlug ? `/mazes/${nav.nextSlug}` : '')) : '';
+  const categoryHref = nav ? (nav.categoryHref || `/${nav.categorySlug}`) : '';
+  const hasNext = Boolean(nextHref);
+
+  // Primary CTA logic:
+  // - Daily: Share Result
+  // - Generator: New Maze
+  // - Library with next: Next Maze (link)
+  // - Library without next: Browse Collection (link)
+  // - Fallback: Play Again
 
   return (
     <div
-      className="absolute inset-0 z-20 flex items-center justify-center bg-white/90 p-4"
+      className="absolute inset-0 z-20 flex items-center justify-center bg-white/90 dark:bg-slate-900/90 p-4"
       role="dialog"
       aria-modal="true"
       aria-label="Maze complete"
@@ -257,15 +278,15 @@ export function PostSolveOverlay({
       <ConfettiParticles />
 
       <div
-        className={`post-solve-card-in relative w-full bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 flex flex-col items-center gap-4 ${isGeneratorMode ? 'max-w-sm sm:max-w-[440px]' : 'max-w-xs'}`}
+        className="post-solve-card-in relative w-full max-w-xs bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 p-6 flex flex-col items-center gap-4"
         style={!interactive ? { pointerEvents: 'none' } : undefined}
       >
 
-        {/* Dismiss X — generator mode only */}
-        {isGeneratorMode && onClose && (
+        {/* Dismiss X — shown whenever onClose is provided */}
+        {onClose && (
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="absolute top-3 right-3 p-1.5 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             aria-label="Close"
           >
             <XIcon />
@@ -277,59 +298,44 @@ export function PostSolveOverlay({
           <CheckIcon />
         </div>
 
-        {/* Heading + optional completion copy */}
+        {/* Title + context label */}
         <div className="text-center leading-snug">
-          <h3 className="text-xl font-bold text-slate-800">
+          <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
             {isDailyMode ? 'Daily Maze Complete!' : 'Maze Complete!'}
           </h3>
-          {completionCopy && (
-            <p className="mt-1.5 text-sm text-slate-600">{completionCopy}</p>
+          {contextLabel && (
+            <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">{contextLabel}</p>
           )}
         </div>
 
-        {/* Stats row */}
-        <p className="text-base font-semibold text-slate-700 text-center">
-          {statsItems.join(' · ')}
-        </p>
-
-        {/* Daily habit messaging */}
-        {returnCopy && (
-          <div className="text-center -mt-1">
-            <p className="text-sm text-slate-600">{returnCopy}</p>
-            {showCountdown && <CountdownLine />}
+        {/* Stats */}
+        {stepCount > 0 ? (
+          <div className="flex gap-8 justify-center">
+            <StatBlock value={formatTimeCompact(elapsedMs)} label="Time" />
+            <StatBlock value={stepCount.toLocaleString()} label="Steps" />
           </div>
-        )}
-
-        {/* Bridge copy */}
-        {isDailyMode && (
-          <p className="text-sm text-slate-500 text-center -mt-1">
-            Want more? Create your own maze while you wait.
-          </p>
-        )}
-        {!isDailyMode && showCountdown && nav && (
-          <p className="text-xs text-slate-400 text-center -mt-1">
-            Want more? Try another maze while you wait.
-          </p>
+        ) : (
+          <StatBlock value={formatTimeCompact(elapsedMs)} label="Time" />
         )}
 
         {/* Primary CTA */}
         {isDailyMode ? (
           <ShareButton
             shareText={shareText}
-            className="btn-primary w-full justify-center text-base py-3"
+            className="btn-primary w-full justify-center text-base py-3 rounded-lg"
           />
         ) : isGeneratorMode ? (
           <button
             onClick={onNewMaze}
-            className="btn-primary w-full justify-center text-base py-3"
+            className="btn-primary w-full justify-center text-base py-3 rounded-lg"
             ref={primaryBtnRef as React.Ref<HTMLButtonElement>}
           >
             New Maze
           </button>
-        ) : nav ? (
+        ) : nav && hasNext ? (
           <a
-            href={`/mazes/${nav.nextSlug}`}
-            className="btn-primary w-full justify-center text-base py-3"
+            href={nextHref}
+            className="btn-primary w-full justify-center text-base py-3 rounded-lg"
             ref={primaryBtnRef as React.Ref<HTMLAnchorElement>}
           >
             {nav.nextLabel ?? 'Next Maze'}
@@ -337,10 +343,18 @@ export function PostSolveOverlay({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
             </svg>
           </a>
+        ) : nav && !hasNext ? (
+          <a
+            href={categoryHref}
+            className="btn-primary w-full justify-center text-base py-3 rounded-lg"
+            ref={primaryBtnRef as React.Ref<HTMLAnchorElement>}
+          >
+            {nav.categoryLabel}
+          </a>
         ) : (
           <button
             onClick={onPlayAgain}
-            className="btn-primary w-full justify-center text-base py-3"
+            className="btn-primary w-full justify-center text-base py-3 rounded-lg"
             ref={primaryBtnRef as React.Ref<HTMLButtonElement>}
           >
             Play Again
@@ -351,23 +365,23 @@ export function PostSolveOverlay({
         {isDailyMode ? (
           <a
             href="/maze-generator"
-            className="btn-secondary w-full justify-center text-sm py-2.5"
+            className="btn-secondary w-full justify-center text-sm py-2.5 rounded-lg"
           >
-            Create a New Maze
+            Create a Maze
           </a>
         ) : isGeneratorMode ? (
           <button
             onClick={onPlayAgain}
-            className="btn-secondary w-full justify-center text-sm py-2.5"
+            className="btn-secondary w-full justify-center text-sm py-2.5 rounded-lg"
           >
             Play Again
           </button>
-        ) : nav ? (
+        ) : nav && hasNext ? (
           <a
-            href={`/${nav.categorySlug}`}
-            className="btn-secondary text-sm justify-center py-2 w-full"
+            href={categoryHref}
+            className="btn-secondary w-full justify-center text-sm py-2.5 rounded-lg"
           >
-            Browse Mazes
+            {nav.categoryLabel}
           </a>
         ) : null}
 
@@ -377,7 +391,7 @@ export function PostSolveOverlay({
         {POST_SOLVE_AD_SLOT_H > 0 && (
           <div
             style={{ height: POST_SOLVE_AD_SLOT_H }}
-            className="w-full rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-xs text-slate-400 shrink-0"
+            className="w-full rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs text-slate-400 shrink-0"
           >
             {/* Ad unit renders here */}
           </div>
@@ -386,35 +400,20 @@ export function PostSolveOverlay({
         {/* Tertiary actions */}
         <div className="flex items-center gap-1 flex-wrap justify-center -mb-1">
           {isDailyMode ? (
-            <button onClick={onPlayAgain} className="btn-ghost text-sm">
+            <button onClick={onPlayAgain} className="btn-ghost text-sm rounded-lg">
               Play Again
             </button>
-          ) : (
-            <>
-              {nav && (
-                <button onClick={onPlayAgain} className="btn-ghost text-sm">
-                  Play Again
-                </button>
-              )}
-              {nav && !showCountdown && (
-                <a href={`/mazes/${nav.randomSlug}`} className="btn-ghost text-sm">
-                  Random
-                </a>
-              )}
-              {showCountdown && (
-                <a href="/maze-generator" className="btn-ghost text-sm">
-                  Make Your Own
-                </a>
-              )}
-              {!nav && !isGeneratorMode && onClose && (
-                <button onClick={onClose} className="btn-ghost text-sm">
-                  Done
-                </button>
-              )}
-              <ShareButton shareText={shareText} mazeSlug={mazeSlug} />
-            </>
-          )}
+          ) : isGeneratorMode ? (
+            <ShareButton shareText={shareText} mazeSlug={mazeSlug} className="btn-ghost text-sm rounded-lg" />
+          ) : nav && hasNext ? (
+            <button onClick={onPlayAgain} className="btn-ghost text-sm rounded-lg">
+              Play Again
+            </button>
+          ) : null}
         </div>
+
+        {/* Small note: countdown for daily */}
+        {showCountdown && <CountdownLine />}
       </div>
     </div>
   );

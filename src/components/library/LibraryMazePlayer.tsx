@@ -16,6 +16,8 @@ import {
 import { MazeRenderer } from '../maze/MazeRenderer';
 import { FullscreenMazePlayer } from '../maze/FullscreenMazePlayer';
 import type { SolveStats } from '../maze/FullscreenMazePlayer';
+import { PostSolveOverlay } from '../maze/PostSolveOverlay';
+import type { PostSolveNav } from '../maze/PostSolveOverlay';
 import type { GameState } from '../../lib/gameplay/types';
 import type { SessionProgress } from '../../lib/library/session';
 import type { LibraryCatalogEntry } from '../../types/maze';
@@ -308,63 +310,31 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
         />
       )}
 
-      {solveStats && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-xs rounded-2xl bg-white shadow-2xl p-6 flex flex-col gap-5">
-            <div className="text-center">
-              <p className="text-3xl mb-1">✓</p>
-              <h2 className="text-xl font-bold text-slate-900">Maze Complete!</h2>
-              <p className="mt-1 text-sm text-slate-500">{label}</p>
-            </div>
-
-            <div className="flex justify-around text-center">
-              <div>
-                <p className="text-2xl font-bold font-mono text-slate-900">
-                  {formatTime(solveStats.elapsedMs)}
-                </p>
-                <p className="text-xs text-slate-500 mt-0.5">Time</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold font-mono text-slate-900">
-                  {formatNum(solveStats.stepCount)}
-                </p>
-                <p className="text-xs text-slate-500 mt-0.5">Steps</p>
-              </div>
-              {solveStats.hintsUsed > 0 && (
-                <div>
-                  <p className="text-2xl font-bold font-mono text-slate-900">
-                    {solveStats.hintsUsed}
-                  </p>
-                  <p className="text-xs text-slate-500 mt-0.5">Hints</p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              {nextEntry && (
-                <a
-                  href={`/play/library/${nextEntry.id}`}
-                  className="btn-primary w-full text-center rounded-lg py-2.5"
-                >
-                  Next Maze
-                </a>
-              )}
-              <a
-                href={collectionHref}
-                className="w-full text-center rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                Browse Collection
-              </a>
-              <button
-                onClick={handlePlayAgain}
-                className="w-full rounded-lg py-2 text-sm text-slate-500 hover:text-slate-700 transition-colors"
-              >
-                Play Again
-              </button>
-            </div>
+      {solveStats && (() => {
+        const nav: PostSolveNav = {
+          nextSlug: nextEntry ? nextEntry.id : '',
+          nextHref: nextEntry ? `/play/library/${nextEntry.id}` : '',
+          randomSlug: '',
+          categorySlug: collectionHref,
+          categoryHref: collectionHref,
+          categoryLabel: 'Browse Collection',
+        };
+        return (
+          <div className="fixed inset-0 z-[60]">
+            <PostSolveOverlay
+              elapsedMs={solveStats.elapsedMs}
+              stepCount={solveStats.stepCount}
+              hintsUsed={solveStats.hintsUsed}
+              isNewBest={solveStats.isNewBest}
+              personalBest={null}
+              contextLabel={label}
+              nav={nav}
+              onPlayAgain={handlePlayAgain}
+              onClose={() => setSolveStats(null)}
+            />
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
