@@ -670,6 +670,7 @@ export function MazeGenerator() {
                 setSolveStats(null);
                 setPlaying(false);
               }}
+              contextLabel={presetLabel && presetLabel.trim() ? `Generated Maze · ${presetLabel}` : `Generated Maze · ${maze.width}×${maze.height}`}
               onNewMaze={handleGenerate}
               mazeWidth={maze.width}
               mazeHeight={maze.height}
