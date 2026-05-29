@@ -51,6 +51,10 @@ export interface PostSolveOverlayProps {
   isDailyMode?: boolean;
   /** Optional label shown under the title, e.g. "Today's Maze", "Generated Maze · Small", "Small #003" */
   contextLabel?: string;
+  /** Current daily streak count (days in a row). Only shown in daily mode. */
+  streakCurrent?: number;
+  /** All-time longest streak. Only shown in daily mode when > 1. */
+  streakLongest?: number;
 }
 
 function formatTimeCompact(ms: number): string {
@@ -223,6 +227,8 @@ export function PostSolveOverlay({
   mazeLabel,
   isDailyMode,
   contextLabel,
+  streakCurrent,
+  streakLongest,
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   // On mobile, the browser fires a synthetic click event at the touch position
@@ -316,6 +322,30 @@ export function PostSolveOverlay({
           </div>
         ) : (
           <StatBlock value={formatTimeCompact(elapsedMs)} label="Time" />
+        )}
+
+        {/* Streak — daily mode only */}
+        {isDailyMode && streakCurrent != null && streakCurrent >= 1 && (
+          <div className="w-full rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 px-4 py-2.5 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-lg leading-none" aria-hidden="true">🔥</span>
+              <div>
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 leading-tight">
+                  {streakCurrent === 1 ? '1-day streak' : `${streakCurrent}-day streak`}
+                </p>
+                {streakLongest != null && streakLongest > streakCurrent && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 leading-tight">
+                    Best: {streakLongest} {streakLongest === 1 ? 'day' : 'days'}
+                  </p>
+                )}
+                {streakLongest != null && streakLongest === streakCurrent && streakCurrent > 1 && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 leading-tight">
+                    New best!
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Primary CTA */}
