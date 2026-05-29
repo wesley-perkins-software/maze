@@ -40,7 +40,7 @@ const articleSchema = JSON.stringify({
   '@type': 'Article',
   headline: 'Maze Difficulty',
   description: 'What makes a maze easy, hard, dense, or confusing — and how to find the right challenge level.',
-  url: `${siteUrl}/learn/maze-difficulty`,
+  url: `${siteUrl}/maze-guides/maze-difficulty`,
   datePublished: '2024-12-05',
   dateModified: '2024-12-05',
   author: {
@@ -54,7 +54,7 @@ const articleSchema = JSON.stringify({
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
-  isPartOf: { '@id': `${siteUrl}/learn` },
+  isPartOf: { '@id': `${siteUrl}/maze-guides` },
   isAccessibleForFree: true,
 });
 
@@ -63,7 +63,7 @@ const breadcrumbSchema = JSON.stringify({
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/learn` },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
     { '@type': 'ListItem', position: 3, name: 'Maze Difficulty' },
   ],
 });
@@ -72,14 +72,14 @@ const breadcrumbSchema = JSON.stringify({
 <BaseLayout
   title="Maze Difficulty — What Makes a Maze Hard? | MazeThis"
   description="What makes a maze easy, hard, dense, or confusing — and how to find the right challenge level."
-  canonical={`${siteUrl}/learn/maze-difficulty`}
+  canonical={`${siteUrl}/maze-guides/maze-difficulty`}
   schemaLD={[articleSchema, breadcrumbSchema]}
 >
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
 
     <Breadcrumb crumbs={[
       { label: 'Home', href: '/' },
-      { label: 'Maze Guides', href: '/learn' },
+      { label: 'Maze Guides', href: '/maze-guides' },
       { label: 'Maze Difficulty' },
     ]} />
 
@@ -182,11 +182,11 @@ const breadcrumbSchema = JSON.stringify({
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { href: '/small-mazes',   label: 'Small',   grid: '20×20',   desc: 'A good entry point. Quick to complete and easy to scan before starting. All strategies are learnable at this size.' },
-          { href: '/medium-mazes',  label: 'Medium',  grid: '40×40',   desc: 'A genuine challenge. Dead ends grow longer and the solution path starts to disorient. Dead-end filling becomes essential.' },
-          { href: '/large-mazes',   label: 'Large',   grid: '60×60',   desc: 'Requires patience and a plan. Scanning before you start is important. Mental backtracking gets costly.' },
-          { href: '/expert-mazes',  label: 'Expert',  grid: '80×80',   desc: 'Dense and demanding. Many experienced solvers use hints at this level. Solution paths are long and indirect.' },
-          { href: '/monster-mazes', label: 'Monster', grid: '100×100', desc: 'Maximum difficulty. Pure DFS structure, no extra openings, vast dead-end networks. Not recommended as a first attempt.' },
+          { href: '/maze-library/small-mazes',   label: 'Small',   grid: '20×20',   desc: 'A good entry point. Quick to complete and easy to scan before starting. All strategies are learnable at this size.' },
+          { href: '/maze-library/medium-mazes',  label: 'Medium',  grid: '40×40',   desc: 'A genuine challenge. Dead ends grow longer and the solution path starts to disorient. Dead-end filling becomes essential.' },
+          { href: '/maze-library/large-mazes',   label: 'Large',   grid: '60×60',   desc: 'Requires patience and a plan. Scanning before you start is important. Mental backtracking gets costly.' },
+          { href: '/maze-library/expert-mazes',  label: 'Expert',  grid: '80×80',   desc: 'Dense and demanding. Many experienced solvers use hints at this level. Solution paths are long and indirect.' },
+          { href: '/maze-library/monster-mazes', label: 'Monster', grid: '100×100', desc: 'Maximum difficulty. Pure DFS structure, no extra openings, vast dead-end networks. Not recommended as a first attempt.' },
         ].map(({ href, label, grid, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-2 no-underline">
             <div class="flex items-baseline gap-2">
@@ -241,8 +241,8 @@ const breadcrumbSchema = JSON.stringify({
       <h2 class="text-lg font-bold text-arch-charcoal mb-2">Find your level</h2>
       <p class="text-sm text-arch-600 mb-5">Start with a small maze and work up, or jump straight to your challenge level and use hints when stuck.</p>
       <div class="flex flex-wrap gap-3">
-        <a href="/small-mazes"  class="btn-secondary">Small Mazes</a>
-        <a href="/medium-mazes" class="btn-secondary">Medium Mazes</a>
+        <a href="/maze-library/small-mazes"  class="btn-secondary">Small Mazes</a>
+        <a href="/maze-library/medium-mazes" class="btn-secondary">Medium Mazes</a>
         <a href="/maze-library" class="btn-secondary">Maze Library</a>
       </div>
     </section>
@@ -250,7 +250,7 @@ const breadcrumbSchema = JSON.stringify({
     <!-- Back link -->
     <div class="mt-10 text-center">
       <a
-        href="/learn"
+        href="/maze-guides"
         class="text-sm transition-colors"
         style="color: var(--color-muted-strong);"
         onmouseover="this.style.color='var(--color-charcoal)'"

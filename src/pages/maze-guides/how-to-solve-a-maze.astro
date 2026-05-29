@@ -40,7 +40,7 @@ const articleSchema = JSON.stringify({
   '@type': 'Article',
   headline: 'How to Solve a Maze',
   description: 'Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles.',
-  url: `${siteUrl}/learn/how-to-solve-a-maze`,
+  url: `${siteUrl}/maze-guides/how-to-solve-a-maze`,
   datePublished: '2024-11-20',
   dateModified: '2024-11-20',
   author: {
@@ -54,7 +54,7 @@ const articleSchema = JSON.stringify({
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
-  isPartOf: { '@id': `${siteUrl}/learn` },
+  isPartOf: { '@id': `${siteUrl}/maze-guides` },
   isAccessibleForFree: true,
 });
 
@@ -63,7 +63,7 @@ const breadcrumbSchema = JSON.stringify({
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
-    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/learn` },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
     { '@type': 'ListItem', position: 3, name: 'How to Solve a Maze' },
   ],
 });
@@ -72,14 +72,14 @@ const breadcrumbSchema = JSON.stringify({
 <BaseLayout
   title="How to Solve a Maze: Strategies for Every Level | MazeThis"
   description="Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles."
-  canonical={`${siteUrl}/learn/how-to-solve-a-maze`}
+  canonical={`${siteUrl}/maze-guides/how-to-solve-a-maze`}
   schemaLD={[articleSchema, breadcrumbSchema]}
 >
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
 
     <Breadcrumb crumbs={[
       { label: 'Home', href: '/' },
-      { label: 'Maze Guides', href: '/learn' },
+      { label: 'Maze Guides', href: '/maze-guides' },
       { label: 'How to Solve a Maze' },
     ]} />
 
@@ -202,9 +202,9 @@ const breadcrumbSchema = JSON.stringify({
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[
-          { href: '/small-mazes',  label: 'Small Mazes',  desc: '20×20 grid. Good for beginners and kids building fundamentals.' },
-          { href: '/medium-mazes', label: 'Medium Mazes', desc: '40×40 grid. A real challenge without becoming overwhelming.' },
-          { href: '/large-mazes',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a systematic approach.' },
+          { href: '/maze-library/small-mazes',  label: 'Small Mazes',  desc: '20×20 grid. Good for beginners and kids building fundamentals.' },
+          { href: '/maze-library/medium-mazes', label: 'Medium Mazes', desc: '40×40 grid. A real challenge without becoming overwhelming.' },
+          { href: '/maze-library/large-mazes',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a systematic approach.' },
           { href: '/maze-library', label: 'Maze Library', desc: 'Browse all difficulty levels and track your progress.' },
         ].map(({ href, label, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
@@ -263,7 +263,7 @@ const breadcrumbSchema = JSON.stringify({
     <!-- Back link -->
     <div class="mt-10 text-center">
       <a
-        href="/learn"
+        href="/maze-guides"
         class="text-sm transition-colors"
         style="color: var(--color-muted-strong);"
         onmouseover="this.style.color='var(--color-charcoal)'"

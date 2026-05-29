@@ -7,17 +7,17 @@
 
 [[redirects]]
   from   = "/mazes/small-*"
-  to     = "/small-mazes"
+  to     = "/maze-library/small-mazes"
   status = 301
 
 [[redirects]]
   from   = "/mazes/medium-*"
-  to     = "/medium-mazes"
+  to     = "/maze-library/medium-mazes"
   status = 301
 
 [[redirects]]
   from   = "/mazes/large-*"
-  to     = "/large-mazes"
+  to     = "/maze-library/large-mazes"
   status = 301
 
 [[redirects]]
@@ -30,24 +30,100 @@
   to     = "/maze-library"
   status = 301
 
-# Blog → Learn redirects (force = true overrides the still-built /dist/blog/* pages)
-# TODO: Once individual /learn/* guides are published, update the /learn fallbacks
-#       (e.g. /blog/how-maze-generation-algorithms-work → /learn/how-mazes-work)
+# Old top-level size routes → /maze-library/
+[[redirects]]
+  from   = "/small-mazes"
+  to     = "/maze-library/small-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/medium-mazes"
+  to     = "/maze-library/medium-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/large-mazes"
+  to     = "/maze-library/large-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/expert-mazes"
+  to     = "/maze-library/expert-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/monster-mazes"
+  to     = "/maze-library/monster-mazes"
+  status = 301
+
+# /mazes-for-classroom and /mazes-for-seniors → /maze-guides equivalents
+[[redirects]]
+  from   = "/mazes-for-classroom"
+  to     = "/maze-guides/mazes-for-classroom"
+  status = 301
+
+[[redirects]]
+  from   = "/mazes-for-seniors"
+  to     = "/maze-guides/mazes-for-seniors"
+  status = 301
+
+# /learn → /maze-guides
+[[redirects]]
+  from   = "/learn"
+  to     = "/maze-guides"
+  status = 301
+
+[[redirects]]
+  from   = "/learn/how-to-solve-a-maze"
+  to     = "/maze-guides/how-to-solve-a-maze"
+  status = 301
+
+[[redirects]]
+  from   = "/learn/how-mazes-work"
+  to     = "/maze-guides/how-mazes-work"
+  status = 301
+
+[[redirects]]
+  from   = "/learn/maze-difficulty"
+  to     = "/maze-guides/maze-difficulty"
+  status = 301
+
+[[redirects]]
+  from   = "/learn/maze-types"
+  to     = "/maze-guides/maze-types"
+  status = 301
+
+[[redirects]]
+  from   = "/learn/mazes-for-kids"
+  to     = "/maze-guides/mazes-for-kids"
+  status = 301
+
+[[redirects]]
+  from   = "/learn/mazes-for-classroom"
+  to     = "/maze-guides/mazes-for-classroom"
+  status = 301
+
+[[redirects]]
+  from   = "/learn/mazes-for-seniors"
+  to     = "/maze-guides/mazes-for-seniors"
+  status = 301
+
+# /blog → /maze-guides (force=true overrides stale dist/blog/* output)
 [[redirects]]
   from   = "/blog/how-to-solve-a-maze"
-  to     = "/learn/how-to-solve-a-maze"
+  to     = "/maze-guides/how-to-solve-a-maze"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/how-to-use-mazes-in-the-classroom"
-  to     = "/mazes-for-classroom"
+  to     = "/maze-guides/mazes-for-classroom"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/mazes-for-seniors-cognitive-health"
-  to     = "/mazes-for-seniors"
+  to     = "/maze-guides/mazes-for-seniors"
   status = 301
   force  = true
 
@@ -65,55 +141,55 @@
 
 [[redirects]]
   from   = "/blog/how-maze-generation-algorithms-work"
-  to     = "/learn/how-mazes-work"
+  to     = "/maze-guides/how-mazes-work"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/types-of-mazes-explained"
-  to     = "/learn/maze-types"
+  to     = "/maze-guides/maze-types"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/maze-difficulty-explained"
-  to     = "/learn/maze-difficulty"
+  to     = "/maze-guides/maze-difficulty"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/maze-puzzles-for-all-ages"
-  to     = "/learn/mazes-for-kids"
+  to     = "/maze-guides"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/benefits-of-mazes-for-kids"
-  to     = "/learn/mazes-for-kids"
+  to     = "/maze-guides/mazes-for-kids"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/brain-training-with-mazes"
-  to     = "/learn"
+  to     = "/maze-guides"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/history-of-mazes-and-labyrinths"
-  to     = "/learn"
+  to     = "/maze-guides"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog/mazes-vs-labyrinths"
-  to     = "/learn/maze-types"
+  to     = "/maze-guides/maze-types"
   status = 301
   force  = true
 
 [[redirects]]
   from   = "/blog"
-  to     = "/learn"
+  to     = "/maze-guides"
   status = 301
   force  = true
 

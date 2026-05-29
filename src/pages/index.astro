@@ -25,11 +25,11 @@ const librarySizes: Array<{
   cta: string;
   desc: string;
 }> = [
-  { difficulty: 'small',   grid: '20×20',   name: 'Small',   href: '/small-mazes',   cta: 'Browse Small',   desc: 'Quick mazes for beginners, kids, and short sessions.' },
-  { difficulty: 'medium',  grid: '40×40',   name: 'Medium',  href: '/medium-mazes',  cta: 'Browse Medium',  desc: 'A balanced maze size with more room to explore.' },
-  { difficulty: 'large',   grid: '60×60',   name: 'Large',   href: '/large-mazes',   cta: 'Browse Large',   desc: 'Bigger challenges for longer solving sessions.' },
-  { difficulty: 'expert',  grid: '80×80',   name: 'Expert',  href: '/expert-mazes',  cta: 'Browse Expert',  desc: 'Dense maze puzzles for experienced solvers.' },
-  { difficulty: 'monster', grid: '100×100', name: 'Monster', href: '/monster-mazes', cta: 'Browse Monster', desc: 'The largest maze collection for serious focus.' },
+  { difficulty: 'small',   grid: '20×20',   name: 'Small',   href: '/maze-library/small-mazes',   cta: 'Browse Small',   desc: 'Quick mazes for beginners, kids, and short sessions.' },
+  { difficulty: 'medium',  grid: '40×40',   name: 'Medium',  href: '/maze-library/medium-mazes',  cta: 'Browse Medium',  desc: 'A balanced maze size with more room to explore.' },
+  { difficulty: 'large',   grid: '60×60',   name: 'Large',   href: '/maze-library/large-mazes',   cta: 'Browse Large',   desc: 'Bigger challenges for longer solving sessions.' },
+  { difficulty: 'expert',  grid: '80×80',   name: 'Expert',  href: '/maze-library/expert-mazes',  cta: 'Browse Expert',  desc: 'Dense maze puzzles for experienced solvers.' },
+  { difficulty: 'monster', grid: '100×100', name: 'Monster', href: '/maze-library/monster-mazes', cta: 'Browse Monster', desc: 'The largest maze collection for serious focus.' },
 ];
 
 // Small/Medium/Large are in catalog.json; Expert/Monster are in libraryCatalog.json
@@ -412,7 +412,7 @@ const organizationSchema = JSON.stringify({
         style="color: var(--color-charcoal);"
       >Read simple guides on maze-solving strategies, difficulty, maze types, and choosing the right puzzle.</p>
       <a
-        href="/learn"
+        href="/maze-guides"
         class="btn-secondary text-sm px-7 py-3 inline-flex items-center gap-2"
       >
         Read Maze Guides →
