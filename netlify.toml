@@ -53,7 +53,12 @@
 
 [[redirects]]
   from   = "/monster-mazes"
-  to     = "/maze-library/monster-mazes"
+  to     = "/maze-library/hardcore-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/maze-library/monster-mazes"
+  to     = "/maze-library/hardcore-mazes"
   status = 301
 
 # /mazes-for-classroom and /mazes-for-seniors → /maze-guides equivalents
