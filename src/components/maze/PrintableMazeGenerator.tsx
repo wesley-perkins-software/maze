@@ -5,14 +5,14 @@ import { generateMaze } from '../../lib/maze/index';
 import { MazeRenderer } from './MazeRenderer';
 import { renderDownloadSVG } from '../../lib/svg/renderToString';
 
-type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
+type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'hardcore';
 
 const SIZE_OPTIONS: { value: SizePreset; label: string; detail: string }[] = [
   { value: 'small',   label: 'Small',   detail: '20 × 20' },
   { value: 'medium',  label: 'Medium',  detail: '40 × 40' },
   { value: 'large',   label: 'Large',   detail: '60 × 60' },
   { value: 'expert',  label: 'Expert',  detail: '80 × 80' },
-  { value: 'monster', label: 'Monster', detail: '100 × 100' },
+  { value: 'hardcore', label: 'Hardcore', detail: '100 × 100' },
 ];
 
 const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
@@ -20,11 +20,11 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
   medium:  { w: 40,  h: 40 },
   large:   { w: 60,  h: 60 },
   expert:  { w: 80,  h: 80 },
-  monster: { w: 100, h: 100 },
+  hardcore: { w: 100, h: 100 },
 };
 
 function presetDifficulty(preset: SizePreset): Difficulty {
-  if (preset === 'expert' || preset === 'monster') return 'large';
+  if (preset === 'expert' || preset === 'hardcore') return 'large';
   return preset;
 }
 
@@ -256,7 +256,7 @@ export function PrintableMazeGenerator() {
                 </span>
               </button>
             ))}
-            {/* Row 2: 1-col spacer + Expert + Monster + 1-col spacer = centered pair */}
+            {/* Row 2: 1-col spacer + Expert + Hardcore + 1-col spacer = centered pair */}
             <div className="col-span-1" aria-hidden="true" />
             {SIZE_OPTIONS.slice(3).map(({ value, label, detail }) => (
               <button

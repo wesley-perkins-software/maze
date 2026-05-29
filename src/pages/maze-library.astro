@@ -22,7 +22,7 @@ const gridSizes: Record<string, string> = {
   medium:  '40×40',
   large:   '60×60',
   expert:  '80×80',
-  monster: '100×100',
+  hardcore: '100×100',
 };
 
 const tierPositioning: Record<string, string> = {
@@ -30,7 +30,7 @@ const tierPositioning: Record<string, string> = {
   medium:  'Balanced challenge',
   large:   'Longer sessions',
   expert:  'Experienced solvers',
-  monster: 'Serious focus',
+  hardcore: 'Serious focus',
 };
 
 const tierDescriptions: Record<string, string> = {
@@ -38,7 +38,7 @@ const tierDescriptions: Record<string, string> = {
   medium:  'Balanced 40×40 mazes with more room to explore.',
   large:   'Bigger 60×60 maze challenges for longer sessions.',
   expert:  'Demanding 80×80 mazes for experienced solvers.',
-  monster: 'Huge 100×100 maze puzzles built for serious focus.',
+  hardcore: 'Huge 100×100 maze puzzles built for serious focus.',
 };
 
 const faqItems = [
@@ -60,7 +60,7 @@ const faqItems = [
   },
   {
     q: 'Can I complete every maze in the library?',
-    a: 'Yes. The Maze Library is designed to be completed. Work through each collection at your own pace — start with Small, move through Medium and Large, then take on Expert and Monster when you are ready.',
+    a: 'Yes. The Maze Library is designed to be completed. Work through each collection at your own pace — start with Small, move through Medium and Large, then take on Expert and Hardcore when you are ready.',
   },
   {
     q: 'What maze size should I start with?',
@@ -68,7 +68,7 @@ const faqItems = [
   },
   {
     q: 'What is the hardest maze in the library?',
-    a: 'Monster Mazes are the hardest — 100×100 grids with extremely long solution paths. Expert Mazes (80×80) are a significant challenge and a good preparation before tackling Monster.',
+    a: 'Hardcore Mazes are the hardest — 100×100 grids with extremely long solution paths. Expert Mazes (80×80) are a significant challenge and a good preparation before tackling Hardcore.',
   },
   {
     q: 'Are these mazes free?',
@@ -96,7 +96,7 @@ const schemaLD = JSON.stringify({
         '@type': 'Dataset',
         name: 'MazeThis Maze Library',
         description:
-          `A curated collection of ${totalCount} free online maze puzzles across five sizes: ${tierCounts.small} Small (20×20), ${tierCounts.medium} Medium (40×40), ${tierCounts.large} Large (60×60), ${tierCounts.expert} Expert (80×80), and ${tierCounts.monster} Monster (100×100).`,
+          `A curated collection of ${totalCount} free online maze puzzles across five sizes: ${tierCounts.small} Small (20×20), ${tierCounts.medium} Medium (40×40), ${tierCounts.large} Large (60×60), ${tierCounts.expert} Expert (80×80), and ${tierCounts.hardcore} Hardcore (100×100).`,
         url: 'https://mazethis.com/maze-library',
         publisher: { '@type': 'Organization', name: 'MazeThis', url: 'https://mazethis.com' },
       },
@@ -231,7 +231,7 @@ const schemaLD = JSON.stringify({
           <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">1</span>
           <div>
             <p class="font-semibold" style="color: var(--color-charcoal);">Choose a collection</p>
-            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Pick Small, Medium, Large, Expert, or Monster.</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Pick Small, Medium, Large, Expert, or Hardcore.</p>
           </div>
         </li>
         <li class="flex gap-4">

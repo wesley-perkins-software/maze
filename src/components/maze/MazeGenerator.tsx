@@ -21,14 +21,14 @@ import {
 import type { GeneratedMazeSession } from '../../lib/gameplay/session';
 import type { GameState } from '../../lib/gameplay/types';
 
-type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'monster';
+type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'hardcore';
 
 const SIZE_OPTIONS: { value: SizePreset; label: string; detail: string }[] = [
   { value: 'small',   label: 'Small',   detail: '20 × 20' },
   { value: 'medium',  label: 'Medium',  detail: '40 × 40' },
   { value: 'large',   label: 'Large',   detail: '60 × 60' },
   { value: 'expert',  label: 'Expert',  detail: '80 × 80' },
-  { value: 'monster', label: 'Monster', detail: '100 × 100' },
+  { value: 'hardcore', label: 'Hardcore', detail: '100 × 100' },
 ];
 
 const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
@@ -36,7 +36,7 @@ const SIZE_MAP: Record<SizePreset, { w: number; h: number }> = {
   medium:  { w: 40,  h: 40 },
   large:   { w: 60,  h: 60 },
   expert:  { w: 80,  h: 80 },
-  monster: { w: 100, h: 100 },
+  hardcore: { w: 100, h: 100 },
 };
 
 export const CUSTOM_RANGE = { min: 10, max: 100 };
@@ -184,7 +184,7 @@ function PreviewFinishLegend() {
 }
 
 function presetDifficulty(preset: SizePreset): Difficulty {
-  if (preset === 'expert' || preset === 'monster') return 'large';
+  if (preset === 'expert' || preset === 'hardcore') return 'large';
   return preset;
 }
 

@@ -27,7 +27,7 @@ type SizeSpec = {
   rectangular?: boolean;
 };
 
-// Square presets (canonical tiers + expert + monster)
+// Square presets (canonical tiers + expert + hardcore)
 const SQUARE_SIZES: SizeSpec[] = [
   { label: '20×20',   w: 20,  h: 20,  difficulty: 'small',  count: 200, seedBase: 50000 },
   { label: '40×40',   w: 40,  h: 40,  difficulty: 'medium', count: 150, seedBase: 51000 },

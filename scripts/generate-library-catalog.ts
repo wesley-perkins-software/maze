@@ -6,7 +6,7 @@
  *   medium:  40×40  — 40 mazes  (seeds 20001–20040)
  *   large:   60×60  — 40 mazes  (seeds 30001–30040)
  *   expert:  80×80  — 25 mazes  (seeds 40001–40025)
- *   monster: 100×100 — 15 mazes (seeds 50001–50015)
+ *   hardcore: 100×100 — 15 mazes (seeds 50001–50015)
  *
  * Total: 160 curated library mazes.
  *
@@ -35,7 +35,7 @@ const GROUPS: Array<{
   { difficulty: 'medium',  width: 40,  height: 40,  count: 40, seedBase: 20000 },
   { difficulty: 'large',   width: 60,  height: 60,  count: 40, seedBase: 30000 },
   { difficulty: 'expert',  width: 80,  height: 80,  count: 25, seedBase: 40000 },
-  { difficulty: 'monster', width: 100, height: 100, count: 15, seedBase: 50000 },
+  { difficulty: 'hardcore', width: 100, height: 100, count: 15, seedBase: 50000 },
 ];
 
 /**
@@ -58,7 +58,7 @@ const SEED_OVERRIDES: Record<string, number> = {
   'expert-011':  41011,
   'expert-016':  42016,
   'expert-022':  41022,
-  'monster-014': 51014,
+  'hardcore-014': 51014,
 };
 
 function pad(n: number, digits = 3): string {

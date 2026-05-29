@@ -534,7 +534,7 @@ export function FullscreenMazePlayer({
 
 
   const normalizedLabel = label?.trim() ?? '';
-  const isGeneratorSizeLabel = ['small', 'medium', 'large', 'monster', 'custom'].includes(normalizedLabel.toLowerCase());
+  const isGeneratorSizeLabel = ['small', 'medium', 'large', 'hardcore', 'custom'].includes(normalizedLabel.toLowerCase());
   const pauseMetaLabel = normalizedLabel.length > 0 ? normalizedLabel : `${maze.width} × ${maze.height}`;
 
   const [vpSize, setVpSize] = useState(getWindowViewportSize);
