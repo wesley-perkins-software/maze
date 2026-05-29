@@ -17,6 +17,14 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   -->
   <div class="hero-mobile-root md:hidden flex flex-col">
 
+    <!-- Dateline above the poster — mirrors the desktop caption -->
+    <p
+      id="hero-date-label-mobile"
+      data-hero-date
+      class="hero-date-label-mobile uppercase text-center"
+      aria-live="polite"
+    >TODAY'S MAZE</p>
+
     <!-- Full-width maze with headline overlaid -->
     <div class="hero-maze-poster">
       <!-- Maze at confident opacity — it IS the product -->
@@ -135,6 +143,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
         <div class="pt-1">
           <p
             id="hero-date-label"
+            data-hero-date
             class="text-base uppercase text-center mb-3"
             style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal); letter-spacing: 0.12em;"
             aria-live="polite"
@@ -182,6 +191,15 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   */
   .hero-mobile-root {
     /* intentionally no min-height */
+  }
+
+  /* ── Mobile dateline — print caption above the poster ──────────────────── */
+  .hero-date-label-mobile {
+    font-family:    'IBM Plex Mono', monospace;
+    font-size:      0.8125rem; /* 13px — caption scale */
+    color:          var(--color-charcoal);
+    letter-spacing: 0.12em;
+    padding:        0.625rem 1rem 0.5rem;
   }
 
   /* ── Mobile maze poster ─────────────────────────────────────────────────── */
@@ -739,14 +757,14 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
   updateAll();
 
-  // Date label above the desktop maze preview
-  const dateLabelEl = document.getElementById('hero-date-label');
-  if (dateLabelEl) {
-    const now = getDailyNow();
-    const month = now.toLocaleString('en-US', { month: 'short' }).toUpperCase();
-    const day = now.getDate();
-    dateLabelEl.textContent = `TODAY'S MAZE · ${month} ${day}`;
-  }
+  // Date label above the maze preview (desktop caption + mobile dateline)
+  const now = getDailyNow();
+  const month = now.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+  const day = now.getDate();
+  const dateLabel = `TODAY'S MAZE · ${month} ${day}`;
+  document.querySelectorAll('[data-hero-date]').forEach((el) => {
+    el.textContent = dateLabel;
+  });
 
   const timer = window.setInterval(updateAll, 1000);
   window.addEventListener('storage', updateAll);
