@@ -33,8 +33,6 @@ export const GET: APIRoute = async () => {
     url('/maze-guides/mazes-for-kids', '0.7', 'monthly'),
     url('/maze-guides/mazes-for-classroom', '0.7', 'monthly'),
     url('/maze-guides/mazes-for-seniors', '0.7', 'monthly'),
-    url('/mazes-for-classroom', '0.7', 'monthly'),
-    url('/mazes-for-seniors', '0.7', 'monthly'),
     url('/about', '0.5', 'monthly'),
     url('/privacy', '0.3', 'yearly'),
     url('/terms', '0.3', 'yearly'),

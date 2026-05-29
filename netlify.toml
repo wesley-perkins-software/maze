@@ -30,6 +30,17 @@
   to     = "/maze-library"
   status = 301
 
+# /mazes-for-classroom and /mazes-for-seniors → /maze-guides equivalents
+[[redirects]]
+  from   = "/mazes-for-classroom"
+  to     = "/maze-guides/mazes-for-classroom"
+  status = 301
+
+[[redirects]]
+  from   = "/mazes-for-seniors"
+  to     = "/maze-guides/mazes-for-seniors"
+  status = 301
+
 # /learn → /maze-guides
 [[redirects]]
   from   = "/learn"
