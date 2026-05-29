@@ -1,38 +1,38 @@
 /**
  * Generates /sitemap.xml at build time.
- * Includes category pages, learn pages, and top-level pages.
- * Excludes old /mazes/* routes (deleted in PR 3), /play/library/* (noindex),
- * and /blog/* (redirected to /learn/* via netlify.toml).
+ * Includes category pages, maze-guides pages, and top-level pages.
+ * Excludes /learn/* (redirected to /maze-guides/*), /blog/* (redirected),
+ * /play/library/* (noindex), and old /mazes/* routes.
  */
 import type { APIRoute } from 'astro';
 import { CATEGORIES } from '../types/maze';
 
 const SITE = 'https://mazethis.com';
 
-function url(path: string, priority: string, changefreq: string, lastmod?: string): string {
+function url(path: string, priority: string, changefreq: string): string {
   return `  <url>
     <loc>${SITE}${path}</loc>
     <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ''}
+    <priority>${priority}</priority>
   </url>`;
 }
 
 export const GET: APIRoute = async () => {
   const staticUrls = [
     url('/', '1.0', 'weekly'),
-    url('/maze-of-the-day/', '0.9', 'daily'),
+    url('/maze-of-the-day', '0.9', 'daily'),
     url('/maze-generator', '0.9', 'monthly'),
     url('/maze-library', '0.9', 'monthly'),
     url('/printable-mazes', '0.9', 'monthly'),
     url('/faq', '0.7', 'monthly'),
-    url('/learn', '0.8', 'weekly'),
-    url('/learn/how-to-solve-a-maze', '0.7', 'monthly', '2024-11-20'),
-    url('/learn/how-mazes-work', '0.7', 'monthly', '2024-11-01'),
-    url('/learn/maze-difficulty', '0.7', 'monthly', '2024-12-05'),
-    url('/learn/maze-types', '0.7', 'monthly', '2024-12-01'),
-    url('/learn/mazes-for-kids', '0.7', 'monthly', '2024-11-05'),
-    url('/learn/mazes-for-classroom', '0.7', 'monthly', '2024-11-15'),
-    url('/learn/mazes-for-seniors', '0.7', 'monthly', '2024-11-10'),
+    url('/maze-guides', '0.8', 'weekly'),
+    url('/maze-guides/how-to-solve-a-maze', '0.7', 'monthly'),
+    url('/maze-guides/how-mazes-work', '0.7', 'monthly'),
+    url('/maze-guides/maze-difficulty', '0.7', 'monthly'),
+    url('/maze-guides/maze-types', '0.7', 'monthly'),
+    url('/maze-guides/mazes-for-kids', '0.7', 'monthly'),
+    url('/maze-guides/mazes-for-classroom', '0.7', 'monthly'),
+    url('/maze-guides/mazes-for-seniors', '0.7', 'monthly'),
     url('/mazes-for-classroom', '0.7', 'monthly'),
     url('/mazes-for-seniors', '0.7', 'monthly'),
     url('/about', '0.5', 'monthly'),
