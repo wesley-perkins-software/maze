@@ -682,26 +682,6 @@ function countPassages(cell: number): number {
   return n;
 }
 
-/** Generate a maze with its slug already set from catalog entry. */
-export function generateMazeFromCatalog(entry: {
-  slug: string;
-  difficulty: Difficulty;
-  width: number;
-  height: number;
-  seed: number;
-}): MazeData {
-  const maze = generateMaze({
-    width: entry.width,
-    height: entry.height,
-    difficulty: entry.difficulty,
-    seed: entry.seed,
-    // anyPortalSide intentionally not set — legacy catalog uses opposite-side behaviour.
-  });
-  maze.id   = entry.slug;
-  maze.slug = entry.slug;
-  return maze;
-}
-
 /**
  * Generate a library maze from a LibraryCatalogEntry.
  * Uses anyPortalSide: true and the current GENERATOR_VERSION for premium quality.

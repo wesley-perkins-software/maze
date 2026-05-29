@@ -69,25 +69,9 @@ export type MazeData = {
   generatedAt: string;  // ISO 8601 timestamp
 };
 
-// ─── Catalog Types ─────────────────────────────────────────────────────────────
-
-export type MazeCatalogEntry = {
-  slug: string;
-  difficulty: Difficulty;
-  width: number;
-  height: number;
-  seed: number;
-};
-
-export type MazeCatalog = {
-  version: number;
-  mazes: MazeCatalogEntry[];
-};
-
 // ─── Library Catalog Types ─────────────────────────────────────────────────────
 //
-//  The library catalog (src/data/libraryCatalog.json) uses clean IDs instead of
-//  slugs and covers all five size tiers including Expert and Monster.
+//  The library catalog (src/data/libraryCatalog.json) covers all five size tiers.
 
 export type LibraryCatalogEntry = {
   id: string;          // e.g. "small-001", "expert-025", "monster-015"
@@ -100,17 +84,6 @@ export type LibraryCatalogEntry = {
 export type LibraryCatalog = {
   version: number;
   mazes: LibraryCatalogEntry[];
-};
-
-// ─── SEO Helpers ───────────────────────────────────────────────────────────────
-
-export type MazeSeoMeta = {
-  title: string;
-  description: string;
-  slug: string;
-  difficulty: Difficulty;
-  width: number;
-  height: number;
 };
 
 // ─── Category Page Info ────────────────────────────────────────────────────────
