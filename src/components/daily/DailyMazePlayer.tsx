@@ -28,6 +28,8 @@ import {
   clearDailySession,
 } from '../../lib/gameplay/dailySession';
 import type { DailyMazeSession } from '../../lib/gameplay/dailySession';
+import { recordSolve } from '../../lib/gameplay/dailyStreak';
+import type { StreakData } from '../../lib/gameplay/dailyStreak';
 
 
 function formatDateLabel(dateStr: string): string {
@@ -73,6 +75,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
 
   // ── Session state ────────────────────────────────────────────────────────────
   const [resumeSession, setResumeSession] = useState<DailyMazeSession | null>(null);
+  const [streak, setStreak] = useState<StreakData | null>(null);
   const [initialGameState, setInitialGameState] = useState<GameState | undefined>(undefined);
   const [initialShowTrail, setInitialShowTrail] = useState<boolean | undefined>(undefined);
   // Stable ref so autosave callback never captures a stale maze.
@@ -203,6 +206,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
       oldValue: null,
       storageArea: localStorage,
     }));
+    setStreak(recordSolve(today));
     setSolveStats(stats);
   }, []);
 
@@ -334,6 +338,8 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
             isDailyMode={true}
             contextLabel="Today's Maze"
             showCountdown={true}
+            streakCurrent={streak?.current}
+            streakLongest={streak?.longest}
             onPlayAgain={() => {
               setSolveStats(null);
               setInitialGameState(undefined);
