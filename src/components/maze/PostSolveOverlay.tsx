@@ -326,10 +326,9 @@ export function PostSolveOverlay({
 
         {/* Streak — daily mode only */}
         {isDailyMode && streakCurrent != null && streakCurrent >= 1 && (
-          <div className="w-full rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 px-4 py-2.5 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-lg leading-none" aria-hidden="true">🔥</span>
-              <div>
+          <div className="w-full rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 px-4 py-2.5 flex items-center justify-center gap-2">
+            <span className="text-lg leading-none" aria-hidden="true">🔥</span>
+            <div className="text-center">
                 <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 leading-tight">
                   {streakCurrent === 1 ? '1-day streak' : `${streakCurrent}-day streak`}
                 </p>
@@ -343,7 +342,6 @@ export function PostSolveOverlay({
                     New best!
                   </p>
                 )}
-              </div>
             </div>
           </div>
         )}
