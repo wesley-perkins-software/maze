@@ -144,8 +144,8 @@ import HeroMazePreview from './HeroMazePreview.jsx';
           <p
             id="hero-date-label"
             data-hero-date
-            class="text-base uppercase text-center mb-3"
-            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal); letter-spacing: 0.12em;"
+            class="hero-date-label-desktop uppercase text-center mb-3"
+            style="font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.12em;"
             aria-live="polite"
           >TODAY'S MAZE</p>
           <div class="relative">
@@ -196,10 +196,24 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   /* ── Mobile dateline — print caption above the poster ──────────────────── */
   .hero-date-label-mobile {
     font-family:    'IBM Plex Mono', monospace;
-    font-size:      0.8125rem; /* 13px — caption scale */
-    color:          var(--color-charcoal);
+    font-size:      1.0625rem; /* 17px — bumped for readability */
+    font-weight:    600;
+    color:          #000; /* true black in light mode */
     letter-spacing: 0.12em;
     padding:        0.625rem 1rem 0.5rem;
+  }
+
+  /* ── Desktop dateline — caption above the maze preview ─────────────────── */
+  .hero-date-label-desktop {
+    font-size:   1.25rem; /* 20px — bumped from text-base for readability */
+    font-weight: 600;
+    color:       #000; /* true black in light mode */
+  }
+
+  /* Dark mode: revert to the themed near-white so the caption stays legible */
+  :global(.dark) .hero-date-label-mobile,
+  :global(.dark) .hero-date-label-desktop {
+    color: var(--color-charcoal);
   }
 
   /* ── Mobile maze poster ─────────────────────────────────────────────────── */
