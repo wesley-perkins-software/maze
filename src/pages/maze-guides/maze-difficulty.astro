@@ -182,11 +182,11 @@ const breadcrumbSchema = JSON.stringify({
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { href: '/small-mazes',   label: 'Small',   grid: '20×20',   desc: 'A good entry point. Quick to complete and easy to scan before starting. All strategies are learnable at this size.' },
-          { href: '/medium-mazes',  label: 'Medium',  grid: '40×40',   desc: 'A genuine challenge. Dead ends grow longer and the solution path starts to disorient. Dead-end filling becomes essential.' },
-          { href: '/large-mazes',   label: 'Large',   grid: '60×60',   desc: 'Requires patience and a plan. Scanning before you start is important. Mental backtracking gets costly.' },
-          { href: '/expert-mazes',  label: 'Expert',  grid: '80×80',   desc: 'Dense and demanding. Many experienced solvers use hints at this level. Solution paths are long and indirect.' },
-          { href: '/monster-mazes', label: 'Monster', grid: '100×100', desc: 'Maximum difficulty. Pure DFS structure, no extra openings, vast dead-end networks. Not recommended as a first attempt.' },
+          { href: '/maze-library/small-mazes',   label: 'Small',   grid: '20×20',   desc: 'A good entry point. Quick to complete and easy to scan before starting. All strategies are learnable at this size.' },
+          { href: '/maze-library/medium-mazes',  label: 'Medium',  grid: '40×40',   desc: 'A genuine challenge. Dead ends grow longer and the solution path starts to disorient. Dead-end filling becomes essential.' },
+          { href: '/maze-library/large-mazes',   label: 'Large',   grid: '60×60',   desc: 'Requires patience and a plan. Scanning before you start is important. Mental backtracking gets costly.' },
+          { href: '/maze-library/expert-mazes',  label: 'Expert',  grid: '80×80',   desc: 'Dense and demanding. Many experienced solvers use hints at this level. Solution paths are long and indirect.' },
+          { href: '/maze-library/monster-mazes', label: 'Monster', grid: '100×100', desc: 'Maximum difficulty. Pure DFS structure, no extra openings, vast dead-end networks. Not recommended as a first attempt.' },
         ].map(({ href, label, grid, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-2 no-underline">
             <div class="flex items-baseline gap-2">
@@ -241,8 +241,8 @@ const breadcrumbSchema = JSON.stringify({
       <h2 class="text-lg font-bold text-arch-charcoal mb-2">Find your level</h2>
       <p class="text-sm text-arch-600 mb-5">Start with a small maze and work up, or jump straight to your challenge level and use hints when stuck.</p>
       <div class="flex flex-wrap gap-3">
-        <a href="/small-mazes"  class="btn-secondary">Small Mazes</a>
-        <a href="/medium-mazes" class="btn-secondary">Medium Mazes</a>
+        <a href="/maze-library/small-mazes"  class="btn-secondary">Small Mazes</a>
+        <a href="/maze-library/medium-mazes" class="btn-secondary">Medium Mazes</a>
         <a href="/maze-library" class="btn-secondary">Maze Library</a>
       </div>
     </section>

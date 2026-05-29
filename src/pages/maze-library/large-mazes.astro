@@ -1,28 +1,28 @@
 ---
-import CategoryLayout from '../layouts/CategoryLayout.astro';
-import LibraryMazeCard from '../components/ui/LibraryMazeCard.astro';
-import { LibraryProgress } from '../components/library/LibraryProgress';
-import { getCategoryBySlug } from '../types/maze.js';
-import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
+import CategoryLayout from '../../layouts/CategoryLayout.astro';
+import LibraryMazeCard from '../../components/ui/LibraryMazeCard.astro';
+import { LibraryProgress } from '../../components/library/LibraryProgress';
+import { getCategoryBySlug } from '../../types/maze.js';
+import { getLibraryMazesByDifficulty } from '../../lib/library/catalog.js';
 
-const category = getCategoryBySlug('medium-mazes')!;
-const mazes = getLibraryMazesByDifficulty('medium');
+const category = getCategoryBySlug('maze-library/large-mazes')!;
+const mazes = getLibraryMazesByDifficulty('large');
 const allIds = mazes.map((m) => m.id);
-const firstLabel = 'Start Medium #001';
+const firstLabel = 'Start Large #001';
 
 const BASE = 'https://mazethis.com';
-const pageUrl = `${BASE}/medium-mazes`;
-const pageTitle = 'Medium Mazes | Free Online 40×40 Maze Puzzles | MazeThis';
-const pageDescription = 'Play free Medium Mazes online. Solve balanced 40×40 maze puzzles, track your progress, and continue through the full Medium Maze collection.';
+const pageUrl = `${BASE}/maze-library/large-mazes`;
+const pageTitle = 'Large Mazes | Free Online 60×60 Maze Puzzles | MazeThis';
+const pageDescription = 'Play free Large Mazes online. Solve bigger 60×60 maze challenges, track your progress, and work through the full Large Maze collection.';
 
 const faqItems = [
   {
-    q: 'What are Medium Mazes?',
-    a: 'Medium Mazes are 40×40 grid maze puzzles on MazeThis. They introduce real branching paths and decision points — a step up from Small without being overwhelming. The collection contains 40 puzzles, each with a unique layout.',
+    q: 'What are Large Mazes?',
+    a: 'Large Mazes are 60×60 grid maze puzzles on MazeThis. The bigger grid creates dense labyrinths with long corridors — it is genuinely easy to get turned around. The collection contains 40 puzzles, each with a unique layout.',
   },
   {
     q: 'Are these mazes free?',
-    a: 'Yes. Every Medium Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
+    a: 'Yes. Every Large Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
   },
   {
     q: 'Does my progress save?',
@@ -30,7 +30,7 @@ const faqItems = [
   },
   {
     q: 'Can I play these mazes online?',
-    a: 'Yes. All Medium Mazes work in any modern browser on desktop, tablet, or phone. Use keyboard arrows, swipe, or the on-screen D-pad to navigate.',
+    a: 'Yes. All Large Mazes work in any modern browser on desktop, tablet, or phone. Use keyboard arrows, swipe, or the on-screen D-pad to navigate.',
   },
   {
     q: 'Can I print these mazes?',
@@ -39,8 +39,8 @@ const faqItems = [
   },
   {
     q: 'What size should I try next?',
-    a: 'Try Large Mazes next for a bigger challenge, or return to Small Mazes for quicker solves.',
-    aHtml: 'Try <a href="/large-mazes" class="underline hover:opacity-80">Large Mazes</a> next for a bigger challenge, or return to <a href="/small-mazes" class="underline hover:opacity-80">Small Mazes</a> for quicker solves.',
+    a: 'Try Expert Mazes next for a harder challenge, or Medium Mazes for shorter sessions.',
+    aHtml: 'Try <a href="/maze-library/expert-mazes" class="underline hover:opacity-80">Expert Mazes</a> next for a harder challenge, or <a href="/maze-library/medium-mazes" class="underline hover:opacity-80">Medium Mazes</a> for shorter sessions.',
   },
   {
     q: 'What is the difference between this collection and the Maze Generator?',
@@ -66,7 +66,7 @@ const schemaLD = JSON.stringify({
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: `${BASE}/` },
         { '@type': 'ListItem', position: 2, name: 'Maze Library', item: `${BASE}/maze-library` },
-        { '@type': 'ListItem', position: 3, name: 'Medium Mazes' },
+        { '@type': 'ListItem', position: 3, name: 'Large Mazes' },
       ],
     },
     {
@@ -79,7 +79,7 @@ const schemaLD = JSON.stringify({
     },
     {
       '@type': 'ItemList',
-      name: 'Medium Mazes',
+      name: 'Large Mazes',
       numberOfItems: mazes.length,
       itemListElement: mazes.map((m, i) => ({
         '@type': 'ListItem',
@@ -97,19 +97,19 @@ const schemaLD = JSON.stringify({
   schemaLD={schemaLD}
   pageTitle={pageTitle}
   pageDescription={pageDescription}
-  heroLabel="MEDIUM MAZE COLLECTION"
-  heroDescription="Balanced 40×40 maze puzzles with more room to explore and more decisions to make."
+  heroLabel="LARGE MAZE COLLECTION"
+  heroDescription="Bigger 60×60 maze challenges for longer sessions and more focused solving."
   benefitCards={[
-    { title: 'Balanced challenge', body: 'More decisions than Small mazes without feeling overwhelming.' },
-    { title: 'Everyday practice', body: 'A good default size for regular maze solving.' },
-    { title: 'Better orientation', body: 'Large enough to require planning, small enough to stay readable.' },
-    { title: 'Next step up', body: 'A natural move after completing Small mazes.' },
+    { title: 'Longer sessions', body: 'More space to explore and more paths to test.' },
+    { title: 'Focused solving', body: 'Good for players who want a deeper challenge.' },
+    { title: 'Useful minimap practice', body: 'Large enough that navigation tools start to matter.' },
+    { title: 'Bridge to Expert', body: 'A strong step before the densest collections.' },
   ]}
   faqItems={faqItems}
-  ctaHeading="Ready for a bigger challenge?"
-  ctaDescription="Move up to Large Mazes, explore the full Maze Library, or generate a custom maze."
+  ctaHeading="Ready for a harder challenge?"
+  ctaDescription="Move up to Expert Mazes, explore the full Maze Library, or generate a custom maze."
   ctaLinks={[
-    { label: 'Large Mazes', href: '/large-mazes' },
+    { label: 'Expert Mazes', href: '/maze-library/expert-mazes' },
     { label: 'Maze Library', href: '/maze-library' },
     { label: 'Maze Generator', href: '/maze-generator' },
   ]}

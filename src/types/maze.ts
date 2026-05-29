@@ -128,7 +128,7 @@ export type CategoryInfo = {
 export const CATEGORIES: CategoryInfo[] = [
   {
     difficulty: 'small',
-    slug: 'small-mazes',
+    slug: 'maze-library/small-mazes',
     label: 'Small Mazes',
     title: 'Small Mazes — 40 Free Maze Puzzles to Play Online | MazeThis',
     description:
@@ -138,7 +138,7 @@ export const CATEGORIES: CategoryInfo[] = [
   },
   {
     difficulty: 'medium',
-    slug: 'medium-mazes',
+    slug: 'maze-library/medium-mazes',
     label: 'Medium Mazes',
     title: 'Medium Mazes — 40 Free Maze Puzzles to Play Online | MazeThis',
     description:
@@ -148,7 +148,7 @@ export const CATEGORIES: CategoryInfo[] = [
   },
   {
     difficulty: 'large',
-    slug: 'large-mazes',
+    slug: 'maze-library/large-mazes',
     label: 'Large Mazes',
     title: 'Large Mazes — 40 Free Maze Puzzles to Play Online | MazeThis',
     description:
@@ -158,7 +158,7 @@ export const CATEGORIES: CategoryInfo[] = [
   },
   {
     difficulty: 'expert',
-    slug: 'expert-mazes',
+    slug: 'maze-library/expert-mazes',
     label: 'Expert Mazes',
     title: 'Expert Mazes — 25 Hard Maze Puzzles to Play Online | MazeThis',
     description:
@@ -168,7 +168,7 @@ export const CATEGORIES: CategoryInfo[] = [
   },
   {
     difficulty: 'monster',
-    slug: 'monster-mazes',
+    slug: 'maze-library/monster-mazes',
     label: 'Monster Mazes',
     title: 'Monster Mazes — 15 Extreme Maze Puzzles to Play Online | MazeThis',
     description:

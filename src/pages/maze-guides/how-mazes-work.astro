@@ -244,9 +244,9 @@ const breadcrumbSchema = JSON.stringify({
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[
-          { href: '/small-mazes',  label: 'Small Mazes',  desc: '20×20 grid. Short corridors, quick to complete — ideal for spotting the DFS structure clearly.' },
-          { href: '/medium-mazes', label: 'Medium Mazes', desc: '40×40 grid. A genuine challenge. Long corridors start to feel genuinely disorienting.' },
-          { href: '/large-mazes',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a plan. Scanning before you start becomes essential.' },
+          { href: '/maze-library/small-mazes',  label: 'Small Mazes',  desc: '20×20 grid. Short corridors, quick to complete — ideal for spotting the DFS structure clearly.' },
+          { href: '/maze-library/medium-mazes', label: 'Medium Mazes', desc: '40×40 grid. A genuine challenge. Long corridors start to feel genuinely disorienting.' },
+          { href: '/maze-library/large-mazes',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a plan. Scanning before you start becomes essential.' },
           { href: '/maze-library', label: 'Maze Library', desc: 'Browse all sizes and track your progress across the full collection.' },
         ].map(({ href, label, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">

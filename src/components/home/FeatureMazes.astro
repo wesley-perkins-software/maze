@@ -8,11 +8,11 @@ const featured = getFeaturedMazes();
 const svgs = featured.map(entry => renderThumbnail(generateMazeFromCatalog(entry)));
 
 const labels: Record<Difficulty, { name: string; time: string; desc: string; href: string }> = {
-  small:   { name: 'Small',   time: '~1–2 min',   desc: 'Quick mazes for kids and warm-ups.',  href: '/small-mazes'   },
-  medium:  { name: 'Medium',  time: '~5–10 min',  desc: 'Balanced mazes for a focused solve.', href: '/medium-mazes'  },
-  large:   { name: 'Large',   time: '~10–20 min', desc: 'Dense mazes for a real challenge.',   href: '/large-mazes'   },
-  expert:  { name: 'Expert',  time: '~20–40 min', desc: 'Deep corridors for serious solvers.', href: '/expert-mazes'  },
-  monster: { name: 'Monster', time: '~40–60 min', desc: 'Extreme mazes for the committed.',    href: '/monster-mazes' },
+  small:   { name: 'Small',   time: '~1–2 min',   desc: 'Quick mazes for kids and warm-ups.',  href: '/maze-library/small-mazes'   },
+  medium:  { name: 'Medium',  time: '~5–10 min',  desc: 'Balanced mazes for a focused solve.', href: '/maze-library/medium-mazes'  },
+  large:   { name: 'Large',   time: '~10–20 min', desc: 'Dense mazes for a real challenge.',   href: '/maze-library/large-mazes'   },
+  expert:  { name: 'Expert',  time: '~20–40 min', desc: 'Deep corridors for serious solvers.', href: '/maze-library/expert-mazes'  },
+  monster: { name: 'Monster', time: '~40–60 min', desc: 'Extreme mazes for the committed.',    href: '/maze-library/monster-mazes' },
 };
 ---
 
@@ -42,7 +42,7 @@ const labels: Record<Difficulty, { name: string; time: string; desc: string; hre
         >Free printable maze collections in five sizes — play online or print at home.</p>
       </div>
       <a
-        href="/large-mazes"
+        href="/maze-library/large-mazes"
         class="hidden sm:inline-flex items-center gap-1.5 feat-viewall-desktop"
       >View all mazes →</a>
     </div>
@@ -98,7 +98,7 @@ const labels: Record<Difficulty, { name: string; time: string; desc: string; hre
       style="border-top: 1px solid var(--color-border); padding-top: 0.875rem;"
     >
       <a
-        href="/large-mazes"
+        href="/maze-library/large-mazes"
         class="feat-viewall-link text-xs uppercase tracking-widest block text-center"
         style="font-family: 'IBM Plex Mono', monospace;"
       >View all mazes →</a>

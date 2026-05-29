@@ -1,28 +1,28 @@
 ---
-import CategoryLayout from '../layouts/CategoryLayout.astro';
-import LibraryMazeCard from '../components/ui/LibraryMazeCard.astro';
-import { LibraryProgress } from '../components/library/LibraryProgress';
-import { getCategoryBySlug } from '../types/maze.js';
-import { getLibraryMazesByDifficulty } from '../lib/library/catalog.js';
+import CategoryLayout from '../../layouts/CategoryLayout.astro';
+import LibraryMazeCard from '../../components/ui/LibraryMazeCard.astro';
+import { LibraryProgress } from '../../components/library/LibraryProgress';
+import { getCategoryBySlug } from '../../types/maze.js';
+import { getLibraryMazesByDifficulty } from '../../lib/library/catalog.js';
 
-const category = getCategoryBySlug('expert-mazes')!;
-const mazes = getLibraryMazesByDifficulty('expert');
+const category = getCategoryBySlug('maze-library/medium-mazes')!;
+const mazes = getLibraryMazesByDifficulty('medium');
 const allIds = mazes.map((m) => m.id);
-const firstLabel = 'Start Expert #001';
+const firstLabel = 'Start Medium #001';
 
 const BASE = 'https://mazethis.com';
-const pageUrl = `${BASE}/expert-mazes`;
-const pageTitle = 'Expert Mazes | Free Online 80×80 Maze Puzzles | MazeThis';
-const pageDescription = 'Play free Expert Mazes online. Solve demanding 80×80 maze puzzles, track your progress, and continue through the Expert Maze collection.';
+const pageUrl = `${BASE}/maze-library/medium-mazes`;
+const pageTitle = 'Medium Mazes | Free Online 40×40 Maze Puzzles | MazeThis';
+const pageDescription = 'Play free Medium Mazes online. Solve balanced 40×40 maze puzzles, track your progress, and continue through the full Medium Maze collection.';
 
 const faqItems = [
   {
-    q: 'What are Expert Mazes?',
-    a: 'Expert Mazes are 80×80 grid maze puzzles on MazeThis. Designed for experienced solvers who have worked through Large and want a denser, more demanding challenge. The collection contains 25 puzzles, each with a unique layout.',
+    q: 'What are Medium Mazes?',
+    a: 'Medium Mazes are 40×40 grid maze puzzles on MazeThis. They introduce real branching paths and decision points — a step up from Small without being overwhelming. The collection contains 40 puzzles, each with a unique layout.',
   },
   {
     q: 'Are these mazes free?',
-    a: 'Yes. Every Expert Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
+    a: 'Yes. Every Medium Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
   },
   {
     q: 'Does my progress save?',
@@ -30,7 +30,7 @@ const faqItems = [
   },
   {
     q: 'Can I play these mazes online?',
-    a: 'Yes. All Expert Mazes work in any modern browser on desktop, tablet, or phone. Use keyboard arrows, swipe, or the on-screen D-pad to navigate.',
+    a: 'Yes. All Medium Mazes work in any modern browser on desktop, tablet, or phone. Use keyboard arrows, swipe, or the on-screen D-pad to navigate.',
   },
   {
     q: 'Can I print these mazes?',
@@ -39,8 +39,8 @@ const faqItems = [
   },
   {
     q: 'What size should I try next?',
-    a: 'Try Monster Mazes next — the largest Maze Library collection — or Large Mazes for a slightly lighter challenge.',
-    aHtml: 'Try <a href="/monster-mazes" class="underline hover:opacity-80">Monster Mazes</a> next — the largest Maze Library collection — or <a href="/large-mazes" class="underline hover:opacity-80">Large Mazes</a> for a slightly lighter challenge.',
+    a: 'Try Large Mazes next for a bigger challenge, or return to Small Mazes for quicker solves.',
+    aHtml: 'Try <a href="/maze-library/large-mazes" class="underline hover:opacity-80">Large Mazes</a> next for a bigger challenge, or return to <a href="/maze-library/small-mazes" class="underline hover:opacity-80">Small Mazes</a> for quicker solves.',
   },
   {
     q: 'What is the difference between this collection and the Maze Generator?',
@@ -66,7 +66,7 @@ const schemaLD = JSON.stringify({
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: `${BASE}/` },
         { '@type': 'ListItem', position: 2, name: 'Maze Library', item: `${BASE}/maze-library` },
-        { '@type': 'ListItem', position: 3, name: 'Expert Mazes' },
+        { '@type': 'ListItem', position: 3, name: 'Medium Mazes' },
       ],
     },
     {
@@ -79,7 +79,7 @@ const schemaLD = JSON.stringify({
     },
     {
       '@type': 'ItemList',
-      name: 'Expert Mazes',
+      name: 'Medium Mazes',
       numberOfItems: mazes.length,
       itemListElement: mazes.map((m, i) => ({
         '@type': 'ListItem',
@@ -97,19 +97,19 @@ const schemaLD = JSON.stringify({
   schemaLD={schemaLD}
   pageTitle={pageTitle}
   pageDescription={pageDescription}
-  heroLabel="EXPERT MAZE COLLECTION"
-  heroDescription="Demanding 80×80 maze puzzles for experienced solvers who want a denser challenge."
+  heroLabel="MEDIUM MAZE COLLECTION"
+  heroDescription="Balanced 40×40 maze puzzles with more room to explore and more decisions to make."
   benefitCards={[
-    { title: 'Experienced solvers', body: 'Designed for players who already know basic strategies.' },
-    { title: 'Dense paths', body: 'More decisions, more dead ends, and more room to get lost.' },
-    { title: 'Serious practice', body: 'Good for testing patience, memory, and planning.' },
-    { title: 'Before Monster', body: 'A final step before the largest preset mazes.' },
+    { title: 'Balanced challenge', body: 'More decisions than Small mazes without feeling overwhelming.' },
+    { title: 'Everyday practice', body: 'A good default size for regular maze solving.' },
+    { title: 'Better orientation', body: 'Large enough to require planning, small enough to stay readable.' },
+    { title: 'Next step up', body: 'A natural move after completing Small mazes.' },
   ]}
   faqItems={faqItems}
-  ctaHeading="Ready for the hardest collection?"
-  ctaDescription="Take on Monster Mazes, explore the full Maze Library, or generate a custom maze."
+  ctaHeading="Ready for a bigger challenge?"
+  ctaDescription="Move up to Large Mazes, explore the full Maze Library, or generate a custom maze."
   ctaLinks={[
-    { label: 'Monster Mazes', href: '/monster-mazes' },
+    { label: 'Large Mazes', href: '/maze-library/large-mazes' },
     { label: 'Maze Library', href: '/maze-library' },
     { label: 'Maze Generator', href: '/maze-generator' },
   ]}
@@ -131,7 +131,7 @@ const schemaLD = JSON.stringify({
   </div>
 
   <!-- Card grid -->
-  <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
     {mazes.map((entry, i) => (
       <LibraryMazeCard entry={entry} index={i} />
     ))}

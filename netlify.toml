@@ -7,17 +7,17 @@
 
 [[redirects]]
   from   = "/mazes/small-*"
-  to     = "/small-mazes"
+  to     = "/maze-library/small-mazes"
   status = 301
 
 [[redirects]]
   from   = "/mazes/medium-*"
-  to     = "/medium-mazes"
+  to     = "/maze-library/medium-mazes"
   status = 301
 
 [[redirects]]
   from   = "/mazes/large-*"
-  to     = "/large-mazes"
+  to     = "/maze-library/large-mazes"
   status = 301
 
 [[redirects]]
@@ -28,6 +28,32 @@
 [[redirects]]
   from   = "/mazes/*"
   to     = "/maze-library"
+  status = 301
+
+# Old top-level size routes → /maze-library/
+[[redirects]]
+  from   = "/small-mazes"
+  to     = "/maze-library/small-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/medium-mazes"
+  to     = "/maze-library/medium-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/large-mazes"
+  to     = "/maze-library/large-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/expert-mazes"
+  to     = "/maze-library/expert-mazes"
+  status = 301
+
+[[redirects]]
+  from   = "/monster-mazes"
+  to     = "/maze-library/monster-mazes"
   status = 301
 
 # /mazes-for-classroom and /mazes-for-seniors → /maze-guides equivalents
