@@ -13,7 +13,7 @@ const thumbnailParams: Record<Difficulty, { cellSize: number; wallThickness: num
   medium:  { cellSize:  5, wallThickness: 1.5 }, // viewBox ~204  — balanced density
   large:   { cellSize:  3, wallThickness: 1.2 }, // viewBox ~184  — more corridors
   expert:  { cellSize:  2, wallThickness: 1.0 }, // viewBox ~164  — fine grid, visible
-  monster: { cellSize:  2, wallThickness: 1.0 }, // viewBox ~204  — finest grid, visible
+  hardcore: { cellSize:  2, wallThickness: 1.0 }, // viewBox ~204  — finest grid, visible
 };
 
 const librarySizes: Array<{
@@ -28,7 +28,7 @@ const librarySizes: Array<{
   { difficulty: 'medium',  grid: '40×40',   name: 'Medium',  href: '/maze-library/medium-mazes',  cta: 'Browse Medium',  desc: 'A balanced maze size with more room to explore.' },
   { difficulty: 'large',   grid: '60×60',   name: 'Large',   href: '/maze-library/large-mazes',   cta: 'Browse Large',   desc: 'Bigger challenges for longer solving sessions.' },
   { difficulty: 'expert',  grid: '80×80',   name: 'Expert',  href: '/maze-library/expert-mazes',  cta: 'Browse Expert',  desc: 'Dense maze puzzles for experienced solvers.' },
-  { difficulty: 'monster', grid: '100×100', name: 'Monster', href: '/maze-library/monster-mazes', cta: 'Browse Monster', desc: 'The largest maze collection for serious focus.' },
+  { difficulty: 'hardcore', grid: '100×100', name: 'Hardcore', href: '/maze-library/hardcore-mazes', cta: 'Browse Hardcore', desc: 'The largest maze collection for serious focus.' },
 ];
 
 function getMazeThumbnail(difficulty: Difficulty): string {

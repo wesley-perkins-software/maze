@@ -19,7 +19,7 @@ const faqItems = [
   },
   {
     q: 'What sizes are available for printing?',
-    a: 'Five sizes are available: Small (20×20), Medium (40×40), Large (60×60), Expert (80×80), and Monster (100×100). All print cleanly on standard A4 or US Letter paper.',
+    a: 'Five sizes are available: Small (20×20), Medium (40×40), Large (60×60), Expert (80×80), and Hardcore (100×100). All print cleanly on standard A4 or US Letter paper.',
   },
   {
     q: 'Can I download a maze as a file instead of printing directly?',
@@ -123,7 +123,7 @@ const faqSchema = JSON.stringify({
       </p>
       <ol class="space-y-3 mb-4">
         {[
-          { label: 'Choose a size', note: 'Select from Small (20×20) through Monster (100×100). Larger sizes produce more complex mazes with longer solution paths.' },
+          { label: 'Choose a size', note: 'Select from Small (20×20) through Hardcore (100×100). Larger sizes produce more complex mazes with longer solution paths.' },
           { label: 'Generate the maze', note: 'Click Generate to create a new unique maze. You can generate as many times as you like to get a maze you are happy with.' },
           { label: 'Print or download', note: 'Click Print Maze for a clean print dialog, or Download SVG to save a scalable vector file for use in documents or design tools.' },
         ].map(({ label, note }, i) => (
@@ -210,7 +210,7 @@ const faqSchema = JSON.stringify({
           { href: '/maze-library/medium-mazes',  label: 'Medium (40×40)',  desc: 'A genuine challenge for older children and adults. Requires backtracking and patience. Good for a 10–15 minute session.' },
           { href: '/maze-library/large-mazes',   label: 'Large (60×60)',   desc: 'For experienced solvers or longer sessions. Complex routing with many dead ends. Scanning before starting helps.' },
           { href: '/maze-library/expert-mazes',  label: 'Expert (80×80)',  desc: 'Dense and demanding. Suitable for adults who want a real challenge. Expect 20+ minutes for most solvers.' },
-          { href: '/maze-library/monster-mazes', label: 'Monster (100×100)', desc: 'Maximum difficulty. A full Monster maze printed on a single page is a significant challenge. Not recommended for beginners.' },
+          { href: '/maze-library/hardcore-mazes', label: 'Hardcore (100×100)', desc: 'Maximum difficulty. A full Hardcore maze printed on a single page is a significant challenge. Not recommended for beginners.' },
         ].map(({ href, label, desc }) => (
           <div class="card rounded-lg p-4">
             <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>

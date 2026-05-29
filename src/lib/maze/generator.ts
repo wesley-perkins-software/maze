@@ -47,7 +47,7 @@ const TIER_CONFIG: Record<Difficulty, TierConfig> = {
   medium:  { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS, perfect maze
   large:   { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS, perfect maze
   expert:  { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS — deep corridors, 80×80
-  monster: { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS — extreme depth, 100×100
+  hardcore: { newestBias: 1.00, braidFactor: 0.00 }, // pure DFS — extreme depth, 100×100
 };
 
 export type GeneratorOptions = {

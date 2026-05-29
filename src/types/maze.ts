@@ -1,17 +1,17 @@
 // ─── Difficulty (tier) ─────────────────────────────────────────────────────────
 //
 //  "Difficulty" is synonymous with size tier. Five values map to the five
-//  library sizes. Expert and Monster are library-only tiers (no generator
+//  library sizes. Expert and Hardcore are library-only tiers (no generator
 //  presets expose custom sizes in this range, but they use the same generator).
 
-export type Difficulty = 'small' | 'medium' | 'large' | 'expert' | 'monster';
+export type Difficulty = 'small' | 'medium' | 'large' | 'expert' | 'hardcore';
 
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
   small:   'Small',
   medium:  'Medium',
   large:   'Large',
   expert:  'Expert',
-  monster: 'Monster',
+  hardcore: 'Hardcore',
 };
 
 export const DIFFICULTY_DESCRIPTIONS: Record<Difficulty, string> = {
@@ -19,7 +19,7 @@ export const DIFFICULTY_DESCRIPTIONS: Record<Difficulty, string> = {
   medium:  'Focused challenge with real decision points — 40×40 grid.',
   large:   'A genuine labyrinth. Easy to get lost — 60×60 grid.',
   expert:  'Serious maze challenge with long corridors — 80×80 grid.',
-  monster: 'Extreme maze puzzle for committed solvers — 100×100 grid.',
+  hardcore: 'Extreme maze puzzle for committed solvers — 100×100 grid.',
 };
 
 // ─── Coordinate ────────────────────────────────────────────────────────────────
@@ -74,7 +74,7 @@ export type MazeData = {
 //  The library catalog (src/data/libraryCatalog.json) covers all five size tiers.
 
 export type LibraryCatalogEntry = {
-  id: string;          // e.g. "small-001", "expert-025", "monster-015"
+  id: string;          // e.g. "small-001", "expert-025", "hardcore-015"
   difficulty: Difficulty;
   width: number;
   height: number;
@@ -140,13 +140,13 @@ export const CATEGORIES: CategoryInfo[] = [
     teaser: 'Longer paths and more sustained navigation on an 80×80 grid — a significant step up.',
   },
   {
-    difficulty: 'monster',
-    slug: 'maze-library/monster-mazes',
-    label: 'Monster Mazes',
-    title: 'Monster Mazes — 15 Extreme Maze Puzzles to Play Online | MazeThis',
+    difficulty: 'hardcore',
+    slug: 'maze-library/hardcore-mazes',
+    label: 'Hardcore Mazes',
+    title: 'Hardcore Mazes — 15 Extreme Maze Puzzles to Play Online | MazeThis',
     description:
-      'Play 15 free monster maze puzzles online. Extreme 100×100 labyrinths — the hardest mazes in the MazeThis collection. For committed solvers only.',
-    h1: 'Monster Mazes',
+      'Play 15 free hardcore maze puzzles online. Extreme 100×100 labyrinths — the hardest mazes in the MazeThis collection. For committed solvers only.',
+    h1: 'Hardcore Mazes',
     teaser: 'The largest puzzles in the Maze Library — 100×100 grids for committed solvers.',
   },
 ];

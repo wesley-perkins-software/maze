@@ -19,7 +19,7 @@ function makeSession(overrides: Partial<SaveSessionInput> = {}): SaveSessionInpu
       height: 100,
       seed: 0xdeadbeef,
       difficulty: 'large',
-      label: 'Monster',
+      label: 'Hardcore',
       anyPortalSide: true,
     },
     progress: {

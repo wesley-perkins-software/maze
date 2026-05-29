@@ -7,7 +7,7 @@ const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
 const faqItems = [
   {
     q: 'What is the hardest type of maze?',
-    a: 'The hardest mazes combine a large grid with maximum dead-end density, long solution paths, and high branching factor at junctions. On MazeThis, Monster mazes are the most demanding — large grids with no extra wall removal, pure DFS structure, and solution paths that wind across nearly the entire grid.',
+    a: 'The hardest mazes combine a large grid with maximum dead-end density, long solution paths, and high branching factor at junctions. On MazeThis, Hardcore mazes are the most demanding — large grids with no extra wall removal, pure DFS structure, and solution paths that wind across nearly the entire grid.',
   },
   {
     q: 'Why are bigger mazes harder?',
@@ -116,7 +116,7 @@ const breadcrumbSchema = JSON.stringify({
           { label: 'Easy mazes', desc: 'Short dead ends (1–3 cells). Most paths lead somewhere useful. Backtracking is quick.' },
           { label: 'Medium mazes', desc: 'Moderate dead ends (4–8 cells). Some longer false paths that require real backtracking.' },
           { label: 'Hard mazes', desc: 'Deep dead ends (10+ cells). Elaborate false corridors that look just like the solution path.' },
-          { label: 'Expert/Monster', desc: 'Maximum dead-end density. Solution path can be shorter than the longest false path in the maze.' },
+          { label: 'Expert/Hardcore', desc: 'Maximum dead-end density. Solution path can be shorter than the longest false path in the maze.' },
         ].map(({ label, desc }) => (
           <div class="card rounded-lg p-4">
             <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>
@@ -186,7 +186,7 @@ const breadcrumbSchema = JSON.stringify({
           { href: '/maze-library/medium-mazes',  label: 'Medium',  grid: '40×40',   desc: 'A genuine challenge. Dead ends grow longer and the solution path starts to disorient. Dead-end filling becomes essential.' },
           { href: '/maze-library/large-mazes',   label: 'Large',   grid: '60×60',   desc: 'Requires patience and a plan. Scanning before you start is important. Mental backtracking gets costly.' },
           { href: '/maze-library/expert-mazes',  label: 'Expert',  grid: '80×80',   desc: 'Dense and demanding. Many experienced solvers use hints at this level. Solution paths are long and indirect.' },
-          { href: '/maze-library/monster-mazes', label: 'Monster', grid: '100×100', desc: 'Maximum difficulty. Pure DFS structure, no extra openings, vast dead-end networks. Not recommended as a first attempt.' },
+          { href: '/maze-library/hardcore-mazes', label: 'Hardcore', grid: '100×100', desc: 'Maximum difficulty. Pure DFS structure, no extra openings, vast dead-end networks. Not recommended as a first attempt.' },
         ].map(({ href, label, grid, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-2 no-underline">
             <div class="flex items-baseline gap-2">

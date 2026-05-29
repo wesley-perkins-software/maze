@@ -7,7 +7,7 @@ const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
 const faqItems = [
   {
     q: 'What is the Maze Library?',
-    a: 'The Maze Library is a set of ready-to-play maze collections on MazeThis. Collections are organized by size — Small, Medium, Large, Expert, and Monster — and you can work through each one at your own pace. Your progress is saved in your browser automatically.',
+    a: 'The Maze Library is a set of ready-to-play maze collections on MazeThis. Collections are organized by size — Small, Medium, Large, Expert, and Hardcore — and you can work through each one at your own pace. Your progress is saved in your browser automatically.',
   },
   {
     q: 'Are Maze Library collections free?',
@@ -23,7 +23,7 @@ const faqItems = [
   },
   {
     q: 'What is the hardest Maze Library collection?',
-    a: 'Monster mazes (100×100) are the largest and most demanding in the library. They require patience, a systematic approach, and the ability to hold a mental map of a large grid. Expert mazes (80×80) are the next step down.',
+    a: 'Hardcore mazes (100×100) are the largest and most demanding in the library. They require patience, a systematic approach, and the ability to hold a mental map of a large grid. Expert mazes (80×80) are the next step down.',
   },
   {
     q: 'How is the Maze Library different from the Maze Generator?',
@@ -108,7 +108,7 @@ const breadcrumbSchema = JSON.stringify({
         A maze library is a collection of ready-to-play maze puzzles organized so you can work through them over time. Rather than generating a single maze and playing it once, you browse a set of collections, pick a starting point, and return to continue where you left off.
       </p>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
-        The <a href="/maze-library" class="text-arch-accent underline">MazeThis Maze Library</a> is organized by grid size — five tiers from Small to Monster. Each tier is its own collection. Your progress through each collection is tracked in your browser automatically.
+        The <a href="/maze-library" class="text-arch-accent underline">MazeThis Maze Library</a> is organized by grid size — five tiers from Small to Hardcore. Each tier is its own collection. Your progress through each collection is tracked in your browser automatically.
       </p>
       <p class="text-sm" style="color: var(--color-muted-strong);">
         There is no account required and no limit on how long a collection takes to complete.
@@ -127,7 +127,7 @@ const breadcrumbSchema = JSON.stringify({
           { href: '/maze-library/medium-mazes',  label: 'Medium',  size: '40×40',   desc: 'A genuine challenge that takes more planning. The step up from Small is noticeable.' },
           { href: '/maze-library/large-mazes',   label: 'Large',   size: '60×60',   desc: 'Requires patience and a more deliberate approach to avoid retracing paths.' },
           { href: '/maze-library/expert-mazes',  label: 'Expert',  size: '80×80',   desc: 'Dense, demanding, and rewarding. Systematic dead-end elimination helps here.' },
-          { href: '/maze-library/monster-mazes', label: 'Monster', size: '100×100', desc: 'The largest tier. Finishing a Monster maze is a real milestone.' },
+          { href: '/maze-library/hardcore-mazes', label: 'Hardcore', size: '100×100', desc: 'The largest tier. Finishing a Hardcore maze is a real milestone.' },
         ].map(({ href, label, size, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
             <div class="flex items-baseline gap-2">
@@ -179,7 +179,7 @@ const breadcrumbSchema = JSON.stringify({
         If you have solved mazes before and want a real challenge without the commitment of a very large maze, Medium is a natural step up. Large mazes are for players who want longer sessions and more complex layouts.
       </p>
       <p class="text-sm" style="color: var(--color-muted-strong);">
-        Expert and Monster are for experienced players who want the maximum challenge. There is no requirement to complete earlier tiers before starting a harder one — collections are independent.
+        Expert and Hardcore are for experienced players who want the maximum challenge. There is no requirement to complete earlier tiers before starting a harder one — collections are independent.
       </p>
     </section>
 

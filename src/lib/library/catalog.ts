@@ -15,7 +15,7 @@ export function getLibraryMazesByDifficulty(difficulty: Difficulty): LibraryCata
   return catalog.mazes.filter((m) => m.difficulty === difficulty);
 }
 
-const DIFFICULTY_ORDER: Difficulty[] = ['small', 'medium', 'large', 'expert', 'monster'];
+const DIFFICULTY_ORDER: Difficulty[] = ['small', 'medium', 'large', 'expert', 'hardcore'];
 
 export function getNextLibraryMaze(id: string): LibraryCatalogEntry | undefined {
   const entry = getLibraryMazeById(id);
