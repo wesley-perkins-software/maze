@@ -17,18 +17,13 @@ const pathname = Astro.url.pathname;
         class="flex items-center gap-3 shrink-0 group"
         aria-label="MazeThis home"
       >
-        <!-- Maze-path logomark -->
-        <svg
-          width="24" height="24" viewBox="0 0 24 24" fill="none"
-          xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+        <img
+          src="/favicon-96x96.png"
+          width="24" height="24"
+          alt=""
+          aria-hidden="true"
           class="transition-transform duration-200 group-hover:scale-110"
-        >
-          <rect width="24" height="24" fill="var(--color-charcoal)"/>
-          <path
-            d="M3 3h6v3H3zM15 3h6v6h-3V6h-3zM3 10h3v4H3zM9 7h3v7H9zM3 17h6v4H3zM12 14h6v3h-3v4h-3z"
-            fill="var(--color-accent)"
-          />
-        </svg>
+        />
         <span
           class="font-display text-xl tracking-wider uppercase"
           style="color: var(--color-charcoal);"
