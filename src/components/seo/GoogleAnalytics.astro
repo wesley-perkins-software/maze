@@ -3,26 +3,24 @@ const measurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undef
 ---
 
 {measurementId && (
-  <script is:inline>
-    (function () {
-      var el = document.querySelector('meta[name="ga-mid"]');
-      if (!el) return;
-      var mid = el.getAttribute('content');
-      if (!mid) return;
-      var host = window.location.hostname;
-      if (host !== 'mazepuzzles.io' && host !== 'www.mazepuzzles.io') return;
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + mid;
-      document.head.appendChild(s);
-      s.onload = function () {
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        window.gtag = gtag;
-        gtag('js', new Date());
-        gtag('config', mid);
-      };
-    })();
-  </script>
+  <>
+    <!-- Google tag (gtag.js) -->
+    <script is:inline async src={'https://www.googletagmanager.com/gtag/js?id=' + measurementId}></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    </script>
+    <meta name="ga-mid" content={measurementId} />
+    <script>
+      // Initialise GA config only on production domains
+      const mid = document.querySelector('meta[name="ga-mid"]')?.getAttribute('content');
+      if (mid) {
+        const host = window.location.hostname;
+        if (host === 'mazepuzzles.io' || host === 'www.mazepuzzles.io') {
+          window.gtag?.('config', mid);
+        }
+      }
+    </script>
+  </>
 )}
-{measurementId && <meta name="ga-mid" content={measurementId} />}
