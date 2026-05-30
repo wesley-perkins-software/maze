@@ -1,4 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
+import {
+  trackMazeGenerated,
+  trackMazeSizeSelected,
+  trackMazePrinted,
+  trackMazeDownloaded,
+  trackPrintableAnswerKeyToggled,
+} from '../../lib/analytics';
 import { createPortal } from 'react-dom';
 import type { Difficulty, MazeData } from '../../types/maze';
 import { generateMaze } from '../../lib/maze/index';
@@ -61,15 +68,30 @@ export function PrintableMazeGenerator() {
   const handleSizeChange = useCallback((preset: SizePreset) => {
     setSelectedSize(preset);
     setMaze(generateForPreset(preset));
+    trackMazeSizeSelected('printable', preset);
   }, []);
 
   const handleGenerate = useCallback(() => {
     setMaze(generateForPreset(selectedSize));
+    trackMazeGenerated({
+      maze_context: 'printable',
+      maze_difficulty: selectedSize,
+      maze_size: `${SIZE_MAP[selectedSize].w}x${SIZE_MAP[selectedSize].h}`,
+      width: SIZE_MAP[selectedSize].w,
+      height: SIZE_MAP[selectedSize].h,
+    });
   }, [selectedSize]);
 
   const handlePrint = useCallback(() => {
     window.requestAnimationFrame(() => window.print());
-  }, []);
+    trackMazePrinted({
+      maze_context: 'printable',
+      maze_difficulty: selectedSize,
+      maze_size: `${maze.width}x${maze.height}`,
+      source_page: '/printable-mazes',
+      include_answer_key: showSolution,
+    });
+  }, [maze, selectedSize, showSolution]);
 
   const handleDownloadSVG = useCallback(() => {
     const svg = renderDownloadSVG(maze);
@@ -80,7 +102,14 @@ export function PrintableMazeGenerator() {
     a.download = `maze-${maze.width}x${maze.height}.svg`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [maze]);
+    trackMazeDownloaded({
+      maze_context: 'printable',
+      maze_difficulty: selectedSize,
+      maze_size: `${maze.width}x${maze.height}`,
+      source_page: '/printable-mazes',
+      file_type: 'svg',
+    });
+  }, [maze, selectedSize]);
 
   const btnBase = 'rounded-sm border py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-arch-accent';
   const activeBtn = 'border-arch-charcoal bg-arch-charcoal text-white dark:bg-arch-dark-surface-raised dark:border-arch-400 dark:text-arch-charcoal';
@@ -284,7 +313,11 @@ export function PrintableMazeGenerator() {
           <input
             type="checkbox"
             checked={showSolution}
-            onChange={(e) => setShowSolution(e.target.checked)}
+            onChange={(e) => {
+              const next = e.target.checked;
+              setShowSolution(next);
+              trackPrintableAnswerKeyToggled(next);
+            }}
             className="w-4 h-4 accent-arch-accent shrink-0"
           />
           <span className="text-sm font-medium text-arch-charcoal">Include Answer Key</span>

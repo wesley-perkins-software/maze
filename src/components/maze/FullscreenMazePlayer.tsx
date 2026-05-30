@@ -11,6 +11,12 @@ import { solveMazeFrom } from '../../lib/maze/solver';
 import { getEndpointMarkerCenter, getMazeBodyBounds, inferPortalSide, warnInvalidPortalSide } from '../../lib/maze/endpointMarkers';
 import { getMazeDebugSummary, shouldLogMazeStateDebug } from '../../lib/maze/fingerprint';
 import { FinishMarkerIcon, START_MARKER_COLOR } from './EndpointMarkerGlyphs';
+import {
+  trackMazeReset,
+  trackHintToggled,
+  trackSolutionToggled,
+  trackTraveledPathToggled,
+} from '../../lib/analytics';
 
 export interface SolveStats {
   elapsedMs: number;
@@ -470,6 +476,8 @@ export interface FullscreenMazePlayerProps {
   onSessionChange?: (state: import('../../lib/gameplay/types.js').GameState, showTrail: boolean) => void;
   /** Called after a confirmed reset so the caller can clear any saved session. */
   onReset?: () => void;
+  /** Maze context passed through to analytics events. */
+  mazeContext?: 'daily' | 'library' | 'generator';
 }
 
 export function FullscreenMazePlayer({
@@ -481,6 +489,7 @@ export function FullscreenMazePlayer({
   initialShowTrail,
   onSessionChange,
   onReset,
+  mazeContext = 'generator',
 }: FullscreenMazePlayerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const mazeViewportRef = useRef<HTMLDivElement>(null);
@@ -528,6 +537,7 @@ export function FullscreenMazePlayer({
     setShowTrail(v => {
       const next = !v;
       try { localStorage.setItem(TRAIL_VISIBILITY_KEY, next ? 'true' : 'false'); } catch {}
+      trackTraveledPathToggled(next, mazeContext);
       return next;
     });
   };
@@ -904,6 +914,7 @@ export function FullscreenMazePlayer({
   const handleHint = useCallback(() => {
     if (isHintActive) {
       dispatch({ type: 'USE_HINT', cells: [] });
+      trackHintToggled(false, mazeContext);
       return;
     }
 
@@ -914,7 +925,8 @@ export function FullscreenMazePlayer({
     // Include the current cell so the green hint is anchored at the player's
     // position and remains followable until completed or abandoned.
     dispatch({ type: 'USE_HINT', cells: pathFromPlayer.slice(0, hintSteps + 1) });
-  }, [isHintActive, maze, currentSolution]);
+    trackHintToggled(true, mazeContext);
+  }, [isHintActive, maze, currentSolution, mazeContext]);
 
   // Close reset modal on Escape
   useEffect(() => {
@@ -1487,7 +1499,7 @@ export function FullscreenMazePlayer({
                   </button>
                 )}
                 <button
-                  onClick={() => { dispatch({ type: 'TOGGLE_SOLUTION' }); setMenuOpen(false); }}
+                  onClick={() => { const next = !state.solutionVisible; dispatch({ type: 'TOGGLE_SOLUTION' }); trackSolutionToggled(next, mazeContext); setMenuOpen(false); }}
                   className="w-full text-left px-4 py-2.5 text-[15px] text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
                 >
                   {state.solutionVisible ? (
@@ -1743,7 +1755,7 @@ export function FullscreenMazePlayer({
                 </button>
               )}
               <button
-                onClick={() => dispatch({ type: 'TOGGLE_SOLUTION' })}
+                onClick={() => { const next = !state.solutionVisible; dispatch({ type: 'TOGGLE_SOLUTION' }); trackSolutionToggled(next, mazeContext); }}
                 className="btn-secondary play-sidebar-btn w-full rounded text-left px-3 py-2.5 gap-2.5"
                 style={state.solutionVisible ? {
                   backgroundColor: 'var(--color-charcoal)',
@@ -2056,6 +2068,7 @@ export function FullscreenMazePlayer({
                 onClick={() => {
                   setShowResetModal(false);
                   dispatch({ type: 'RESET', startPosition: maze.entry });
+                  trackMazeReset(mazeContext);
                   onReset?.();
                 }}
                 style={{

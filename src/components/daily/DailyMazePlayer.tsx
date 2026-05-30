@@ -30,6 +30,18 @@ import {
 import type { DailyMazeSession } from '../../lib/gameplay/dailySession';
 import { recordSolve } from '../../lib/gameplay/dailyStreak';
 import type { StreakData } from '../../lib/gameplay/dailyStreak';
+import {
+  trackMazeStarted,
+  trackMazeCompleted,
+  trackSessionResumed,
+  trackDailyStreakMilestone,
+} from '../../lib/analytics';
+
+const DAILY_MAZE_CONTEXT = {
+  maze_context: 'daily' as const,
+  maze_size: '60x60',
+  maze_difficulty: 'large',
+};
 
 
 function formatDateLabel(dateStr: string): string {
@@ -80,6 +92,8 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   const [initialShowTrail, setInitialShowTrail] = useState<boolean | undefined>(undefined);
   // Stable ref so autosave callback never captures a stale maze.
   const mazeRef = useRef<MazeData | null>(null);
+  // Guards against duplicate maze_started events within a single play session.
+  const hasStartedRef = useRef(false);
   // Date captured at mount — stays fixed so midnight never swaps the maze mid-play.
   const dailyDateRef = useRef<string>('');
 
@@ -164,6 +178,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
   // ── Resume saved session ─────────────────────────────────────────────────────
   const handleResume = useCallback(() => {
     if (!resumeSession) return;
+    trackSessionResumed(DAILY_MAZE_CONTEXT);
     const { progress } = resumeSession;
 
     // Maze is already generated in state (same seed); just inject saved GameState.
@@ -192,6 +207,8 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
     setInitialShowTrail(undefined);
     setSolveStats(null);
     setPlayerKey((k) => k + 1);
+    hasStartedRef.current = true;
+    trackMazeStarted(DAILY_MAZE_CONTEXT);
     setPlaying(true);
   }, []);
 
@@ -206,8 +223,20 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
       oldValue: null,
       storageArea: localStorage,
     }));
-    setStreak(recordSolve(today));
+    const updatedStreak = recordSolve(today);
+    setStreak(updatedStreak);
     setSolveStats(stats);
+    hasStartedRef.current = false;
+    trackMazeCompleted({
+      ...DAILY_MAZE_CONTEXT,
+      elapsed_ms: stats.elapsedMs,
+      elapsed_sec: Math.floor(stats.elapsedMs / 1000),
+      steps: stats.stepCount,
+      hints_used: stats.hintsUsed,
+    });
+    if (updatedStreak && updatedStreak.current >= 3) {
+      trackDailyStreakMilestone(updatedStreak.current, updatedStreak.longest);
+    }
   }, []);
 
   // ── Exit fullscreen player ───────────────────────────────────────────────────
@@ -298,7 +327,14 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
           {!showResumeCard && (
             <div className="mt-4 flex justify-center">
               <button
-                onClick={() => { setPlaying(true); setSolveStats(null); }}
+                onClick={() => {
+                  if (!hasStartedRef.current) {
+                    hasStartedRef.current = true;
+                    trackMazeStarted(DAILY_MAZE_CONTEXT);
+                  }
+                  setPlaying(true);
+                  setSolveStats(null);
+                }}
                 className="btn-primary rounded-lg px-6 py-3 text-base shadow-sm"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -323,6 +359,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
           onReset={clearDailySession}
           onSolve={handleSolve}
           onClose={handleClose}
+          mazeContext="daily"
         />
       )}
 
@@ -336,6 +373,7 @@ export function DailyMazePlayer({ autoPlay = false }: { autoPlay?: boolean }) {
             isNewBest={solveStats.isNewBest}
             personalBest={null}
             isDailyMode={true}
+            mazeContext="daily"
             contextLabel="Today's Maze"
             showCountdown={true}
             streakCurrent={streak?.current}

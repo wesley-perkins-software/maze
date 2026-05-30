@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { trackPostSolveActionClicked, trackShareResult } from '../../lib/analytics';
 import { getMsUntilLocalMidnight } from '../../lib/utils/countdown';
 import { getDailyNow } from '../../lib/utils/dailyNow';
 
@@ -49,6 +50,8 @@ export interface PostSolveOverlayProps {
   mazeLabel?: string;
   /** Daily maze post-solve: daily-specific title, actions, and share text. */
   isDailyMode?: boolean;
+  /** Maze context for analytics. */
+  mazeContext?: 'daily' | 'library' | 'generator';
   /** Optional label shown under the title, e.g. "Today's Maze", "Generated Maze · Small", "Small #003" */
   contextLabel?: string;
   /** Current daily streak count (days in a row). Only shown in daily mode. */
@@ -168,10 +171,12 @@ function ShareButton({
   shareText,
   mazeSlug: _mazeSlug,
   className = 'btn-ghost text-sm',
+  mazeContext = 'generator',
 }: {
   shareText: string;
   mazeSlug?: string;
   className?: string;
+  mazeContext?: 'daily' | 'library' | 'generator';
 }) {
   const btnRef = useRef<HTMLButtonElement>(null);
 
@@ -181,8 +186,10 @@ function ShareButton({
     try {
       if (navigator.share) {
         await navigator.share({ title: 'MazePuzzles.io', text: shareText });
+        trackShareResult(mazeContext, 'native_share');
       } else {
         await navigator.clipboard.writeText(shareText);
+        trackShareResult(mazeContext, 'copy_link');
         const orig = btn.textContent ?? '';
         btn.textContent = 'Copied!';
         setTimeout(() => { if (btn) btn.textContent = orig; }, 2000);
@@ -229,6 +236,7 @@ export function PostSolveOverlay({
   contextLabel,
   streakCurrent,
   streakLongest,
+  mazeContext = 'generator',
 }: PostSolveOverlayProps) {
   const primaryBtnRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   // On mobile, the browser fires a synthetic click event at the touch position
@@ -350,11 +358,12 @@ export function PostSolveOverlay({
         {isDailyMode ? (
           <ShareButton
             shareText={shareText}
+            mazeContext={mazeContext}
             className="btn-primary w-full justify-center text-base py-3 rounded-lg"
           />
         ) : isGeneratorMode ? (
           <button
-            onClick={onNewMaze}
+            onClick={() => { trackPostSolveActionClicked('new_maze', mazeContext); onNewMaze?.(); }}
             className="btn-primary w-full justify-center text-base py-3 rounded-lg"
             ref={primaryBtnRef as React.Ref<HTMLButtonElement>}
           >
@@ -363,6 +372,7 @@ export function PostSolveOverlay({
         ) : nav && hasNext ? (
           <a
             href={nextHref}
+            onClick={() => trackPostSolveActionClicked('next_maze', mazeContext)}
             className="btn-primary w-full justify-center text-base py-3 rounded-lg"
             ref={primaryBtnRef as React.Ref<HTMLAnchorElement>}
           >
@@ -374,6 +384,7 @@ export function PostSolveOverlay({
         ) : nav && !hasNext ? (
           <a
             href={categoryHref}
+            onClick={() => trackPostSolveActionClicked('browse_collection', mazeContext)}
             className="btn-primary w-full justify-center text-base py-3 rounded-lg"
             ref={primaryBtnRef as React.Ref<HTMLAnchorElement>}
           >
@@ -381,7 +392,7 @@ export function PostSolveOverlay({
           </a>
         ) : (
           <button
-            onClick={onPlayAgain}
+            onClick={() => { trackPostSolveActionClicked('play_again', mazeContext); onPlayAgain(); }}
             className="btn-primary w-full justify-center text-base py-3 rounded-lg"
             ref={primaryBtnRef as React.Ref<HTMLButtonElement>}
           >
@@ -393,13 +404,14 @@ export function PostSolveOverlay({
         {isDailyMode ? (
           <a
             href="/maze-generator"
+            onClick={() => trackPostSolveActionClicked('create_maze', mazeContext)}
             className="btn-secondary w-full justify-center text-sm py-2.5 rounded-lg"
           >
             Create a Maze
           </a>
         ) : isGeneratorMode ? (
           <button
-            onClick={onPlayAgain}
+            onClick={() => { trackPostSolveActionClicked('play_again', mazeContext); onPlayAgain(); }}
             className="btn-secondary w-full justify-center text-sm py-2.5 rounded-lg"
           >
             Play Again
@@ -407,6 +419,7 @@ export function PostSolveOverlay({
         ) : nav && hasNext ? (
           <a
             href={categoryHref}
+            onClick={() => trackPostSolveActionClicked('browse_collection', mazeContext)}
             className="btn-secondary w-full justify-center text-sm py-2.5 rounded-lg"
           >
             {nav.categoryLabel}
@@ -428,13 +441,13 @@ export function PostSolveOverlay({
         {/* Tertiary actions */}
         <div className="flex items-center gap-1 flex-wrap justify-center -mb-1">
           {isDailyMode ? (
-            <button onClick={onPlayAgain} className="btn-ghost text-sm rounded-lg">
+            <button onClick={() => { trackPostSolveActionClicked('play_again', mazeContext); onPlayAgain(); }} className="btn-ghost text-sm rounded-lg">
               Play Again
             </button>
           ) : isGeneratorMode ? (
-            <ShareButton shareText={shareText} mazeSlug={mazeSlug} className="btn-ghost text-sm rounded-lg" />
+            <ShareButton shareText={shareText} mazeSlug={mazeSlug} mazeContext={mazeContext} className="btn-ghost text-sm rounded-lg" />
           ) : nav && hasNext ? (
-            <button onClick={onPlayAgain} className="btn-ghost text-sm rounded-lg">
+            <button onClick={() => { trackPostSolveActionClicked('play_again', mazeContext); onPlayAgain(); }} className="btn-ghost text-sm rounded-lg">
               Play Again
             </button>
           ) : null}
