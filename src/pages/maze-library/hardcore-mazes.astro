@@ -10,15 +10,15 @@ const mazes = getLibraryMazesByDifficulty('hardcore');
 const allIds = mazes.map((m) => m.id);
 const firstLabel = 'Start Hardcore #001';
 
-const BASE = 'https://mazethis.com';
+const BASE = 'https://mazepuzzles.io';
 const pageUrl = `${BASE}/maze-library/hardcore-mazes`;
-const pageTitle = 'Hardcore Mazes | Free Online 100×100 Maze Puzzles | MazeThis';
-const pageDescription = 'Play free Hardcore Mazes online. Solve huge 100×100 maze puzzles, track your progress, and work through the hardest MazeThis collection.';
+const pageTitle = 'Hardcore Mazes | Free Online 100×100 Maze Puzzles | MazePuzzles.io';
+const pageDescription = 'Play free Hardcore Mazes online. Solve huge 100×100 maze puzzles, track your progress, and work through the hardest MazePuzzles.io collection.';
 
 const faqItems = [
   {
     q: 'What are Hardcore Mazes?',
-    a: 'Hardcore Mazes are 100×100 grid maze puzzles on MazeThis — the largest Maze Library collection on the site. Built for committed solvers who want an extreme, long-form challenge. The collection contains 15 puzzles, each with a unique layout.',
+    a: 'Hardcore Mazes are 100×100 grid maze puzzles on MazePuzzles.io — the largest Maze Library collection on the site. Built for committed solvers who want an extreme, long-form challenge. The collection contains 15 puzzles, each with a unique layout.',
   },
   {
     q: 'Are these mazes free?',
@@ -39,8 +39,8 @@ const faqItems = [
   },
   {
     q: 'What size should I try next?',
-    a: 'Hardcore Mazes are the largest Maze Library collection on MazeThis. For custom sizes beyond 100×100, use the Maze Generator.',
-    aHtml: 'Hardcore Mazes are the largest Maze Library collection on MazeThis. For custom sizes beyond 100×100, use the <a href="/maze-generator" class="underline hover:opacity-80">Maze Generator</a>.',
+    a: 'Hardcore Mazes are the largest Maze Library collection on MazePuzzles.io. For custom sizes beyond 100×100, use the Maze Generator.',
+    aHtml: 'Hardcore Mazes are the largest Maze Library collection on MazePuzzles.io. For custom sizes beyond 100×100, use the <a href="/maze-generator" class="underline hover:opacity-80">Maze Generator</a>.',
   },
   {
     q: 'What is the difference between this collection and the Maze Generator?',
@@ -100,7 +100,7 @@ const schemaLD = JSON.stringify({
   heroLabel="HARDCORE MAZE COLLECTION"
   heroDescription="Huge 100×100 maze puzzles built for serious focus and long-form maze solving."
   benefitCards={[
-    { title: 'Maximum size', body: 'The largest Maze Library collection on MazeThis.' },
+    { title: 'Maximum size', body: 'The largest Maze Library collection on MazePuzzles.io.' },
     { title: 'Serious focus', body: 'Built for long, careful solving sessions.' },
     { title: 'Dense exploration', body: 'A full 100×100 maze with a lot of ground to cover.' },
     { title: 'Completion challenge', body: 'Work through the hardest collection one maze at a time.' },
@@ -141,7 +141,7 @@ const schemaLD = JSON.stringify({
 <script>
   (function () {
     try {
-      var raw = localStorage.getItem('mazethis.library.progress');
+      var raw = localStorage.getItem('mazepuzzles.library.progress');
       var ids = raw ? JSON.parse(raw)?.completedMazeIds : [];
       if (!Array.isArray(ids)) return;
       var done = new Set(ids);

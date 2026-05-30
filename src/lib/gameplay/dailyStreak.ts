@@ -1,4 +1,4 @@
-const STREAK_KEY = 'mazethis.dailyMaze.streak';
+const STREAK_KEY = 'mazepuzzles.dailyMaze.streak';
 
 export interface StreakData {
   current: number;

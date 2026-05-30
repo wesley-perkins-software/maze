@@ -2,7 +2,7 @@ import type { Difficulty } from '../../types/maze.js';
 import type { Point } from '../../types/maze.js';
 import type { GameStatus } from './types.js';
 
-export const SESSION_STORAGE_KEY = 'mazethis.generatedMaze.activeSession';
+export const SESSION_STORAGE_KEY = 'mazepuzzles.generatedMaze.activeSession';
 export const SESSION_VERSION = 1;
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 

@@ -2,12 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const faqItems = [
   {
     q: 'What is a daily maze challenge?',
-    a: 'A daily maze challenge is a single new maze puzzle available each day. The maze refreshes at midnight, so every day brings a different layout to solve. MazeThis offers a free daily maze at mazethis.com/maze-of-the-day — no account required.',
+    a: 'A daily maze challenge is a single new maze puzzle available each day. The maze refreshes at midnight, so every day brings a different layout to solve. MazePuzzles.io offers a free daily maze at mazepuzzles.io/maze-of-the-day — no account required.',
   },
   {
     q: 'Is the Maze of the Day free?',
@@ -45,12 +45,12 @@ const articleSchema = JSON.stringify({
   dateModified: '2025-05-29',
   author: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
   },
   publisher: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
@@ -80,7 +80,7 @@ const breadcrumbSchema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="Daily Maze Challenge: Build a Maze-Solving Habit | MazeThis"
+  title="Daily Maze Challenge: Build a Maze-Solving Habit | MazePuzzles.io"
   description="How a daily maze challenge works, why a short daily puzzle habit is worth building, and where to play the free Maze of the Day."
   canonical={`${siteUrl}/maze-guides/daily-maze-challenge`}
   schemaLD={[articleSchema, faqSchema, breadcrumbSchema]}
@@ -119,7 +119,7 @@ const breadcrumbSchema = JSON.stringify({
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">How the Maze of the Day works</h2>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
-        MazeThis has a free daily maze at <a href="/maze-of-the-day" class="text-arch-accent underline">mazethis.com/maze-of-the-day</a>. A new maze is generated each day — no two days share the same layout. The puzzle is the same for every player on that date.
+        MazePuzzles.io has a free daily maze at <a href="/maze-of-the-day" class="text-arch-accent underline">mazepuzzles.io/maze-of-the-day</a>. A new maze is generated each day — no two days share the same layout. The puzzle is the same for every player on that date.
       </p>
       <ol class="space-y-3 mb-4">
         {[
@@ -194,7 +194,7 @@ const breadcrumbSchema = JSON.stringify({
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">What to play after the daily maze</h2>
       <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
-        Once you have finished today's puzzle, a few options are available on MazeThis.
+        Once you have finished today's puzzle, a few options are available on MazePuzzles.io.
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[

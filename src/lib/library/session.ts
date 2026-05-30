@@ -6,7 +6,7 @@ const SESSION_VERSION = 1;
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 function storageKey(mazeId: string): string {
-  return `mazethis.library.session.${mazeId}`;
+  return `mazepuzzles.library.session.${mazeId}`;
 }
 
 export interface LibraryMazeSession {

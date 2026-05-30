@@ -2,12 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const faqItems = [
   {
     q: 'What is an orthogonal maze?',
-    a: 'An orthogonal maze uses a square grid, with four possible directions per cell: north, south, east, and west. It is the standard maze format — the type used in the vast majority of printed puzzles, worksheets, and maze games. MazeThis generates orthogonal mazes.',
+    a: 'An orthogonal maze uses a square grid, with four possible directions per cell: north, south, east, and west. It is the standard maze format — the type used in the vast majority of printed puzzles, worksheets, and maze games. MazePuzzles.io generates orthogonal mazes.',
   },
   {
     q: 'What is a hexagonal maze?',
@@ -22,8 +22,8 @@ const faqItems = [
     a: 'Hexagonal and triangular mazes tend to be harder than orthogonal mazes at the same scale, because they disrupt standard solving strategies like the wall-following rule. Weave mazes, which include over/under passages, are extremely difficult because they are topologically more complex than flat mazes.',
   },
   {
-    q: 'Are MazeThis mazes square grid or something else?',
-    a: 'MazeThis generates orthogonal (square grid) mazes. These offer the broadest accessibility — orthogonal mazes work at any skill level, print cleanly on standard paper, and support all the major solving strategies. The maze generator and library both use the orthogonal format.',
+    q: 'Are MazePuzzles.io mazes square grid or something else?',
+    a: 'MazePuzzles.io generates orthogonal (square grid) mazes. These offer the broadest accessibility — orthogonal mazes work at any skill level, print cleanly on standard paper, and support all the major solving strategies. The maze generator and library both use the orthogonal format.',
   },
   {
     q: 'What is a weave maze?',
@@ -31,7 +31,7 @@ const faqItems = [
   },
   {
     q: 'Where can I try different maze sizes?',
-    a: 'The Maze Library on MazeThis has orthogonal maze worksheets organized by size: small (20×20), medium (40×40), large (60×60), expert, and hardcore. You can also generate a custom maze at any size using the Maze Generator.',
+    a: 'The Maze Library on MazePuzzles.io has orthogonal maze worksheets organized by size: small (20×20), medium (40×40), large (60×60), expert, and hardcore. You can also generate a custom maze at any size using the Maze Generator.',
   },
 ];
 
@@ -43,10 +43,10 @@ const articleSchema = JSON.stringify({
   url: `${siteUrl}/maze-guides/maze-types`,
   datePublished: '2024-12-01',
   dateModified: '2024-12-01',
-  author: { '@type': 'Organization', name: 'MazeThis', url: siteUrl },
+  author: { '@type': 'Organization', name: 'MazePuzzles.io', url: siteUrl },
   publisher: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
@@ -66,7 +66,7 @@ const breadcrumbSchema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="Maze Types — Orthogonal, Hexagonal, Circular & More | MazeThis"
+  title="Maze Types — Orthogonal, Hexagonal, Circular & More | MazePuzzles.io"
   description="A guide to the different maze grid types — orthogonal, hexagonal, circular, triangular, and more — and how each changes the way you navigate."
   canonical={`${siteUrl}/maze-guides/maze-types`}
   schemaLD={[articleSchema, breadcrumbSchema]}
@@ -91,7 +91,7 @@ const breadcrumbSchema = JSON.stringify({
     <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">Orthogonal mazes</h2>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
-        The standard maze. Cells are squares arranged in a rectangular grid, with four possible directions per cell: north, south, east, and west. The vast majority of printed puzzles, maze worksheets, and maze games use this format — including all mazes on MazeThis.
+        The standard maze. Cells are squares arranged in a rectangular grid, with four possible directions per cell: north, south, east, and west. The vast majority of printed puzzles, maze worksheets, and maze games use this format — including all mazes on MazePuzzles.io.
       </p>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
         Navigation maps directly to up/down/left/right, making orthogonal mazes immediately intuitive for solvers of any age. The familiar grid structure lets solvers apply systematic strategies efficiently — scanning corridors, tracking position relative to the edges, and using the wall-following rule reliably on perfect mazes.

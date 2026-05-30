@@ -2,12 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const faqItems = [
   {
     q: 'What is the Maze Library?',
-    a: 'The Maze Library is a set of ready-to-play maze collections on MazeThis. Collections are organized by size — Small, Medium, Large, Expert, and Hardcore — and you can work through each one at your own pace. Your progress is saved in your browser automatically.',
+    a: 'The Maze Library is a set of ready-to-play maze collections on MazePuzzles.io. Collections are organized by size — Small, Medium, Large, Expert, and Hardcore — and you can work through each one at your own pace. Your progress is saved in your browser automatically.',
   },
   {
     q: 'Are Maze Library collections free?',
@@ -31,7 +31,7 @@ const faqItems = [
   },
   {
     q: 'Can I print Maze Library mazes?',
-    a: 'The Maze Library is designed for online play. For clean worksheet-style printouts with an optional answer key page, use the Printable Mazes tool at mazethis.com/printable-mazes.',
+    a: 'The Maze Library is designed for online play. For clean worksheet-style printouts with an optional answer key page, use the Printable Mazes tool at mazepuzzles.io/printable-mazes.',
   },
 ];
 
@@ -39,18 +39,18 @@ const articleSchema = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: 'How to Use the Maze Library',
-  description: 'How Maze Library collections, size tiers, progress tracking, and Play Next work on MazeThis.',
+  description: 'How Maze Library collections, size tiers, progress tracking, and Play Next work on MazePuzzles.io.',
   url: `${siteUrl}/maze-guides/maze-library`,
   datePublished: '2025-05-29',
   dateModified: '2025-05-29',
   author: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
   },
   publisher: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
@@ -80,8 +80,8 @@ const breadcrumbSchema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="How to Use the Maze Library | MazeThis"
-  description="How Maze Library collections, size tiers, progress tracking, and Play Next work on MazeThis."
+  title="How to Use the Maze Library | MazePuzzles.io"
+  description="How Maze Library collections, size tiers, progress tracking, and Play Next work on MazePuzzles.io."
   canonical={`${siteUrl}/maze-guides/maze-library`}
   schemaLD={[articleSchema, faqSchema, breadcrumbSchema]}
 >
@@ -108,7 +108,7 @@ const breadcrumbSchema = JSON.stringify({
         A maze library is a collection of ready-to-play maze puzzles organized so you can work through them over time. Rather than generating a single maze and playing it once, you browse a set of collections, pick a starting point, and return to continue where you left off.
       </p>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
-        The <a href="/maze-library" class="text-arch-accent underline">MazeThis Maze Library</a> is organized by grid size — five tiers from Small to Hardcore. Each tier is its own collection. Your progress through each collection is tracked in your browser automatically.
+        The <a href="/maze-library" class="text-arch-accent underline">MazePuzzles.io Maze Library</a> is organized by grid size — five tiers from Small to Hardcore. Each tier is its own collection. Your progress through each collection is tracked in your browser automatically.
       </p>
       <p class="text-sm" style="color: var(--color-muted-strong);">
         There is no account required and no limit on how long a collection takes to complete.

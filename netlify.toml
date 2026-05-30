@@ -204,7 +204,7 @@
   status = 404
 
 [context.production.environment]
-  SITE_URL = "https://mazethis.com"
+  SITE_URL = "https://mazepuzzles.io"
 
 [context.deploy-preview.environment]
   SITE_URL = "https://deploy-preview--mazethis.netlify.app"

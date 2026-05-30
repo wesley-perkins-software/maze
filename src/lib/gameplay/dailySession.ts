@@ -1,7 +1,7 @@
 import type { Difficulty } from '../../types/maze.js';
 import type { SessionProgress } from './session.js';
 
-export const DAILY_SESSION_STORAGE_KEY = 'mazethis.dailyMaze.activeSession';
+export const DAILY_SESSION_STORAGE_KEY = 'mazepuzzles.dailyMaze.activeSession';
 export const DAILY_SESSION_VERSION = 1;
 // 2-day TTL — daily sessions are keyed by date and would be rejected by date
 // check anyway, but this prevents indefinite accumulation in edge cases.

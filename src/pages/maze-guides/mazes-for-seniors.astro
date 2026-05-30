@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const faqItems = [
   {
@@ -15,7 +15,7 @@ const faqItems = [
   },
   {
     q: 'Do printed mazes or digital mazes work better for seniors?',
-    a: 'Both formats have advantages. Printed mazes offer fine motor engagement (pencil tracing) and the satisfaction of a physical artifact. Digital mazes on MazeThis allow instant solution reveals when stuck and require no printing. Many seniors find value in alternating: print for focused sessions, digital for convenience.',
+    a: 'Both formats have advantages. Printed mazes offer fine motor engagement (pencil tracing) and the satisfaction of a physical artifact. Digital mazes on MazePuzzles.io allow instant solution reveals when stuck and require no printing. Many seniors find value in alternating: print for focused sessions, digital for convenience.',
   },
   {
     q: 'Can mazes help with Alzheimer\'s or dementia?',
@@ -43,10 +43,10 @@ const articleSchema = JSON.stringify({
   url: `${siteUrl}/maze-guides/mazes-for-seniors`,
   datePublished: '2024-11-10',
   dateModified: '2024-11-10',
-  author: { '@type': 'Organization', name: 'MazeThis', url: siteUrl },
+  author: { '@type': 'Organization', name: 'MazePuzzles.io', url: siteUrl },
   publisher: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
@@ -66,7 +66,7 @@ const breadcrumbSchema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="Mazes for Seniors — Cognitive Benefits & How to Get Started | MazeThis"
+  title="Mazes for Seniors — Cognitive Benefits & How to Get Started | MazePuzzles.io"
   description="How maze puzzles support cognitive health in older adults — working memory, attention, spatial reasoning, and mood — and how to choose the right difficulty."
   canonical={`${siteUrl}/maze-guides/mazes-for-seniors`}
   schemaLD={[articleSchema, breadcrumbSchema]}
@@ -180,7 +180,7 @@ const breadcrumbSchema = JSON.stringify({
         Both formats have real advantages. Printed mazes offer fine motor engagement — pencil tracing within narrow corridors requires sustained grip and controlled movement — and the satisfaction of a completed physical artifact. Many solvers find that marking dead ends with an X and recording the correct path by hand is more cognitively engaging than moving a cursor on screen.
       </p>
       <p class="text-sm" style="color: var(--color-muted-strong);">
-        Digital mazes on MazeThis offer instant solution reveals when a solver gets stuck, require no printing, and work on tablets and phones with on-screen directional controls. For solvers who find precise pencil control difficult, the digital format removes that barrier entirely. Many seniors find value in alternating between the two.
+        Digital mazes on MazePuzzles.io offer instant solution reveals when a solver gets stuck, require no printing, and work on tablets and phones with on-screen directional controls. For solvers who find precise pencil control difficult, the digital format removes that barrier entirely. Many seniors find value in alternating between the two.
       </p>
     </section>
 

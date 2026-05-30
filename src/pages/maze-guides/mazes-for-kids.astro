@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const faqItems = [
   {
@@ -31,7 +31,7 @@ const faqItems = [
   },
   {
     q: 'Where can I find printable mazes for kids?',
-    a: 'The MazeThis maze library includes small mazes (20×20) that work well for older children, and the maze generator lets you set any custom size. For very young children (3–6), print the smallest available size and increase as skills grow.',
+    a: 'The MazePuzzles.io maze library includes small mazes (20×20) that work well for older children, and the maze generator lets you set any custom size. For very young children (3–6), print the smallest available size and increase as skills grow.',
   },
 ];
 
@@ -43,10 +43,10 @@ const articleSchema = JSON.stringify({
   url: `${siteUrl}/maze-guides/mazes-for-kids`,
   datePublished: '2024-11-05',
   dateModified: '2024-11-05',
-  author: { '@type': 'Organization', name: 'MazeThis', url: siteUrl },
+  author: { '@type': 'Organization', name: 'MazePuzzles.io', url: siteUrl },
   publisher: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
@@ -66,7 +66,7 @@ const breadcrumbSchema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="Mazes for Kids — Benefits, Age Guide & Free Printables | MazeThis"
+  title="Mazes for Kids — Benefits, Age Guide & Free Printables | MazePuzzles.io"
   description="How maze puzzles support cognitive, motor, and emotional development in children — and how to choose the right difficulty by age."
   canonical={`${siteUrl}/maze-guides/mazes-for-kids`}
   schemaLD={[articleSchema, breadcrumbSchema]}

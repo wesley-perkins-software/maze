@@ -7,7 +7,7 @@
 import type { APIRoute } from 'astro';
 import { CATEGORIES } from '../types/maze';
 
-const SITE = 'https://mazethis.com';
+const SITE = 'https://mazepuzzles.io';
 
 function url(path: string, priority: string, changefreq: string): string {
   return `  <url>

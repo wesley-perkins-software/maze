@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const guides = [
   {
@@ -70,11 +70,11 @@ const guides = [
 const faqItems = [
   {
     q: 'What is the Maze Guides section?',
-    a: 'Maze Guides is MazeThis\'s guide hub for maze-solving strategies, maze types, difficulty, printable maze activities, and choosing mazes for different audiences.',
+    a: 'Maze Guides is MazePuzzles.io\'s guide hub for maze-solving strategies, maze types, difficulty, printable maze activities, and choosing mazes for different audiences.',
   },
   {
     q: 'Are the maze guides free?',
-    a: 'Yes. The guides are free to read, and MazeThis tools are free to use without an account.',
+    a: 'Yes. The guides are free to read, and MazePuzzles.io tools are free to use without an account.',
   },
   {
     q: 'Where should beginners start?',
@@ -123,7 +123,7 @@ const schemaLD = JSON.stringify({
 ---
 
 <BaseLayout
-  title="Maze Guides | MazeThis"
+  title="Maze Guides | MazePuzzles.io"
   description="Maze guides for solving mazes, choosing difficulty, understanding maze types, printing maze worksheets, and finding maze activities for kids, classrooms, and seniors."
   canonical={`${siteUrl}/maze-guides`}
   schemaLD={schemaLD}
@@ -198,9 +198,9 @@ const schemaLD = JSON.stringify({
       </div>
     </section>
 
-    <!-- MazeThis Tools -->
+    <!-- MazePuzzles.io Tools -->
     <section class="mt-12">
-      <h2 class="text-xl font-bold text-arch-charcoal mb-2">MazeThis Tools</h2>
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">MazePuzzles.io Tools</h2>
       <p class="text-sm mb-6" style="color: var(--color-muted-strong);">Learn the strategies, then practice with the tool that fits what you want to do.</p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <a href="/maze-library" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">

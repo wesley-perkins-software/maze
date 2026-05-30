@@ -10,15 +10,15 @@ const mazes = getLibraryMazesByDifficulty('small');
 const allIds = mazes.map((m) => m.id);
 const firstLabel = 'Start Small #001';
 
-const BASE = 'https://mazethis.com';
+const BASE = 'https://mazepuzzles.io';
 const pageUrl = `${BASE}/maze-library/small-mazes`;
-const pageTitle = 'Small Mazes | Free Online 20×20 Maze Puzzles | MazeThis';
+const pageTitle = 'Small Mazes | Free Online 20×20 Maze Puzzles | MazePuzzles.io';
 const pageDescription = 'Play free Small Mazes online. Solve 20×20 maze puzzles, track your progress, and work through the full Small Maze collection.';
 
 const faqItems = [
   {
     q: 'What are Small Mazes?',
-    a: 'Small Mazes are 20×20 grid maze puzzles on MazeThis. Quick and approachable, they are a great starting point for new solvers and a reliable warm-up for experienced ones. The collection contains 40 puzzles, each with a unique layout.',
+    a: 'Small Mazes are 20×20 grid maze puzzles on MazePuzzles.io. Quick and approachable, they are a great starting point for new solvers and a reliable warm-up for experienced ones. The collection contains 40 puzzles, each with a unique layout.',
   },
   {
     q: 'Are these mazes free?',
@@ -141,7 +141,7 @@ const schemaLD = JSON.stringify({
 <script>
   (function () {
     try {
-      var raw = localStorage.getItem('mazethis.library.progress');
+      var raw = localStorage.getItem('mazepuzzles.library.progress');
       var ids = raw ? JSON.parse(raw)?.completedMazeIds : [];
       if (!Array.isArray(ids)) return;
       var done = new Set(ids);
