@@ -2,12 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const faqItems = [
   {
     q: 'What is the hardest type of maze?',
-    a: 'The hardest mazes combine a large grid with maximum dead-end density, long solution paths, and high branching factor at junctions. On MazeThis, Hardcore mazes are the most demanding — large grids with no extra wall removal, pure DFS structure, and solution paths that wind across nearly the entire grid.',
+    a: 'The hardest mazes combine a large grid with maximum dead-end density, long solution paths, and high branching factor at junctions. On MazePuzzles.io, Hardcore mazes are the most demanding — large grids with no extra wall removal, pure DFS structure, and solution paths that wind across nearly the entire grid.',
   },
   {
     q: 'Why are bigger mazes harder?',
@@ -30,8 +30,8 @@ const faqItems = [
     a: 'Small mazes (20×20) are the right starting point. They are quick to complete, easy to scan fully before starting, and clearly reveal how solving strategies work without the cognitive load of a larger grid. Once small mazes feel straightforward, medium mazes (40×40) are the natural next step.',
   },
   {
-    q: 'How does MazeThis set difficulty?',
-    a: 'MazeThis generates all mazes using the recursive backtracker algorithm, which produces maximum dead-end density by default. Difficulty is adjusted through grid size (larger = harder) and the amount of post-processing wall removal applied (more openings = easier). Harder difficulty levels preserve the full DFS structure with no extra openings.',
+    q: 'How does MazePuzzles.io set difficulty?',
+    a: 'MazePuzzles.io generates all mazes using the recursive backtracker algorithm, which produces maximum dead-end density by default. Difficulty is adjusted through grid size (larger = harder) and the amount of post-processing wall removal applied (more openings = easier). Harder difficulty levels preserve the full DFS structure with no extra openings.',
   },
 ];
 
@@ -45,12 +45,12 @@ const articleSchema = JSON.stringify({
   dateModified: '2024-12-05',
   author: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
   },
   publisher: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
@@ -70,7 +70,7 @@ const breadcrumbSchema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="Maze Difficulty — What Makes a Maze Hard? | MazeThis"
+  title="Maze Difficulty — What Makes a Maze Hard? | MazePuzzles.io"
   description="What makes a maze easy, hard, dense, or confusing — and how to find the right challenge level."
   canonical={`${siteUrl}/maze-guides/maze-difficulty`}
   schemaLD={[articleSchema, breadcrumbSchema]}
@@ -153,7 +153,7 @@ const breadcrumbSchema = JSON.stringify({
         A longer solution path means more junctions, more correct decisions to make, and more territory to track. In a dense maze, a long solution path winds back across the same area repeatedly — which is particularly disorienting because different sections of the correct path look similar, and it is easy to lose track of where you have already been.
       </p>
       <p class="text-sm" style="color: var(--color-muted-strong);">
-        MazeThis shows the solution step count for each maze, so you can compare the relative complexity of mazes at the same grid size before committing to one.
+        MazePuzzles.io shows the solution step count for each maze, so you can compare the relative complexity of mazes at the same grid size before committing to one.
       </p>
     </section>
 
@@ -174,11 +174,11 @@ const breadcrumbSchema = JSON.stringify({
       </div>
     </section>
 
-    <!-- Section 6: MazeThis difficulty levels -->
+    <!-- Section 6: MazePuzzles.io difficulty levels -->
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
-      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Difficulty levels on MazeThis</h2>
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Difficulty levels on MazePuzzles.io</h2>
       <p class="text-sm mb-6" style="color: var(--color-muted-strong);">
-        MazeThis generates all mazes using the recursive backtracker algorithm, which produces maximum dead-end density by default. Difficulty is calibrated through grid size and the amount of post-processing wall removal applied after generation. Harder levels preserve the full DFS structure with no extra openings.
+        MazePuzzles.io generates all mazes using the recursive backtracker algorithm, which produces maximum dead-end density by default. Difficulty is calibrated through grid size and the amount of post-processing wall removal applied after generation. Harder levels preserve the full DFS structure with no extra openings.
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[

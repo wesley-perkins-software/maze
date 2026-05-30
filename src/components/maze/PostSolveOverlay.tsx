@@ -180,7 +180,7 @@ function ShareButton({
     if (!btn) return;
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'MazeThis', text: shareText });
+        await navigator.share({ title: 'MazePuzzles.io', text: shareText });
       } else {
         await navigator.clipboard.writeText(shareText);
         const orig = btn.textContent ?? '';
@@ -255,7 +255,7 @@ export function PostSolveOverlay({
     : '/maze-of-the-day';
 
   const shareText = isDailyMode
-    ? `I solved today's MazeThis Maze of the Day in ${formatTimeFull(elapsedMs)}.\n\nCan you solve it?\n${dailyShareUrl}`
+    ? `I solved today's MazePuzzles.io Maze of the Day in ${formatTimeFull(elapsedMs)}.\n\nCan you solve it?\n${dailyShareUrl}`
     : onNewMaze && mazeWidth && mazeHeight
     ? `I solved a ${mazeWidth}×${mazeHeight} maze in ${formatTimeFull(elapsedMs)}${stepCount > 0 ? ` and ${stepCount} steps` : ''}. Try making your own maze: ${generatorUrl}`
     : `I just solved a maze! Try it: ${typeof window !== 'undefined' ? window.location.href : ''}`;

@@ -1,6 +1,6 @@
 import type { Difficulty } from '../../types/maze.js';
 
-const LIBRARY_PROGRESS_KEY = 'mazethis.library.progress';
+const LIBRARY_PROGRESS_KEY = 'mazepuzzles.library.progress';
 const LIBRARY_PROGRESS_VERSION = 1;
 
 interface LibraryProgress {

@@ -579,7 +579,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
   const loadInProgressSession = (): InProgressSession | null => {
     try {
-      const raw = localStorage.getItem('mazethis.dailyMaze.activeSession');
+      const raw = localStorage.getItem('mazepuzzles.dailyMaze.activeSession');
       if (!raw) return null;
       const s = JSON.parse(raw) as Record<string, unknown>;
       if (
@@ -732,7 +732,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
     if (action === 'daily-restart-confirm') {
       // User confirmed — clear progress and navigate to start fresh.
-      try { localStorage.removeItem('mazethis.dailyMaze.activeSession'); } catch { /* ignore */ }
+      try { localStorage.removeItem('mazepuzzles.dailyMaze.activeSession'); } catch { /* ignore */ }
       window.location.href = dailyPlayPath;
       return;
     }

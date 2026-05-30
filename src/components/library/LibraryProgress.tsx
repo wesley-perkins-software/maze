@@ -3,7 +3,7 @@
  * localStorage and renders a live progress summary.
  *
  * PR 2: renders static totals only (shows 0 / N until PR 4 wires markLibraryMazeComplete).
- * PR 4: will read completedMazeIds from mazethis.library.progress and update counts.
+ * PR 4: will read completedMazeIds from mazepuzzles.library.progress and update counts.
  */
 import { useState, useEffect } from 'react';
 import { getLibraryProgress } from '../../lib/library/progress';

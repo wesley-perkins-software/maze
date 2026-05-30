@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { MazeGenerator } from '../components/maze/MazeGenerator';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const faqItems = [
   {
@@ -69,7 +69,7 @@ const schema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="Free Maze Generator — Create Custom Mazes Online | MazeThis"
+  title="Free Maze Generator — Create Custom Mazes Online | MazePuzzles.io"
   description="Free online maze generator — no account needed. Choose a size from 20×20 to 100×100, play in your browser with arrow keys, download as SVG, or print. New unique maze every time."
   schemaLD={schema}
 >

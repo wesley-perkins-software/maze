@@ -3,7 +3,7 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  site: 'https://mazethis.com',
+  site: 'https://mazepuzzles.io',
   output: 'static',
   integrations: [
     react(),

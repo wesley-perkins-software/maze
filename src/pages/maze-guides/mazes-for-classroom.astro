@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const faqItems = [
   {
@@ -23,7 +23,7 @@ const faqItems = [
   },
   {
     q: 'Are there mazes that work on a whiteboard or projector?',
-    a: 'The MazeThis interactive maze generator produces mazes playable directly in the browser. Project the maze on a whiteboard, and students can suggest moves while one student navigates — a useful format for strategy discussions and whole-class problem-solving.',
+    a: 'The MazePuzzles.io interactive maze generator produces mazes playable directly in the browser. Project the maze on a whiteboard, and students can suggest moves while one student navigates — a useful format for strategy discussions and whole-class problem-solving.',
   },
   {
     q: 'Do mazes work for homeschool settings?',
@@ -31,7 +31,7 @@ const faqItems = [
   },
   {
     q: 'Where do I find printable mazes for the classroom?',
-    a: 'The MazeThis maze library has printable maze worksheets organized by size. All print cleanly on standard 8.5×11 paper with no account, download limit, or DRM. The maze generator lets you create a custom size on demand.',
+    a: 'The MazePuzzles.io maze library has printable maze worksheets organized by size. All print cleanly on standard 8.5×11 paper with no account, download limit, or DRM. The maze generator lets you create a custom size on demand.',
   },
 ];
 
@@ -43,10 +43,10 @@ const articleSchema = JSON.stringify({
   url: `${siteUrl}/maze-guides/mazes-for-classroom`,
   datePublished: '2024-11-15',
   dateModified: '2024-11-15',
-  author: { '@type': 'Organization', name: 'MazeThis', url: siteUrl },
+  author: { '@type': 'Organization', name: 'MazePuzzles.io', url: siteUrl },
   publisher: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
@@ -66,7 +66,7 @@ const breadcrumbSchema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="Mazes for the Classroom — Teacher's Guide to Maze Activities | MazeThis"
+  title="Mazes for the Classroom — Teacher's Guide to Maze Activities | MazePuzzles.io"
   description="Practical ideas for using printable maze puzzles in K–8 classrooms — warm-ups, fine motor practice, math enrichment, critical thinking, and more."
   canonical={`${siteUrl}/maze-guides/mazes-for-classroom`}
   schemaLD={[articleSchema, breadcrumbSchema]}

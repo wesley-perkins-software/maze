@@ -85,28 +85,28 @@ const schemaLD = JSON.stringify({
   '@graph': [
     {
       '@type': 'CollectionPage',
-      '@id': 'https://mazethis.com/maze-library',
-      url: 'https://mazethis.com/maze-library',
-      name: 'Free Online Maze Library - Complete Maze Collections | MazeThis',
+      '@id': 'https://mazepuzzles.io/maze-library',
+      url: 'https://mazepuzzles.io/maze-library',
+      name: 'Free Online Maze Library - Complete Maze Collections | MazePuzzles.io',
       description:
-        'Play Maze Library collections online, track your progress, and work toward completing every maze in the MazeThis Maze Library.',
-      isPartOf: { '@id': 'https://mazethis.com/#website' },
-      breadcrumb: { '@id': 'https://mazethis.com/maze-library#breadcrumb' },
+        'Play Maze Library collections online, track your progress, and work toward completing every maze in the MazePuzzles.io Maze Library.',
+      isPartOf: { '@id': 'https://mazepuzzles.io/#website' },
+      breadcrumb: { '@id': 'https://mazepuzzles.io/maze-library#breadcrumb' },
       about: {
         '@type': 'Dataset',
-        name: 'MazeThis Maze Library',
+        name: 'MazePuzzles.io Maze Library',
         description:
           `A curated collection of ${totalCount} free online maze puzzles across five sizes: ${tierCounts.small} Small (20×20), ${tierCounts.medium} Medium (40×40), ${tierCounts.large} Large (60×60), ${tierCounts.expert} Expert (80×80), and ${tierCounts.hardcore} Hardcore (100×100).`,
-        url: 'https://mazethis.com/maze-library',
-        publisher: { '@type': 'Organization', name: 'MazeThis', url: 'https://mazethis.com' },
+        url: 'https://mazepuzzles.io/maze-library',
+        publisher: { '@type': 'Organization', name: 'MazePuzzles.io', url: 'https://mazepuzzles.io' },
       },
     },
     {
       '@type': 'BreadcrumbList',
-      '@id': 'https://mazethis.com/maze-library#breadcrumb',
+      '@id': 'https://mazepuzzles.io/maze-library#breadcrumb',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://mazethis.com/' },
-        { '@type': 'ListItem', position: 2, name: 'Maze Library', item: 'https://mazethis.com/maze-library' },
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://mazepuzzles.io/' },
+        { '@type': 'ListItem', position: 2, name: 'Maze Library', item: 'https://mazepuzzles.io/maze-library' },
       ],
     },
     {
@@ -122,8 +122,8 @@ const schemaLD = JSON.stringify({
 ---
 
 <BaseLayout
-  title="Free Online Maze Library - Complete Maze Collections | MazeThis"
-  description="Play Maze Library collections online, track your progress, and work toward completing every maze in the MazeThis Maze Library."
+  title="Free Online Maze Library - Complete Maze Collections | MazePuzzles.io"
+  description="Play Maze Library collections online, track your progress, and work toward completing every maze in the MazePuzzles.io Maze Library."
   schemaLD={schemaLD}
 >
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
@@ -335,7 +335,7 @@ const schemaLD = JSON.stringify({
 <script>
   (function () {
     try {
-      var raw = localStorage.getItem('mazethis.library.progress');
+      var raw = localStorage.getItem('mazepuzzles.library.progress');
       var parsed = raw ? JSON.parse(raw) : null;
       var ids = Array.isArray(parsed && parsed.completedMazeIds) ? parsed.completedMazeIds : [];
       var done = new Set(ids);

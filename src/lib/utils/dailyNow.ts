@@ -3,7 +3,7 @@ function isDailyOverrideAllowed(): boolean {
   if (typeof window === 'undefined') return false;
   const host = window.location.hostname.toLowerCase();
   if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]') return true;
-  if (host === 'mazethis.com' || host === 'www.mazethis.com') return false;
+  if (host === 'mazepuzzles.io' || host === 'www.mazepuzzles.io') return false;
   return host.endsWith('.netlify.app');
 }
 

@@ -3,11 +3,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 import { DailyMazePlayer } from '../../components/daily/DailyMazePlayer';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
-const title = 'Maze of the Day - Free Daily Maze Puzzle | MazeThis';
+const title = 'Maze of the Day - Free Daily Maze Puzzle | MazePuzzles.io';
 const description =
-  'Play the MazeThis Maze of the Day: a new free daily maze puzzle you can solve online. Challenge yourself, use hints, and come back tomorrow for a fresh maze.';
+  'Play the MazePuzzles.io Maze of the Day: a new free daily maze puzzle you can solve online. Challenge yourself, use hints, and come back tomorrow for a fresh maze.';
 const canonical = `${siteUrl}/maze-of-the-day/`;
 
 const faqs = [
@@ -57,7 +57,7 @@ const schemaLD = JSON.stringify({
       name: 'Maze of the Day',
       description,
       url: canonical,
-      isPartOf: { '@type': 'WebSite', name: 'MazeThis', url: siteUrl },
+      isPartOf: { '@type': 'WebSite', name: 'MazePuzzles.io', url: siteUrl },
       about: {
         '@type': 'Game',
         name: 'Maze of the Day',

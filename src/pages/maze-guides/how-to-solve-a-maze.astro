@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/nav/Breadcrumb.astro';
 
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 
 const faqItems = [
   {
@@ -31,7 +31,7 @@ const faqItems = [
   },
   {
     q: 'Can I practice with printable mazes?',
-    a: 'Yes. Printable mazes are ideal for practicing dead-end filling and wall-following because you can mark paths with a pencil. Generate free printable maze worksheets at mazethis.com/printable-mazes — choose your size, generate, and print.',
+    a: 'Yes. Printable mazes are ideal for practicing dead-end filling and wall-following because you can mark paths with a pencil. Generate free printable maze worksheets at mazepuzzles.io/printable-mazes — choose your size, generate, and print.',
   },
 ];
 
@@ -45,12 +45,12 @@ const articleSchema = JSON.stringify({
   dateModified: '2024-11-20',
   author: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
   },
   publisher: {
     '@type': 'Organization',
-    name: 'MazeThis',
+    name: 'MazePuzzles.io',
     url: siteUrl,
     logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
   },
@@ -70,7 +70,7 @@ const breadcrumbSchema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="How to Solve a Maze: Strategies for Every Level | MazeThis"
+  title="How to Solve a Maze: Strategies for Every Level | MazePuzzles.io"
   description="Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles."
   canonical={`${siteUrl}/maze-guides/how-to-solve-a-maze`}
   schemaLD={[articleSchema, breadcrumbSchema]}
@@ -180,7 +180,7 @@ const breadcrumbSchema = JSON.stringify({
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">Use the minimap and hints when playing online</h2>
       <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
-        When playing mazes on MazeThis, the interface includes two tools that make strategy more visible:
+        When playing mazes on MazePuzzles.io, the interface includes two tools that make strategy more visible:
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="card rounded-lg p-4">

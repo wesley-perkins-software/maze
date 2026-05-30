@@ -13,7 +13,7 @@ export interface Props {
 }
 
 const { title, canonical } = Astro.props;
-const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
 ---
 
 <!doctype html>
@@ -41,7 +41,7 @@ const siteUrl = import.meta.env.SITE || 'https://mazethis.com';
   </head>
   <body>
     <div class="print-header no-print">
-      <a href="/">MazeThis</a>
+      <a href="/">MazePuzzles.io</a>
       <span>
         <a href={canonical} class="no-print" style="color:#2563eb;text-decoration:none;font-size:0.85rem;">← Back to maze</a>
         &nbsp;&nbsp;

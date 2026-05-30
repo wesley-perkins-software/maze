@@ -103,7 +103,7 @@ export const CATEGORIES: CategoryInfo[] = [
     difficulty: 'small',
     slug: 'maze-library/small-mazes',
     label: 'Small Mazes',
-    title: 'Small Mazes — 40 Free Maze Puzzles to Play Online | MazeThis',
+    title: 'Small Mazes — 40 Free Maze Puzzles to Play Online | MazePuzzles.io',
     description:
       'Play 40 free small maze puzzles online. Quick, approachable challenges on a 20×20 grid. Track your progress and complete the collection.',
     h1: 'Small Mazes',
@@ -113,7 +113,7 @@ export const CATEGORIES: CategoryInfo[] = [
     difficulty: 'medium',
     slug: 'maze-library/medium-mazes',
     label: 'Medium Mazes',
-    title: 'Medium Mazes — 40 Free Maze Puzzles to Play Online | MazeThis',
+    title: 'Medium Mazes — 40 Free Maze Puzzles to Play Online | MazePuzzles.io',
     description:
       'Play 40 free medium maze puzzles online. Real branching paths and decision points on a 40×40 grid. Track your progress and complete the collection.',
     h1: 'Medium Mazes',
@@ -123,7 +123,7 @@ export const CATEGORIES: CategoryInfo[] = [
     difficulty: 'large',
     slug: 'maze-library/large-mazes',
     label: 'Large Mazes',
-    title: 'Large Mazes — 40 Free Maze Puzzles to Play Online | MazeThis',
+    title: 'Large Mazes — 40 Free Maze Puzzles to Play Online | MazePuzzles.io',
     description:
       'Play 40 free large maze puzzles online. Dense labyrinths on a 60×60 grid that are genuinely easy to get lost in. Complete the full collection.',
     h1: 'Large Mazes',
@@ -133,7 +133,7 @@ export const CATEGORIES: CategoryInfo[] = [
     difficulty: 'expert',
     slug: 'maze-library/expert-mazes',
     label: 'Expert Mazes',
-    title: 'Expert Mazes — 25 Hard Maze Puzzles to Play Online | MazeThis',
+    title: 'Expert Mazes — 25 Hard Maze Puzzles to Play Online | MazePuzzles.io',
     description:
       'Play 25 free expert maze puzzles online. Long corridors and deep branching on an 80×80 grid. A serious challenge for experienced solvers.',
     h1: 'Expert Mazes',
@@ -143,9 +143,9 @@ export const CATEGORIES: CategoryInfo[] = [
     difficulty: 'hardcore',
     slug: 'maze-library/hardcore-mazes',
     label: 'Hardcore Mazes',
-    title: 'Hardcore Mazes — 15 Extreme Maze Puzzles to Play Online | MazeThis',
+    title: 'Hardcore Mazes — 15 Extreme Maze Puzzles to Play Online | MazePuzzles.io',
     description:
-      'Play 15 free hardcore maze puzzles online. Extreme 100×100 labyrinths — the hardest mazes in the MazeThis collection. For committed solvers only.',
+      'Play 15 free hardcore maze puzzles online. Extreme 100×100 labyrinths — the hardest mazes in the MazePuzzles.io collection. For committed solvers only.',
     h1: 'Hardcore Mazes',
     teaser: 'The largest puzzles in the Maze Library — 100×100 grids for committed solvers.',
   },

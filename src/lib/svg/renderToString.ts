@@ -131,7 +131,7 @@ export function renderMazeToSVGString(maze: MazeData, opts: RenderOptions = {}):
 
   return `<svg xmlns="http://www.w3.org/2000/svg"${sizeAttrs} viewBox="0 0 ${totalW} ${totalH}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${escapeAttr(label)}">
   <title>${title}</title>
-  <desc>A printable ${label}. Print or solve online at MazeThis.</desc>
+  <desc>A printable ${label}. Print or solve online at MazePuzzles.io.</desc>
   <rect width="${totalW}" height="${totalH}" fill="${o.bgColor}"/>
   ${solutionPath}
   <path d="${wallSegments.join(' ')}" stroke="${o.wallColor}" stroke-width="${wallThickness}" stroke-linecap="square" fill="none"/>
