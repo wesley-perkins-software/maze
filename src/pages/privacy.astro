@@ -2,94 +2,183 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/nav/Breadcrumb.astro';
 
-const updated = 'January 1, 2025';
+const effectiveDate = 'May 30, 2026';
 ---
 
 <BaseLayout
   title="Privacy Policy | MazePuzzles.io"
-  description="MazePuzzles.io privacy policy — how we handle your data, what we collect, and your rights."
+  description="Learn how MazePuzzles.io handles browser storage, cookies, analytics, advertising, and information related to playing, generating, and printing mazes."
 >
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
+
     <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }]} />
 
-    <div class="mt-4 mb-8">
-      <h1 class="mb-2">Privacy Policy</h1>
-      <p class="text-slate-500 text-sm">Last updated: {updated}</p>
+    <!-- Hero -->
+    <div class="mt-6 mb-10">
+      <p
+        class="text-xs uppercase tracking-widest mb-3"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
+      >Privacy</p>
+      <h1
+        class="font-display text-5xl sm:text-6xl uppercase leading-none mb-4"
+        style="color: var(--color-charcoal);"
+      >Privacy Policy</h1>
+      <p class="text-base leading-relaxed mb-2" style="color: var(--color-charcoal);">
+        This Privacy Policy explains how MazePuzzles.io handles information when you use the site.
+      </p>
+      <p class="text-base leading-relaxed mb-2" style="color: var(--color-charcoal);">
+        MazePuzzles.io does not require an account to play, generate, or print mazes.
+      </p>
+      <p
+        class="text-sm mt-3"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+      >Effective date: {effectiveDate}</p>
     </div>
 
-    <div class="prose prose-slate max-w-none prose-headings:font-bold prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-p:text-slate-600 prose-p:leading-relaxed prose-ul:text-slate-600 prose-li:mb-1">
+    <!-- Sections -->
+    <div
+      class="border-t space-y-10 pt-8"
+      style="border-color: var(--color-border);"
+    >
 
-      <p>
-        MazePuzzles.io ("we," "us," or "our") is committed to protecting your privacy. This Privacy Policy
-        explains what information we collect, how we use it, and your rights with respect to that information.
-      </p>
+      <section aria-labelledby="pp-info-provide">
+        <h2
+          id="pp-info-provide"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >1. Information you provide</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          MazePuzzles.io currently does not require users to create accounts. If you contact us
+          directly in the future, we may receive the information you choose to send, such as your
+          email address and message.
+        </p>
+      </section>
 
-      <h2>Information We Collect</h2>
-      <p>MazePuzzles.io is a static website. We do not require accounts or sign-ups. The information we collect is limited to:</p>
-      <ul>
-        <li>
-          <strong>Usage analytics:</strong> We may collect anonymized data about pages visited, browser type,
-          and general geographic region (country-level) to understand how the site is used and improve it.
-          No personally identifiable information is collected for this purpose.
-        </li>
-        <li>
-          <strong>Local storage:</strong> MazePuzzles.io uses your browser's local storage to save your preferences
-          (such as dark mode preference) and game state (such as personal best times). This data never
-          leaves your device and is not transmitted to our servers.
-        </li>
-        <li>
-          <strong>Server logs:</strong> Our hosting provider (Netlify) automatically records standard server
-          access logs (IP address, timestamp, URL requested). These are used for security, diagnostics,
-          and uptime monitoring. We do not use these logs for marketing or tracking.
-        </li>
-      </ul>
+      <section aria-labelledby="pp-device-storage">
+        <h2
+          id="pp-device-storage"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >2. Information stored on your device</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          Some MazePuzzles.io features save progress, streaks, or preferences in your browser
+          using local storage or similar browser storage. This helps the site remember maze progress
+          on the same device. If you clear your browser data, this saved progress may be removed.
+        </p>
+      </section>
 
-      <h2>Cookies</h2>
-      <p>
-        MazePuzzles.io does not use tracking cookies or third-party advertising cookies. We may use
-        a single session cookie to support site functionality. No cross-site tracking occurs.
-      </p>
+      <section aria-labelledby="pp-auto-collected">
+        <h2
+          id="pp-auto-collected"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >3. Automatically collected information</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          Like most websites, MazePuzzles.io may receive basic technical information such as
+          browser type, device type, pages visited, approximate usage information, and error or
+          security information through hosting, analytics, or security tools. This information
+          helps operate and improve the site.
+        </p>
+      </section>
 
-      <h2>Third-Party Services</h2>
-      <p>We may use the following third-party services:</p>
-      <ul>
-        <li><strong>Netlify</strong> (hosting): Processes server requests. Subject to Netlify's own privacy policy.</li>
-      </ul>
-      <p>We do not use Google Analytics, Meta Pixel, or any advertising networks.</p>
+      <section aria-labelledby="pp-cookies-ads">
+        <h2
+          id="pp-cookies-ads"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >4. Cookies and advertising</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          MazePuzzles.io may use cookies or similar technologies for site functionality, analytics,
+          and advertising. If ads are shown, third-party advertising partners may use cookies or
+          similar technologies to show, personalize, and measure ads. You can control cookies
+          through your browser settings.
+        </p>
+      </section>
 
-      <h2>Children's Privacy</h2>
-      <p>
-        MazePuzzles.io is intended to be safe for all ages, including children. We do not knowingly collect
-        personal information from children under 13. If you believe a child has provided us with personal
-        information, please contact us and we will promptly delete it.
-      </p>
+      <section aria-labelledby="pp-how-used">
+        <h2
+          id="pp-how-used"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >5. How information is used</h2>
+        <p class="text-base leading-relaxed mb-3" style="color: var(--color-charcoal);">
+          Information may be used to:
+        </p>
+        <ul class="list-disc pl-5 space-y-1 text-base" style="color: var(--color-charcoal);">
+          <li>operate and improve the site</li>
+          <li>save local progress, streaks, and preferences</li>
+          <li>understand general site usage</li>
+          <li>prevent abuse or technical issues</li>
+          <li>respond to messages if a contact method exists</li>
+        </ul>
+      </section>
 
-      <h2>Data Retention and Deletion</h2>
-      <p>
-        Because we collect minimal data and no personally identifiable information, there is no personal
-        data to delete. Data stored in your browser's local storage can be cleared at any time through
-        your browser settings.
-      </p>
+      <section aria-labelledby="pp-how-shared">
+        <h2
+          id="pp-how-shared"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >6. How information is shared</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          MazePuzzles.io does not sell user accounts because accounts are not required. Information
+          may be processed by service providers that help host, operate, analyze, secure, or monetize
+          the site. These providers process information according to their own terms and privacy practices.
+        </p>
+      </section>
 
-      <h2>Your Rights</h2>
-      <p>
-        You have the right to know what data we hold about you, to request deletion, and to opt out
-        of any analytics collection. Since we collect only anonymized usage data, there is no
-        personally identifiable information to request or delete.
-      </p>
+      <section aria-labelledby="pp-children">
+        <h2
+          id="pp-children"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >7. Children and classrooms</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          MazePuzzles.io is designed to be usable by families, teachers, and students. The site does
+          not require children to create accounts. Parents, guardians, and teachers should supervise
+          internet use as appropriate.
+        </p>
+      </section>
 
-      <h2>Changes to This Policy</h2>
-      <p>
-        We may update this Privacy Policy from time to time. We will update the "Last updated" date
-        at the top of this page when we do so. Continued use of MazePuzzles.io after changes constitutes
-        acceptance of the updated policy.
-      </p>
+      <section aria-labelledby="pp-your-choices">
+        <h2
+          id="pp-your-choices"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >8. Your choices</h2>
+        <p class="text-base leading-relaxed mb-3" style="color: var(--color-charcoal);">
+          You can:
+        </p>
+        <ul class="list-disc pl-5 space-y-1 text-base" style="color: var(--color-charcoal);">
+          <li>use the site without creating an account</li>
+          <li>clear browser storage to remove locally saved progress, streaks, and preferences</li>
+          <li>adjust browser cookie settings</li>
+          <li>contact us if a contact method is provided</li>
+        </ul>
+      </section>
 
-      <h2>Contact</h2>
-      <p>
-        If you have questions about this Privacy Policy, please visit our
-        <a href="/about">About page</a>.
-      </p>
+      <section aria-labelledby="pp-changes">
+        <h2
+          id="pp-changes"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >9. Changes to this policy</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          We may update this Privacy Policy from time to time. The updated version will be posted
+          on this page with a new effective date.
+        </p>
+      </section>
+
+      <section aria-labelledby="pp-contact">
+        <h2
+          id="pp-contact"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >10. Contact</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          Contact information will be added when a support address is selected.
+        </p>
+      </section>
+
     </div>
   </div>
 </BaseLayout>
