@@ -206,9 +206,6 @@
 [context.production.environment]
   SITE_URL = "https://mazepuzzles.io"
 
-[context.deploy-preview.environment]
-  SITE_URL = "https://deploy-preview--mazethis.netlify.app"
-
 [[headers]]
   for = "/_astro/*"
   [headers.values]

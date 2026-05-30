@@ -3,4 +3,4 @@ Allow: /
 
 Disallow: /mazes/*/print
 
-Sitemap: https://mazepuzzles.io/sitemap-index.xml
+Sitemap: https://mazepuzzles.io/sitemap.xml
