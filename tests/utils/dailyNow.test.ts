@@ -36,7 +36,7 @@ describe('getDailyNow — no override', () => {
     expect(result.getTime()).toBeLessThanOrEqual(after);
   });
 
-  // Note: the production hostname guard (mazethis.com / www.mazethis.com) relies on
+  // Note: the production hostname guard (mazepuzzles.io / www.mazepuzzles.io) relies on
   // import.meta.env.DEV being false, which is always true in Vitest. That guard is
   // verified at runtime; the unit tests below cover the allowed-host code paths.
 });
@@ -56,7 +56,7 @@ describe('getDailyNow — override allowed (localhost)', () => {
   });
 
   it('returns the parsed override date on a Netlify preview hostname', () => {
-    stubLocation('?dailyNow=2026-05-21T12:00:00', 'deploy-preview-42--mazethis.netlify.app');
+    stubLocation('?dailyNow=2026-05-21T12:00:00', 'deploy-preview-42--mazepuzzles.netlify.app');
     const result = getDailyNow();
     expect(result.toISOString()).toBe('2026-05-21T12:00:00.000Z');
   });
