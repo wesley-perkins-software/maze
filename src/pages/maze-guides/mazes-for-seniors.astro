@@ -1,0 +1,233 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const faqItems = [
+  {
+    q: 'Are mazes good for brain health in older adults?',
+    a: 'Maze puzzles engage working memory, sustained attention, visuospatial processing, and cognitive flexibility simultaneously. That cross-domain activation is more cognitively demanding than single-domain activities like word search. Regular engagement with spatial puzzles has been associated with slower decline in these same functions in healthy aging research.',
+  },
+  {
+    q: 'What size maze is right for a senior just starting out?',
+    a: 'A 20×20 small maze is a reasonable starting point for most healthy adults. If that feels too easy within a few sessions, move to 40×40. If it feels overwhelming, try generating a smaller custom size. The goal is a maze that takes 5–15 minutes and ends with a satisfying completion.',
+  },
+  {
+    q: 'Do printed mazes or digital mazes work better for seniors?',
+    a: 'Both formats have advantages. Printed mazes offer fine motor engagement (pencil tracing) and the satisfaction of a physical artifact. Digital mazes on MazePuzzles.io allow instant solution reveals when stuck and require no printing. Many seniors find value in alternating: print for focused sessions, digital for convenience.',
+  },
+  {
+    q: 'Can mazes help with Alzheimer\'s or dementia?',
+    a: 'Maze solving engages the hippocampus and entorhinal cortex — areas that support spatial memory and are notably vulnerable in Alzheimer\'s disease. While no activity prevents dementia, regular engagement of these neural circuits supports their health in the same way physical exercise supports cardiovascular health.',
+  },
+  {
+    q: 'How often should seniors do maze puzzles?',
+    a: 'Short, consistent sessions are more beneficial than occasional long ones. Five to ten minutes of maze-solving per day delivers more cognitive benefit than an hour once a week. Building maze time into an existing routine — morning coffee, after lunch — makes the habit sustainable.',
+  },
+  {
+    q: 'Are mazes useful in occupational therapy?',
+    a: 'Yes. Occupational therapists use maze tasks to assess and support visual scanning, planning, and fine motor control in older adult populations. Maze completion reveals a patient\'s approach to spatial problem-solving, and regular practice can maintain each of these capacities.',
+  },
+  {
+    q: 'Can I do mazes with a partner or group?',
+    a: 'Group maze-solving compounds the cognitive benefit with social engagement. Sharing strategies, gently disagreeing about which path to take, and celebrating completions together are all positive social interactions that mazes naturally support. Both print and on-screen formats work well for pairs.',
+  },
+];
+
+const articleSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Mazes for Seniors',
+  description: 'How maze puzzles support cognitive health in older adults — working memory, attention, spatial reasoning, and mood — and how to choose the right difficulty.',
+  url: `${siteUrl}/maze-guides/mazes-for-seniors`,
+  datePublished: '2024-11-10',
+  dateModified: '2024-11-10',
+  author: { '@type': 'Organization', name: 'MazePuzzles.io', url: siteUrl },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon-96x96.png` },
+  },
+  isPartOf: { '@id': `${siteUrl}/maze-guides` },
+  isAccessibleForFree: true,
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
+    { '@type': 'ListItem', position: 3, name: 'Mazes for Seniors' },
+  ],
+});
+---
+
+<BaseLayout
+  title="Mazes for Seniors — Cognitive Benefits & How to Get Started | MazePuzzles.io"
+  description="How maze puzzles support cognitive health in older adults — working memory, attention, spatial reasoning, and mood — and how to choose the right difficulty."
+  canonical={`${siteUrl}/maze-guides/mazes-for-seniors`}
+  schemaLD={[articleSchema, breadcrumbSchema]}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'Mazes for Seniors' },
+    ]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">Audiences</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">Mazes for Seniors</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        How maze puzzles support cognitive health in older adults — working memory, attention, spatial reasoning, and mood — and how to choose the right difficulty.
+      </p>
+    </div>
+
+    <!-- Why mazes -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Why mazes for cognitive health</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The brain is not static. Even in later life, it retains significant plasticity — the ability to form new connections and adapt to new challenges. Regular mental activity is one of the most accessible ways to support this ongoing neurological health.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Maze puzzles occupy a particularly valuable position in the landscape of brain exercises. Unlike word puzzles (which primarily engage language regions) or number puzzles (which activate mathematical processing), mazes engage spatial reasoning, working memory, planning, and visual attention simultaneously. That cross-domain activation is part of what makes them genuinely demanding, and genuinely useful.
+      </p>
+    </section>
+
+    <!-- Cognitive benefits -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-5">Cognitive benefits</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          {
+            title: 'Working memory',
+            body: 'Solving a maze requires holding information about where you\'ve been, where you are now, and where you might go next — a classic working memory task. Regular spatial problem-solving has been associated with slower working memory decline in studies of healthy aging.',
+          },
+          {
+            title: 'Sustained attention',
+            body: 'Navigating a maze requires maintaining focus on a specific goal while ignoring the visual noise of all the other corridors. Brief daily puzzle sessions have been linked to improved sustained attention in older adults, with effects that appear to transfer to other tasks.',
+          },
+          {
+            title: 'Visuospatial processing',
+            body: 'Maze navigation activates the hippocampus (spatial memory), parietal cortex (spatial processing), and entorhinal cortex (cognitive mapping) — the same systems used for real-world navigation. The hippocampus is notably vulnerable in Alzheimer\'s disease, making its regular engagement a matter of genuine preventive interest.',
+          },
+          {
+            title: 'Cognitive flexibility',
+            body: 'When a path dead-ends, the solver must abandon that strategy and shift to an alternative. This cognitive flexibility — the ability to recognize when an approach has failed and try something different — declines with age in the absence of exercise. Activities that regularly require strategy switching help maintain this capacity.',
+          },
+        ].map(({ title, body }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{title}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Mood -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Mood and sense of accomplishment</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The psychological benefits of puzzle-solving are as real as the cognitive ones. Completing a puzzle — no matter its size — produces a genuine sense of accomplishment. For older adults who may face reduced sources of mastery and achievement in daily life, regular puzzle completion is a meaningful mood support.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Group maze-solving compounds this effect by adding a social dimension. Sharing strategies, gently disagreeing about which corridor to take, and celebrating completions together are positive interactions that mazes naturally support. Both printed and on-screen formats work well for pairs or small groups.
+      </p>
+    </section>
+
+    <!-- Occupational therapy -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Mazes and occupational therapy</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Occupational therapists have long used maze tasks as both assessment tools and therapeutic activities for older adults. Maze completion reveals a patient's visual scanning patterns, planning ability, and fine motor control — and regular maze practice can support each of these.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        In fine motor contexts, hand-tracing a printed maze provides controlled pencil practice that supports hand strength and coordination. For seniors managing arthritis or tremor, the focused, deliberate movements required to stay within maze boundaries can be a gentle and motivating exercise.
+      </p>
+    </section>
+
+    <!-- Choosing difficulty -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Choosing the right difficulty</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The goal is productive challenge: a maze that requires genuine effort but delivers the satisfaction of completion. Too easy produces boredom; too hard produces frustration without payoff.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        {[
+          { label: 'New to puzzles', detail: 'Start with small mazes (20×20). Solvable in 5–15 minutes. Clear success signal.' },
+          { label: 'Comfortable solver', detail: 'Medium mazes (40×40). More dead ends, longer solution path, higher working memory demand.' },
+          { label: 'Active enthusiast', detail: 'Large mazes (60×60) and beyond. Challenging even for experienced solvers.' },
+        ].map(({ label, detail }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{detail}</p>
+          </div>
+        ))}
+      </div>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Progress gradually. When a maze can be completed comfortably in under 5 minutes, move up one size. There is no rush — the cognitive benefit comes from the effort, not the speed.
+      </p>
+    </section>
+
+    <!-- Print vs digital -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Print vs. digital</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Both formats have real advantages. Printed mazes offer fine motor engagement — pencil tracing within narrow corridors requires sustained grip and controlled movement — and the satisfaction of a completed physical artifact. Many solvers find that marking dead ends with an X and recording the correct path by hand is more cognitively engaging than moving a cursor on screen.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Digital mazes on MazePuzzles.io offer instant solution reveals when a solver gets stuck, require no printing, and work on tablets and phones with on-screen directional controls. For solvers who find precise pencil control difficult, the digital format removes that barrier entirely. Many seniors find value in alternating between the two.
+      </p>
+    </section>
+
+    <!-- Building a habit -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Building a habit</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Like physical exercise, cognitive exercise benefits most from consistency. Five to ten minutes of maze-solving per day is more valuable than an hour once a week. The brain responds to regular, repeated engagement rather than occasional intensity.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        The easiest way to make it consistent is to attach it to an existing routine: morning coffee, after lunch, or before bed. Keep a printed stack on the table or bookmark a maze page on your device. The lower the friction, the more likely the habit will stick.
+      </p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Start solving today</h2>
+      <p class="text-sm text-arch-600 mb-5">Browse the maze library, print a worksheet, or solve a maze directly in your browser — all free.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library"    class="btn-secondary">Maze Library</a>
+        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
+        <a href="/maze-generator"  class="btn-secondary">Maze Generator</a>
+      </div>
+    </section>
+
+    <div class="mt-10 text-center">
+      <a
+        href="/maze-guides"
+        class="text-sm transition-colors"
+        style="color: var(--color-muted-strong);"
+        onmouseover="this.style.color='var(--color-charcoal)'"
+        onmouseout="this.style.color='var(--color-muted-strong)'"
+      >← All guides</a>
+    </div>
+
+  </div>
+</BaseLayout>

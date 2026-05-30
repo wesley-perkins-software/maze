@@ -1,0 +1,249 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const faqItems = [
+  {
+    q: 'What is a daily maze challenge?',
+    a: 'A daily maze challenge is a single new maze puzzle available each day. The maze refreshes at midnight, so every day brings a different layout to solve. MazePuzzles.io offers a free daily maze at mazepuzzles.io/maze-of-the-day — no account required.',
+  },
+  {
+    q: 'Is the Maze of the Day free?',
+    a: 'Yes. The Maze of the Day is completely free to play. No account, no subscription, and no in-app purchases are required.',
+  },
+  {
+    q: 'When does the daily maze change?',
+    a: "The daily maze resets at midnight in your local time. Once the new day begins, a fresh puzzle is available. You can still finish yesterday's maze if you started it, but the featured puzzle will be the new one.",
+  },
+  {
+    q: 'Is the daily maze the same every time I reload?',
+    a: 'Yes. Everyone sees the same maze on a given calendar day, and reloading the page does not generate a new one. The maze only changes when the day changes.',
+  },
+  {
+    q: 'Can I play the daily maze on mobile?',
+    a: 'Yes. The Maze of the Day works on phones and tablets. You can navigate using swipe gestures or on-screen controls.',
+  },
+  {
+    q: 'Does daily maze progress save?',
+    a: 'Yes, where supported. If you start the maze and come back later on the same device and browser, your position is saved automatically. Clearing your browser data will remove that saved progress.',
+  },
+  {
+    q: 'What should I play after today\'s maze?',
+    a: 'The Maze Library has collections of ready-to-play mazes across five size tiers — Small through Hardcore. You can pick up a collection and work through it at your own pace. The Maze Generator lets you create a custom maze any time.',
+  },
+];
+
+const articleSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Daily Maze Challenge: Build a Maze-Solving Habit',
+  description: 'How a daily maze challenge works, why a short daily puzzle habit is worth building, and where to play the free Maze of the Day.',
+  url: `${siteUrl}/maze-guides/daily-maze-challenge`,
+  datePublished: '2025-05-29',
+  dateModified: '2025-05-29',
+  author: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon-96x96.png` },
+  },
+  isPartOf: { '@id': `${siteUrl}/maze-guides` },
+  isAccessibleForFree: true,
+});
+
+const faqSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
+    { '@type': 'ListItem', position: 3, name: 'Daily Maze Challenge' },
+  ],
+});
+---
+
+<BaseLayout
+  title="Daily Maze Challenge: Build a Maze-Solving Habit | MazePuzzles.io"
+  description="How a daily maze challenge works, why a short daily puzzle habit is worth building, and where to play the free Maze of the Day."
+  canonical={`${siteUrl}/maze-guides/daily-maze-challenge`}
+  schemaLD={[articleSchema, faqSchema, breadcrumbSchema]}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'Daily Maze Challenge' },
+    ]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">Daily Play</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">Daily Maze Challenge: Build a Maze-Solving Habit</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        How a daily maze challenge works, why a short daily puzzle habit is worth building, and where to play.
+      </p>
+    </div>
+
+    <!-- Section 1: What is a daily maze challenge -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">What is a daily maze challenge?</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        A daily maze challenge is a simple format: one new maze puzzle becomes available each day, and it resets the next morning. You solve today's maze, come back tomorrow for a different one. That's it.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The appeal is the constraint. Because there is only one maze per day — the same maze for everyone — solving it carries a small shared quality. You are not picking from a library or generating something custom. You are solving today's puzzle.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Daily puzzle formats work across a wide range of games and activities. The structure creates a natural anchor for a short daily habit: open, solve, done.
+      </p>
+    </section>
+
+    <!-- Section 2: How the Maze of the Day works -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">How the Maze of the Day works</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        MazePuzzles.io has a free daily maze at <a href="/maze-of-the-day" class="text-arch-accent underline">mazepuzzles.io/maze-of-the-day</a>. A new maze is generated each day — no two days share the same layout. The puzzle is the same for every player on that date.
+      </p>
+      <ol class="space-y-3 mb-4">
+        {[
+          { label: 'Open today\'s maze', note: 'Visit the Maze of the Day page. The current puzzle is ready immediately, no setup required.' },
+          { label: 'Solve at your own pace', note: 'Navigate using keyboard arrows, WASD, or swipe gestures. There is no time limit.' },
+          { label: 'Share your result', note: 'After solving, you can share your completion time with the post-solve result.' },
+        ].map(({ label, note }, i) => (
+          <li class="flex gap-4">
+            <span class="shrink-0 w-6 h-6 rounded-full bg-arch-accent text-white text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+            <span class="text-sm" style="color: var(--color-muted-strong);"><strong class="text-arch-charcoal">{label}:</strong> {note}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        The maze resets at midnight. If you start a puzzle and do not finish it, your progress is saved automatically on the same device and browser, so you can return and complete it.
+      </p>
+    </section>
+
+    <!-- Section 3: Why play a daily maze -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Why play a daily maze?</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        A daily maze is one of the lower-friction puzzle habits available. Most sessions take a few minutes, the rules are simple, and there is no penalty for taking longer or needing to think through a dead end.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        {[
+          { label: 'Short sessions', desc: 'Most daily mazes take a few minutes. It fits into a commute, a coffee break, or the start of a morning routine.' },
+          { label: 'Low setup', desc: 'No account needed. Open the page, play the maze. There are no tutorials or onboarding steps.' },
+          { label: 'Same challenge for everyone', desc: 'Because the maze is the same for all players on a given day, you can compare notes or share your result.' },
+          { label: 'A clear stopping point', desc: 'Finishing the maze is a natural ending. There is no pressure to continue to the next level or unlock anything.' },
+        ].map(({ label, desc }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+          </div>
+        ))}
+      </div>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Maze-solving requires spatial reasoning and systematic thinking — noticing dead ends, backtracking deliberately, and keeping track of tried paths. A short daily session is a reasonable way to practice those skills in a low-stakes setting.
+      </p>
+    </section>
+
+    <!-- Section 4: How progress works -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">How progress works</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        When you play the Maze of the Day, your position and elapsed time are saved in your browser automatically. If you close the tab and return on the same device and browser, you will pick up where you left off.
+      </p>
+      <div class="card rounded-lg p-4 mb-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">What gets saved</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">
+          Your current position in the maze, your elapsed time, and your trail are saved locally. No account is needed. Progress is stored in your browser and is only available on the same device and browser where you played.
+        </p>
+      </div>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Clearing your browser's local storage or using a different device will start a fresh session. Once you complete the daily maze, a completion marker is saved so the page shows your result when you return.
+      </p>
+    </section>
+
+    <!-- Section 5: Sharing your result -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Sharing your result</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        After solving the daily maze, a post-solve result shows your completion time and step count. You can share this result using the Share Result button, which opens your device's share sheet or copies the text to your clipboard.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Because the maze is the same for everyone on a given day, your result is directly comparable. Sharing after completion — with your actual time — is more interesting than sharing a link before you have played.
+      </p>
+    </section>
+
+    <!-- Section 6: What to play after -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">What to play after the daily maze</h2>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        Once you have finished today's puzzle, a few options are available on MazePuzzles.io.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { href: '/maze-library', label: 'Maze Library', desc: 'Ready-to-play collections across five size tiers. Pick a collection and track your progress through it.' },
+          { href: '/maze-generator', label: 'Maze Generator', desc: 'Generate a custom maze of any size on demand. Play online, print it, or share it.' },
+          { href: '/printable-mazes', label: 'Printable Mazes', desc: 'Generate clean maze worksheets to print, with an optional answer key page.' },
+        ].map(({ href, label, desc }) => (
+          <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
+            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+            <span class="text-sm font-medium mt-2 text-arch-accent">Go →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready for today's challenge?</h2>
+      <p class="text-sm text-arch-600 mb-5">Play the Maze of the Day, then come back tomorrow for a fresh puzzle.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-of-the-day" class="btn-secondary">Play Today's Maze</a>
+        <a href="/maze-library" class="btn-secondary">Browse Maze Library</a>
+      </div>
+    </section>
+
+    <!-- Back link -->
+    <div class="mt-10 text-center">
+      <a
+        href="/maze-guides"
+        class="text-sm transition-colors"
+        style="color: var(--color-muted-strong);"
+        onmouseover="this.style.color='var(--color-charcoal)'"
+        onmouseout="this.style.color='var(--color-muted-strong)'"
+      >← All guides</a>
+    </div>
+
+  </div>
+</BaseLayout>

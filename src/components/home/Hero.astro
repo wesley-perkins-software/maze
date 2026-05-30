@@ -1,0 +1,789 @@
+---
+import HeroMazePreview from './HeroMazePreview.jsx';
+---
+
+<section
+  class="relative overflow-hidden"
+  style="background-color: var(--color-bg); border-bottom: 1px solid var(--color-border);"
+  aria-labelledby="hero-heading"
+>
+  <div class="absolute inset-0 architect-dot-grid pointer-events-none" aria-hidden="true"></div>
+
+  <!-- ─── MOBILE: poster overlay layout ─────────────────────────────────── -->
+  <!--
+    min-height fills the viewport below the sticky header (h-14 = 3.5rem).
+    flex-col lets the content area grow to fill remaining space, so the
+    next section never awkwardly peeks above the fold.
+  -->
+  <div class="hero-mobile-root md:hidden flex flex-col">
+
+    <!-- Dateline above the poster — mirrors the desktop caption -->
+    <p
+      id="hero-date-label-mobile"
+      data-hero-date
+      class="hero-date-label-mobile uppercase text-center"
+      aria-live="polite"
+    >TODAY'S MAZE</p>
+
+    <!-- Full-width maze with headline overlaid -->
+    <div class="hero-maze-poster">
+      <!-- Maze at confident opacity — it IS the product -->
+      <div class="hero-maze-wrap" style="opacity: 0.60;">
+        <HeroMazePreview client:only="react" className="hero-maze-preview-mobile" />
+      </div>
+
+      <!--
+        Scrim: elliptical cream shape, taller at the vertical center where
+        the headline lives. Strong enough to feel "printed on" without
+        washing out the outer maze.
+      -->
+      <div class="hero-scrim" aria-hidden="true"></div>
+
+      <!--
+        Headline: absolutely fills the poster, flexed to center, but
+        padding-bottom shifts the visual center ~10% upward for better
+        composition and breathing room toward the bottom edge.
+      -->
+      <a
+        href="/play/maze-of-the-day/"
+        class="hero-headline-link"
+        aria-label="Play today's maze"
+        tabindex="-1"
+      >
+        <h1
+          id="hero-heading"
+          class="font-display uppercase text-center"
+          style="font-size: clamp(2.9rem, 14.5vw, 5rem); line-height: 0.86; color: var(--color-charcoal); pointer-events: none;"
+        >
+          CAN YOU<br />SOLVE<br /><span style="color: var(--color-accent);">TODAY'S</span><br />MAZE?
+        </h1>
+      </a>
+    </div>
+
+    <!-- Below-poster: daily state + CTA + secondary links -->
+    <div class="hero-mobile-content">
+
+      <!-- Daily state — two lines, prominent but not larger than the CTA -->
+      <div id="hero-daily-status-mobile" class="hero-status-block">
+        <p class="hero-status-line1">
+          <span style="color: var(--color-accent);">●</span>&thinsp;Ready now
+        </p>
+        <p class="hero-status-line2">Today's maze is waiting.</p>
+      </div>
+
+      <!-- Primary CTA — full-width, subtle tactile depth -->
+      <a
+        id="hero-play-cta"
+        href="/play/maze-of-the-day/"
+        class="hero-cta-primary btn-primary w-full justify-center text-sm px-7 py-4 inline-flex items-center gap-2"
+      >
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+        Play Today's Maze
+      </a>
+
+      <!-- Secondary CTA slot — shown for in-progress (Restart) and completed (Share) states -->
+      <div id="hero-cta-secondary-mobile"></div>
+
+      <!-- Secondary links — clearly links, clearly secondary, 44px tap targets -->
+      <div id="hero-sec-group-mobile" class="hero-sec-group-mobile">
+        <a href="/maze-library" class="hero-sec-link">Browse Maze Library</a>
+        <a href="/maze-generator" class="hero-sec-link">Create a Maze</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── DESKTOP: split editorial layout ───────────────────────────────── -->
+  <div class="hidden md:block relative">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-2 pb-6 lg:pt-4 lg:pb-8">
+      <div class="grid grid-cols-[1fr_540px] lg:grid-cols-[1fr_580px] gap-10 lg:gap-14 items-start">
+
+        <!-- Left: headline + daily state + CTA + secondary links -->
+        <div class="flex flex-col items-start">
+          <h1
+            class="font-display uppercase mb-4"
+            style="font-size: clamp(3.5rem, 9vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
+          >
+            Can You<br />Solve<br /><span style="color: var(--color-accent);">Today's</span><br />Maze?
+          </h1>
+
+          <!-- Daily state — prominent, between headline and CTA -->
+          <div id="hero-daily-status-desktop" class="hero-status-block mb-4">
+            <p class="hero-status-line1">
+              <span style="color: var(--color-accent);">●</span>&thinsp;Ready now
+            </p>
+            <p class="hero-status-line2">Today's maze is waiting.</p>
+          </div>
+
+          <!-- Primary CTA -->
+          <a
+            id="hero-cta-desktop"
+            href="/play/maze-of-the-day/"
+            class="hero-cta-primary btn-primary text-sm px-8 py-4 mb-3 inline-flex items-center gap-2"
+          >
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            Play Today's Maze
+          </a>
+
+          <!-- Secondary CTA slot — shown for in-progress (Restart) and completed (Share) states -->
+          <div id="hero-cta-secondary-desktop"></div>
+
+          <!-- Secondary links — horizontal row on desktop -->
+          <div id="hero-sec-group-desktop" class="hero-sec-group-desktop">
+            <a href="/maze-library" class="hero-sec-link">Browse Maze Library</a>
+            <a href="/maze-generator" class="hero-sec-link">Create a Maze</a>
+          </div>
+        </div>
+
+        <!-- Right: maze preview with corner-bracket frame -->
+        <div class="pt-1">
+          <p
+            id="hero-date-label"
+            data-hero-date
+            class="hero-date-label-desktop uppercase text-center mb-3"
+            style="font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.12em;"
+            aria-live="polite"
+          >TODAY'S MAZE</p>
+          <div class="relative">
+            <!-- Corner brackets — 3px border weight so they register as intentional -->
+            <div class="absolute -top-2 -left-2 w-6 h-6 z-10" style="border-top: 3px solid var(--color-charcoal); border-left: 3px solid var(--color-charcoal);"></div>
+            <div class="absolute -top-2 -right-2 w-6 h-6 z-10" style="border-top: 3px solid var(--color-charcoal); border-right: 3px solid var(--color-charcoal);"></div>
+            <div class="absolute -bottom-2 -left-2 w-6 h-6 z-10" style="border-bottom: 3px solid var(--color-charcoal); border-left: 3px solid var(--color-charcoal);"></div>
+            <div class="absolute -bottom-2 -right-2 w-6 h-6 z-10" style="border-bottom: 3px solid var(--color-charcoal); border-right: 3px solid var(--color-charcoal);"></div>
+            <a
+              href="/play/maze-of-the-day/"
+              class="block w-full group overflow-hidden cursor-pointer"
+              style="border: 1px solid var(--color-border-strong); background-color: var(--color-surface); aspect-ratio: 1;"
+              aria-label="Play today's maze"
+              tabindex="-1"
+            >
+              <div class="hero-maze-wrap maze-fill-square w-full h-full transition-transform duration-500 group-hover:scale-[1.02]">
+                <HeroMazePreview client:only="react" className="hero-maze-preview-desktop" />
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── SVG scaling ────────────────────────────────────────────────────────── */
+  .maze-fill-width :global(svg)  { width: 100%; height: auto;  display: block; }
+  .maze-fill-square :global(svg) { width: 100%; height: 100%;  display: block; }
+
+  /* Hero maze preview islands — must use :global() to reach inside React islands */
+  .hero-maze-preview-mobile :global(svg)  { width: 100%; height: auto;  display: block; }
+  .hero-maze-preview-desktop :global(svg) { width: 100%; height: 100%; display: block; }
+
+  /*
+    Mobile root: display/flex-direction live as Tailwind classes (flex flex-col)
+    so md:hidden can override display without specificity conflict.
+    No forced min-height — the natural height of poster + content is enough
+    on any real phone, and letting the next section peek slightly reads as
+    intentional scroll invitation rather than a dead zone.
+  */
+  .hero-mobile-root {
+    /* intentionally no min-height */
+  }
+
+  /* ── Mobile dateline — print caption above the poster ──────────────────── */
+  .hero-date-label-mobile {
+    font-family:    'IBM Plex Mono', monospace;
+    font-size:      1.0625rem; /* 17px — bumped for readability */
+    font-weight:    600;
+    color:          #000; /* true black in light mode */
+    letter-spacing: 0.12em;
+    padding:        0.625rem 1rem 0.5rem;
+  }
+
+  /* ── Desktop dateline — caption above the maze preview ─────────────────── */
+  .hero-date-label-desktop {
+    font-size:   1.25rem; /* 20px — bumped from text-base for readability */
+    font-weight: 600;
+    color:       #000; /* true black in light mode */
+  }
+
+  /* Dark mode: revert to the themed near-white so the caption stays legible */
+  :global(.dark) .hero-date-label-mobile,
+  :global(.dark) .hero-date-label-desktop {
+    color: var(--color-charcoal);
+  }
+
+  /* ── Mobile maze poster ─────────────────────────────────────────────────── */
+  .hero-maze-poster {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: var(--color-surface);
+    /* Thin print-rule frame above and below the maze image */
+    border-top:    1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border-strong);
+    /* Maintain 1:1 aspect ratio before the React island hydrates */
+    aspect-ratio: 1;
+  }
+
+  /*
+    Scrim: radial ellipse centered on the headline position.
+    Fades cream around the text for readability without washing out the
+    maze edges or bottom — the maze stays visible on all sides.
+    The center `at 50% 45%` tracks the headline's padding-bottom position.
+  */
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 78% 56% at 50% 45%,
+      rgba(246, 245, 240, 0.90)  0%,
+      rgba(246, 245, 240, 0.68) 38%,
+      rgba(246, 245, 240, 0.34) 62%,
+      transparent               88%
+    );
+  }
+
+  /*
+    Headline overlay: fills the poster, flexed to center.
+    padding-bottom shifts the visual center upward from 50%.
+    At 10%, the headline sits at ~45% from the top — slightly above
+    dead-center, giving breathing room without feeling too high.
+  */
+  .hero-headline-link {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 10%;
+    /* no text-decoration — it's a layout link, the heading is the content */
+  }
+
+  /* ── Mobile content: natural height, centered to match poster composition ── */
+  .hero-mobile-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.25rem 1rem 1.75rem;
+  }
+
+  /* ── Daily status block — bordered tile so it reads as product state ──── */
+  .hero-status-block {
+    width:            100%;
+    margin-bottom:    0.75rem;
+    padding:          0.5rem 0.875rem;
+    background-color: var(--color-surface);
+    border:           1px solid var(--color-border);
+    border-left:      3px solid var(--color-accent);
+  }
+  /* Desktop: don't stretch to full column — shrink to content width */
+  @media (min-width: 768px) {
+    .hero-status-block {
+      width: auto;
+    }
+  }
+  .hero-status-line1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size:   0.9375rem; /* 15px */
+    font-weight: 600;
+    color:       var(--color-charcoal);
+    line-height: 1.3;
+  }
+  .hero-status-line2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size:   0.8125rem; /* 13px */
+    color:       var(--color-charcoal);
+    margin-top:  0.2rem;
+    line-height: 1.4;
+  }
+
+  /* ── Primary CTA: subtle tactile bottom-edge depth ──────────────────────── */
+  /*
+    box-shadow creates a 2px dark bottom ledge — like a rubber stamp.
+    Active state "presses" it down by 2px and removes the shadow.
+  */
+  .hero-cta-primary {
+    box-shadow: 0 2px 0 0 var(--color-accent-dark);
+    margin-bottom: 0.75rem;
+  }
+  .hero-cta-primary:active {
+    transform:  translateY(2px);
+    box-shadow: none;
+  }
+
+  /* ── Secondary links — compact bordered chips ───────────────────────────── */
+  /*
+    Small auto-width buttons with a thin 1px border. Clearly tappable due to
+    the visible border, clearly subordinate to the red CTA due to small size,
+    muted color, and no fill. Not the old full-width bordered buttons.
+  */
+  .hero-sec-link {
+    display:         inline-flex;
+    align-items:     center;
+    font-family:     'IBM Plex Mono', monospace;
+    font-size:       0.9375rem; /* 15px — solid secondary button presence */
+    font-weight:     600;
+    color:           var(--color-charcoal);
+    text-decoration: none;
+    cursor:          pointer;
+    border:          2px solid var(--color-charcoal);
+    padding:         0.625rem 1.25rem;
+    white-space:     nowrap;
+    transition:      background-color 120ms ease, color 120ms ease;
+  }
+  .hero-sec-link:hover {
+    background-color: var(--color-charcoal);
+    color:            var(--color-bg);
+  }
+  .hero-sec-link:focus-visible {
+    outline:        2px solid var(--color-charcoal);
+    outline-offset: 2px;
+  }
+
+  /* Mobile: side-by-side chips with 44px tap zone via padding trick */
+  .hero-sec-group-mobile {
+    display:     flex;
+    flex-wrap:   wrap;
+    gap:         0.625rem;
+    padding-top: 1.25rem;
+  }
+  .hero-sec-group-mobile .hero-sec-link {
+    padding: 0.75rem 1.25rem; /* taller padding = solid 44px tap target */
+  }
+
+  /* Desktop: same chip style, compact horizontal row */
+  .hero-sec-group-desktop {
+    display:        flex;
+    flex-direction: row;
+    gap:            0.625rem;
+    align-items:    center;
+    margin-top:     0.5rem;
+  }
+
+  /*
+    Secondary action buttons injected via innerHTML bypass Astro scoping.
+    :global() ensures hover/focus pseudo-classes apply correctly.
+  */
+
+  /* Share Result (completed state) — chip style matching hero-sec-link */
+  :global(.hero-daily-secondary-btn) {
+    display:      inline-flex;
+    align-items:  center;
+    font-family:  'IBM Plex Mono', monospace;
+    font-size:    0.75rem;
+    color:        var(--color-muted-strong);
+    background:   none;
+    cursor:       pointer;
+    border:       1px solid var(--color-border-strong);
+    padding:      0.4rem 0.875rem;
+    white-space:  nowrap;
+    transition:   color 120ms ease, border-color 120ms ease;
+  }
+  :global(.hero-daily-secondary-btn:hover) {
+    color:        var(--color-charcoal);
+    border-color: var(--color-charcoal);
+  }
+  :global(.hero-daily-secondary-btn:focus-visible) {
+    outline:        2px solid var(--color-charcoal);
+    outline-offset: 2px;
+  }
+  @media (max-width: 767px) {
+    :global(.hero-daily-secondary-btn) { padding: 0.7rem 0.875rem; }
+  }
+
+  /* Solved-state action row — two equal-weight chips injected via innerHTML */
+  :global(.hero-solved-links) {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       0.625rem;
+    width:     100%;
+  }
+  :global(.hero-solved-link) {
+    display:         inline-flex;
+    align-items:     center;
+    font-family:     'IBM Plex Mono', monospace;
+    font-size:       0.75rem;
+    font-weight:     400;
+    color:           var(--color-charcoal);
+    text-decoration: none;
+    cursor:          pointer;
+    border:          1px solid var(--color-border-strong);
+    padding:         0.7rem 0.875rem;
+    white-space:     nowrap;
+    transition:      color 120ms ease, border-color 120ms ease;
+  }
+  :global(.hero-solved-link:hover) {
+    border-color: var(--color-charcoal);
+  }
+  :global(.hero-solved-link:focus-visible) {
+    outline:        2px solid var(--color-charcoal);
+    outline-offset: 2px;
+  }
+  @media (min-width: 768px) {
+    :global(.hero-solved-links) { width: auto; }
+    :global(.hero-solved-link)  { padding: 0.4rem 0.875rem; }
+  }
+
+  /* "Restart today's maze" — outlined secondary, real control, clearly quieter than Resume */
+  :global(.hero-daily-restart-btn) {
+    display:         flex;
+    width:           100%;
+    align-items:     center;
+    justify-content: center;
+    font-family:     'IBM Plex Mono', monospace;
+    font-size:       0.8125rem;
+    font-weight:     400;
+    color:           var(--color-muted-strong);
+    background:      transparent;
+    border:          1px solid var(--color-border-strong);
+    padding:         0.6875rem 1.5rem;
+    cursor:          pointer;
+    transition:      color 120ms ease, border-color 120ms ease;
+  }
+  :global(.hero-daily-restart-btn:hover) {
+    color:        var(--color-charcoal);
+    border-color: var(--color-charcoal);
+  }
+  :global(.hero-daily-restart-btn:focus-visible) {
+    outline:        2px solid var(--color-charcoal);
+    outline-offset: 2px;
+  }
+  @media (min-width: 768px) {
+    :global(.hero-daily-restart-btn) {
+      display: inline-flex;
+      width:   auto;
+      padding: 0.5rem 1.25rem;
+    }
+  }
+
+  /* ── Restart confirmation panel ─────────────────────────────────────────── */
+  :global(.hero-daily-confirm) {
+    width:            100%;
+    padding:          0.875rem 1rem;
+    background-color: var(--color-surface);
+    border:           1px solid var(--color-border);
+    border-left:      3px solid var(--color-accent);
+    margin-bottom:    0.375rem;
+  }
+  :global(.hero-daily-confirm-title) {
+    font-family:  'IBM Plex Mono', monospace;
+    font-size:    0.875rem;
+    font-weight:  600;
+    color:        var(--color-charcoal);
+    line-height:  1.4;
+    margin-bottom: 0.2rem;
+  }
+  :global(.hero-daily-confirm-body) {
+    font-family:  'IBM Plex Mono', monospace;
+    font-size:    0.8125rem;
+    color:        var(--color-muted-strong);
+    line-height:  1.4;
+    margin-bottom: 0.75rem;
+  }
+  :global(.hero-daily-confirm-actions) {
+    display: flex;
+    gap:     0.5rem;
+  }
+  :global(.hero-daily-confirm-cancel),
+  :global(.hero-daily-confirm-restart) {
+    flex:        1;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size:   0.8125rem;
+    font-weight: 600;
+    padding:     0.625rem 0.875rem;
+    cursor:      pointer;
+    border:      1px solid transparent;
+    transition:  background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+    white-space: nowrap;
+  }
+  /* Cancel — ghost, neutral */
+  :global(.hero-daily-confirm-cancel) {
+    color:        var(--color-muted-strong);
+    background:   none;
+    border-color: var(--color-border-strong);
+  }
+  :global(.hero-daily-confirm-cancel:hover) {
+    color:        var(--color-charcoal);
+    border-color: var(--color-charcoal);
+  }
+  /* Restart — red outline, clearly destructive but doesn't compete with the solid red Resume */
+  :global(.hero-daily-confirm-restart) {
+    color:        var(--color-accent);
+    background:   transparent;
+    border-color: var(--color-accent);
+  }
+  :global(.hero-daily-confirm-restart:hover) {
+    background-color: var(--color-accent);
+    color:            var(--color-bg);
+  }
+  :global(.hero-daily-confirm-cancel:focus-visible),
+  :global(.hero-daily-confirm-restart:focus-visible) {
+    outline:        2px solid var(--color-charcoal);
+    outline-offset: 2px;
+  }
+
+  /* ── Dark mode: invert maze to blueprint, swap scrim to dark center ─────── */
+  :global(.dark) .hero-maze-wrap {
+    filter: invert(1) brightness(0.75);
+  }
+  :global(.dark) .hero-scrim {
+    background: radial-gradient(
+      ellipse 78% 56% at 50% 45%,
+      rgba(0, 0, 0, 0.65)  0%,
+      rgba(0, 0, 0, 0.38) 42%,
+      rgba(0, 0, 0, 0.12) 65%,
+      transparent          85%
+    );
+  }
+
+</style>
+
+<script>
+  import { getDailyNow } from '../../lib/utils/dailyNow';
+  import { getLocalDateString } from '../../lib/maze/dailyMaze';
+  import { getMsUntilLocalMidnight, formatCountdown } from '../../lib/utils/countdown';
+
+  const qs = new URLSearchParams(window.location.search);
+  const dailyTestEnabled = qs.get('dailyTestMaze') === '1';
+  const dailyNowParam = qs.get('dailyNow');
+
+  // Build paths forwarding all active test params.
+  const buildTestSearch = (): string => {
+    const parts: string[] = [];
+    if (dailyTestEnabled) parts.push('testMaze=1');
+    if (dailyNowParam) parts.push(`dailyNow=${encodeURIComponent(dailyNowParam)}`);
+    return parts.length ? '?' + parts.join('&') : '';
+  };
+  const testSearch = buildTestSearch();
+  const dailyPlayPath = `/play/maze-of-the-day/${testSearch}`;
+  const dailyPagePath = `/maze-of-the-day/${testSearch}`;
+
+  // Preserve test params in hero links so they survive navigation.
+  for (const anchor of document.querySelectorAll<HTMLAnchorElement>('a[href="/play/maze-of-the-day/"]')) {
+    anchor.href = dailyPlayPath;
+  }
+  for (const anchor of document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-of-the-day/"]')) {
+    anchor.href = dailyPagePath;
+  }
+
+  // ── Session detection ────────────────────────────────────────────────────────
+  interface InProgressSession {
+    progress: { steps: number; elapsedMs: number };
+  }
+
+  const loadInProgressSession = (): InProgressSession | null => {
+    try {
+      const raw = localStorage.getItem('mazepuzzles.dailyMaze.activeSession');
+      if (!raw) return null;
+      const s = JSON.parse(raw) as Record<string, unknown>;
+      if (
+        s['version'] !== 1 ||
+        s['mode'] !== 'daily' ||
+        s['localDate'] !== getLocalDateString(getDailyNow()) ||
+        s['generatorVersion'] !== 1 ||
+        !s['maze'] ||
+        !s['progress']
+      ) return null;
+      return s as unknown as InProgressSession;
+    } catch {
+      return null;
+    }
+  };
+
+  type DailyState =
+    | { type: 'not-started' }
+    | { type: 'in-progress'; session: InProgressSession }
+    | { type: 'completed' };
+
+  const detectState = (): DailyState => {
+    const today = getLocalDateString(getDailyNow());
+    if (localStorage.getItem(`daily_completed_${today}`) === 'true') {
+      return { type: 'completed' };
+    }
+    const session = loadInProgressSession();
+    const steps = (session?.progress.steps ?? 0) as number;
+    if (session && steps > 0) {
+      return { type: 'in-progress', session };
+    }
+    return { type: 'not-started' };
+  };
+
+  // ── Status block rendering ───────────────────────────────────────────────────
+  const renderStatus = (state: DailyState): string => {
+    const monoBase = `font-family:'IBM Plex Mono',monospace;`;
+    const line1Style = `${monoBase}font-size:0.9375rem;font-weight:600;color:var(--color-charcoal);line-height:1.3;`;
+    const line2Style = `${monoBase}font-size:0.8125rem;color:var(--color-charcoal);margin-top:0.2rem;line-height:1.4;`;
+    const accentStyle = `color:var(--color-accent);`;
+
+    if (state.type === 'not-started') {
+      return `<p style="${line1Style}"><span style="${accentStyle}">●</span>&thinsp;Ready now</p>`
+           + `<p style="${line2Style}">Today's maze is waiting.</p>`;
+    }
+
+    if (state.type === 'in-progress') {
+      return `<p style="${line1Style}">In progress</p>`
+           + `<p style="${line2Style}">Continue today's maze.</p>`;
+    }
+
+    // completed
+    const cd = formatCountdown(getMsUntilLocalMidnight(getDailyNow()));
+    return `<p style="${line1Style}"><span style="${accentStyle}">✓</span>&thinsp;Solved today</p>`
+         + `<p style="${line2Style}">New maze in <span style="font-variant-numeric:tabular-nums;">${cd}</span></p>`;
+  };
+
+  // ── CTA rendering ────────────────────────────────────────────────────────────
+  const PLAY_ICON = `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
+
+  // "Restart today's maze" — ghost secondary button, full-width on mobile.
+  const restartLinkHtml = (): string =>
+    `<button type="button" class="hero-daily-restart-btn" data-action="daily-restart">Restart today's maze</button>`;
+
+  // Inline confirmation panel replacing the restart button when tapped.
+  const restartConfirmHtml = (): string =>
+    `<div class="hero-daily-confirm">`
+    + `<p class="hero-daily-confirm-title">Restart today's maze?</p>`
+    + `<p class="hero-daily-confirm-body">Your current progress will be lost.</p>`
+    + `<div class="hero-daily-confirm-actions">`
+    + `<button type="button" class="hero-daily-confirm-cancel" data-action="daily-restart-cancel">Cancel</button>`
+    + `<button type="button" class="hero-daily-confirm-restart" data-action="daily-restart-confirm">Restart</button>`
+    + `</div></div>`;
+
+  const updateCta = (
+    state: DailyState,
+    mobileLink: HTMLAnchorElement,
+    desktopLink: HTMLAnchorElement,
+    mobileSecEl: HTMLElement,
+    desktopSecEl: HTMLElement,
+  ): void => {
+    const mobileSecGroupEl  = document.getElementById('hero-sec-group-mobile');
+    const desktopSecGroupEl = document.getElementById('hero-sec-group-desktop');
+
+    if (state.type === 'not-started') {
+      mobileLink.style.display  = '';
+      desktopLink.style.display = '';
+      mobileLink.href = dailyPlayPath;
+      mobileLink.innerHTML = `${PLAY_ICON} Play Today's Maze`;
+      desktopLink.href = dailyPlayPath;
+      desktopLink.innerHTML = `${PLAY_ICON} Play Today's Maze`;
+      mobileSecEl.innerHTML = '';
+      desktopSecEl.innerHTML = '';
+      if (mobileSecGroupEl)  mobileSecGroupEl.style.display  = '';
+      if (desktopSecGroupEl) desktopSecGroupEl.style.display = '';
+    } else if (state.type === 'in-progress') {
+      mobileLink.style.display  = '';
+      desktopLink.style.display = '';
+      mobileLink.href = dailyPlayPath;
+      mobileLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
+      desktopLink.href = dailyPlayPath;
+      desktopLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
+      const link = restartLinkHtml();
+      mobileSecEl.innerHTML = link;
+      desktopSecEl.innerHTML = link;
+      if (mobileSecGroupEl)  mobileSecGroupEl.style.display  = '';
+      if (desktopSecGroupEl) desktopSecGroupEl.style.display = '';
+    } else {
+      // completed — hide primary CTA and static sec group; inject equal-weight chips
+      mobileLink.style.display  = 'none';
+      desktopLink.style.display = 'none';
+      if (mobileSecGroupEl)  mobileSecGroupEl.style.display  = 'none';
+      if (desktopSecGroupEl) desktopSecGroupEl.style.display = 'none';
+      const solvedLinks =
+        `<div class="hero-solved-links">`
+        + `<a href="/maze-generator" class="hero-solved-link">Create a Maze</a>`
+        + `<a href="/maze-library" class="hero-solved-link">Browse Maze Library</a>`
+        + `</div>`;
+      mobileSecEl.innerHTML  = solvedLinks;
+      desktopSecEl.innerHTML = solvedLinks;
+    }
+
+    // Keep the sticky CTA href in sync.
+    const stickyCta = document.querySelector<HTMLAnchorElement>('#sticky-cta a');
+    if (stickyCta) {
+      stickyCta.href = dailyPlayPath;
+    }
+  };
+
+  // ── Event delegation for injected buttons ────────────────────────────────────
+  document.addEventListener('click', async (e: MouseEvent) => {
+    const target = e.target as Element | null;
+    const action = (target?.closest('[data-action]') as HTMLElement | null)?.dataset['action'];
+
+    if (action === 'daily-restart') {
+      // Show inline confirmation instead of immediately clearing progress.
+      const html = restartConfirmHtml();
+      if (mobileSecEl) mobileSecEl.innerHTML = html;
+      if (desktopSecEl) desktopSecEl.innerHTML = html;
+      return;
+    }
+
+    if (action === 'daily-restart-cancel') {
+      // Restore the quiet restart link; preserve progress.
+      const link = restartLinkHtml();
+      if (mobileSecEl) mobileSecEl.innerHTML = link;
+      if (desktopSecEl) desktopSecEl.innerHTML = link;
+      return;
+    }
+
+    if (action === 'daily-restart-confirm') {
+      // User confirmed — clear progress and navigate to start fresh.
+      try { localStorage.removeItem('mazepuzzles.dailyMaze.activeSession'); } catch { /* ignore */ }
+      window.location.href = dailyPlayPath;
+      return;
+    }
+
+  });
+
+  // ── Main update loop ─────────────────────────────────────────────────────────
+  const desktopStatusEl = document.getElementById('hero-daily-status-desktop');
+  const mobileStatusEl  = document.getElementById('hero-daily-status-mobile');
+  const mobileLinkEl    = document.getElementById('hero-play-cta') as HTMLAnchorElement | null;
+  const desktopLinkEl   = document.getElementById('hero-cta-desktop') as HTMLAnchorElement | null;
+  const mobileSecEl     = document.getElementById('hero-cta-secondary-mobile');
+  const desktopSecEl    = document.getElementById('hero-cta-secondary-desktop');
+
+  let prevStateType: string | null = null;
+
+  const updateAll = (): void => {
+    const state = detectState();
+    const stateChanged = state.type !== prevStateType;
+
+    // Status block: always re-render when completed so countdown ticks; on transition otherwise.
+    if (stateChanged || state.type === 'completed') {
+      const statusHtml = renderStatus(state);
+      if (desktopStatusEl) desktopStatusEl.innerHTML = statusHtml;
+      if (mobileStatusEl)  mobileStatusEl.innerHTML  = statusHtml;
+    }
+
+    // CTA elements: only update on state kind transition (not every countdown tick).
+    if (stateChanged) {
+      if (mobileLinkEl && desktopLinkEl && mobileSecEl && desktopSecEl) {
+        updateCta(state, mobileLinkEl, desktopLinkEl, mobileSecEl, desktopSecEl);
+      }
+      prevStateType = state.type;
+    }
+  };
+
+  updateAll();
+
+  // Date label above the maze preview (desktop caption + mobile dateline)
+  const now = getDailyNow();
+  const month = now.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+  const day = now.getDate();
+  const dateLabel = `TODAY'S MAZE · ${month} ${day}`;
+  document.querySelectorAll('[data-hero-date]').forEach((el) => {
+    el.textContent = dateLabel;
+  });
+
+  const timer = window.setInterval(updateAll, 1000);
+  window.addEventListener('storage', updateAll);
+  window.addEventListener('beforeunload', () => {
+    clearInterval(timer);
+    window.removeEventListener('storage', updateAll);
+  });
+</script>

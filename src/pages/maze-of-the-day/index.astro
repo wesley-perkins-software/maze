@@ -1,0 +1,275 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+import { DailyMazePlayer } from '../../components/daily/DailyMazePlayer';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const title = 'Maze of the Day - Free Daily Maze Puzzle | MazePuzzles.io';
+const description =
+  'Play the MazePuzzles.io Maze of the Day: a new free daily maze puzzle you can solve online. Challenge yourself, use hints, and come back tomorrow for a fresh maze.';
+const canonical = `${siteUrl}/maze-of-the-day/`;
+
+const faqs = [
+  {
+    q: 'What is the Maze of the Day?',
+    a: 'The Maze of the Day is a free daily maze puzzle. A new challenge is available every day — just open the page and play. No account or sign-up is required.',
+  },
+  {
+    q: 'When does the Maze of the Day change?',
+    a: 'The daily maze changes at midnight based on your local calendar date. When the clock passes midnight where you are, a fresh maze is ready.',
+  },
+  {
+    q: 'Is the Maze of the Day free?',
+    a: 'Yes. The Maze of the Day is completely free to play online. No account, no sign-up, and no payment is required.',
+  },
+  {
+    q: 'Can I play the maze online?',
+    a: 'Yes. The daily maze is designed for online play in your browser. Use the arrow keys or WASD on desktop, or swipe in any direction on mobile and tablet. An on-screen D-pad is also available.',
+  },
+  {
+    q: 'Does my progress save?',
+    a: 'Yes. Your progress is saved automatically on this device. If you leave and come back later on the same day, you can resume from where you left off.',
+  },
+  {
+    q: 'Can I use hints?',
+    a: 'Yes. Hints are available while playing. You can also reveal the full solution at any time. There is no penalty for using hints.',
+  },
+  {
+    q: "Is today's maze the same every time I reload?",
+    a: 'Yes. The maze is generated from the current calendar date, so it is the same maze for the entire day. Reloading the page on the same date gives you the same maze.',
+  },
+  {
+    q: 'What difficulty is the daily maze?',
+    a: 'The daily maze is a Large challenge — a 60×60 grid with complex corridors. It is more substantial than a small or medium maze but still completable in a single sitting.',
+  },
+  {
+    q: 'Can I print the daily maze?',
+    a: 'Maze of the Day is optimised for online play. For worksheet-style printouts and optional answer key pages, visit Printable Mazes.',
+  },
+];
+
+const schemaLD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      name: 'Maze of the Day',
+      description,
+      url: canonical,
+      isPartOf: { '@type': 'WebSite', name: 'MazePuzzles.io', url: siteUrl },
+      about: {
+        '@type': 'Game',
+        name: 'Maze of the Day',
+        description: 'A free daily maze puzzle. A new Large maze is available every day based on the current calendar date. Same maze for all players on the same day.',
+        url: canonical,
+        genre: 'Puzzle',
+        gamePlatform: 'Web Browser',
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+        { '@type': 'ListItem', position: 2, name: 'Maze of the Day', item: canonical },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqs.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
+  ],
+});
+---
+
+<BaseLayout {title} {description} canonical={canonical} schemaLD={schemaLD}>
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze of the Day' },
+    ]} />
+
+    <!-- Page header -->
+    <div class="mt-4 mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+      <div>
+        <!-- Date badge — populated client-side so it always shows today's local date -->
+        <div
+          id="motd-date-badge"
+          class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-semibold text-blue-700 mb-3"
+          aria-live="polite"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span id="motd-date-label">Today's Challenge</span>
+        </div>
+
+        <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">Daily Maze Challenge</p>
+        <h1 class="text-5xl text-arch-charcoal mb-3">Maze of the Day</h1>
+        <p class="text-arch-600 text-base max-w-xl">
+          A new maze appears every day. Play today's challenge online, save your progress on this device, and come back tomorrow for a fresh maze.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Maze player — constrained preview, generated client-side from today's local date seed -->
+    <div class="max-w-[640px] mx-auto mb-6">
+      <DailyMazePlayer client:only="react" />
+    </div>
+
+    <!-- Return / countdown row -->
+    <div class="text-center mb-10">
+      <p class="text-sm text-arch-600">Come back tomorrow for a new daily maze</p>
+      <p class="text-xs text-arch-400 mt-1">
+        Next maze in <span id="motd-countdown" class="font-mono">…</span> · New maze at midnight
+      </p>
+    </div>
+
+    <!-- How the Maze of the Day Works -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">How the Maze of the Day Works</h2>
+      <ol class="grid grid-cols-1 sm:grid-cols-3 gap-6 list-none">
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">1</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Open today's maze</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">A new daily maze is generated from the current date.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">2</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Solve online</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Play with keyboard, swipe, or D-pad controls.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">3</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Come back tomorrow</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">The challenge changes at midnight, giving you a fresh maze every day.</p>
+          </div>
+        </li>
+      </ol>
+      <p class="text-sm mt-4" style="color: var(--color-muted-strong);">
+        <a href="/maze-guides/daily-maze-challenge" style="color: var(--color-accent);">Learn about daily maze challenges →</a>
+      </p>
+    </section>
+
+    <!-- Why Play Today's Maze? -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Why Play Today's Maze?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm" style="color: var(--color-muted-strong);">
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Daily habit</p>
+          <p>One fresh maze every day.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Same challenge for everyone</p>
+          <p>Today's maze is based on the date, so everyone gets the same daily puzzle.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Progress saves locally</p>
+          <p>Leave and come back without losing your current run.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Quick way to play</p>
+          <p>No setup, no account, no maze selection required.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison section -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">Maze of the Day, Maze Library, and Maze Generator</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">Three ways to play, each built for a different kind of maze session.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="card rounded-lg p-5 flex flex-col gap-3">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze of the Day</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Play one fresh daily maze challenge.</p>
+          </div>
+          <span class="text-xs text-arch-400 mt-auto">You are here</span>
+        </div>
+        <a href="/maze-library" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Library</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Work through Maze Library collections and track your progress.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Library →</span>
+        </a>
+        <a href="/maze-generator" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Generator</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze and decide whether to play, print, or download it.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Generator →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently Asked Questions</h2>
+      <dl class="space-y-5">
+        {faqs.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Want more than one maze?</h2>
+      <p class="text-sm text-arch-600 mb-5">Use the Maze Library to work through collections, or use the Maze Generator to create a custom maze anytime.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library" class="btn-secondary">Maze Library</a>
+        <a href="/maze-generator" class="btn-secondary">Maze Generator</a>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<script>
+  import { getDailyNow } from '../../lib/utils/dailyNow';
+  import { getMsUntilLocalMidnight } from '../../lib/utils/countdown';
+
+  // Populate the date badge with today's local date.
+  (function () {
+    const label = document.getElementById('motd-date-label');
+    if (label) {
+      label.textContent = getDailyNow().toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+
+    // Countdown to local midnight
+    function tickMotdCountdown() {
+      const rem = Math.max(0, Math.floor(getMsUntilLocalMidnight(getDailyNow()) / 1000));
+      const h = Math.floor(rem / 3600);
+      const m = Math.floor((rem % 3600) / 60);
+      const s = rem % 60;
+      const el = document.getElementById('motd-countdown');
+      if (el) {
+        el.textContent = h > 0
+          ? `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`
+          : `${m}m ${String(s).padStart(2, '0')}s`;
+      }
+    }
+    tickMotdCountdown();
+    setInterval(tickMotdCountdown, 1000);
+
+  })();
+</script>

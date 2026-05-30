@@ -1,0 +1,505 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Architect Design Tokens ──────────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* Core palette */
+    --color-bg:           #F6F5F0;
+    --color-surface:      #FFFFFF;
+    --color-charcoal:     #1C1C1E;
+    --color-charcoal-2:   #2A2A2C;
+    --color-accent:       #E03B24;
+    --color-accent-dark:  #C42E18;
+    --color-border:       #D6D4CF;
+    --color-border-strong:#B0AEA8;
+    --color-muted:        #9A9892;
+    --color-muted-strong: #5C5A55;
+
+    /* Extended surface scale */
+    --color-surface-raised:  #F8F7F2;
+    --color-surface-inset:   #EDECEA;
+    --color-surface-overlay: #FFFFFF;
+
+    /* Progress indicator colors */
+    --color-progress:        #10b981;
+    --color-progress-bg:     #f0fdf4;
+
+    /* Adaptive shadows — .dark overrides these for dark-mode depth */
+    --shadow-card:    0 1px 3px 0 rgb(0 0 0 / .08), 0 1px 2px -1px rgb(0 0 0 / .06);
+    --shadow-card-md: 0 4px 12px -2px rgb(0 0 0 / .10), 0 2px 6px -2px rgb(0 0 0 / .06);
+    --shadow-card-lg: 0 10px 30px -4px rgb(0 0 0 / .12), 0 4px 10px -4px rgb(0 0 0 / .07);
+
+    /* Legacy brand vars — gameplay components reference these */
+    --color-brand:      #2563eb;
+    --color-brand-dark: #1d4ed8;
+  }
+
+  .dark {
+    --color-bg:              #111110;
+    --color-surface:         #1A1918;
+    --color-surface-raised:  #222120;
+    --color-surface-inset:   #141312;
+    --color-surface-overlay: #2C2A28;
+    --color-charcoal:        #F0EFE9;
+    --color-charcoal-2:      #D8D6D0;
+    --color-border:          #2A2927;
+    --color-border-strong:   #3E3D3A;
+    --color-muted:           #7A7A78;
+    --color-muted-strong:    #A8A8A4;
+    --color-progress:        #34d399;
+    --color-progress-bg:     rgba(52, 211, 153, 0.12);
+    --shadow-card:    0 1px 0 0 rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.45);
+    --shadow-card-md: 0 1px 0 0 rgba(255,255,255,0.06), 0 4px 14px rgba(0,0,0,0.55);
+    --shadow-card-lg: 0 1px 0 0 rgba(255,255,255,0.05), 0 10px 28px rgba(0,0,0,0.65);
+  }
+
+  html {
+    @apply scroll-smooth;
+    font-family: 'Outfit', system-ui, sans-serif;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-charcoal);
+    @apply antialiased;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', system-ui, sans-serif;
+    @apply tracking-tight leading-none;
+  }
+  h2 {
+    font-family: 'Bebas Neue', system-ui, sans-serif;
+    @apply tracking-tight leading-none;
+  }
+  h3 {
+    @apply text-xl font-semibold tracking-tight;
+  }
+}
+
+/* ── Architect dot-grid background ───────────────────────────────────────── */
+.architect-dot-grid {
+  background-image: radial-gradient(circle, rgba(28,28,30,0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.dark .architect-dot-grid {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.09) 1px, transparent 1px);
+}
+
+/* ── Legacy maze-path background — kept for gameplay pages ────────────────── */
+.maze-bg-pattern {
+  background-image:
+    linear-gradient(rgba(37,99,235,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.dark .maze-bg-pattern {
+  background-image:
+    linear-gradient(rgba(96,165,250,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96,165,250,.05) 1px, transparent 1px);
+}
+
+/* ── Maze game animations — do not modify ─────────────────────────────────── */
+@keyframes maze-player-pulse {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.45; }
+}
+.maze-player-glow {
+  animation: maze-player-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes post-solve-card-in {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+@keyframes post-solve-confetti {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--cx), var(--cy)) rotate(var(--cr)); opacity: 0; }
+}
+.post-solve-card-in {
+  animation: post-solve-card-in 220ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Component layer ──────────────────────────────────────────────────────── */
+@layer components {
+
+  /* Maze generator range inputs ─────────────────────────────────────────── */
+  .generator-range {
+    height: 1.5rem;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    accent-color: var(--color-charcoal);
+  }
+  .generator-range:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  .generator-range::-webkit-slider-runnable-track {
+    height: 4px;
+    background: var(--color-border-strong);
+    border-radius: 0;
+  }
+  .generator-range::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+    margin-top: -6px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--color-charcoal);
+    border: 2px solid var(--color-surface);
+    border-radius: 9999px;
+    box-shadow: 0 0 0 1px var(--color-charcoal);
+  }
+  .generator-range::-moz-range-track {
+    height: 4px;
+    background: var(--color-border-strong);
+    border-radius: 0;
+  }
+  .generator-range::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--color-charcoal);
+    border: 2px solid var(--color-surface);
+    border-radius: 9999px;
+    box-shadow: 0 0 0 1px var(--color-charcoal);
+  }
+
+  /* Buttons ───────────────────────────────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white
+           transition-colors duration-150
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+           active:scale-[0.98];
+    background-color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-accent-dark);
+    border-color: var(--color-accent-dark);
+  }
+  .btn-primary:focus-visible {
+    outline-color: var(--color-accent);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-transparent
+           transition-all duration-150
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+           active:scale-[0.98];
+    color: var(--color-charcoal);
+    border: 1px solid var(--color-charcoal);
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-charcoal);
+    color: var(--color-bg);
+  }
+  .dark .btn-secondary {
+    color: var(--color-charcoal);
+    border-color: var(--color-charcoal);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+           transition-colors duration-150;
+    color: var(--color-charcoal);
+  }
+  .btn-ghost:hover {
+    color: var(--color-charcoal);
+    background-color: var(--color-border);
+  }
+  .dark .btn-ghost {
+    color: var(--color-charcoal);
+  }
+  .dark .btn-ghost:hover {
+    color: var(--color-charcoal);
+    background-color: var(--color-border);
+  }
+
+  /* Desktop sidebar surface — elevated charcoal in dark mode, unchanged in light */
+  .play-sidebar {
+    background-color: var(--color-surface-raised);
+    border-color: var(--color-border-strong);
+    color: var(--color-charcoal);
+  }
+  .dark .play-sidebar {
+    background-color: var(--color-surface-overlay); /* #2C2A28 — warmer elevated charcoal, not a flat slab */
+  }
+
+  /* Sidebar divider — visible in dark mode against the elevated sidebar surface */
+  .play-sidebar-divider {
+    background-color: var(--color-border);
+  }
+  .dark .play-sidebar-divider {
+    background-color: var(--color-border-strong); /* #3E3D3A — readable on #2C2A28 */
+  }
+
+  /* Sidebar action buttons — softer dark-mode outline so they don't look like
+     stark white borders on the raised-surface sidebar. */
+  .dark .play-sidebar-btn {
+    color: var(--color-charcoal);
+    border-color: var(--color-border-strong);
+    background-color: var(--color-surface-raised); /* #222120 — inset against sidebar #2C2A28; crisper text contrast */
+  }
+  .dark .play-sidebar-btn:hover {
+    color: var(--color-charcoal);
+    background-color: var(--color-surface-inset); /* #141312 — deeper on hover for clear feedback */
+    border-color: var(--color-border-strong);
+  }
+
+  /* Sidebar ghost buttons (Pause, Reset Progress) — white text in dark mode */
+  .dark .play-sidebar-ghost {
+    color: var(--color-charcoal);
+  }
+  .dark .play-sidebar-ghost:hover {
+    color: var(--color-charcoal);
+    background-color: var(--color-border);
+  }
+
+  /* Cards ─────────────────────────────────────────────────────────────────── */
+  .card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
+    @apply overflow-hidden;
+  }
+  .card-hover {
+    @apply card transition-all duration-200;
+  }
+  .card-hover:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-card-md);
+    transform: translateY(-1px);
+  }
+  .dark .card {
+    background-color: var(--color-surface-raised);
+    border-color: var(--color-border);
+  }
+
+  /* Badges ────────────────────────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium;
+    font-family: 'IBM Plex Mono', Menlo, monospace;
+    border: 1px solid var(--color-border);
+    color: var(--color-muted-strong);
+    background-color: var(--color-surface);
+  }
+
+  /* Section labels ────────────────────────────────────────────────────────── */
+  .section-label {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-widest mb-3;
+    font-family: 'IBM Plex Mono', Menlo, monospace;
+    color: var(--color-muted-strong);
+    border: 1px solid var(--color-border);
+    background-color: transparent;
+  }
+  .dark .section-label {
+    color: var(--color-muted-strong);
+    border-color: var(--color-border);
+  }
+
+  /* Gradient text — kept for pages that still use it ──────────────────────── */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600;
+  }
+
+  /* Architect accent text ─────────────────────────────────────────────────── */
+  .text-accent {
+    color: var(--color-accent);
+  }
+
+  /* Architect section container ───────────────────────────────────────────── */
+  .arch-section {
+    @apply py-16 sm:py-24;
+    background-color: var(--color-bg);
+  }
+  .arch-section-surface {
+    @apply py-16 sm:py-24;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .arch-section-dark {
+    @apply py-16 sm:py-24;
+    background-color: var(--color-charcoal);
+  }
+  .dark .arch-section-dark {
+    background-color: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+  }
+  .dark .arch-section-surface {
+    background-color: var(--color-surface-raised);
+  }
+
+  /* Footer — elevated surface in dark mode for clear visual separation */
+  .arch-footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+  }
+  .dark .arch-footer {
+    background-color: var(--color-surface-raised);
+    border-top-color: var(--color-border-strong);
+  }
+
+  /* CTA callout block — blue-tinted in light, themed surface in dark */
+  .cta-callout {
+    background-color: #eff6ff;
+    border: 1px solid #dbeafe;
+  }
+  .dark .cta-callout {
+    background-color: var(--color-surface-raised);
+    border-color: var(--color-border);
+  }
+
+  /* Library progress indicators — CSS-managed so JS width updates don't clobber color */
+  .tier-progress-container {
+    background-color: var(--color-progress-bg);
+  }
+  .tier-progress-bar {
+    background-color: var(--color-progress);
+  }
+}
+
+/* Maze generator print sheet ─────────────────────────────────────────────── */
+@media screen {
+  .print-only,
+  .print-pages {
+    display: none !important;
+  }
+}
+
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 10mm;
+  }
+
+  html,
+  body {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    /* visible so multi-page print portals can flow across pages */
+    overflow: visible !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .screen-only,
+  header,
+  footer,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: flex !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483647 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #fff !important;
+  }
+
+  .print-maze-sheet {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .print-maze-art {
+    /* Fixed physical print box: grid size changes cell density, not footprint. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 7.25in;
+    height: 9.25in;
+    max-width: 100%;
+    max-height: 100%;
+    background: #fff !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .print-maze-art svg {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: visible !important;
+  }
+
+  .print-maze-art svg rect {
+    fill: #fff !important;
+  }
+
+  .print-maze-art svg path {
+    stroke: #000 !important;
+  }
+
+  /* Backup guard: printable sheets should only include clean maze geometry. */
+  .print-maze-art .maze-endpoint-marker,
+  .print-maze-art .maze-player-cursor,
+  .print-maze-art .maze-traversal-path,
+  .print-maze-art .maze-hint-path {
+    display: none !important;
+  }
+  /* Solution path hidden by default; opt-in via .print-with-solution on the wrapper. */
+  .print-maze-art:not(.print-with-solution) .maze-solution-path {
+    display: none !important;
+  }
+
+  /* Multi-page print portal (answer key). Uses normal document flow so
+     the browser can paginate across pages. .print-only (single-page) is
+     unchanged — its position:fixed approach is still used when no answer key. */
+  .print-pages {
+    display: block !important;
+    background: #fff;
+  }
+
+  .print-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .print-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+}

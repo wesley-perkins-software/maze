@@ -1,0 +1,307 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { MazeGenerator } from '../components/maze/MazeGenerator';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const faqItems = [
+  {
+    q: 'Is the maze generator free?',
+    a: 'Yes, completely free. No account required, no sign-up, no limits. Generate as many mazes as you like.',
+  },
+  {
+    q: 'Can I print the maze?',
+    a: 'Yes. Click the Print button to send the current maze directly to your printer. The output is a clean single-maze page.',
+  },
+  {
+    q: 'Can I print an answer key?',
+    a: 'The maze generator prints the current maze only — it does not produce answer key pages. For printable worksheets with an optional answer key, use Free Maze Printables at /printable-mazes.',
+  },
+  {
+    q: 'What maze sizes can I make?',
+    a: 'Choose Small (20×20), Medium (40×40), Large (60×60), Expert (80×80), or Hardcore (100×100) with one click. Use the Custom button to set exact dimensions up to 100×100.',
+  },
+  {
+    q: 'Can I play the maze online?',
+    a: 'Yes. Use arrow keys on desktop or swipe on mobile to move through the maze. A timer and hint system are included.',
+  },
+  {
+    q: 'Can I download the maze as an SVG?',
+    a: 'Yes. Click Download SVG to save a vector file of the current maze. SVG scales to any resolution, so it is suitable for printing at large sizes or embedding in documents.',
+  },
+  {
+    q: 'Can I use these mazes in my classroom?',
+    a: 'Yes. Generate a fresh maze for every student and print as many copies as you need — all free. For worksheets with answer key pages, see Free Maze Printables at /printable-mazes.',
+  },
+  {
+    q: 'How are the mazes generated?',
+    a: "Every maze is built with a Growing Tree algorithm — a hybrid of depth-first search and Prim's algorithm. Larger mazes use more branching and loop carving to create genuine decision points instead of simple corridors.",
+  },
+  {
+    q: 'What is the difference between the Maze Generator and Printable Mazes?',
+    a: 'The Maze Generator creates a custom maze on demand — choose your size, then play, print, or download it. Printable Mazes (/printable-mazes) is a print-first tool that produces worksheet-style pages with optional answer keys.',
+  },
+];
+
+const schema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebApplication',
+      name: 'Free Maze Generator',
+      url: `${siteUrl}/maze-generator`,
+      description:
+        'Free online maze generator. Pick a size from Small (20×20) to Hardcore (100×100), generate a unique maze instantly, then play in your browser, download as SVG, or print. No account required.',
+      applicationCategory: 'UtilityApplication',
+      isAccessibleForFree: true,
+      operatingSystem: 'Web Browser',
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
+  ],
+});
+---
+
+<BaseLayout
+  title="Free Maze Generator — Create Custom Mazes Online | MazePuzzles.io"
+  description="Free online maze generator — no account needed. Choose a size from 20×20 to 100×100, play in your browser with arrow keys, download as SVG, or print. New unique maze every time."
+  schemaLD={schema}
+>
+  <div class="screen-only mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10 lg:pt-8">
+
+    <!-- Breadcrumb + heading — mobile only; desktop version renders inside the generator component -->
+    <div class="mb-6 scroll-mt-24 lg:hidden">
+      <nav aria-label="Breadcrumb" class="text-sm text-arch-600 mb-4">
+        <ol class="flex items-center gap-1">
+          <li><a href="/" class="hover:text-arch-charcoal transition-colors">Home</a></li>
+          <li>
+            <svg class="w-3 h-3 mx-1 text-arch-600 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </li>
+          <li><span class="text-arch-charcoal font-medium" aria-current="page">Maze Generator</span></li>
+        </ol>
+      </nav>
+
+      <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">Free Maze Generator</p>
+      <h1 class="text-5xl text-arch-charcoal mb-3">Build Your Own Maze</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        Choose a size, generate a maze, then play online or print.
+      </p>
+    </div>
+
+    <!-- Generator Island -->
+    <MazeGenerator client:only="react">
+      <div
+        slot="fallback"
+        class="screen-only flex flex-col gap-7 lg:grid lg:grid-cols-[320px_1fr] lg:items-start lg:gap-10"
+        aria-hidden="true"
+      >
+        <div class="min-w-0 w-full lg:col-start-2 lg:row-start-1">
+          <div
+            class="border border-arch-400/60 bg-arch-surface mx-auto"
+            style="width: min(100%, calc(100vh - 140px)); aspect-ratio: 1 / 1; box-shadow: inset 0 0 0 6px #FFFFFF, inset 0 0 0 7px #B0AEA8;"
+          >
+          </div>
+          <div
+            class="grid grid-cols-[minmax(0,1fr)_auto_auto_minmax(0,1fr)] items-center gap-x-5 pt-2 pb-1 mx-auto sm:gap-x-6"
+            style="width: min(100%, calc(100vh - 140px));"
+          >
+            <span class="h-4 w-14 bg-arch-200/70"></span>
+            <span class="h-4 w-16 bg-arch-200/70"></span>
+            <span class="h-4 w-16 bg-arch-200/70"></span>
+            <span class="h-4 w-16 justify-self-end bg-arch-200/70"></span>
+          </div>
+        </div>
+
+        <div class="w-full shrink-0 flex flex-col gap-4 lg:col-start-1 lg:row-start-1">
+          <div class="hidden lg:block">
+            <div class="mb-3 h-4 w-36 bg-arch-200/70"></div>
+            <div class="mb-2 h-3 w-32 bg-arch-200/70"></div>
+            <div class="mb-2 h-12 w-full bg-arch-200/70"></div>
+            <div class="mb-4 h-10 w-full bg-arch-200/70"></div>
+          </div>
+          <div>
+            <div class="mb-2 h-3 w-12 bg-arch-200/70"></div>
+            <div class="grid grid-cols-3 gap-1.5">
+              <span class="h-[58px] rounded-sm border border-arch-200 bg-arch-surface"></span>
+              <span class="h-[58px] rounded-sm border border-arch-200 bg-arch-surface"></span>
+              <span class="h-[58px] rounded-sm border border-arch-200 bg-arch-surface"></span>
+              <span class="h-[58px] rounded-sm border border-arch-200 bg-arch-surface"></span>
+              <span class="h-[58px] rounded-sm border border-arch-200 bg-arch-surface"></span>
+              <span class="h-[58px] rounded-sm border border-arch-200 bg-arch-surface"></span>
+            </div>
+          </div>
+          <div class="border-t border-arch-200"></div>
+          <div class="space-y-2.5">
+            <div class="h-[52px] rounded-sm border-2 border-arch-charcoal bg-arch-surface"></div>
+            <div class="h-[52px] rounded-sm bg-arch-accent/80"></div>
+            <div class="flex gap-2">
+              <div class="h-[38px] flex-1 rounded-sm border border-arch-200 bg-arch-surface"></div>
+              <div class="hidden h-[38px] flex-1 rounded-sm border border-arch-200 bg-arch-surface lg:block"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </MazeGenerator>
+
+    <!-- ── How to Use ─────────────────────────────────────────────────────── -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">How to Create Your Maze</h2>
+      <ol class="grid grid-cols-1 sm:grid-cols-3 gap-6 list-none">
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">1</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Pick a size</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Pick a preset — Small through Hardcore — or use Custom to set your own dimensions up to 100×100.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">2</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Generate</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Hit Generate to create a unique maze instantly. Run it again for a completely different maze.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">3</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Play, print, or download</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Solve with arrow keys or swipe, click Print for a clean printout, or Download SVG for a vector file.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ── Size Guide ─────────────────────────────────────────────────────── -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Choosing the Right Size</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="rounded-sm border border-arch-200 bg-arch-surface p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block rounded-sm bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">Small</span>
+          </div>
+          <p class="text-xs font-mono text-arch-400 mb-2">20×20</p>
+          <p class="text-sm text-arch-600">Best for quick solves, kids, and simple printable mazes.</p>
+        </div>
+        <div class="rounded-sm border border-arch-200 bg-arch-surface p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block rounded-sm bg-arch-100 px-2 py-0.5 text-xs font-semibold text-arch-charcoal">Medium</span>
+          </div>
+          <p class="text-xs font-mono text-arch-400 mb-2">40×40</p>
+          <p class="text-sm text-arch-600">A balanced maze with more room to explore.</p>
+        </div>
+        <div class="rounded-sm border border-arch-200 bg-arch-surface p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block rounded-sm bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">Large</span>
+          </div>
+          <p class="text-xs font-mono text-arch-400 mb-2">60×60</p>
+          <p class="text-sm text-arch-600">A bigger challenge for longer sessions or larger printouts.</p>
+        </div>
+        <div class="rounded-sm border border-arch-200 bg-arch-surface p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block rounded-sm bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-700">Expert</span>
+          </div>
+          <p class="text-xs font-mono text-arch-400 mb-2">80×80</p>
+          <p class="text-sm text-arch-600">A dense maze for experienced solvers.</p>
+        </div>
+        <div class="rounded-sm border border-arch-200 bg-arch-surface p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block rounded-sm px-2 py-0.5 text-xs font-semibold text-white" style="background-color: #1C1C1E;">Hardcore</span>
+          </div>
+          <p class="text-xs font-mono text-arch-400 mb-2">100×100</p>
+          <p class="text-sm text-arch-600">The largest preset maze for serious maze fans.</p>
+        </div>
+        <div class="rounded-sm border border-arch-200 bg-arch-surface p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-block rounded-sm bg-arch-200 px-2 py-0.5 text-xs font-semibold text-arch-charcoal">Custom</span>
+          </div>
+          <p class="text-xs font-mono text-arch-400 mb-2">Up to 100×100</p>
+          <p class="text-sm text-arch-600">Set exact dimensions using the Custom button.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Use Cases ──────────────────────────────────────────────────────── -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Ways to Use Your Maze</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm" style="color: var(--color-muted-strong);">
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">🎮 Play online</p>
+          <p>Use arrow keys on desktop or swipe on mobile to solve the maze. A built-in timer and hint system keep it engaging for all ages.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">🖨️ Print a maze</p>
+          <p>Click Print to send a clean single-maze page directly to your printer. Small mazes work great for kids; larger sizes suit older solvers.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">📐 Download SVG</p>
+          <p>Save the maze as a vector file that scales to any size. Share it digitally or import it into documents and presentations.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">🏫 Classroom activities</p>
+          <p>Generate a fresh maze for every student and print as many copies as you need. For worksheets with answer keys, see <a href="/printable-mazes" class="text-arch-accent hover:underline">Free Maze Printables</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Tool Comparison ─────────────────────────────────────────────────── -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">Maze Generator, Printable Mazes, and Maze Library</h2>
+      <p class="text-sm text-arch-600 mb-6">Three tools, each built for a different use. Choose the one that fits.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="card rounded-lg p-5 flex flex-col gap-3">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Generator</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze and decide whether to play, print, or download it.</p>
+          </div>
+          <span class="text-xs text-arch-400 mt-auto">You are here</span>
+        </div>
+        <a href="/printable-mazes" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Printable Mazes</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">A print-first worksheet tool with optional answer key pages.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Free Maze Printables →</span>
+        </a>
+        <a href="/maze-library" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Library</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Work through Maze Library collections and track your progress.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Library →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── FAQ ────────────────────────────────────────────────────────────── -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently Asked Questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- ── Want a Maze Library challenge? ────────────────────────────────── -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Want a Maze Library challenge?</h2>
+      <p class="text-sm text-arch-600 mb-5">Use the Maze Library to work through curated maze collections and track your progress, or use Printable Mazes for worksheet-style printouts.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library"    class="btn-secondary">Maze Library</a>
+        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>

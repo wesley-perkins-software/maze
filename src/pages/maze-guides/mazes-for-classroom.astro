@@ -1,0 +1,226 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const faqItems = [
+  {
+    q: 'What grade levels are mazes appropriate for?',
+    a: 'Mazes can work from preschool through middle school with appropriate sizing. K–2 benefits most from fine motor practice and basic problem-solving. Grades 3–5 can engage with strategy discussions and math integration. Grades 6–8 can analyze mazes as algorithm problems and use them for critical thinking discussions.',
+  },
+  {
+    q: 'How long should a classroom maze activity take?',
+    a: 'Five to ten minutes is the sweet spot for most classroom uses — long enough for a meaningful challenge, short enough to fit into a transition or warm-up slot. For dedicated activities like math enrichment or procedural writing, 15–20 minutes is workable with the right difficulty level.',
+  },
+  {
+    q: 'How do I differentiate mazes for different skill levels?',
+    a: 'Print different maze sizes for different groups — a 6×6 for students who need less challenge, a 10×10 or 15×15 for students who need more. Because the mazes look similar on paper, differentiation is low-key and doesn\'t draw attention to ability differences.',
+  },
+  {
+    q: 'Can I use mazes for math class?',
+    a: 'Yes. Elementary mazes support counting (count the dead ends), estimation (estimate path length before solving), and coordinate notation (label rows and columns, describe positions). These activities directly reinforce grade-level math standards while keeping engagement high.',
+  },
+  {
+    q: 'Are there mazes that work on a whiteboard or projector?',
+    a: 'The MazePuzzles.io interactive maze generator produces mazes playable directly in the browser. Project the maze on a whiteboard, and students can suggest moves while one student navigates — a useful format for strategy discussions and whole-class problem-solving.',
+  },
+  {
+    q: 'Do mazes work for homeschool settings?',
+    a: 'Yes, and in several ways. A maze gives one child a fully self-directed, independent activity while a parent works with another student. Maze completion also works well as a low-stakes positive reward, and a dated folder of completed mazes provides a concrete progress record over a school year.',
+  },
+  {
+    q: 'Where do I find printable mazes for the classroom?',
+    a: 'The MazePuzzles.io maze library has printable maze worksheets organized by size. All print cleanly on standard 8.5×11 paper with no account, download limit, or DRM. The maze generator lets you create a custom size on demand.',
+  },
+];
+
+const articleSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Mazes for the Classroom',
+  description: 'Practical ideas for using printable maze puzzles in K–8 classrooms — warm-ups, fine motor practice, math enrichment, critical thinking, and more.',
+  url: `${siteUrl}/maze-guides/mazes-for-classroom`,
+  datePublished: '2024-11-15',
+  dateModified: '2024-11-15',
+  author: { '@type': 'Organization', name: 'MazePuzzles.io', url: siteUrl },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon-96x96.png` },
+  },
+  isPartOf: { '@id': `${siteUrl}/maze-guides` },
+  isAccessibleForFree: true,
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
+    { '@type': 'ListItem', position: 3, name: 'Mazes for the Classroom' },
+  ],
+});
+---
+
+<BaseLayout
+  title="Mazes for the Classroom — Teacher's Guide to Maze Activities | MazePuzzles.io"
+  description="Practical ideas for using printable maze puzzles in K–8 classrooms — warm-ups, fine motor practice, math enrichment, critical thinking, and more."
+  canonical={`${siteUrl}/maze-guides/mazes-for-classroom`}
+  schemaLD={[articleSchema, breadcrumbSchema]}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'Mazes for the Classroom' },
+    ]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">Audiences</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">Mazes for the Classroom</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        Practical ideas for using printable maze puzzles in K–8 classrooms — warm-ups, fine motor practice, math enrichment, critical thinking, and more.
+      </p>
+    </div>
+
+    <!-- Morning warm-ups -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Morning warm-ups and bell ringers</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        One of the most effective classroom uses of maze puzzles is as a transition activity at the start of class. Students who arrive at staggered times — or who need a few minutes to shift mentally from recess to learning — benefit from having a defined task waiting for them.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Place a printed maze face-down on each desk before students arrive. When students enter, they flip it over and begin. By the time the last student is seated, the class is already in focused, problem-solving mode. Mazes are self-explanatory (no instructions needed), self-checking (students know immediately when they've succeeded), and have a natural endpoint that signals readiness to move on.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">Differentiation tip</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">Print different maze sizes for different groups — because they look similar from a distance, the differentiation is low-key. Students who finish early can count dead ends, estimate path length, or find an alternative route.</p>
+      </div>
+    </section>
+
+    <!-- Fine motor -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Fine motor practice (K–2)</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        For kindergarten and first-grade students, printed mazes are a legitimate fine motor exercise. Tracing through narrow corridors with a pencil requires the same controlled movements that handwriting demands — staying inside boundaries, making deliberate turns, sustaining grip pressure.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Use larger-cell mazes (5×5 or 6×6) with wide corridors for ages 4–6, and encourage tracing slowly rather than racing. Progress to narrower corridors as control improves. A dated folder of completed maze worksheets makes a satisfying visual record of fine motor development over a school year.
+      </p>
+      <p class="text-sm mt-3" style="color: var(--color-muted-strong);">
+        For a step-by-step guide on generating and printing worksheets, see the <a href="/maze-guides/printable-maze-worksheets" style="color: var(--color-accent);">Printable Maze Worksheets guide →</a>
+      </p>
+    </section>
+
+    <!-- Math enrichment -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Math enrichment and analysis</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Mazes are surprisingly rich mathematical objects that directly support elementary standards:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          {
+            title: 'Counting dead ends',
+            body: 'Students count all dead-end paths in the maze. Reinforces counting skills and introduces the concept of categorizing objects within a complex image.',
+          },
+          {
+            title: 'Estimating path length',
+            body: 'Before solving, students estimate how many steps the solution path is. After solving, they count the actual steps. Builds number sense and the mathematical habit of estimation.',
+          },
+          {
+            title: 'Grid coordinates',
+            body: 'Label columns and rows, then ask students to describe positions using (column, row) pairs. A direct, hands-on introduction to coordinate plane notation.',
+          },
+          {
+            title: 'Graphing times',
+            body: 'After the class completes the same maze, graph how long it took each student. Discuss the shape of the distribution and introduce concepts like range and median.',
+          },
+        ].map(({ title, body }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{title}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Reading and writing -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Reading and writing connections</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Mazes integrate naturally with literacy activities in ways that feel authentic rather than forced:
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        <strong style="color: var(--color-charcoal);">Pre-reading motivation:</strong> Before a story involving direction, navigation, or getting lost, have students attempt a maze. The physical experience of navigating a maze creates embodied context for those themes.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        <strong style="color: var(--color-charcoal);">Procedural writing:</strong> Ask students to write step-by-step directions for solving a maze they've completed. This is a natural, authentic reason to write a procedural text — and the student immediately knows whether their directions work by testing them.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        <strong style="color: var(--color-charcoal);">Story retelling:</strong> After reading a narrative, give students a maze and ask them to mark story events at key junctions: where the problem began, where the character got stuck, where they found the path forward, and the exit where it resolved.
+      </p>
+    </section>
+
+    <!-- Critical thinking -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Critical thinking and strategy discussions (grades 4–8)</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Older students can use mazes as a springboard for genuine algorithm thinking. Project an interactive maze on the whiteboard and invite students to suggest strategies: always turn right, work backward from the exit, identify dead ends first, find the longest uninterrupted corridor. Compare strategies and discuss which is most efficient — and under what conditions each breaks down.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        For a failure analysis exercise, ask students to mark every dead end they explored before finding the solution. Count the total wrong cells visited, then discuss: was there a more efficient strategy? What information would have helped? This is an authentic introduction to computational thinking.
+      </p>
+    </section>
+
+    <!-- End of week / homeschool -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">End-of-week and homeschool uses</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        A printed maze is a reliable way to fill the last 10 minutes of a Friday productively — engaging, low-stakes, and self-pacing. Keep a folder of mazes at different difficulty levels and let students choose: "Pick one that looks like the right challenge for you today." Self-selection builds metacognitive awareness.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        For homeschool parents managing multiple students simultaneously, a maze that a child can complete independently — without needing adult guidance — is invaluable. A maze also works well as a positive reward: "When you finish your reading, there's a new maze waiting for you."
+      </p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Get mazes for your class</h2>
+      <p class="text-sm text-arch-600 mb-5">Browse the library, generate a custom size, or print a set of worksheets — all free, no account required.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library"    class="btn-secondary">Maze Library</a>
+        <a href="/maze-generator"  class="btn-secondary">Maze Generator</a>
+        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
+      </div>
+    </section>
+
+    <div class="mt-10 text-center">
+      <a
+        href="/maze-guides"
+        class="text-sm transition-colors"
+        style="color: var(--color-muted-strong);"
+        onmouseover="this.style.color='var(--color-charcoal)'"
+        onmouseout="this.style.color='var(--color-muted-strong)'"
+      >← All guides</a>
+    </div>
+
+  </div>
+</BaseLayout>

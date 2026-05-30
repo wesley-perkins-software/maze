@@ -1,0 +1,76 @@
+---
+---
+
+<section
+  class="py-12 sm:py-16"
+  style="background-color: #EEECEA; border-top: 1px solid var(--color-border);"
+  aria-labelledby="find-your-maze-heading"
+>
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+    <!-- Two-column layout on desktop: heading left, links right -->
+    <div class="flex flex-col sm:flex-row sm:gap-16 lg:gap-24">
+
+      <!-- Left: label + heading -->
+      <div class="mb-10 sm:mb-0 sm:w-52 sm:shrink-0 sm:pt-1">
+        <p
+          class="text-xs uppercase tracking-widest mb-2"
+          style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        >Free Maze Library</p>
+        <h2
+          id="find-your-maze-heading"
+          class="font-display text-5xl sm:text-6xl uppercase"
+          style="color: var(--color-charcoal);"
+        >Find Your<br />Maze</h2>
+      </div>
+
+      <!-- Right: 5 curated browse links -->
+      <div class="flex-1">
+        <ul class="divide-y" style="border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); --tw-divide-opacity: 1;">
+          {[
+            {
+              title: 'Printable Mazes',
+              body: 'Clean worksheets with answer keys — ready to print, no watermarks.',
+              href: '/printable-mazes',
+            },
+            {
+              title: 'Mazes for Kids',
+              body: 'Simple, fast mazes sized for younger solvers.',
+              href: '/mazes-for-kids',
+            },
+            {
+              title: 'Classroom Mazes',
+              body: 'Print-friendly puzzles for groups, homework, and activity sheets.',
+              href: '/mazes-for-classroom',
+            },
+          ].map(({ title, body, href }) => (
+            <li>
+              <a
+                href={href}
+                class="group flex items-center justify-between gap-6 py-4 transition-colors duration-150"
+                style="color: inherit; text-decoration: none;"
+              >
+                <div class="min-w-0">
+                  <span
+                    class="block text-sm font-semibold mb-0.5 transition-colors duration-150"
+                    style="color: var(--color-charcoal);"
+                  >{title}</span>
+                  <span
+                    class="block text-xs leading-relaxed"
+                    style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+                  >{body}</span>
+                </div>
+                <span
+                  class="text-sm shrink-0 transition-transform duration-150 group-hover:translate-x-1"
+                  style="color: var(--color-muted-strong);"
+                  aria-hidden="true"
+                >→</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>

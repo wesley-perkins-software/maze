@@ -1,0 +1,275 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const faqItems = [
+  {
+    q: 'What is the easiest way to solve a maze?',
+    a: 'For beginners, the wall-following method (right-hand or left-hand rule) is the easiest to learn. Pick a wall, keep your hand on it, and follow it through. It works reliably on perfect mazes with no loops. For printed mazes, scanning the full maze before you start is also a simple and effective first step.',
+  },
+  {
+    q: 'Does the left-hand rule always work?',
+    a: 'No. The wall-following rules work on perfect mazes — mazes with exactly one solution and no loops. If the maze has loops, the wall-following rule can walk you in circles. It also fails when the entry and exit are on the same wall. If either condition is present, switch to the junction or dead-end filling strategy instead.',
+  },
+  {
+    q: 'How do you solve a maze with loops?',
+    a: 'Use dead-end filling or the junction approach. Dead-end filling eliminates paths that cannot lead to the exit, one dead end at a time, until only the solution remains. Alternatively, mark every junction you visit and backtrack systematically when you reach a dead end.',
+  },
+  {
+    q: 'What is dead-end filling?',
+    a: 'Dead-end filling is a strategy where you identify every dead end — any path with only one open exit — and fill it in (on paper, mark it off). Work backward from each dead end to the nearest junction. Repeat until no more dead ends remain. The unmarked paths form the solution.',
+  },
+  {
+    q: 'How can kids get better at mazes?',
+    a: 'Start with small, simple mazes and build up gradually. Encourage kids to trace the path with their finger before committing with a pencil. Teaching them to identify dead ends builds patience and systematic thinking. Regular short sessions are more effective than occasional long ones.',
+  },
+  {
+    q: 'What maze size should beginners start with?',
+    a: 'Small mazes (20×20 grid) are the right starting point. They are quick to complete, easy to scan in full, and let beginners practice strategy without getting frustrated. Once those feel comfortable, step up to medium mazes (40×40) for a genuine challenge.',
+  },
+  {
+    q: 'Can I practice with printable mazes?',
+    a: 'Yes. Printable mazes are ideal for practicing dead-end filling and wall-following because you can mark paths with a pencil. Generate free printable maze worksheets at mazepuzzles.io/printable-mazes — choose your size, generate, and print.',
+  },
+];
+
+const articleSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'How to Solve a Maze',
+  description: 'Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles.',
+  url: `${siteUrl}/maze-guides/how-to-solve-a-maze`,
+  datePublished: '2024-11-20',
+  dateModified: '2024-11-20',
+  author: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon-96x96.png` },
+  },
+  isPartOf: { '@id': `${siteUrl}/maze-guides` },
+  isAccessibleForFree: true,
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
+    { '@type': 'ListItem', position: 3, name: 'How to Solve a Maze' },
+  ],
+});
+---
+
+<BaseLayout
+  title="How to Solve a Maze: Strategies for Every Level | MazePuzzles.io"
+  description="Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles."
+  canonical={`${siteUrl}/maze-guides/how-to-solve-a-maze`}
+  schemaLD={[articleSchema, breadcrumbSchema]}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'How to Solve a Maze' },
+    ]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">Maze Solving</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">How to Solve a Maze</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles.
+      </p>
+    </div>
+
+    <!-- Section 1: Start with the goal -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Start with the goal</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Before making a single move, locate the entry and exit. Knowing where you need to end up gives you an immediate filter — any path that moves consistently away from the exit is probably not part of the solution.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Next, scan the overall shape of the maze. Is it dense with many short corridors, or open with longer uninterrupted paths? Dense mazes reward systematic strategies like dead-end filling. Open mazes often have one or two visible through-paths on quick inspection.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Finally, notice whether the maze has loops — places where two paths reconnect. A perfect maze (no loops, exactly one solution) works well with wall-following. Mazes with loops require the junction or dead-end approach instead.
+      </p>
+    </section>
+
+    <!-- Section 2: Wall-following -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Use the wall-following method</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        The wall-following method — also called the right-hand rule or left-hand rule — is the simplest maze-solving strategy. Place your hand on one wall (right or left) and keep it there as you move. Never let go.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        On a <strong class="text-arch-charcoal">perfect maze</strong> (one solution, no loops), this guarantees you reach the exit. You may trace a lot of the maze along the way, but you will not get stuck indefinitely.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">When it fails</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">
+          The wall-following rule breaks down in mazes with loops. If the solution crosses a loop, you can end up tracing the same walls repeatedly. It also fails when the entry and exit share the same wall — you will trace all the way around without finding the exit. If this happens, switch to dead-end filling or the junction strategy.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 3: Mark dead ends -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Mark dead ends</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Dead-end filling is the most systematic way to solve a printed maze. A dead end is any corridor with only one open exit — it cannot be part of the solution. Mark it off with a pencil and work backward to the nearest junction.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Repeat: each time you fill a dead end, the junction it connects to may become a new dead end. Continue eliminating until no more dead ends can be filled. What remains unmarked is the solution path.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">Best for: paper mazes with a pencil</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">
+          Dead-end filling transforms a complex maze into a solved one through pure elimination — no guessing required. On digital mazes, your trail already shows dead ends as you backtrack, giving you the same visual feedback automatically.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 4: Look for junctions -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Look for junctions</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Every time you reach a junction — a point where two or more unexplored paths branch off — you face a real decision. Treat junctions as checkpoints rather than guesses.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        At each junction, choose the branch that moves most directly toward the exit. If it ends in a dead end, backtrack to the junction and try the next option. Note which branches you have already eliminated so you do not retrace them.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Confident backtracking is the key skill here. Reaching a dead end is not failure — it is information. Every eliminated branch brings you closer to the correct path.
+      </p>
+    </section>
+
+    <!-- Section 5: Scan before you start -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Scan before you start</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        For larger mazes, spend 20–30 seconds studying the whole maze before making a move. Look for:
+      </p>
+      <ol class="space-y-3 mb-4">
+        {[
+          { label: 'Long uninterrupted corridors', note: 'These are strong candidates for solution-path segments.' },
+          { label: 'Dense wall clusters', note: 'Highly walled regions usually have one real through-path, making them easier than they look.' },
+          { label: 'General direction', note: 'Any path that consistently moves away from the exit can be deprioritized early.' },
+        ].map(({ label, note }, i) => (
+          <li class="flex gap-4">
+            <span class="shrink-0 w-6 h-6 rounded-full bg-arch-accent text-white text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+            <span class="text-sm" style="color: var(--color-muted-strong);"><strong class="text-arch-charcoal">{label}:</strong> {note}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        This upfront scan matters most on large and hardcore-size mazes. On small mazes, it is usually faster to just start solving.
+      </p>
+    </section>
+
+    <!-- Section 6: Online minimap and hints -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Use the minimap and hints when playing online</h2>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        When playing mazes on MazePuzzles.io, the interface includes two tools that make strategy more visible:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">Trail visualization</p>
+          <p class="text-sm" style="color: var(--color-muted-strong);">Your path is drawn as you move. Dead ends become immediately visible — any trail segment that terminates without an exit is a branch you can rule out and backtrack from.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">Hint system</p>
+          <p class="text-sm" style="color: var(--color-muted-strong);">Use a hint to reveal the next step on the solution path. Hints are especially useful for learning — use one when stuck, then reason backward to understand why that was the correct move.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Practice by difficulty -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Practice by difficulty</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">
+        The fastest way to improve is to solve mazes just above your current level. Start small, build intuition, then step up gradually.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { href: '/maze-library/small-mazes',  label: 'Small Mazes',  desc: '20×20 grid. Good for beginners and kids building fundamentals.' },
+          { href: '/maze-library/medium-mazes', label: 'Medium Mazes', desc: '40×40 grid. A real challenge without becoming overwhelming.' },
+          { href: '/maze-library/large-mazes',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a systematic approach.' },
+          { href: '/maze-library', label: 'Maze Library', desc: 'Browse all difficulty levels and track your progress.' },
+        ].map(({ href, label, desc }) => (
+          <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
+            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+            <span class="text-sm font-medium mt-2 text-arch-accent">Play →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 8: Printable practice + Create your own -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Printable practice</h2>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        Paper mazes are ideal for practicing dead-end filling and wall-following because you can mark paths with a pencil. Print as many as you need — free, no account required.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a href="/printable-mazes" class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
+          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Printable Mazes</p>
+          <p class="text-sm" style="color: var(--color-muted-strong);">Generate clean printable maze worksheets in multiple sizes. Perfect for pencil-and-paper practice.</p>
+          <span class="text-sm font-medium mt-2 text-arch-accent">Print a maze →</span>
+        </a>
+        <a href="/maze-generator" class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
+          <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Create your own maze</p>
+          <p class="text-sm" style="color: var(--color-muted-strong);">Generate a custom maze to play online, print, or share. Set the size, solve it, then try a harder one.</p>
+          <span class="text-sm font-medium mt-2 text-arch-accent">Open generator →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready to practice?</h2>
+      <p class="text-sm text-arch-600 mb-5">Start with a Maze Library collection, print a worksheet, or generate a custom maze.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library"   class="btn-secondary">Maze Library</a>
+        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
+        <a href="/maze-generator" class="btn-secondary">Maze Generator</a>
+      </div>
+    </section>
+
+    <!-- Back link -->
+    <div class="mt-10 text-center">
+      <a
+        href="/maze-guides"
+        class="text-sm transition-colors"
+        style="color: var(--color-muted-strong);"
+        onmouseover="this.style.color='var(--color-charcoal)'"
+        onmouseout="this.style.color='var(--color-muted-strong)'"
+      >← All guides</a>
+    </div>
+
+  </div>
+</BaseLayout>

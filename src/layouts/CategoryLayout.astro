@@ -1,0 +1,174 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../components/nav/Breadcrumb.astro';
+import CategoryNav from '../components/nav/CategoryNav.astro';
+import type { CategoryInfo } from '../types/maze.js';
+
+export interface Props {
+  category: CategoryInfo;
+  schemaLD?: string;
+  totalCount: number;
+  pageTitle?: string;
+  pageDescription?: string;
+  heroLabel?: string;
+  heroDescription?: string;
+  benefitCards?: Array<{ title: string; body: string }>;
+  faqItems?: Array<{ q: string; a?: string; aHtml?: string }>;
+  ctaHeading?: string;
+  ctaDescription?: string;
+  ctaLinks?: Array<{ label: string; href: string }>;
+}
+
+const {
+  category, schemaLD, totalCount,
+  pageTitle, pageDescription,
+  heroLabel, heroDescription,
+  benefitCards, faqItems,
+  ctaHeading, ctaDescription, ctaLinks,
+} = Astro.props;
+
+const effectiveTitle = pageTitle ?? category.title;
+const effectiveDescription = pageDescription ?? category.description;
+---
+
+<BaseLayout
+  title={effectiveTitle}
+  description={effectiveDescription}
+  schemaLD={schemaLD}
+>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze Library', href: '/maze-library' },
+      { label: category.label },
+    ]} />
+
+    <!-- Hero -->
+    <div class="mt-6 mb-8 md:mb-12">
+      {heroLabel && (
+        <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">{heroLabel}</p>
+      )}
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mb-5">{category.h1}</h1>
+      {heroDescription && (
+        <p class="text-lg sm:text-xl md:text-2xl max-w-2xl leading-relaxed" style="color: var(--color-muted-strong);">
+          {heroDescription}
+        </p>
+      )}
+      <p class="mt-3 text-sm" style="color: var(--color-muted-strong);">Progress saves on this device — no account required.</p>
+    </div>
+
+    <!-- Category nav -->
+    <div class="mb-8">
+      <CategoryNav activeDifficulty={category.difficulty} compact />
+    </div>
+
+    <!-- Maze grid + progress row -->
+    <slot />
+
+    <!-- How this collection works -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">How {category.label} Work</h2>
+      <ol class="grid grid-cols-1 sm:grid-cols-3 gap-6 list-none">
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">1</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Choose a maze</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Pick any maze in this collection or use Play Next to continue from where you left off.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">2</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Solve online</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Play with keyboard, swipe, or D-pad controls.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-arch-accent text-white text-sm font-bold flex items-center justify-center">3</span>
+          <div>
+            <p class="font-semibold" style="color: var(--color-charcoal);">Track progress</p>
+            <p class="text-sm mt-1" style="color: var(--color-muted-strong);">Finished mazes are saved on this device so you can work through the whole collection over time.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Who this collection is for -->
+    {benefitCards && benefitCards.length > 0 && (
+      <section class="mt-12">
+        <h2 class="text-xl font-bold text-arch-charcoal mb-6">Who {category.label} Are For</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm" style="color: var(--color-muted-strong);">
+          {benefitCards.map(({ title, body }) => (
+            <div class="card rounded-lg p-4">
+              <p class="font-semibold mb-1" style="color: var(--color-charcoal);">{title}</p>
+              <p>{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Tool comparison -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">Maze Library, Maze Generator, and Printable Mazes</h2>
+      <p class="text-sm text-arch-600 mb-6">Three tools, each built for a different use. Choose the one that fits.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a href="/maze-library" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Library</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Work through Maze Library collections and track your progress.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Library →</span>
+        </a>
+        <a href="/maze-generator" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Generator</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze and decide whether to play, print, or download it.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Generator →</span>
+        </a>
+        <a href="/printable-mazes" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Printable Mazes</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">A print-first worksheet tool with optional answer key pages.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Printable Mazes →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    {faqItems && faqItems.length > 0 && (
+      <section class="mt-12">
+        <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+        <dl class="space-y-5">
+          {faqItems.map(({ q, a, aHtml }) => (
+            <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+              <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+              <dd class="text-sm" style="color: var(--color-muted-strong);">
+                {aHtml ? <Fragment set:html={aHtml} /> : a}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    )}
+
+    <!-- Final CTA -->
+    {ctaHeading && ctaLinks && ctaLinks.length > 0 && (
+      <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+        <h2 class="text-lg font-bold text-arch-charcoal mb-2">{ctaHeading}</h2>
+        {ctaDescription && (
+          <p class="text-sm text-arch-600 mb-5">{ctaDescription}</p>
+        )}
+        <div class="flex flex-wrap gap-3">
+          {ctaLinks.map(({ label, href }) => (
+            <a href={href} class="btn-secondary">{label}</a>
+          ))}
+        </div>
+      </section>
+    )}
+
+  </div>
+</BaseLayout>

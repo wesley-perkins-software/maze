@@ -1,0 +1,265 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const faqItems = [
+  {
+    q: 'What is the hardest type of maze?',
+    a: 'The hardest mazes combine a large grid with maximum dead-end density, long solution paths, and high branching factor at junctions. On MazePuzzles.io, Hardcore mazes are the most demanding — large grids with no extra wall removal, pure DFS structure, and solution paths that wind across nearly the entire grid.',
+  },
+  {
+    q: 'Why are bigger mazes harder?',
+    a: 'Difficulty scales faster than grid size. Doubling the width and height creates roughly four times the challenge — not twice — because both the number of dead ends and the solution path length increase together. A 40×40 maze is not just twice as hard as a 20×20; it is substantially more complex to hold in working memory.',
+  },
+  {
+    q: 'What role do dead ends play in difficulty?',
+    a: 'Dead ends are the primary difficulty mechanism. Each one forces a solver to backtrack after committing to a wrong path. Deep dead ends — corridors that run for ten or more cells before hitting a wall — are especially costly because the solver has to retrace a long, winding path before trying the next option.',
+  },
+  {
+    q: 'What is solution path length?',
+    a: 'Solution path length is the number of cells on the correct route from entry to exit. A longer solution path means more junctions, more correct decisions, and more territory to navigate. In a dense maze, a long solution path can wind back across itself repeatedly, making it hard to track where you have already been.',
+  },
+  {
+    q: 'Is a maze with loops easier or harder?',
+    a: 'Generally easier. Loops create alternative routes — if one path dead-ends, a nearby loop may provide another way forward. However, loops also make dead-end filling less effective as a solving strategy, because some dead ends connect back to the solution path through an alternative route.',
+  },
+  {
+    q: 'What difficulty should beginners start with?',
+    a: 'Small mazes (20×20) are the right starting point. They are quick to complete, easy to scan fully before starting, and clearly reveal how solving strategies work without the cognitive load of a larger grid. Once small mazes feel straightforward, medium mazes (40×40) are the natural next step.',
+  },
+  {
+    q: 'How does MazePuzzles.io set difficulty?',
+    a: 'MazePuzzles.io generates all mazes using the recursive backtracker algorithm, which produces maximum dead-end density by default. Difficulty is adjusted through grid size (larger = harder) and the amount of post-processing wall removal applied (more openings = easier). Harder difficulty levels preserve the full DFS structure with no extra openings.',
+  },
+];
+
+const articleSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Maze Difficulty',
+  description: 'What makes a maze easy, hard, dense, or confusing — and how to find the right challenge level.',
+  url: `${siteUrl}/maze-guides/maze-difficulty`,
+  datePublished: '2024-12-05',
+  dateModified: '2024-12-05',
+  author: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon-96x96.png` },
+  },
+  isPartOf: { '@id': `${siteUrl}/maze-guides` },
+  isAccessibleForFree: true,
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
+    { '@type': 'ListItem', position: 3, name: 'Maze Difficulty' },
+  ],
+});
+---
+
+<BaseLayout
+  title="Maze Difficulty — What Makes a Maze Hard? | MazePuzzles.io"
+  description="What makes a maze easy, hard, dense, or confusing — and how to find the right challenge level."
+  canonical={`${siteUrl}/maze-guides/maze-difficulty`}
+  schemaLD={[articleSchema, breadcrumbSchema]}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'Maze Difficulty' },
+    ]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">Maze Difficulty</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">Maze Difficulty</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        What makes a maze easy, hard, dense, or confusing — and how to find the right challenge level.
+      </p>
+    </div>
+
+    <!-- Section 1: What makes a maze hard -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">What actually makes a maze hard?</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Two mazes can have the same grid size and look visually similar but feel dramatically different to solve. Difficulty is not just about how big a maze is — it is a combination of several interacting factors, each of which can make a maze harder or easier independently of the others.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        The four main factors are dead-end density, grid size, solution path length, and branching factor at junctions. Understanding them helps you choose the right level and recognize when a maze is genuinely harder than it looks.
+      </p>
+    </section>
+
+    <!-- Section 2: Dead ends -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Dead ends — the primary difficulty mechanism</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Dead ends are the most important single variable in maze difficulty. A dead end is a path that looks promising but leads nowhere — the solver has to backtrack and try something else, losing time and mental momentum.
+      </p>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        What separates easy mazes from hard ones is the <strong class="text-arch-charcoal">depth</strong> of dead ends, not just their number. A dead end that terminates after two cells is a minor nuisance. A dead end that runs for twenty cells through multiple turns — looking exactly like the solution corridor the whole way — is genuinely punishing.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { label: 'Easy mazes', desc: 'Short dead ends (1–3 cells). Most paths lead somewhere useful. Backtracking is quick.' },
+          { label: 'Medium mazes', desc: 'Moderate dead ends (4–8 cells). Some longer false paths that require real backtracking.' },
+          { label: 'Hard mazes', desc: 'Deep dead ends (10+ cells). Elaborate false corridors that look just like the solution path.' },
+          { label: 'Expert/Hardcore', desc: 'Maximum dead-end density. Solution path can be shorter than the longest false path in the maze.' },
+        ].map(({ label, desc }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 3: Grid size -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Grid size</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Larger grids are harder — but difficulty scales faster than you might expect. Doubling the width and height creates roughly <strong class="text-arch-charcoal">four times the challenge</strong>, not twice, because both the number of dead ends and the solution path length increase together.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        A 40×40 maze has four times the cells of a 20×20, but the added dead-end depth and longer correct path make it significantly more demanding than four times the work. Working memory is the real constraint — a larger maze is harder to hold in your head, which means you rely more on backtracking and less on intuition.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">Size alone is not the whole story</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">
+          A 20×20 maze with no extra wall removal can be harder than a 40×40 maze with many openings added. Dead-end structure matters more than grid dimensions when mazes at the extremes are compared.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 4: Solution path length -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Solution path length</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Solution path length is the number of cells on the correct route from entry to exit. In a 20×20 maze, the solution could range from around 40 cells (nearly straight) to 350+ cells (winding across almost the entire grid).
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        A longer solution path means more junctions, more correct decisions to make, and more territory to track. In a dense maze, a long solution path winds back across the same area repeatedly — which is particularly disorienting because different sections of the correct path look similar, and it is easy to lose track of where you have already been.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        MazePuzzles.io shows the solution step count for each maze, so you can compare the relative complexity of mazes at the same grid size before committing to one.
+      </p>
+    </section>
+
+    <!-- Section 5: Branching factor -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Branching factor and wall density</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Branching factor is the average number of choices at each junction. A maze where most junctions offer three or four options is harder than one where most junctions are simple two-way choices, because there are more opportunities to go wrong at each decision point.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Visual density adds a separate layer of difficulty. A maze with many short corridors packed close together is harder to visually parse — the solver's eye cannot easily distinguish the solution corridor from nearby dead-end corridors that look identical. Sparse mazes with more open space are easier to navigate even when the graph structure is the same.
+      </p>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">The hardest combination</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">
+          High branching factor combined with deep dead ends is the recipe for maximum difficulty. Every junction looks like a genuine decision, and every wrong choice leads to a long, costly dead end before you can backtrack.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 6: MazePuzzles.io difficulty levels -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Difficulty levels on MazePuzzles.io</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">
+        MazePuzzles.io generates all mazes using the recursive backtracker algorithm, which produces maximum dead-end density by default. Difficulty is calibrated through grid size and the amount of post-processing wall removal applied after generation. Harder levels preserve the full DFS structure with no extra openings.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { href: '/maze-library/small-mazes',   label: 'Small',   grid: '20×20',   desc: 'A good entry point. Quick to complete and easy to scan before starting. All strategies are learnable at this size.' },
+          { href: '/maze-library/medium-mazes',  label: 'Medium',  grid: '40×40',   desc: 'A genuine challenge. Dead ends grow longer and the solution path starts to disorient. Dead-end filling becomes essential.' },
+          { href: '/maze-library/large-mazes',   label: 'Large',   grid: '60×60',   desc: 'Requires patience and a plan. Scanning before you start is important. Mental backtracking gets costly.' },
+          { href: '/maze-library/expert-mazes',  label: 'Expert',  grid: '80×80',   desc: 'Dense and demanding. Many experienced solvers use hints at this level. Solution paths are long and indirect.' },
+          { href: '/maze-library/hardcore-mazes', label: 'Hardcore', grid: '100×100', desc: 'Maximum difficulty. Pure DFS structure, no extra openings, vast dead-end networks. Not recommended as a first attempt.' },
+        ].map(({ href, label, grid, desc }) => (
+          <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-2 no-underline">
+            <div class="flex items-baseline gap-2">
+              <p class="font-semibold text-sm" style="color: var(--color-charcoal);">{label}</p>
+              <p class="text-xs" style="color: var(--color-muted);">{grid}</p>
+            </div>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+            <span class="text-sm font-medium mt-auto text-arch-accent">Play →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 7: Finding your level -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Finding your level</h2>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        The right difficulty is one that requires genuine effort but stays within your patience window. A few rough benchmarks:
+      </p>
+      <ol class="space-y-3 mb-5">
+        {[
+          { step: 'Under 2 minutes',  note: 'Probably too easy — try the next level up unless you are building speed.' },
+          { step: '5–10 minutes',     note: 'The sweet spot. You are working, backtracking occasionally, but still making progress.' },
+          { step: 'Over 15 minutes',  note: 'Probably too hard — step down or use hints as learning tools rather than hints as surrender.' },
+        ].map(({ step, note }, i) => (
+          <li class="flex gap-4">
+            <span class="shrink-0 w-6 h-6 rounded-full bg-arch-accent text-white text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+            <span class="text-sm" style="color: var(--color-muted-strong);"><strong class="text-arch-charcoal">{step}:</strong> {note}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Most people should start one level below where they think they belong. A large maze looks manageable on first glance but becomes much harder once you are inside it.
+      </p>
+      <p class="text-sm mt-3" style="color: var(--color-muted-strong);">
+        <a href="/maze-guides/maze-library" style="color: var(--color-accent);">How to use the Maze Library →</a>
+      </p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Find your level</h2>
+      <p class="text-sm text-arch-600 mb-5">Start with a small maze and work up, or jump straight to your challenge level and use hints when stuck.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library/small-mazes"  class="btn-secondary">Small Mazes</a>
+        <a href="/maze-library/medium-mazes" class="btn-secondary">Medium Mazes</a>
+        <a href="/maze-library" class="btn-secondary">Maze Library</a>
+      </div>
+    </section>
+
+    <!-- Back link -->
+    <div class="mt-10 text-center">
+      <a
+        href="/maze-guides"
+        class="text-sm transition-colors"
+        style="color: var(--color-muted-strong);"
+        onmouseover="this.style.color='var(--color-charcoal)'"
+        onmouseout="this.style.color='var(--color-muted-strong)'"
+      >← All guides</a>
+    </div>
+
+  </div>
+</BaseLayout>

@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/nav/Breadcrumb.astro';
+
+const effectiveDate = 'May 30, 2026';
+---
+
+<BaseLayout
+  title="Terms of Service | MazePuzzles.io"
+  description="Read the terms for using MazePuzzles.io maze games, maze generator, printable maze worksheets, SVG downloads, and maze guides."
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
+
+    <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Terms of Service' }]} />
+
+    <!-- Hero -->
+    <div class="mt-6 mb-10">
+      <p
+        class="text-xs uppercase tracking-widest mb-3"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
+      >Terms</p>
+      <h1
+        class="font-display text-5xl sm:text-6xl uppercase leading-none mb-4"
+        style="color: var(--color-charcoal);"
+      >Terms of Service</h1>
+      <p class="text-base leading-relaxed mb-2" style="color: var(--color-charcoal);">
+        These Terms of Service explain the rules for using MazePuzzles.io.
+      </p>
+      <p
+        class="text-sm mt-3"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted-strong);"
+      >Effective date: {effectiveDate}</p>
+    </div>
+
+    <!-- Sections -->
+    <div
+      class="border-t space-y-10 pt-8"
+      style="border-color: var(--color-border);"
+    >
+
+      <section aria-labelledby="tos-using">
+        <h2
+          id="tos-using"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >1. Using MazePuzzles.io</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          MazePuzzles.io provides maze games, maze generation tools, printable maze worksheets,
+          SVG downloads, and maze guides. By using the site, you agree to use it responsibly and
+          follow these terms.
+        </p>
+      </section>
+
+      <section aria-labelledby="tos-personal-edu">
+        <h2
+          id="tos-personal-edu"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >2. Free personal and educational use</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          You may use MazePuzzles.io for personal, classroom, homeschool, and non-commercial
+          educational purposes. You may print mazes for students, family activities, personal
+          practice, and similar uses.
+        </p>
+      </section>
+
+      <section aria-labelledby="tos-commercial">
+        <h2
+          id="tos-commercial"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >3. Commercial use</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          You may not sell, repackage, redistribute, or publish MazePuzzles.io mazes, downloads,
+          screenshots, generated outputs, or site content as part of a paid product or commercial
+          collection without permission.
+        </p>
+      </section>
+
+      <section aria-labelledby="tos-acceptable">
+        <h2
+          id="tos-acceptable"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >4. Acceptable use</h2>
+        <ul class="list-disc pl-5 space-y-1 text-base" style="color: var(--color-charcoal);">
+          <li>do not misuse the site or interfere with its operation</li>
+          <li>do not attempt to overload, scrape, reverse engineer, or bypass limits</li>
+          <li>do not use the site for unlawful or harmful purposes</li>
+          <li>do not remove branding or claim the site's design, code, or content as your own</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="tos-generated">
+        <h2
+          id="tos-generated"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >5. Generated mazes and printouts</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          Mazes generated or printed through MazePuzzles.io are provided for personal and
+          educational use. Printable mazes and SVG downloads are provided as-is. You are responsible
+          for checking that a printout or download works for your intended use.
+        </p>
+      </section>
+
+      <section aria-labelledby="tos-progress">
+        <h2
+          id="tos-progress"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >6. Progress and saved data</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          Some progress, streaks, or preferences may be saved locally in your browser.
+          MazePuzzles.io does not guarantee that local progress will always be available.
+          Clearing browser data, changing devices, or technical issues may remove saved progress.
+        </p>
+      </section>
+
+      <section aria-labelledby="tos-ip">
+        <h2
+          id="tos-ip"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >7. Intellectual property</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          The MazePuzzles.io name, site design, software, text, layout, and original content are
+          owned by the site owner or its licensors. These terms do not grant ownership of the site,
+          brand, code, or content.
+        </p>
+      </section>
+
+      <section aria-labelledby="tos-warranties">
+        <h2
+          id="tos-warranties"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >8. No warranties</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          MazePuzzles.io is provided as-is. We try to keep the site available and accurate, but we
+          do not guarantee uninterrupted access, error-free operation, or that every maze, printout,
+          download, or guide will meet every user's needs.
+        </p>
+      </section>
+
+      <section aria-labelledby="tos-liability">
+        <h2
+          id="tos-liability"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >9. Limitation of liability</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          To the fullest extent permitted by law, MazePuzzles.io is not responsible for indirect,
+          incidental, or consequential damages related to use of the site.
+        </p>
+      </section>
+
+      <section aria-labelledby="tos-changes">
+        <h2
+          id="tos-changes"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >10. Changes to these terms</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          We may update these Terms from time to time. The updated version will be posted on this
+          page with a new effective date.
+        </p>
+      </section>
+
+      <section aria-labelledby="tos-contact">
+        <h2
+          id="tos-contact"
+          class="font-bold text-lg mb-3"
+          style="color: var(--color-charcoal);"
+        >11. Contact</h2>
+        <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">
+          Contact information will be added when a support address is selected.
+        </p>
+      </section>
+
+    </div>
+  </div>
+</BaseLayout>

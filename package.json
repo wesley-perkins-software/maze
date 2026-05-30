@@ -1,0 +1,38 @@
+{
+  "name": "maze-platform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "generate:catalog": "tsx scripts/generate-catalog.ts",
+    "generate:library-catalog": "tsx scripts/generate-library-catalog.ts",
+    "library:audit": "tsx scripts/audit-library.ts",
+    "validate:catalog": "tsx scripts/validate-catalog.ts",
+    "generate:og": "node scripts/generate-og.mjs",
+    "quality:audit": "tsx scripts/quality-audit.ts",
+    "topology:experiment": "tsx scripts/topology-experiment.ts",
+    "confirmation:audit": "tsx scripts/confirmation-audit.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/react": "^3.6.0",
+    "@astrojs/sitemap": "^3.2.0",
+    "@astrojs/tailwind": "^5.1.0",
+    "astro": "^4.16.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.0"
+  }
+}

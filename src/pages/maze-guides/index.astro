@@ -1,0 +1,255 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const guides = [
+  {
+    title: 'How to Solve a Maze',
+    href: '/maze-guides/how-to-solve-a-maze',
+    category: 'MAZE SOLVING',
+    description: 'Maze-solving strategies for beginners, kids, and experienced solvers.',
+  },
+  {
+    title: 'How Mazes Work',
+    href: '/maze-guides/how-mazes-work',
+    category: 'MAZE BASICS',
+    description: 'Learn how maze paths, walls, dead ends, loops, and generation algorithms work.',
+  },
+  {
+    title: 'Maze Types',
+    href: '/maze-guides/maze-types',
+    category: 'MAZE BASICS',
+    description: 'A guide to square, circular, hexagonal, triangular, and other maze styles.',
+  },
+  {
+    title: 'Maze Difficulty',
+    href: '/maze-guides/maze-difficulty',
+    category: 'MAZE BASICS',
+    description: 'What makes a maze easy, hard, dense, or confusing.',
+  },
+  {
+    title: 'Mazes for Kids',
+    href: '/maze-guides/mazes-for-kids',
+    category: 'AUDIENCES',
+    description: 'How to choose maze puzzles for children by age and skill level.',
+  },
+  {
+    title: 'Mazes for the Classroom',
+    href: '/maze-guides/mazes-for-classroom',
+    category: 'AUDIENCES',
+    description: 'Ways teachers can use printable mazes for warm-ups, quiet work, and problem-solving.',
+  },
+  {
+    title: 'Mazes for Seniors',
+    href: '/maze-guides/mazes-for-seniors',
+    category: 'AUDIENCES',
+    description: 'How maze puzzles can support focus, routine, and low-pressure cognitive activity.',
+  },
+  {
+    title: 'Daily Maze Challenge',
+    href: '/maze-guides/daily-maze-challenge',
+    category: 'DAILY PLAY',
+    description: 'How a daily maze habit works and why the Maze of the Day is a simple way to keep solving.',
+  },
+  {
+    title: 'Maze Library',
+    href: '/maze-guides/maze-library',
+    category: 'MAZE COLLECTIONS',
+    description: 'How Maze Library collections, size tiers, progress tracking, and Play Next work.',
+  },
+  {
+    title: 'Printable Maze Worksheets',
+    href: '/maze-guides/printable-maze-worksheets',
+    category: 'PRINTABLE MAZES',
+    description: 'A guide to generating, printing, and using maze worksheets with optional answer key pages.',
+  },
+];
+
+const faqItems = [
+  {
+    q: 'What is the Maze Guides section?',
+    a: 'Maze Guides is MazePuzzles.io\'s guide hub for maze-solving strategies, maze types, difficulty, printable maze activities, and choosing mazes for different audiences.',
+  },
+  {
+    q: 'Are the maze guides free?',
+    a: 'Yes. The guides are free to read, and MazePuzzles.io tools are free to use without an account.',
+  },
+  {
+    q: 'Where should beginners start?',
+    a: 'Start with How to Solve a Maze, then try Small Mazes in the Maze Library or generate a small custom maze.',
+  },
+  {
+    q: 'Can I practice after reading a guide?',
+    a: 'Yes. Browse the Maze Library for collections, use the Maze Generator for custom mazes, or use Printable Mazes for worksheet-style practice.',
+  },
+  {
+    q: 'Can teachers use these resources?',
+    a: 'Yes. Teachers can use the guides and printable mazes for classroom warm-ups, quiet work, activity packs, and problem-solving practice.',
+  },
+];
+
+const schemaLD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${siteUrl}/maze-guides`,
+      url: `${siteUrl}/maze-guides`,
+      name: 'Maze Guides',
+      description: 'Maze guides for solving mazes, choosing difficulty, understanding maze types, printing maze worksheets, and finding maze activities for kids, classrooms, and seniors.',
+      isPartOf: { '@id': `${siteUrl}/#website` },
+      breadcrumb: { '@id': `${siteUrl}/maze-guides#breadcrumb` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${siteUrl}/maze-guides#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
+  ],
+});
+---
+
+<BaseLayout
+  title="Maze Guides | MazePuzzles.io"
+  description="Maze guides for solving mazes, choosing difficulty, understanding maze types, printing maze worksheets, and finding maze activities for kids, classrooms, and seniors."
+  canonical={`${siteUrl}/maze-guides`}
+  schemaLD={schemaLD}
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'Maze Guides' }]} />
+
+    <!-- Hero -->
+    <div class="mt-6 mb-12 md:mb-16 lg:mb-20">
+      <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">MAZE GUIDES</p>
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mb-5">Maze Guides</h1>
+      <p class="text-lg sm:text-xl md:text-2xl max-w-2xl leading-relaxed" style="color: var(--color-muted-strong);">
+        Guides for solving mazes, choosing the right difficulty, printing maze worksheets, and understanding how maze puzzles work.
+      </p>
+    </div>
+
+    <!-- Featured Guides -->
+    <section class="mb-14">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Featured Guides</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {guides.map((guide) => (
+          <a href={guide.href} class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+            <div>
+              <p class="text-xs tracking-widest uppercase font-semibold mb-1 text-arch-accent">{guide.category}</p>
+              <p class="font-semibold mb-1" style="color: var(--color-charcoal);">{guide.title}</p>
+              <p class="text-sm" style="color: var(--color-muted-strong);">{guide.description}</p>
+            </div>
+            <span class="text-sm font-medium mt-auto text-arch-accent">Read guide →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Learn by Goal -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">Learn by Goal</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">Choose a guide based on what you want to do next.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm" style="color: var(--color-muted-strong);">
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">New to mazes?</p>
+          <p class="mb-3">Start with basic solving strategies and learn how difficulty changes from small mazes to larger challenges.</p>
+          <div class="flex flex-col gap-1">
+            <a href="/maze-guides/how-to-solve-a-maze" style="color: var(--color-accent);">How to Solve a Maze →</a>
+            <a href="/maze-guides/maze-difficulty" style="color: var(--color-accent);">Maze Difficulty →</a>
+          </div>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Printing worksheets?</p>
+          <p class="mb-3">Learn how printable mazes work and find classroom-friendly maze activities.</p>
+          <div class="flex flex-col gap-1">
+            <a href="/printable-mazes" style="color: var(--color-accent);">Printable Mazes →</a>
+            <a href="/maze-guides/mazes-for-classroom" style="color: var(--color-accent);">Mazes for the Classroom →</a>
+          </div>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Choosing for someone else?</p>
+          <p class="mb-3">Find age-appropriate and low-pressure maze options for kids, seniors, and groups.</p>
+          <div class="flex flex-col gap-1">
+            <a href="/maze-guides/mazes-for-kids" style="color: var(--color-accent);">Mazes for Kids →</a>
+            <a href="/maze-guides/mazes-for-seniors" style="color: var(--color-accent);">Mazes for Seniors →</a>
+          </div>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Curious how mazes work?</p>
+          <p class="mb-3">Learn the structure behind maze paths, walls, loops, dead ends, and maze types.</p>
+          <div class="flex flex-col gap-1">
+            <a href="/maze-guides/how-mazes-work" style="color: var(--color-accent);">How Mazes Work →</a>
+            <a href="/maze-guides/maze-types" style="color: var(--color-accent);">Maze Types →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MazePuzzles.io Tools -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-2">MazePuzzles.io Tools</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">Learn the strategies, then practice with the tool that fits what you want to do.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a href="/maze-library" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Library</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Work through Maze Library collections and track your progress.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Library →</span>
+        </a>
+        <a href="/maze-generator" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Generator</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze and decide whether to play, print, or download it.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Generator →</span>
+        </a>
+        <a href="/printable-mazes" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+          <div>
+            <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Printable Mazes</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">A print-first worksheet tool with optional answer key pages.</p>
+          </div>
+          <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Printable Mazes →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready to practice?</h2>
+      <p class="text-sm text-arch-600 mb-5">Use the Maze Library to work through collections, generate a custom maze, or print worksheet-style mazes.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-library"    class="btn-secondary">Maze Library</a>
+        <a href="/maze-generator"  class="btn-secondary">Maze Generator</a>
+        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>

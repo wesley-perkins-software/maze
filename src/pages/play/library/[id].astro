@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { LibraryMazePlayer } from '../../../components/library/LibraryMazePlayer';
+import { getAllLibraryMazes } from '../../../lib/library/catalog.js';
+import type { LibraryCatalogEntry } from '../../../types/maze.js';
+
+export async function getStaticPaths() {
+  const mazes = getAllLibraryMazes();
+  return mazes.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: LibraryCatalogEntry;
+}
+
+const { entry } = Astro.props;
+
+const num = String(parseInt(entry.id.split('-')[1] ?? '1', 10)).padStart(3, '0');
+const tierLabel = entry.difficulty.charAt(0).toUpperCase() + entry.difficulty.slice(1);
+const label = `${tierLabel} #${num}`;
+const collectionSlug = `${entry.difficulty}-mazes`;
+---
+
+<BaseLayout
+  title={`${label} — Maze Library | MazePuzzles.io`}
+  description={`Play ${label} from the MazePuzzles.io Maze Library — a ${entry.width}×${entry.height} maze puzzle, free to play in your browser.`}
+  noindex={true}
+>
+  <div class="mx-auto max-w-4xl px-4 pt-6 pb-14">
+    <div class="mb-6 flex items-center gap-2 text-sm" style="color: var(--color-muted-strong);">
+      <a href="/maze-library" class="transition-colors" onmouseover="this.style.color='var(--color-charcoal)';" onmouseout="this.style.color='var(--color-muted-strong)';">Maze Library</a>
+      <span aria-hidden="true">›</span>
+      <a href={`/${collectionSlug}`} class="transition-colors" onmouseover="this.style.color='var(--color-charcoal)';" onmouseout="this.style.color='var(--color-muted-strong)';">{tierLabel} Mazes</a>
+      <span aria-hidden="true">›</span>
+      <span class="font-medium" style="color: var(--color-charcoal);">{label}</span>
+    </div>
+
+    <LibraryMazePlayer client:only="react" entry={entry} />
+  </div>
+</BaseLayout>

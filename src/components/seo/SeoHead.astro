@@ -1,0 +1,52 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  schemaLD?: string | string[];
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = '/og-default.png',
+  noindex = false,
+  schemaLD,
+} = Astro.props;
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+const resolvedCanonical = canonical
+  ? (canonical.startsWith('http') ? canonical : `${siteUrl}${canonical}`)
+  : `${siteUrl}${Astro.url.pathname}`;
+
+const schemas = Array.isArray(schemaLD) ? schemaLD : schemaLD ? [schemaLD] : [];
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={resolvedCanonical} />
+{noindex && <meta name="robots" content="noindex, follow" />}
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={resolvedCanonical} />
+<meta property="og:site_name" content="MazePuzzles.io" />
+<meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`} />
+
+<!-- JSON-LD -->
+{schemas.map((s) => (
+  <script type="application/ld+json" set:html={s} />
+))}

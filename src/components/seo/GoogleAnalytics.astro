@@ -1,0 +1,19 @@
+---
+// Measurement ID is public — safe to hardcode. GA only activates on production domains.
+const GA_MEASUREMENT_ID = 'G-JC41Z4E131';
+---
+
+<!-- Google tag (gtag.js) -->
+<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-JC41Z4E131"></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
+<script define:vars={{ GA_MEASUREMENT_ID }}>
+  // Only call config on production — blocks localhost and .netlify.app previews
+  const host = window.location.hostname;
+  if (host === 'mazepuzzles.io' || host === 'www.mazepuzzles.io') {
+    gtag('config', GA_MEASUREMENT_ID);
+  }
+</script>

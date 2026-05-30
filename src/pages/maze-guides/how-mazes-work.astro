@@ -1,0 +1,297 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const faqItems = [
+  {
+    q: 'What is a perfect maze?',
+    a: 'A perfect maze has two properties: every cell is reachable from every other cell, and there is exactly one path between any two points — no loops. Perfect mazes are the most common type in puzzles because they have a single, definitive solution.',
+  },
+  {
+    q: 'Can a maze have more than one solution?',
+    a: 'Yes. A maze with loops — where extra walls have been removed to create multiple connected paths — can have more than one route from entry to exit. These are called imperfect mazes. They are generally easier to navigate but harder to analyze systematically because dead-end filling does not eliminate all wrong paths.',
+  },
+  {
+    q: 'What algorithm does MazePuzzles.io use to generate mazes?',
+    a: 'MazePuzzles.io uses the recursive backtracker (depth-first search) algorithm for all its mazes. It produces long winding corridors and a high density of dead ends, which makes for dramatic, satisfying puzzles. For easy and kids mazes, extra wall removals are applied after generation to create loops and reduce difficulty.',
+  },
+  {
+    q: 'What is a dead end in a maze?',
+    a: 'A dead end is any corridor that has only one opening — you can enter it, but the only way out is back the way you came. Dead ends are definitively not part of the solution path in a perfect maze, which makes them useful targets for the dead-end filling strategy.',
+  },
+  {
+    q: 'What is a junction in a maze?',
+    a: 'A junction is any point where three or more paths meet, requiring a decision about which direction to go. Junctions are the decision points that create the challenge of a maze. A maze with more junctions generally feels more complex, even if the grid size is the same.',
+  },
+  {
+    q: 'Why do some mazes feel harder than others?',
+    a: 'Several factors affect perceived difficulty: grid size (more cells = more surface to cover), corridor length (longer winding paths are harder to track mentally), dead-end density (more dead ends = more wrong turns), and the presence or absence of loops. The recursive backtracker creates long corridors and many dead ends, which makes mazes feel demanding even at moderate sizes.',
+  },
+  {
+    q: 'Can I generate a maze myself?',
+    a: 'Yes. The Maze Generator on MazePuzzles.io lets you set the size and generate a fresh maze instantly. Each maze is unique — the same algorithm, a different random seed. You can play it in your browser, print it as a worksheet, or download the SVG.',
+  },
+];
+
+const articleSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'How Mazes Work',
+  description: 'Learn how maze paths, walls, dead ends, loops, and generation algorithms create the puzzles you solve.',
+  url: `${siteUrl}/maze-guides/how-mazes-work`,
+  datePublished: '2024-11-01',
+  dateModified: '2024-11-01',
+  author: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon-96x96.png` },
+  },
+  isPartOf: { '@id': `${siteUrl}/maze-guides` },
+  isAccessibleForFree: true,
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
+    { '@type': 'ListItem', position: 3, name: 'How Mazes Work' },
+  ],
+});
+---
+
+<BaseLayout
+  title="How Mazes Work — Paths, Walls, and Generation | MazePuzzles.io"
+  description="Learn how maze paths, walls, dead ends, loops, and generation algorithms create the puzzles you solve."
+  canonical={`${siteUrl}/maze-guides/how-mazes-work`}
+  schemaLD={[articleSchema, breadcrumbSchema]}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'How Mazes Work' },
+    ]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">Maze Basics</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">How Mazes Work</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        Learn how maze paths, walls, dead ends, loops, and generation algorithms create the puzzles you solve.
+      </p>
+    </div>
+
+    <!-- Section 1: Anatomy -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">The anatomy of a maze</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">
+        Every maze — whether printed on paper or rendered on screen — is built from the same basic parts.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { term: 'Paths', def: 'The open corridors you move through. Paths connect cells and define where you can go.' },
+          { term: 'Walls', def: 'The boundaries that block movement. Walls are what create the puzzle — without them, there is nothing to navigate.' },
+          { term: 'Dead ends', def: 'Corridors with only one opening. You can enter a dead end but the only way out is back the way you came.' },
+          { term: 'Junctions', def: 'Points where three or more paths meet. Junctions force a decision — which direction to go next.' },
+          { term: 'Entry', def: 'Where you start. Usually marked on the edge of the maze grid.' },
+          { term: 'Exit', def: 'Where you need to reach. The goal of every maze.' },
+        ].map(({ term, def }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{term}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{def}</p>
+          </div>
+        ))}
+      </div>
+      <p class="text-sm mt-5" style="color: var(--color-muted-strong);">
+        Understanding these parts makes it easier to talk about strategy. When you reach a dead end, you know it is definitively not part of the solution. When you reach a junction, you face a real decision. The structure of the maze is the puzzle.
+      </p>
+    </section>
+
+    <!-- Section 2: Perfect mazes vs loops -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Perfect mazes and mazes with loops</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Not all mazes are structurally identical. The most important distinction is whether a maze is <strong class="text-arch-charcoal">perfect</strong> or contains <strong class="text-arch-charcoal">loops</strong>.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        <div class="card rounded-lg p-5">
+          <p class="font-semibold text-sm mb-2" style="color: var(--color-charcoal);">Perfect maze</p>
+          <ul class="space-y-1.5">
+            {[
+              'Every cell is reachable from every other cell',
+              'Exactly one path exists between any two points',
+              'No loops — no place where two paths reconnect',
+              'Has a single, definitive solution',
+            ].map((item) => (
+              <li class="flex gap-2 items-start">
+                <span class="shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-arch-accent"></span>
+                <span class="text-sm" style="color: var(--color-muted-strong);">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="card rounded-lg p-5">
+          <p class="font-semibold text-sm mb-2" style="color: var(--color-charcoal);">Maze with loops</p>
+          <ul class="space-y-1.5">
+            {[
+              'Extra walls removed to create multiple connected paths',
+              'More than one route from entry to exit',
+              'Generally easier to navigate — more options at each junction',
+              'Dead-end filling becomes less effective as a solving strategy',
+            ].map((item) => (
+              <li class="flex gap-2 items-start">
+                <span class="shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-arch-accent"></span>
+                <span class="text-sm" style="color: var(--color-muted-strong);">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        Most puzzle mazes — including all mazes generated by MazePuzzles.io by default — are perfect mazes. Loops are sometimes added to easier difficulty levels to give solvers more room to maneuver when they get stuck.
+      </p>
+    </section>
+
+    <!-- Section 3: How mazes are generated -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">How mazes are generated</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        A computer-generated maze starts as a grid of cells, each completely surrounded by walls. The generation algorithm selects which walls to remove, carving out a connected network of paths while preserving the structure of a perfect maze.
+      </p>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        MazePuzzles.io uses the <strong class="text-arch-charcoal">recursive backtracker</strong> — also called depth-first search — for all its mazes. Here is how it works:
+      </p>
+      <ol class="space-y-3 mb-5">
+        {[
+          { step: 'Start at a random cell', note: 'Mark it as visited. This is the seed of the maze.' },
+          { step: 'Choose a random unvisited neighbor', note: 'Carve a passage (remove the shared wall) and move into it.' },
+          { step: 'Repeat until stuck', note: 'Keep carving deeper into unvisited territory. This is the "depth-first" part.' },
+          { step: 'Backtrack when stuck', note: 'When all neighbors are visited, step back to the previous cell and try again.' },
+          { step: 'Finish when all cells are visited', note: 'Every cell has been reached exactly once. The result is a perfect maze.' },
+        ].map(({ step, note }, i) => (
+          <li class="flex gap-4">
+            <span class="shrink-0 w-6 h-6 rounded-full bg-arch-accent text-white text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+            <span class="text-sm" style="color: var(--color-muted-strong);"><strong class="text-arch-charcoal">{step}:</strong> {note}</span>
+          </li>
+        ))}
+      </ol>
+      <div class="card rounded-lg p-4">
+        <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">What this produces</p>
+        <p class="text-sm" style="color: var(--color-muted-strong);">
+          The recursive backtracker creates mazes with long, winding corridors and many dead ends. Because the algorithm dives deep before backtracking, it tends to produce a strong visual flow — long diagonal runs followed by forced turns. This makes the mazes feel dramatic and satisfying to navigate.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 4: What this means for solving -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">What this means for solving</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Knowing how a maze was generated helps you choose the right solving strategy.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Recursive backtracker mazes are perfect mazes — which means the wall-following rule (keeping one hand on the wall) is guaranteed to reach the exit. Dead-end filling also works well: the dense dead-end structure gives you a lot of paths to eliminate, and each elimination simplifies the remaining puzzle significantly.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        When scanning a large maze before you start, look for the telltale signs of DFS structure: long unbroken corridors that run across significant portions of the grid. Those long passages are strong candidates for the solution path because the algorithm tends to carve the main corridor deep before branching.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        For more on how to apply this — and the other strategies that work across maze types — see the full solving guide.
+      </p>
+      <a href="/maze-guides/how-to-solve-a-maze" class="inline-flex items-center gap-1 text-sm font-medium mt-3 text-arch-accent hover:underline">
+        How to Solve a Maze →
+      </a>
+    </section>
+
+    <!-- Section 5: Size and difficulty -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Size, difficulty, and wall removal</h2>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        Grid size is the most visible factor in difficulty, but it is not the only one. Two 40×40 mazes can feel very different depending on their internal structure.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+        {[
+          { label: 'Grid size', desc: 'More cells means more surface to cover and a longer solution path. A 60×60 maze has nine times the area of a 20×20 maze.' },
+          { label: 'Corridor length', desc: 'Long winding corridors are harder to track mentally than short frequent ones. DFS mazes have the longest average corridors.' },
+          { label: 'Wall removal', desc: 'After generation, removing extra walls creates loops. Loops make dead-end filling less effective and give solvers more options — easier, but less systematic.' },
+        ].map(({ label, desc }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+          </div>
+        ))}
+      </div>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        The best way to understand these differences is to solve mazes at different sizes back to back. What feels manageable at 20×20 feels like a different puzzle entirely at 60×60 — even though the underlying structure is generated by the same algorithm.
+      </p>
+    </section>
+
+    <!-- Practice cards -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Try a maze at every size</h2>
+      <p class="text-sm mb-6" style="color: var(--color-muted-strong);">
+        The best way to understand maze structure is to solve a few. Start small, notice the patterns, then step up.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { href: '/maze-library/small-mazes',  label: 'Small Mazes',  desc: '20×20 grid. Short corridors, quick to complete — ideal for spotting the DFS structure clearly.' },
+          { href: '/maze-library/medium-mazes', label: 'Medium Mazes', desc: '40×40 grid. A genuine challenge. Long corridors start to feel genuinely disorienting.' },
+          { href: '/maze-library/large-mazes',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a plan. Scanning before you start becomes essential.' },
+          { href: '/maze-library', label: 'Maze Library', desc: 'Browse all sizes and track your progress across the full collection.' },
+        ].map(({ href, label, desc }) => (
+          <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
+            <p class="font-semibold text-sm" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+            <span class="text-sm font-medium mt-2 text-arch-accent">Play →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready to see it for yourself?</h2>
+      <p class="text-sm text-arch-600 mb-5">Generate a maze and watch the structure in action, or browse the library to compare sizes.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/maze-generator"           class="btn-secondary">Maze Generator</a>
+        <a href="/maze-library"             class="btn-secondary">Maze Library</a>
+        <a href="/maze-guides/how-to-solve-a-maze" class="btn-secondary">How to Solve a Maze</a>
+      </div>
+    </section>
+
+    <!-- Back link -->
+    <div class="mt-10 text-center">
+      <a
+        href="/maze-guides"
+        class="text-sm transition-colors"
+        style="color: var(--color-muted-strong);"
+        onmouseover="this.style.color='var(--color-charcoal)'"
+        onmouseout="this.style.color='var(--color-muted-strong)'"
+      >← All guides</a>
+    </div>
+
+  </div>
+</BaseLayout>

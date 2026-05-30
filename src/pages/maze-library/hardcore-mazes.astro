@@ -1,0 +1,178 @@
+---
+import CategoryLayout from '../../layouts/CategoryLayout.astro';
+import LibraryMazeCard from '../../components/ui/LibraryMazeCard.astro';
+import { LibraryProgress } from '../../components/library/LibraryProgress';
+import { getCategoryBySlug } from '../../types/maze.js';
+import { getLibraryMazesByDifficulty } from '../../lib/library/catalog.js';
+
+const category = getCategoryBySlug('maze-library/hardcore-mazes')!;
+const mazes = getLibraryMazesByDifficulty('hardcore');
+const allIds = mazes.map((m) => m.id);
+const firstLabel = 'Start Hardcore #001';
+
+const BASE = 'https://mazepuzzles.io';
+const pageUrl = `${BASE}/maze-library/hardcore-mazes`;
+const pageTitle = 'Hardcore Mazes | Free Online 100×100 Maze Puzzles | MazePuzzles.io';
+const pageDescription = 'Play free Hardcore Mazes online. Solve huge 100×100 maze puzzles, track your progress, and work through the hardest MazePuzzles.io collection.';
+
+const faqItems = [
+  {
+    q: 'What are Hardcore Mazes?',
+    a: 'Hardcore Mazes are 100×100 grid maze puzzles on MazePuzzles.io — the largest Maze Library collection on the site. Built for committed solvers who want an extreme, long-form challenge. The collection contains 15 puzzles, each with a unique layout.',
+  },
+  {
+    q: 'Are these mazes free?',
+    a: 'Yes. Every Hardcore Maze is free to play directly in your browser — no account, no download, and no sign-up required.',
+  },
+  {
+    q: 'Does my progress save?',
+    a: "Yes. Progress is saved on your device using browser storage. Completed mazes show a green checkmark badge and the progress bar updates automatically. No account is required.",
+  },
+  {
+    q: 'Can I play these mazes online?',
+    a: 'Yes. All Hardcore Mazes work in any modern browser on desktop, tablet, or phone. Use keyboard arrows, swipe, or the on-screen D-pad to navigate.',
+  },
+  {
+    q: 'Can I print these mazes?',
+    a: 'These collection pages are optimized for online solving. For worksheet-style printouts and optional answer key pages, use Printable Mazes.',
+    aHtml: 'These collection pages are optimized for online solving. For worksheet-style printouts and optional answer key pages, use <a href="/printable-mazes" class="underline hover:opacity-80">Printable Mazes</a>.',
+  },
+  {
+    q: 'What size should I try next?',
+    a: 'Hardcore Mazes are the largest Maze Library collection on MazePuzzles.io. For custom sizes beyond 100×100, use the Maze Generator.',
+    aHtml: 'Hardcore Mazes are the largest Maze Library collection on MazePuzzles.io. For custom sizes beyond 100×100, use the <a href="/maze-generator" class="underline hover:opacity-80">Maze Generator</a>.',
+  },
+  {
+    q: 'What is the difference between this collection and the Maze Generator?',
+    a: 'This collection contains numbered mazes with progress tracking — each maze has a permanent URL and stays the same every visit. The Maze Generator creates a unique random maze on demand with no set layout or progress tracking.',
+  },
+];
+
+const schemaLD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': pageUrl,
+      url: pageUrl,
+      name: pageTitle,
+      description: pageDescription,
+      isPartOf: { '@id': `${BASE}/#website` },
+      breadcrumb: { '@id': `${pageUrl}#breadcrumb` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${pageUrl}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${BASE}/` },
+        { '@type': 'ListItem', position: 2, name: 'Maze Library', item: `${BASE}/maze-library` },
+        { '@type': 'ListItem', position: 3, name: 'Hardcore Mazes' },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a ?? '' },
+      })),
+    },
+    {
+      '@type': 'ItemList',
+      name: 'Hardcore Mazes',
+      numberOfItems: mazes.length,
+      itemListElement: mazes.map((m, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${BASE}/play/library/${m.id}`,
+      })),
+    },
+  ],
+});
+---
+
+<CategoryLayout
+  category={category}
+  totalCount={mazes.length}
+  schemaLD={schemaLD}
+  pageTitle={pageTitle}
+  pageDescription={pageDescription}
+  heroLabel="HARDCORE MAZE COLLECTION"
+  heroDescription="Huge 100×100 maze puzzles built for serious focus and long-form maze solving."
+  benefitCards={[
+    { title: 'Maximum size', body: 'The largest Maze Library collection on MazePuzzles.io.' },
+    { title: 'Serious focus', body: 'Built for long, careful solving sessions.' },
+    { title: 'Dense exploration', body: 'A full 100×100 maze with a lot of ground to cover.' },
+    { title: 'Completion challenge', body: 'Work through the hardest collection one maze at a time.' },
+  ]}
+  faqItems={faqItems}
+  ctaHeading="Want a custom challenge?"
+  ctaDescription="Use the Maze Generator for custom sizes, or explore the full Maze Library and Printable Mazes."
+  ctaLinks={[
+    { label: 'Maze Generator', href: '/maze-generator' },
+    { label: 'Maze Library', href: '/maze-library' },
+    { label: 'Printable Mazes', href: '/printable-mazes' },
+  ]}
+>
+  <!-- Progress row -->
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+    <div class="min-w-0 flex-1 max-w-sm">
+      <LibraryProgress client:load total={mazes.length} difficulty={category.difficulty} />
+    </div>
+    <a
+      id="play-next-link"
+      href={`/play/library/${allIds[0]}`}
+      data-all-ids={JSON.stringify(allIds)}
+      data-first-label={firstLabel}
+      class="btn-primary text-sm px-4 py-2 shrink-0 w-full sm:w-auto"
+    >
+      {firstLabel}
+    </a>
+  </div>
+
+  <!-- Card grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {mazes.map((entry, i) => (
+      <LibraryMazeCard entry={entry} index={i} />
+    ))}
+  </div>
+</CategoryLayout>
+
+<script>
+  (function () {
+    try {
+      var raw = localStorage.getItem('mazepuzzles.library.progress');
+      var ids = raw ? JSON.parse(raw)?.completedMazeIds : [];
+      if (!Array.isArray(ids)) return;
+      var done = new Set(ids);
+
+      document.querySelectorAll('[data-maze-id]').forEach(function (el) {
+        if (done.has(el.getAttribute('data-maze-id'))) {
+          el.classList.add('maze-card-completed');
+        }
+      });
+
+      var link = document.getElementById('play-next-link');
+      if (!link) return;
+      var allIds = JSON.parse(link.getAttribute('data-all-ids') ?? '[]');
+      var next = allIds.find(function (id) { return !done.has(id); });
+
+      if (next) {
+        var nextCard = document.querySelector('[data-maze-id="' + next + '"]');
+        if (nextCard) nextCard.classList.add('maze-card-next');
+      }
+
+      var firstLabel = link.getAttribute('data-first-label') ?? 'Play Next';
+
+      if (done.size === 0) {
+        link.textContent = firstLabel;
+      } else if (next) {
+        link.textContent = 'Play Next';
+        link.setAttribute('href', '/play/library/' + next);
+      } else {
+        link.textContent = 'Collection Complete ✓';
+        link.setAttribute('href', '/play/library/' + allIds[0]);
+      }
+    } catch (_) {}
+  })();
+</script>

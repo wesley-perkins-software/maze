@@ -1,0 +1,223 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const schemaLD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/about`,
+      url: `${siteUrl}/about`,
+      name: 'About MazePuzzles.io | Free Online Mazes and Maze Generator',
+      description:
+        'Learn about MazePuzzles.io, a free maze platform for daily maze challenges, online maze collections, custom maze generation, printable maze worksheets, and maze-solving guides.',
+      isPartOf: { '@id': siteUrl },
+      breadcrumb: { '@id': `${siteUrl}/about#breadcrumb` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${siteUrl}/about#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+        { '@type': 'ListItem', position: 2, name: 'About', item: `${siteUrl}/about` },
+      ],
+    },
+  ],
+});
+---
+
+<BaseLayout
+  title="About MazePuzzles.io | Free Online Mazes and Maze Generator"
+  description="Learn about MazePuzzles.io, a free maze platform for daily maze challenges, online maze collections, custom maze generation, printable maze worksheets, and maze-solving guides."
+  schemaLD={[schemaLD]}
+>
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10">
+
+    <Breadcrumb crumbs={[{ label: 'Home', href: '/' }, { label: 'About' }]} />
+
+    <!-- Hero -->
+    <div class="mt-6 mb-12">
+      <p
+        class="text-xs uppercase tracking-widest mb-3"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
+      >About</p>
+      <h1
+        class="font-display text-5xl sm:text-6xl lg:text-7xl uppercase leading-none mb-5"
+        style="color: var(--color-charcoal);"
+      >About MazePuzzles.io</h1>
+      <p
+        class="text-base leading-relaxed max-w-2xl"
+        style="color: var(--color-charcoal);"
+      >
+        MazePuzzles.io is a free maze platform for daily challenges, online maze collections,
+        custom maze generation, printable worksheets, and maze-solving guides.
+      </p>
+    </div>
+
+    <!-- Section: What you can do -->
+    <section
+      class="pt-10 border-t"
+      style="border-color: var(--color-border);"
+      aria-labelledby="what-you-can-do-heading"
+    >
+      <h2
+        id="what-you-can-do-heading"
+        class="font-bold text-xl mb-6"
+        style="color: var(--color-charcoal);"
+      >What you can do</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            title: 'Play the Maze of the Day',
+            desc: 'Solve one fresh daily maze challenge.',
+          },
+          {
+            title: 'Complete Maze Library collections',
+            desc: 'Work through ready-to-play maze collections and track your progress on this device.',
+          },
+          {
+            title: 'Generate custom mazes',
+            desc: 'Create a new maze whenever you want, then play, print, or download it.',
+          },
+          {
+            title: 'Print maze worksheets',
+            desc: 'Generate clean printouts with optional answer key pages.',
+          },
+        ].map(({ title, desc }) => (
+          <div
+            class="rounded-lg p-5 flex flex-col gap-2"
+            style="background-color: var(--color-surface); border: 1px solid var(--color-border);"
+          >
+            <p class="font-semibold text-base" style="color: var(--color-charcoal);">{title}</p>
+            <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">{desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section: Built for simple maze solving -->
+    <section
+      class="pt-10 mt-10 border-t"
+      style="border-color: var(--color-border);"
+      aria-labelledby="built-for-heading"
+    >
+      <h2
+        id="built-for-heading"
+        class="font-bold text-xl mb-4"
+        style="color: var(--color-charcoal);"
+      >Built for simple maze solving</h2>
+      <p class="text-base leading-relaxed max-w-2xl" style="color: var(--color-charcoal);">
+        MazePuzzles.io is designed to be fast, readable, and easy to use. You do not need an account
+        to start solving. Open a maze, choose how you want to play, and continue at your own pace.
+      </p>
+    </section>
+
+    <!-- Section: For players, teachers, and puzzle fans -->
+    <section
+      class="pt-10 mt-10 border-t"
+      style="border-color: var(--color-border);"
+      aria-labelledby="audiences-heading"
+    >
+      <h2
+        id="audiences-heading"
+        class="font-bold text-xl mb-6"
+        style="color: var(--color-charcoal);"
+      >For players, teachers, and puzzle fans</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          {
+            title: 'Players',
+            desc: 'Use the daily maze, Maze Library collections, and custom generator for quick or focused solving sessions.',
+          },
+          {
+            title: 'Teachers and parents',
+            desc: 'Print maze worksheets for classroom activities, homeschool practice, quiet work, or puzzle packs.',
+          },
+          {
+            title: 'Puzzle fans',
+            desc: 'Explore different maze sizes, learn solving strategies, and challenge yourself with larger collections.',
+          },
+        ].map(({ title, desc }) => (
+          <div
+            class="rounded-lg p-5 flex flex-col gap-2"
+            style="background-color: var(--color-surface); border: 1px solid var(--color-border);"
+          >
+            <p class="font-semibold text-base" style="color: var(--color-charcoal);">{title}</p>
+            <p class="text-base leading-relaxed" style="color: var(--color-charcoal);">{desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section: How MazePuzzles.io is organized -->
+    <section
+      class="pt-10 mt-10 border-t"
+      style="border-color: var(--color-border);"
+      aria-labelledby="organized-heading"
+    >
+      <h2
+        id="organized-heading"
+        class="font-bold text-xl mb-6"
+        style="color: var(--color-charcoal);"
+      >How MazePuzzles.io is organized</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            title: 'Maze Library',
+            desc: 'Ready-to-play collections you can complete over time.',
+            href: '/maze-library',
+          },
+          {
+            title: 'Maze Generator',
+            desc: 'Custom mazes for playing, printing, or downloading.',
+            href: '/maze-generator',
+          },
+          {
+            title: 'Printable Mazes',
+            desc: 'A print-first worksheet tool with optional answer key pages.',
+            href: '/printable-mazes',
+          },
+          {
+            title: 'Maze Guides',
+            desc: 'Helpful guides for solving mazes, understanding difficulty, and choosing the right puzzle.',
+            href: '/maze-guides',
+          },
+        ].map(({ title, desc, href }) => (
+          <a
+            href={href}
+            class="card-hover rounded-lg p-5 flex flex-col gap-2 no-underline"
+          >
+            <p class="font-semibold text-base" style="color: var(--color-charcoal);">{title}</p>
+            <p class="text-base leading-relaxed flex-1" style="color: var(--color-charcoal);">{desc}</p>
+            <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Explore →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section
+      class="mt-14 rounded-lg p-8 sm:p-10 text-center"
+      style="background-color: var(--color-surface); border: 1px solid var(--color-border);"
+      aria-labelledby="cta-heading"
+    >
+      <h2
+        id="cta-heading"
+        class="font-display text-4xl sm:text-5xl uppercase leading-none mb-4"
+        style="color: var(--color-charcoal);"
+      >Ready to solve a maze?</h2>
+      <p class="text-base leading-relaxed mb-7 max-w-md mx-auto" style="color: var(--color-charcoal);">
+        Start with today's maze, browse the library, or generate your own.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/maze-of-the-day" class="btn-primary text-sm px-6 py-3">Maze of the Day</a>
+        <a href="/maze-library" class="btn-secondary text-sm px-6 py-3">Maze Library</a>
+        <a href="/maze-generator" class="btn-secondary text-sm px-6 py-3">Maze Generator</a>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>

@@ -1,0 +1,303 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/nav/Breadcrumb.astro';
+
+const siteUrl = import.meta.env.SITE || 'https://mazepuzzles.io';
+
+const faqItems = [
+  {
+    q: 'Are printable maze worksheets free?',
+    a: 'Yes. MazePuzzles.io printable mazes are completely free. No account, no sign-up, and no limit on how many you generate or print.',
+  },
+  {
+    q: 'Can I print mazes for a whole class?',
+    a: 'Yes. Generate a maze, print as many copies as you need. There is no per-print fee or DRM. The output is a clean single-page PDF with no ads or watermarks.',
+  },
+  {
+    q: 'How do I include an answer key?',
+    a: 'Before printing, toggle Include Answer Key in the Printable Mazes tool. The printout will include the maze worksheet on the first page and the solution on a second page.',
+  },
+  {
+    q: 'What sizes are available for printing?',
+    a: 'Five sizes are available: Small (20×20), Medium (40×40), Large (60×60), Expert (80×80), and Hardcore (100×100). All print cleanly on standard A4 or US Letter paper.',
+  },
+  {
+    q: 'Can I download a maze as a file instead of printing directly?',
+    a: 'Yes. The Printable Mazes tool has a Download SVG option. SVG files are vector format and scale cleanly at any size, making them suitable for use in documents or design tools.',
+  },
+  {
+    q: 'What is the difference between Printable Mazes and the Maze Generator?',
+    a: 'Both can generate mazes for printing. Printable Mazes is optimized for the print workflow — clean layout, answer key toggle, print button. The Maze Generator is play-first: it lets you solve the maze online and also offers printing as an option.',
+  },
+  {
+    q: 'Are the mazes different every time I generate one?',
+    a: 'Yes. Each time you click Generate, a new maze is created. You can generate as many unique mazes as you want for a packet or activity set.',
+  },
+];
+
+const articleSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Printable Maze Worksheets: A Guide for Teachers and Parents',
+  description: 'How to generate and print maze worksheets, when to include an answer key, classroom and parent uses, and how to choose the right maze size.',
+  url: `${siteUrl}/maze-guides/printable-maze-worksheets`,
+  datePublished: '2025-05-29',
+  dateModified: '2025-05-29',
+  author: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MazePuzzles.io',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon-96x96.png` },
+  },
+  isPartOf: { '@id': `${siteUrl}/maze-guides` },
+  isAccessibleForFree: true,
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+    { '@type': 'ListItem', position: 2, name: 'Maze Guides', item: `${siteUrl}/maze-guides` },
+    { '@type': 'ListItem', position: 3, name: 'Printable Maze Worksheets' },
+  ],
+});
+
+const faqSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+});
+---
+
+<BaseLayout
+  title="Printable Maze Worksheets: A Guide for Teachers and Parents | MazePuzzles.io"
+  description="How to generate and print maze worksheets, when to include an answer key, classroom and parent uses, and how to choose the right maze size."
+  canonical={`${siteUrl}/maze-guides/printable-maze-worksheets`}
+  schemaLD={[articleSchema, breadcrumbSchema, faqSchema]}
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
+
+    <Breadcrumb crumbs={[
+      { label: 'Home', href: '/' },
+      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'Printable Maze Worksheets' },
+    ]} />
+
+    <div class="mt-4 mb-10">
+      <p class="text-xs tracking-widest uppercase font-semibold mb-2 text-arch-accent">PRINTABLE MAZES</p>
+      <h1 class="text-5xl sm:text-6xl text-arch-charcoal mb-4">Printable Maze Worksheets: A Guide for Teachers and Parents</h1>
+      <p class="text-arch-600 text-base max-w-xl">
+        How to generate and print maze worksheets, when to include an answer key, classroom and parent uses, and how to choose the right maze size.
+      </p>
+    </div>
+
+    <!-- Section 1: What are printable maze worksheets? -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">What are printable maze worksheets?</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        A printable maze worksheet is a maze puzzle formatted for paper — clean, ad-free, and ready to solve with a pencil. Unlike online mazes, printed mazes let solvers mark paths, fill in dead ends, and work through the puzzle in a tangible, screen-free way.
+      </p>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        For teachers and parents, printable maze worksheets serve a range of purposes: fine motor practice for young children, a quiet activity for a classroom transition, a travel activity for older kids, or a low-pressure cognitive exercise for adults and seniors. A maze worksheet requires no materials beyond a pencil and works in any setting.
+      </p>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        MazePuzzles.io generates unique maze worksheets on demand, free to print in five sizes. Each maze is freshly generated — no two are exactly alike.
+      </p>
+    </section>
+
+    <!-- Section 2: How to generate and print -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">How to generate and print a worksheet</h2>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        The <a href="/printable-mazes" style="color: var(--color-accent);">MazePuzzles.io Printable Mazes tool</a> is built around a three-step workflow:
+      </p>
+      <ol class="space-y-3 mb-4">
+        {[
+          { label: 'Choose a size', note: 'Select from Small (20×20) through Hardcore (100×100). Larger sizes produce more complex mazes with longer solution paths.' },
+          { label: 'Generate the maze', note: 'Click Generate to create a new unique maze. You can generate as many times as you like to get a maze you are happy with.' },
+          { label: 'Print or download', note: 'Click Print Maze for a clean print dialog, or Download SVG to save a scalable vector file for use in documents or design tools.' },
+        ].map(({ label, note }, i) => (
+          <li class="flex gap-4">
+            <span class="shrink-0 w-6 h-6 rounded-full bg-arch-accent text-white text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+            <span class="text-sm" style="color: var(--color-muted-strong);"><strong class="text-arch-charcoal">{label}:</strong> {note}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="text-sm" style="color: var(--color-muted-strong);">
+        The printout is a single clean page with the maze centered on standard A4 or US Letter paper. No ads, no watermarks, no headers.
+      </p>
+    </section>
+
+    <!-- Section 3: When to include an answer key -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">When to include an answer key</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Toggle Include Answer Key before printing and the printout adds a second page showing the solution path. The maze on page one is clean and unsolved; the answer key on page two shows the correct route highlighted.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">When an answer key helps</p>
+          <p class="text-sm" style="color: var(--color-muted-strong);">Classroom use where a teacher needs to check solutions. Activity packets where the solver may need a reference. Younger children who may get stuck and need a nudge.</p>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">When to skip it</p>
+          <p class="text-sm" style="color: var(--color-muted-strong);">Individual use where the solver should work through the maze independently. Competitions or timed challenges. When the goal is persistence without a reference available.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Classroom uses -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Classroom uses</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Maze worksheets are a low-prep, high-utility classroom tool. They work across grade levels and require no technology or setup beyond a printer. Common classroom uses:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { label: 'Warm-up activity', desc: 'Hand out a maze as students arrive or transition between subjects. A Small or Medium maze takes 3–8 minutes and focuses attention without requiring instruction.' },
+          { label: 'Fine motor practice (K–2)', desc: 'Tracing a path through a printed maze requires the same pencil control as handwriting. Wide-corridor mazes are especially good for early grades.' },
+          { label: 'Quiet independent work', desc: 'A maze is self-contained — students know when they have finished. It works for early finishers, indoor recess, or any period that calls for independent quiet work.' },
+          { label: 'Problem-solving discussion', desc: 'After solving, ask students to explain their strategy: did they follow a wall? Backtrack from dead ends? What would they do differently on a harder maze?' },
+        ].map(({ label, desc }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 5: Parent uses -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Parent uses</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        For parents, printable maze worksheets offer a screen-free activity that can be used at home or on the go. A few useful contexts:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { label: 'Travel activity', desc: 'Print a few mazes before a trip. They require nothing more than a pencil, take up minimal space, and work on planes, trains, and in waiting rooms.' },
+          { label: 'Screen-free time', desc: 'A maze is a focused, self-contained puzzle. It occupies attention without a screen and produces a satisfying result — the completed path — when finished.' },
+          { label: 'Homework support', desc: 'For children who need a bridge from school work to free time, a maze is low-stakes problem-solving that requires focus without feeling like more schoolwork.' },
+          { label: 'Rainy day activity', desc: 'Print a set of different sizes and let children work through them in order of difficulty. A Small maze as a warm-up, a Medium or Large as the main challenge.' },
+        ].map(({ label, desc }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 6: Choosing the right size -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Choosing the right worksheet size</h2>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        Maze size determines complexity, not just visual scale. A larger grid means more corridors, more dead ends, and a longer solution path — not just a bigger printout. Choose based on the solver's experience and available time:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { href: '/maze-library/small-mazes',   label: 'Small (20×20)',   desc: 'Good for young children, beginners, or when you want a quick 3–5 minute activity. Easy to scan and solve.' },
+          { href: '/maze-library/medium-mazes',  label: 'Medium (40×40)',  desc: 'A genuine challenge for older children and adults. Requires backtracking and patience. Good for a 10–15 minute session.' },
+          { href: '/maze-library/large-mazes',   label: 'Large (60×60)',   desc: 'For experienced solvers or longer sessions. Complex routing with many dead ends. Scanning before starting helps.' },
+          { href: '/maze-library/expert-mazes',  label: 'Expert (80×80)',  desc: 'Dense and demanding. Suitable for adults who want a real challenge. Expect 20+ minutes for most solvers.' },
+          { href: '/maze-library/hardcore-mazes', label: 'Hardcore (100×100)', desc: 'Maximum difficulty. A full Hardcore maze printed on a single page is a significant challenge. Not recommended for beginners.' },
+        ].map(({ href, label, desc }) => (
+          <div class="card rounded-lg p-4">
+            <p class="font-semibold text-sm mb-1" style="color: var(--color-charcoal);">{label}</p>
+            <p class="text-sm" style="color: var(--color-muted-strong);">{desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 7: Printable Mazes vs. Maze Generator -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">Printable Mazes vs. Maze Generator</h2>
+      <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
+        Both tools can produce a maze you can print. The difference is which workflow they are optimized for:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold text-sm mb-2" style="color: var(--color-charcoal);">Printable Mazes</p>
+          <ul class="space-y-1">
+            {[
+              'Print-first layout and UI',
+              'Answer key toggle',
+              'Clean single-page output',
+              'Download SVG option',
+              'Best for: worksheets, classroom sets, paper-first use',
+            ].map((item) => (
+              <li class="text-sm flex gap-2" style="color: var(--color-muted-strong);">
+                <span class="shrink-0 text-arch-accent mt-0.5">✓</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <a href="/printable-mazes" class="inline-block mt-3 text-sm font-medium text-arch-accent">Create Printable Mazes →</a>
+        </div>
+        <div class="card rounded-lg p-4">
+          <p class="font-semibold text-sm mb-2" style="color: var(--color-charcoal);">Maze Generator</p>
+          <ul class="space-y-1">
+            {[
+              'Play-first interface',
+              'Solve online before printing',
+              'Print or download SVG',
+              'Best for: online play that may also get printed',
+            ].map((item) => (
+              <li class="text-sm flex gap-2" style="color: var(--color-muted-strong);">
+                <span class="shrink-0 text-arch-accent mt-0.5">✓</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <a href="/maze-generator" class="inline-block mt-3 text-sm font-medium text-arch-accent">Open Maze Generator →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-16 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-6">Frequently asked questions</h2>
+      <dl class="space-y-5">
+        {faqItems.map(({ q, a }) => (
+          <div class="border-b pb-5 last:border-0" style="border-color: var(--color-border);">
+            <dt class="font-semibold mb-1" style="color: var(--color-charcoal);">{q}</dt>
+            <dd class="text-sm" style="color: var(--color-muted-strong);">{a}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- CTA -->
+    <section class="mt-12 rounded-sm border border-arch-200 bg-arch-bg p-6">
+      <h2 class="text-lg font-bold text-arch-charcoal mb-2">Create a printable maze worksheet</h2>
+      <p class="text-sm text-arch-600 mb-5">Generate a free maze worksheet, add an answer key if needed, and print in seconds.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/printable-mazes" class="btn-secondary">Create Printable Mazes</a>
+        <a href="/maze-generator" class="btn-secondary">Open Maze Generator</a>
+      </div>
+    </section>
+
+    <!-- Back link -->
+    <div class="mt-10 text-center">
+      <a
+        href="/maze-guides"
+        class="text-sm transition-colors"
+        style="color: var(--color-muted-strong);"
+        onmouseover="this.style.color='var(--color-charcoal)'"
+        onmouseout="this.style.color='var(--color-muted-strong)'"
+      >← All guides</a>
+    </div>
+
+  </div>
+</BaseLayout>
