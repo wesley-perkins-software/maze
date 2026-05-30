@@ -20,6 +20,15 @@ import {
 } from '../../lib/gameplay/session';
 import type { GeneratedMazeSession } from '../../lib/gameplay/session';
 import type { GameState } from '../../lib/gameplay/types';
+import {
+  trackMazeStarted,
+  trackMazeCompleted,
+  trackSessionResumed,
+  trackMazeGenerated,
+  trackMazeSizeSelected,
+  trackMazePrinted,
+  trackMazeDownloaded,
+} from '../../lib/analytics';
 
 type SizePreset = 'small' | 'medium' | 'large' | 'expert' | 'hardcore';
 
@@ -403,6 +412,7 @@ export function MazeGenerator() {
     setSizePreset(s);
     setShowCustom(false);
     generate(s, SIZE_MAP[s]);
+    trackMazeSizeSelected('generator', s);
   }, [generate, cancelScheduledCustomPreview]);
 
   const handleGenerate = useCallback(() => {
@@ -415,8 +425,22 @@ export function MazeGenerator() {
 
     if (showCustom) {
       generate(null, { w: customWidth, h: customHeight });
+      trackMazeGenerated({
+        maze_context: 'generator',
+        maze_difficulty: 'custom',
+        maze_size: `${customWidth}x${customHeight}`,
+        width: customWidth,
+        height: customHeight,
+      });
     } else {
       generate(sizePreset, SIZE_MAP[sizePreset]);
+      trackMazeGenerated({
+        maze_context: 'generator',
+        maze_difficulty: sizePreset,
+        maze_size: `${SIZE_MAP[sizePreset].w}x${SIZE_MAP[sizePreset].h}`,
+        width: SIZE_MAP[sizePreset].w,
+        height: SIZE_MAP[sizePreset].h,
+      });
     }
   }, [showCustom, customWidth, customHeight, sizePreset, generate, cancelScheduledCustomPreview, resumeSession]);
 
@@ -434,11 +458,20 @@ export function MazeGenerator() {
     setInitialGameState(undefined);
     setInitialShowTrail(undefined);
     setPlaying(true);
-  }, [maze, resumeSession]);
+    trackMazeStarted({
+      maze_context: 'generator',
+      maze_size: `${maze.width}x${maze.height}`,
+      maze_difficulty: showCustom ? 'custom' : sizePreset,
+    });
+  }, [maze, resumeSession, showCustom, sizePreset]);
 
-  // Resume the saved session: re-generate the exact same maze from saved seed.
   const handleResume = useCallback(() => {
     if (!resumeSession) return;
+    trackSessionResumed({
+      maze_context: 'generator',
+      maze_size: `${resumeSession.maze.width}x${resumeSession.maze.height}`,
+      maze_difficulty: resumeSession.maze.difficulty ?? 'custom',
+    });
     const { maze: m, progress } = resumeSession;
 
     const restoredMaze = generateMaze({
@@ -488,7 +521,16 @@ export function MazeGenerator() {
   const handleSolve = useCallback((stats: SolveStats) => {
     clearGeneratedSession();
     setSolveStats(stats);
-  }, []);
+    trackMazeCompleted({
+      maze_context: 'generator',
+      maze_size: `${maze.width}x${maze.height}`,
+      maze_difficulty: showCustom ? 'custom' : sizePreset,
+      elapsed_ms: stats.elapsedMs,
+      elapsed_sec: Math.floor(stats.elapsedMs / 1000),
+      steps: stats.stepCount,
+      hints_used: stats.hintsUsed,
+    });
+  }, [maze, showCustom, sizePreset]);
 
   // Autosave callback — called by FullscreenMazePlayer on state changes.
   const handleSessionChange = useCallback((gameState: GameState, showTrail: boolean) => {
@@ -532,11 +574,25 @@ export function MazeGenerator() {
     a.download = `maze-${maze.width}x${maze.height}.svg`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [maze]);
+    trackMazeDownloaded({
+      maze_context: 'generator',
+      maze_difficulty: showCustom ? 'custom' : sizePreset,
+      maze_size: `${maze.width}x${maze.height}`,
+      source_page: '/maze-generator',
+      file_type: 'svg',
+    });
+  }, [maze, showCustom, sizePreset]);
 
   const handlePrint = useCallback(() => {
     window.requestAnimationFrame(() => window.print());
-  }, []);
+    trackMazePrinted({
+      maze_context: 'generator',
+      maze_difficulty: showCustom ? 'custom' : sizePreset,
+      maze_size: `${maze.width}x${maze.height}`,
+      source_page: '/maze-generator',
+      include_answer_key: false,
+    });
+  }, [maze, showCustom, sizePreset]);
 
   const toggleCustom = useCallback(() => {
     setShowCustom((prev) => {
@@ -642,6 +698,7 @@ export function MazeGenerator() {
             onSessionChange={handleSessionChange}
             onReset={handleReset}
             onSolve={handleSolve}
+            mazeContext="generator"
             onClose={() => {
               setPlaying(false);
               setInitialGameState(undefined);
@@ -671,6 +728,7 @@ export function MazeGenerator() {
                 setPlaying(false);
               }}
               contextLabel={presetLabel && presetLabel.trim() ? `Generated Maze · ${presetLabel}` : `Generated Maze · ${maze.width}×${maze.height}`}
+              mazeContext="generator"
               onNewMaze={handleGenerate}
               mazeWidth={maze.width}
               mazeHeight={maze.height}

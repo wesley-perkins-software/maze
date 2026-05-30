@@ -583,3 +583,42 @@ const organizationSchema = JSON.stringify({
   applyBarState();
   window.addEventListener('storage', applyBarState);
 </script>
+
+<script>
+  import { trackCtaClicked } from '../lib/analytics';
+
+  // Product grid CTAs
+  const ctaMap: Record<string, { cta_id: string; destination: string }> = {
+    '/maze-of-the-day': { cta_id: 'product_daily', destination: '/maze-of-the-day' },
+    '/maze-library':    { cta_id: 'product_library', destination: '/maze-library' },
+    '/maze-generator':  { cta_id: 'product_generator', destination: '/maze-generator' },
+    '/printable-mazes': { cta_id: 'product_printable', destination: '/printable-mazes' },
+  };
+
+  document.querySelectorAll<HTMLAnchorElement>('.card-hover[href]').forEach((el) => {
+    const href = el.getAttribute('href') ?? '';
+    const meta = ctaMap[href];
+    if (meta) {
+      el.addEventListener('click', () => trackCtaClicked(meta.cta_id, '/', meta.destination));
+    }
+  });
+
+  // Bottom section CTAs
+  document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-of-the-day"].btn-primary').forEach((el) => {
+    el.addEventListener('click', () => trackCtaClicked('bottom_cta_daily', '/', '/maze-of-the-day'));
+  });
+  document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-library"].btn-secondary').forEach((el) => {
+    el.addEventListener('click', () => trackCtaClicked('bottom_cta_library', '/', '/maze-library'));
+  });
+  document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-generator"].btn-secondary').forEach((el) => {
+    el.addEventListener('click', () => trackCtaClicked('bottom_cta_generator', '/', '/maze-generator'));
+  });
+
+  // Sticky mobile CTA
+  const stickyBtn = document.getElementById('sticky-cta-btn');
+  if (stickyBtn) {
+    stickyBtn.addEventListener('click', () =>
+      trackCtaClicked('sticky_mobile_play_now', '/', '/play/maze-of-the-day/'),
+    );
+  }
+</script>

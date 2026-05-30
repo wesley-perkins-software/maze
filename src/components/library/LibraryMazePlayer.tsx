@@ -4,7 +4,7 @@
  * Follows the DailyMazePlayer pattern:
  *   static preview → fullscreen player on "Play" → custom post-solve overlay.
  */
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { generateMazeFromLibraryCatalog, GENERATOR_VERSION } from '../../lib/maze/generator';
 import { getNextLibraryMaze, getLibraryMazesByDifficulty } from '../../lib/library/catalog';
 import { markLibraryMazeComplete, isLibraryMazeComplete } from '../../lib/library/progress';
@@ -21,6 +21,12 @@ import type { PostSolveNav } from '../maze/PostSolveOverlay';
 import type { GameState } from '../../lib/gameplay/types';
 import type { SessionProgress } from '../../lib/library/session';
 import type { LibraryCatalogEntry } from '../../types/maze';
+import {
+  trackMazeStarted,
+  trackMazeCompleted,
+  trackSessionResumed,
+  trackLibraryPlayNextClicked,
+} from '../../lib/analytics';
 
 export interface LibraryMazePlayerProps {
   entry: LibraryCatalogEntry;
@@ -67,6 +73,8 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   const [savedSession, setSavedSession] = useState<ReturnType<typeof loadLibrarySession>>(null);
   const [shouldResume, setShouldResume] = useState(false);
 
+  const hasStartedRef = useRef(false);
+
   const nextEntry = useMemo(() => getNextLibraryMaze(entry.id), [entry.id]);
 
   const adjacentMazes = useMemo(() => {
@@ -106,7 +114,18 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
     setIsComplete(true);
     setSavedSession(null);
     setSolveStats(stats);
-  }, [entry.id]);
+    hasStartedRef.current = false;
+    trackMazeCompleted({
+      maze_context: 'library',
+      maze_size: `${maze.width}x${maze.height}`,
+      maze_difficulty: entry.difficulty,
+      maze_id: entry.id,
+      elapsed_ms: stats.elapsedMs,
+      elapsed_sec: Math.floor(stats.elapsedMs / 1000),
+      steps: stats.stepCount,
+      hints_used: stats.hintsUsed,
+    });
+  }, [entry.id, entry.difficulty, maze.width, maze.height]);
 
   const handleClose = useCallback(() => {
     setPlaying(false);
@@ -137,16 +156,31 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
   }, [entry.id]);
 
   const handleResumeCTA = useCallback(() => {
+    trackSessionResumed({
+      maze_context: 'library',
+      maze_size: `${maze.width}x${maze.height}`,
+      maze_difficulty: entry.difficulty,
+      maze_id: entry.id,
+    });
     setShouldResume(true);
     setPlaying(true);
     setSolveStats(null);
-  }, []);
+  }, [entry.id, entry.difficulty, maze.width, maze.height]);
 
   const handlePlayFresh = useCallback(() => {
+    if (!hasStartedRef.current) {
+      hasStartedRef.current = true;
+      trackMazeStarted({
+        maze_context: 'library',
+        maze_size: `${maze.width}x${maze.height}`,
+        maze_difficulty: entry.difficulty,
+        maze_id: entry.id,
+      });
+    }
     setShouldResume(false);
     setPlaying(true);
     setSolveStats(null);
-  }, []);
+  }, [entry.id, entry.difficulty, maze.width, maze.height]);
 
   const handlePlayAgain = useCallback(() => {
     setSolveStats(null);
@@ -223,14 +257,14 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
 
                 <div className="flex items-center justify-between gap-2 mt-4 pt-4 border-t border-[var(--color-border)]">
                   {adjacentMazes.prev ? (
-                    <a href={`/play/library/${adjacentMazes.prev.id}`} className="inline-flex items-center rounded border border-[var(--color-border-strong)] px-3 py-1.5 text-sm font-medium text-[var(--color-charcoal)] hover:border-[var(--color-charcoal)] hover:bg-[var(--color-border)] transition-colors">
+                    <a href={`/play/library/${adjacentMazes.prev.id}`} onClick={() => trackLibraryPlayNextClicked({ from_maze_id: entry.id, to_maze_id: adjacentMazes.prev!.id, difficulty: entry.difficulty })} className="inline-flex items-center rounded border border-[var(--color-border-strong)] px-3 py-1.5 text-sm font-medium text-[var(--color-charcoal)] hover:border-[var(--color-charcoal)] hover:bg-[var(--color-border)] transition-colors">
                       ← {mazeShortLabel(adjacentMazes.prev)}
                     </a>
                   ) : (
                     <span aria-hidden="true" />
                   )}
                   {adjacentMazes.next ? (
-                    <a href={`/play/library/${adjacentMazes.next.id}`} className="inline-flex items-center rounded border border-[var(--color-border-strong)] px-3 py-1.5 text-sm font-medium text-[var(--color-charcoal)] hover:border-[var(--color-charcoal)] hover:bg-[var(--color-border)] transition-colors">
+                    <a href={`/play/library/${adjacentMazes.next.id}`} onClick={() => trackLibraryPlayNextClicked({ from_maze_id: entry.id, to_maze_id: adjacentMazes.next!.id, difficulty: entry.difficulty })} className="inline-flex items-center rounded border border-[var(--color-border-strong)] px-3 py-1.5 text-sm font-medium text-[var(--color-charcoal)] hover:border-[var(--color-charcoal)] hover:bg-[var(--color-border)] transition-colors">
                       {mazeShortLabel(adjacentMazes.next)} →
                     </a>
                   ) : (
@@ -307,6 +341,7 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
           onReset={handleReset}
           initialGameState={initialGameState}
           initialShowTrail={initialShowTrail}
+          mazeContext="library"
         />
       )}
 
@@ -328,6 +363,7 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
               isNewBest={solveStats.isNewBest}
               personalBest={null}
               contextLabel={label}
+              mazeContext="library"
               nav={nav}
               onPlayAgain={handlePlayAgain}
               onClose={() => setSolveStats(null)}

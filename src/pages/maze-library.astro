@@ -375,3 +375,12 @@ const schemaLD = JSON.stringify({
     } catch (_) {}
   })();
 </script>
+
+<script>
+  import { trackLibraryCollectionViewed } from '../lib/analytics';
+  const key = 'ga_lib_overview_viewed';
+  if (!sessionStorage.getItem(key)) {
+    sessionStorage.setItem(key, '1');
+    trackLibraryCollectionViewed('overview');
+  }
+</script>
