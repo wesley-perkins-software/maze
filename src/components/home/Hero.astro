@@ -121,7 +121,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
           <a
             id="hero-cta-desktop"
             href="/play/maze-of-the-day/"
-            class="hero-cta-primary btn-primary text-sm px-8 py-4 mb-3 inline-flex items-center gap-2"
+            class="hero-cta-primary btn-primary w-full justify-center text-sm px-8 py-4 mb-3 inline-flex items-center gap-2"
           >
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
@@ -346,18 +346,21 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     outline-offset: 2px;
   }
 
-  /* Mobile: side-by-side chips with 44px tap zone via padding trick */
+  /* Mobile: stacked full-width buttons matching the primary and restart CTAs */
   .hero-sec-group-mobile {
-    display:     flex;
-    flex-wrap:   wrap;
-    gap:         0.625rem;
-    padding-top: 1.25rem;
+    display:        flex;
+    flex-direction: column;
+    gap:            0.625rem;
+    padding-top:    0.75rem;
+    width:          100%;
   }
   .hero-sec-group-mobile .hero-sec-link {
-    padding: 0.75rem 1.25rem; /* taller padding = solid 44px tap target */
+    width:           100%;
+    justify-content: center;
+    padding:         0.75rem 1.25rem;
   }
 
-  /* Desktop: same chip style, compact horizontal row */
+  /* Desktop: horizontal row — Browse, Create (and Restart when in-progress) */
   .hero-sec-group-desktop {
     display:        flex;
     flex-direction: row;
@@ -456,9 +459,9 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   }
   @media (min-width: 768px) {
     :global(.hero-daily-restart-btn) {
-      display: inline-flex;
-      width:   auto;
-      padding: 0.5rem 1.25rem;
+      display: flex;
+      width:   100%;
+      padding: 0.625rem 1.25rem;
     }
   }
 
@@ -682,6 +685,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
       mobileLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
       desktopLink.href = dailyPlayPath;
       desktopLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
+      // Restart sits in its own full-width slot above the sec-group on both mobile and desktop
       const link = restartLinkHtml();
       mobileSecEl.innerHTML = link;
       desktopSecEl.innerHTML = link;
@@ -744,8 +748,8 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   const mobileStatusEl  = document.getElementById('hero-daily-status-mobile');
   const mobileLinkEl    = document.getElementById('hero-play-cta') as HTMLAnchorElement | null;
   const desktopLinkEl   = document.getElementById('hero-cta-desktop') as HTMLAnchorElement | null;
-  const mobileSecEl     = document.getElementById('hero-cta-secondary-mobile');
-  const desktopSecEl    = document.getElementById('hero-cta-secondary-desktop');
+  const mobileSecEl  = document.getElementById('hero-cta-secondary-mobile');
+  const desktopSecEl = document.getElementById('hero-cta-secondary-desktop');
 
   let prevStateType: string | null = null;
 
