@@ -1,4 +1,5 @@
 import { useReducer, useEffect, useRef, useCallback, useState, useMemo } from 'react';
+import { useIsTouchMazeLayout } from '../../hooks/useIsTouchMazeLayout';
 import type { MazeData } from '../../types/maze';
 import { MazeRenderer } from './MazeRenderer';
 import { Timer } from './Timer';
@@ -549,7 +550,9 @@ export function FullscreenMazePlayer({
 
   const [vpSize, setVpSize] = useState(getWindowViewportSize);
   const [mazeViewportSize, setMazeViewportSize] = useState<ViewportSize | null>(null);
-  const [initialCameraReady, setInitialCameraReady] = useState(() => getWindowViewportSize().w >= 768);
+  const isTouchLayout = useIsTouchMazeLayout();
+  // Default false (hidden) until isTouchLayout settles after mount, then reveal.
+  const [initialCameraReady, setInitialCameraReady] = useState(false);
 
   // ── Look-mode camera state ───────────────────────────────────────────────────
   // Isolated: remove these two lines + related code blocks to fully revert the feature.
@@ -829,9 +832,7 @@ export function FullscreenMazePlayer({
   // has driven one render of the initial camera transform, then reveal on the
   // following double-rAF so the first visible frame is already correctly framed.
   useEffect(() => {
-    const isMobileFullscreen = vpSize.w < 768;
-
-    if (!isMobileFullscreen) {
+    if (!isTouchLayout) {
       initialCameraReadyMazeKeyRef.current = mazeKey;
       setInitialCameraReady(true);
       return;
@@ -863,7 +864,7 @@ export function FullscreenMazePlayer({
       cancelled = true;
       rafIds.forEach(id => window.cancelAnimationFrame(id));
     };
-  }, [mazeKey, mazeViewportSize?.w, mazeViewportSize?.h, vpSize.w, vpSize.h]);
+  }, [mazeKey, mazeViewportSize?.w, mazeViewportSize?.h, vpSize.h, isTouchLayout]);
 
   // Close overflow menu whenever a modal/completion surface owns the UI.
   useEffect(() => {
@@ -1001,8 +1002,8 @@ export function FullscreenMazePlayer({
       ? exitMarkerCenter.y
       : MAZE_PADDING + state.playerPosition.y * PLAY_CELL_SIZE + PLAY_CELL_SIZE / 2;
 
-  const stripH = vpSize.w < 768 ? controlStripH : 0;
-  const sidebarW = vpSize.w >= 768 ? SIDEBAR_W : 0;
+  const stripH = isTouchLayout ? controlStripH : 0;
+  const sidebarW = isTouchLayout ? 0 : SIDEBAR_W;
   const fallbackViewW = Math.max(1, vpSize.w - sidebarW);
   const fallbackViewH = Math.max(1, vpSize.h - TOP_BAR_H - AD_SLOT_H - stripH);
   const viewW = Math.max(1, mazeViewportSize?.w ?? fallbackViewW);
@@ -1027,7 +1028,7 @@ export function FullscreenMazePlayer({
   const safeW = Math.max(0, viewW / 2 - SAFE_PAD - PAN_LOOKAHEAD);
   const safeH = Math.max(0, viewH / 2 - SAFE_PAD - PAN_LOOKAHEAD);
 
-  const isMobileFullscreen = vpSize.w < 768;
+  const isMobileFullscreen = isTouchLayout;
   const isInitializingMobileCamera = isMobileFullscreen && !initialCameraReady;
 
   let camX: number;
@@ -1085,7 +1086,7 @@ export function FullscreenMazePlayer({
   const playerScreenY = playerPy + ty;
   const playerMarkerRadius = PLAY_CELL_SIZE * 0.32;
   const playerGlowRadius = PLAY_CELL_SIZE * 0.5;
-  const showBottomStartPlayerOverlay = vpSize.w < 768
+  const showBottomStartPlayerOverlay = isTouchLayout
     && state.status !== 'paused'
     && playerOnEntryMarker
     && maze.entry.y === maze.height - 1;
@@ -1348,7 +1349,7 @@ export function FullscreenMazePlayer({
     </div>
   );
 
-  const pauseOverlayBottomPadding = vpSize.w >= 768 ? 0 : mobileDockH;
+  const pauseOverlayBottomPadding = isTouchLayout ? mobileDockH : 0;
 
   const dpadPanel = (
     <div
@@ -1413,8 +1414,8 @@ export function FullscreenMazePlayer({
               {/* "Paused" label intentionally omitted here — the centered pause card already communicates this */}
               {state.status === 'idle' && (
                 <>
-                  <span className="md:hidden text-slate-900 text-[16px] font-semibold leading-none">Swipe or use D-pad to move</span>
-                  <span className="hidden md:inline text-slate-900 text-base font-medium">Use arrow keys or WASD to move</span>
+                  <span className={`${isTouchLayout ? '' : 'hidden'} text-slate-900 text-[16px] font-semibold leading-none`}>Swipe or use D-pad to move</span>
+                  <span className={`${isTouchLayout ? 'hidden' : 'inline'} text-slate-900 text-base font-medium`}>Use arrow keys or WASD to move</span>
                 </>
               )}
               {state.status === 'solved' && <span className="text-emerald-600 font-semibold text-xs">Solved — {formatTime(state.elapsedMs)}</span>}
@@ -1429,7 +1430,7 @@ export function FullscreenMazePlayer({
           {cameraMode !== 'look' && (state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={() => dispatch({ type: state.status === 'playing' ? 'PAUSE' : 'RESUME' })}
-              className="hidden md:flex items-center gap-1.5 px-3.5 py-2 rounded text-[15px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
+              className={`${isTouchLayout ? 'hidden' : 'flex'} items-center gap-1.5 px-3.5 py-2 rounded text-[15px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500`}
               aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -1445,7 +1446,7 @@ export function FullscreenMazePlayer({
 
           {/* Desktop Return to Play — shown only during camera view */}
           {cameraMode === 'look' && (
-            <div className="hidden md:block">
+            <div className={isTouchLayout ? 'hidden' : 'block'}>
               <button
                 onClick={exitLookMode}
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
@@ -1463,7 +1464,7 @@ export function FullscreenMazePlayer({
           {cameraMode !== 'look' && (state.status === 'playing' || state.status === 'paused') && (
             <button
               onClick={handleMobilePauseToggle}
-              className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors text-sm"
+              className={`${isTouchLayout ? '' : 'hidden'} w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-colors text-sm`}
               aria-label={state.status === 'playing' ? 'Pause timer' : 'Resume timer'}
             >
               {state.status === 'playing' ? '⏸' : '▶'}
@@ -1471,7 +1472,7 @@ export function FullscreenMazePlayer({
           )}
 
           {/* ⋯ overflow menu */}
-          <div ref={menuRef} className="relative md:hidden">
+          <div ref={menuRef} className={`relative ${isTouchLayout ? '' : 'hidden'}`}>
             <button
               onClick={toggleMobileMenu}
               disabled={isMobileMenuBlocked}
@@ -1531,7 +1532,7 @@ export function FullscreenMazePlayer({
 
       {/* Mobile camera view strip — sits flush under the header, above the maze */}
       {cameraMode === 'look' && (
-        <div className="md:hidden flex justify-center items-center py-1.5 bg-white border-b border-indigo-100 shrink-0">
+        <div className={`${isTouchLayout ? '' : 'hidden'} flex justify-center items-center py-1.5 bg-white border-b border-indigo-100 shrink-0`}>
           <button
             onClick={exitLookMode}
             style={{
@@ -1626,7 +1627,7 @@ export function FullscreenMazePlayer({
 
         {/* Desktop sidebar — quiet utility rail */}
         <aside
-          className="hidden md:flex flex-col w-56 shrink-0 border-l architect-dot-grid play-sidebar"
+          className={`${isTouchLayout ? 'hidden' : 'flex'} flex-col w-56 shrink-0 border-l architect-dot-grid play-sidebar`}
         >
           <div className="flex flex-col p-4">
 
@@ -1814,7 +1815,7 @@ export function FullscreenMazePlayer({
       {/* Mobile control strip — fixed 50/50 panels with left-handed content swap */}
       <div
         ref={controlStripRef}
-        className="md:hidden relative bg-[#F6F5F0] border-t border-[#DDD8CF] shrink-0 overflow-visible pb-[env(safe-area-inset-bottom,0px)]"
+        className={`${isTouchLayout ? '' : 'hidden'} relative bg-[#F6F5F0] border-t border-[#DDD8CF] shrink-0 overflow-visible pb-[env(safe-area-inset-bottom,0px)]`}
         style={{
           height: mobileDockH,
           // Freeze this subtree to light-mode control tokens so D-pad borders,
@@ -2094,7 +2095,7 @@ export function FullscreenMazePlayer({
 
       {initialCameraReady && showBottomStartPlayerOverlay && (
         <svg
-          className="pointer-events-none absolute left-0 top-0 z-20 overflow-visible md:hidden"
+          className={`pointer-events-none absolute left-0 top-0 z-20 overflow-visible ${isTouchLayout ? '' : 'hidden'}`}
           style={{ transform: `translate(${playerScreenX}px, ${TOP_BAR_H + playerScreenY}px)` }}
           width="1"
           height="1"
