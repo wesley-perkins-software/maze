@@ -27,8 +27,8 @@ import { CATEGORIES } from '../../types/maze.js';
           >MazePuzzles.io</span>
         </a>
         <p
-          class="text-sm leading-relaxed"
-          style="color: var(--color-muted-strong);"
+          class="text-base leading-relaxed"
+          style="color: var(--color-charcoal);"
         >
           Free printable mazes and interactive maze games for all ages.
         </p>
@@ -37,7 +37,7 @@ import { CATEGORIES } from '../../types/maze.js';
       <!-- Maze Library -->
       <div>
         <h3
-          class="text-xs uppercase tracking-widest mb-4"
+          class="text-sm uppercase tracking-widest mb-4"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
         >Maze Library</h3>
         <ul class="space-y-2.5">
@@ -46,9 +46,9 @@ import { CATEGORIES } from '../../types/maze.js';
               <a
                 href={`/${cat.slug}`}
                 class="text-sm transition-colors duration-150"
-                style="color: var(--color-muted-strong);"
+                style="color: var(--color-charcoal);"
                 onmouseover="this.style.color='var(--color-accent)';"
-                onmouseout="this.style.color='var(--color-muted-strong)';"
+                onmouseout="this.style.color='var(--color-charcoal)';"
               >{cat.label}</a>
             </li>
           ))}
@@ -58,7 +58,7 @@ import { CATEGORIES } from '../../types/maze.js';
       <!-- Tools -->
       <div>
         <h3
-          class="text-xs uppercase tracking-widest mb-4"
+          class="text-sm uppercase tracking-widest mb-4"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
         >Tools</h3>
         <ul class="space-y-2.5">
@@ -72,9 +72,9 @@ import { CATEGORIES } from '../../types/maze.js';
               <a
                 href={href}
                 class="text-sm transition-colors duration-150"
-                style="color: var(--color-muted-strong);"
+                style="color: var(--color-charcoal);"
                 onmouseover="this.style.color='var(--color-accent)';"
-                onmouseout="this.style.color='var(--color-muted-strong)';"
+                onmouseout="this.style.color='var(--color-charcoal)';"
               >{label}</a>
             </li>
           ))}
@@ -84,7 +84,7 @@ import { CATEGORIES } from '../../types/maze.js';
       <!-- Learn -->
       <div>
         <h3
-          class="text-xs uppercase tracking-widest mb-4"
+          class="text-sm uppercase tracking-widest mb-4"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
         >Maze Guides</h3>
         <ul class="space-y-2.5">
@@ -98,9 +98,9 @@ import { CATEGORIES } from '../../types/maze.js';
               <a
                 href={href}
                 class="text-sm transition-colors duration-150"
-                style="color: var(--color-muted-strong);"
+                style="color: var(--color-charcoal);"
                 onmouseover="this.style.color='var(--color-accent)';"
-                onmouseout="this.style.color='var(--color-muted-strong)';"
+                onmouseout="this.style.color='var(--color-charcoal)';"
               >{label}</a>
             </li>
           ))}
@@ -110,7 +110,7 @@ import { CATEGORIES } from '../../types/maze.js';
       <!-- About -->
       <div>
         <h3
-          class="text-xs uppercase tracking-widest mb-4"
+          class="text-sm uppercase tracking-widest mb-4"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
         >About</h3>
         <ul class="space-y-2.5">
@@ -123,9 +123,9 @@ import { CATEGORIES } from '../../types/maze.js';
               <a
                 href={href}
                 class="text-sm transition-colors duration-150"
-                style="color: var(--color-muted-strong);"
+                style="color: var(--color-charcoal);"
                 onmouseover="this.style.color='var(--color-accent)';"
-                onmouseout="this.style.color='var(--color-muted-strong)';"
+                onmouseout="this.style.color='var(--color-charcoal)';"
               >{label}</a>
             </li>
           ))}
@@ -139,8 +139,8 @@ import { CATEGORIES } from '../../types/maze.js';
       style="border-top: 1px solid var(--color-border);"
     >
       <p
-        class="text-xs"
-        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
+        class="text-sm"
+        style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
       >
         &copy; {new Date().getFullYear()} MazePuzzles.io. All mazes are free for personal and educational use.
       </p>
@@ -151,10 +151,10 @@ import { CATEGORIES } from '../../types/maze.js';
         ].map(({ href, label }) => (
           <a
             href={href}
-            class="text-xs transition-colors duration-150"
-            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-muted);"
-            onmouseover="this.style.color='var(--color-charcoal)';"
-            onmouseout="this.style.color='var(--color-muted)';"
+            class="text-sm transition-colors duration-150"
+            style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal);"
+            onmouseover="this.style.color='var(--color-accent)';"
+            onmouseout="this.style.color='var(--color-charcoal)';"
           >{label}</a>
         ))}
       </div>
