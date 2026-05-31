@@ -117,25 +117,28 @@ import HeroMazePreview from './HeroMazePreview.jsx';
             <p class="hero-status-line2">Today's maze is waiting.</p>
           </div>
 
-          <!-- Primary CTA -->
-          <a
-            id="hero-cta-desktop"
-            href="/play/maze-of-the-day/"
-            class="hero-cta-primary btn-primary text-sm px-8 py-4 mb-3 inline-flex items-center gap-2"
-          >
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-            Play Today's Maze
-          </a>
+          <!-- Desktop actions shrink to the secondary row, keeping the primary CTA aligned -->
+          <div class="hero-actions-desktop">
+            <!-- Primary CTA -->
+            <a
+              id="hero-cta-desktop"
+              href="/play/maze-of-the-day/"
+              class="hero-cta-primary btn-primary w-full justify-center text-sm px-8 py-4 mb-3 inline-flex items-center gap-2"
+            >
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Play Today's Maze
+            </a>
 
-          <!-- Secondary CTA slot — shown for in-progress (Restart) and completed (Share) states -->
-          <div id="hero-cta-secondary-desktop"></div>
+            <!-- Secondary CTA slot — shown for in-progress (Restart) and completed (Share) states -->
+            <div id="hero-cta-secondary-desktop"></div>
 
-          <!-- Secondary links — horizontal row on desktop -->
-          <div id="hero-sec-group-desktop" class="hero-sec-group-desktop">
-            <a href="/maze-library" class="hero-sec-link">Browse Maze Library</a>
-            <a href="/maze-generator" class="hero-sec-link">Create a Maze</a>
+            <!-- Secondary links — horizontal row on desktop -->
+            <div id="hero-sec-group-desktop" class="hero-sec-group-desktop">
+              <a href="/maze-library" class="hero-sec-link">Browse Maze Library</a>
+              <a href="/maze-generator" class="hero-sec-link">Create a Maze</a>
+            </div>
           </div>
         </div>
 
@@ -297,7 +300,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   }
   .hero-status-line2 {
     font-family: 'IBM Plex Mono', monospace;
-    font-size:   0.8125rem; /* 13px */
+    font-size:   0.875rem; /* 14px */
     color:       var(--color-charcoal);
     margin-top:  0.2rem;
     line-height: 1.4;
@@ -346,18 +349,26 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     outline-offset: 2px;
   }
 
-  /* Mobile: side-by-side chips with 44px tap zone via padding trick */
+  /* Mobile: stacked full-width buttons matching the primary and restart CTAs */
   .hero-sec-group-mobile {
-    display:     flex;
-    flex-wrap:   wrap;
-    gap:         0.625rem;
-    padding-top: 1.25rem;
+    display:        flex;
+    flex-direction: column;
+    gap:            0.625rem;
+    padding-top:    0.75rem;
+    width:          100%;
   }
   .hero-sec-group-mobile .hero-sec-link {
-    padding: 0.75rem 1.25rem; /* taller padding = solid 44px tap target */
+    width:           100%;
+    justify-content: center;
+    padding:         0.75rem 1.25rem;
   }
 
-  /* Desktop: same chip style, compact horizontal row */
+  /* Desktop: size the primary CTA to the width established by the action row. */
+  .hero-actions-desktop {
+    width: fit-content;
+  }
+
+  /* Desktop: horizontal row — Browse, Create (and Restart when in-progress) */
   .hero-sec-group-desktop {
     display:        flex;
     flex-direction: row;
@@ -376,7 +387,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     display:      inline-flex;
     align-items:  center;
     font-family:  'IBM Plex Mono', monospace;
-    font-size:    0.75rem;
+    font-size:    0.875rem;
     color:        var(--color-muted-strong);
     background:   none;
     cursor:       pointer;
@@ -408,7 +419,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     display:         inline-flex;
     align-items:     center;
     font-family:     'IBM Plex Mono', monospace;
-    font-size:       0.75rem;
+    font-size:       0.875rem;
     font-weight:     400;
     color:           var(--color-charcoal);
     text-decoration: none;
@@ -430,25 +441,25 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     :global(.hero-solved-link)  { padding: 0.4rem 0.875rem; }
   }
 
-  /* "Restart today's maze" — outlined secondary, real control, clearly quieter than Resume */
+  /* "Restart today's maze" — neutral outlined secondary matching the links below */
   :global(.hero-daily-restart-btn) {
     display:         flex;
     width:           100%;
     align-items:     center;
     justify-content: center;
     font-family:     'IBM Plex Mono', monospace;
-    font-size:       0.8125rem;
-    font-weight:     400;
-    color:           var(--color-muted-strong);
+    font-size:       0.9375rem;
+    font-weight:     600;
+    color:           var(--color-charcoal);
     background:      transparent;
-    border:          1px solid var(--color-border-strong);
-    padding:         0.6875rem 1.5rem;
+    border:          2px solid var(--color-charcoal);
+    padding:         0.625rem 1.25rem;
     cursor:          pointer;
-    transition:      color 120ms ease, border-color 120ms ease;
+    transition:      background-color 120ms ease, color 120ms ease;
   }
   :global(.hero-daily-restart-btn:hover) {
-    color:        var(--color-charcoal);
-    border-color: var(--color-charcoal);
+    background-color: var(--color-charcoal);
+    color:            var(--color-bg);
   }
   :global(.hero-daily-restart-btn:focus-visible) {
     outline:        2px solid var(--color-charcoal);
@@ -456,9 +467,9 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   }
   @media (min-width: 768px) {
     :global(.hero-daily-restart-btn) {
-      display: inline-flex;
-      width:   auto;
-      padding: 0.5rem 1.25rem;
+      display: flex;
+      width:   100%;
+      padding: 0.625rem 1.25rem;
     }
   }
 
@@ -481,7 +492,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   }
   :global(.hero-daily-confirm-body) {
     font-family:  'IBM Plex Mono', monospace;
-    font-size:    0.8125rem;
+    font-size:    0.875rem;
     color:        var(--color-muted-strong);
     line-height:  1.4;
     margin-bottom: 0.75rem;
@@ -494,7 +505,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   :global(.hero-daily-confirm-restart) {
     flex:        1;
     font-family: 'IBM Plex Mono', monospace;
-    font-size:   0.8125rem;
+    font-size:   0.875rem;
     font-weight: 600;
     padding:     0.625rem 0.875rem;
     cursor:      pointer;
@@ -640,7 +651,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   // ── CTA rendering ────────────────────────────────────────────────────────────
   const PLAY_ICON = `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
 
-  // "Restart today's maze" — ghost secondary button, full-width on mobile.
+  // "Restart today's maze" — neutral outlined secondary button, full-width on mobile.
   const restartLinkHtml = (): string =>
     `<button type="button" class="hero-daily-restart-btn" data-action="daily-restart">Restart today's maze</button>`;
 
@@ -682,6 +693,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
       mobileLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
       desktopLink.href = dailyPlayPath;
       desktopLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
+      // Restart sits in its own full-width slot above the sec-group on both mobile and desktop
       const link = restartLinkHtml();
       mobileSecEl.innerHTML = link;
       desktopSecEl.innerHTML = link;
@@ -744,8 +756,8 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   const mobileStatusEl  = document.getElementById('hero-daily-status-mobile');
   const mobileLinkEl    = document.getElementById('hero-play-cta') as HTMLAnchorElement | null;
   const desktopLinkEl   = document.getElementById('hero-cta-desktop') as HTMLAnchorElement | null;
-  const mobileSecEl     = document.getElementById('hero-cta-secondary-mobile');
-  const desktopSecEl    = document.getElementById('hero-cta-secondary-desktop');
+  const mobileSecEl  = document.getElementById('hero-cta-secondary-mobile');
+  const desktopSecEl = document.getElementById('hero-cta-secondary-desktop');
 
   let prevStateType: string | null = null;
 
