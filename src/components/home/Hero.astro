@@ -430,25 +430,25 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     :global(.hero-solved-link)  { padding: 0.4rem 0.875rem; }
   }
 
-  /* "Restart today's maze" — outlined secondary, real control, clearly quieter than Resume */
+  /* "Restart today's maze" — neutral outlined secondary matching the links below */
   :global(.hero-daily-restart-btn) {
     display:         flex;
     width:           100%;
     align-items:     center;
     justify-content: center;
     font-family:     'IBM Plex Mono', monospace;
-    font-size:       0.875rem;
-    font-weight:     400;
-    color:           var(--color-muted-strong);
+    font-size:       0.9375rem;
+    font-weight:     600;
+    color:           var(--color-charcoal);
     background:      transparent;
-    border:          1px solid var(--color-border-strong);
-    padding:         0.6875rem 1.5rem;
+    border:          2px solid var(--color-charcoal);
+    padding:         0.625rem 1.25rem;
     cursor:          pointer;
-    transition:      color 120ms ease, border-color 120ms ease;
+    transition:      background-color 120ms ease, color 120ms ease;
   }
   :global(.hero-daily-restart-btn:hover) {
-    color:        var(--color-charcoal);
-    border-color: var(--color-charcoal);
+    background-color: var(--color-charcoal);
+    color:            var(--color-bg);
   }
   :global(.hero-daily-restart-btn:focus-visible) {
     outline:        2px solid var(--color-charcoal);
@@ -640,7 +640,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   // ── CTA rendering ────────────────────────────────────────────────────────────
   const PLAY_ICON = `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
 
-  // "Restart today's maze" — ghost secondary button, full-width on mobile.
+  // "Restart today's maze" — neutral outlined secondary button, full-width on mobile.
   const restartLinkHtml = (): string =>
     `<button type="button" class="hero-daily-restart-btn" data-action="daily-restart">Restart today's maze</button>`;
 
