@@ -459,8 +459,8 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   }
   @media (min-width: 768px) {
     :global(.hero-daily-restart-btn) {
-      display: inline-flex;
-      width:   auto;
+      display: flex;
+      width:   100%;
       padding: 0.625rem 1.25rem;
     }
   }
@@ -685,19 +685,10 @@ import HeroMazePreview from './HeroMazePreview.jsx';
       mobileLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
       desktopLink.href = dailyPlayPath;
       desktopLink.innerHTML = `${PLAY_ICON} Resume Today's Maze`;
-      // Mobile: restart sits in its own full-width slot above the sec-group
-      mobileSecEl.innerHTML = restartLinkHtml();
-      // Desktop: restart is prepended into the sec-group row so all three
-      // secondary buttons (Restart, Browse, Create) share the same row and style
-      desktopSecEl.innerHTML = '';
-      if (desktopSecGroupEl) {
-        const restartBtn = document.createElement('button');
-        restartBtn.type = 'button';
-        restartBtn.className = 'hero-daily-restart-btn';
-        restartBtn.dataset['action'] = 'daily-restart';
-        restartBtn.textContent = 'Restart today\'s maze';
-        desktopSecGroupEl.prepend(restartBtn);
-      }
+      // Restart sits in its own full-width slot above the sec-group on both mobile and desktop
+      const link = restartLinkHtml();
+      mobileSecEl.innerHTML = link;
+      desktopSecEl.innerHTML = link;
       if (mobileSecGroupEl)  mobileSecGroupEl.style.display  = '';
       if (desktopSecGroupEl) desktopSecGroupEl.style.display = '';
     } else {
@@ -728,39 +719,18 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     const action = (target?.closest('[data-action]') as HTMLElement | null)?.dataset['action'];
 
     if (action === 'daily-restart') {
-      // Mobile: replace the secondary slot with the confirmation panel
-      const mobileSecSlot = document.getElementById('hero-cta-secondary-mobile');
-      if (mobileSecSlot) mobileSecSlot.innerHTML = restartConfirmHtml();
-      // Desktop: replace the sec-group contents with the confirmation panel
-      const deskSecGroup = document.getElementById('hero-sec-group-desktop');
-      if (deskSecGroup) deskSecGroup.innerHTML = restartConfirmHtml();
+      // Show inline confirmation instead of immediately clearing progress.
+      const html = restartConfirmHtml();
+      if (mobileSecEl) mobileSecEl.innerHTML = html;
+      if (desktopSecEl) desktopSecEl.innerHTML = html;
       return;
     }
 
     if (action === 'daily-restart-cancel') {
-      // Mobile: restore restart button in secondary slot
-      const mobileSecSlot = document.getElementById('hero-cta-secondary-mobile');
-      if (mobileSecSlot) mobileSecSlot.innerHTML = restartLinkHtml();
-      // Desktop: restore all three buttons in the sec-group row
-      const deskSecGroup = document.getElementById('hero-sec-group-desktop');
-      if (deskSecGroup) {
-        const restartBtn = document.createElement('button');
-        restartBtn.type = 'button';
-        restartBtn.className = 'hero-daily-restart-btn';
-        restartBtn.dataset['action'] = 'daily-restart';
-        restartBtn.textContent = 'Restart today\'s maze';
-        deskSecGroup.innerHTML = '';
-        deskSecGroup.prepend(restartBtn);
-        const browseLink = document.createElement('a');
-        browseLink.href = '/maze-library';
-        browseLink.className = 'hero-sec-link';
-        browseLink.textContent = 'Browse Maze Library';
-        const createLink = document.createElement('a');
-        createLink.href = '/maze-generator';
-        createLink.className = 'hero-sec-link';
-        createLink.textContent = 'Create a Maze';
-        deskSecGroup.append(browseLink, createLink);
-      }
+      // Restore the quiet restart link; preserve progress.
+      const link = restartLinkHtml();
+      if (mobileSecEl) mobileSecEl.innerHTML = link;
+      if (desktopSecEl) desktopSecEl.innerHTML = link;
       return;
     }
 
