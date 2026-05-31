@@ -117,25 +117,28 @@ import HeroMazePreview from './HeroMazePreview.jsx';
             <p class="hero-status-line2">Today's maze is waiting.</p>
           </div>
 
-          <!-- Primary CTA -->
-          <a
-            id="hero-cta-desktop"
-            href="/play/maze-of-the-day/"
-            class="hero-cta-primary btn-primary w-full justify-center text-sm px-8 py-4 mb-3 inline-flex items-center gap-2"
-          >
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-            Play Today's Maze
-          </a>
+          <!-- Desktop actions shrink to the secondary row, keeping the primary CTA aligned -->
+          <div class="hero-actions-desktop">
+            <!-- Primary CTA -->
+            <a
+              id="hero-cta-desktop"
+              href="/play/maze-of-the-day/"
+              class="hero-cta-primary btn-primary w-full justify-center text-sm px-8 py-4 mb-3 inline-flex items-center gap-2"
+            >
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Play Today's Maze
+            </a>
 
-          <!-- Secondary CTA slot — shown for in-progress (Restart) and completed (Share) states -->
-          <div id="hero-cta-secondary-desktop"></div>
+            <!-- Secondary CTA slot — shown for in-progress (Restart) and completed (Share) states -->
+            <div id="hero-cta-secondary-desktop"></div>
 
-          <!-- Secondary links — horizontal row on desktop -->
-          <div id="hero-sec-group-desktop" class="hero-sec-group-desktop">
-            <a href="/maze-library" class="hero-sec-link">Browse Maze Library</a>
-            <a href="/maze-generator" class="hero-sec-link">Create a Maze</a>
+            <!-- Secondary links — horizontal row on desktop -->
+            <div id="hero-sec-group-desktop" class="hero-sec-group-desktop">
+              <a href="/maze-library" class="hero-sec-link">Browse Maze Library</a>
+              <a href="/maze-generator" class="hero-sec-link">Create a Maze</a>
+            </div>
           </div>
         </div>
 
@@ -358,6 +361,11 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     width:           100%;
     justify-content: center;
     padding:         0.75rem 1.25rem;
+  }
+
+  /* Desktop: size the primary CTA to the width established by the action row. */
+  .hero-actions-desktop {
+    width: fit-content;
   }
 
   /* Desktop: horizontal row — Browse, Create (and Restart when in-progress) */
