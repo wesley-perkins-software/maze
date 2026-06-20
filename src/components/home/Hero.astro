@@ -15,7 +15,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     flex-col lets the content area grow to fill remaining space, so the
     next section never awkwardly peeks above the fold.
   -->
-  <div class="hero-mobile-root md:hidden flex flex-col">
+  <div class="hero-mobile-root xl:hidden flex flex-col">
 
     <!-- Dateline above the poster — mirrors the desktop caption -->
     <p
@@ -96,9 +96,9 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   </div>
 
   <!-- ─── DESKTOP: split editorial layout ───────────────────────────────── -->
-  <div class="hidden md:block relative">
-    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-2 pb-6 lg:pt-4 lg:pb-8">
-      <div class="grid grid-cols-[1fr_540px] lg:grid-cols-[1fr_580px] gap-10 lg:gap-14 items-start">
+  <div class="hidden xl:block relative">
+    <div class="mx-auto max-w-6xl px-8 pt-4 pb-8">
+      <div class="grid grid-cols-[1fr_minmax(0,540px)] 2xl:grid-cols-[1fr_580px] gap-14 items-start">
 
         <!-- Left: headline + daily state + CTA + secondary links -->
         <div class="flex flex-col items-start">
@@ -230,6 +230,26 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     border-bottom: 1px solid var(--color-border-strong);
     /* Maintain 1:1 aspect ratio before the React island hydrates */
     aspect-ratio: 1;
+  }
+
+  /* Tablet portrait (768–1023px): keep square poster, add breathing room */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .hero-date-label-mobile {
+      padding: 0.75rem 2.5rem 0.5rem;
+    }
+    .hero-mobile-content {
+      padding: 1rem 2.5rem 2rem;
+    }
+  }
+
+  /* Landscape tablet / small desktop (1024–1279px): square poster with wider margins */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .hero-date-label-mobile {
+      padding: 0.75rem 3rem 0.5rem;
+    }
+    .hero-mobile-content {
+      padding: 1rem 3rem 2rem;
+    }
   }
 
   /*
