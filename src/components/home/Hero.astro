@@ -98,10 +98,10 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   <!-- ─── DESKTOP: split editorial layout ───────────────────────────────── -->
   <div class="hidden md:block relative">
     <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-2 pb-6 lg:pt-4 lg:pb-8">
-      <div class="grid grid-cols-[1fr_540px] lg:grid-cols-[1fr_580px] gap-10 lg:gap-14 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,540px)] xl:grid-cols-[1fr_580px] gap-10 lg:gap-14 items-start">
 
         <!-- Left: headline + daily state + CTA + secondary links -->
-        <div class="flex flex-col items-start">
+        <div class="flex flex-col items-start md:items-center md:text-center lg:items-start lg:text-left">
           <h1
             class="font-display uppercase mb-4"
             style="font-size: clamp(3.5rem, 9vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
@@ -143,7 +143,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
         </div>
 
         <!-- Right: maze preview with corner-bracket frame -->
-        <div class="pt-1">
+        <div class="pt-1 md:mx-auto md:w-full md:max-w-[480px] lg:mx-0 lg:max-w-none lg:w-auto">
           <p
             id="hero-date-label"
             data-hero-date
@@ -364,8 +364,14 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   }
 
   /* Desktop: size the primary CTA to the width established by the action row. */
+  /* Tablet (md, single-col): allow it to expand to a readable fixed width. */
   .hero-actions-desktop {
     width: fit-content;
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .hero-actions-desktop {
+      width: min(100%, 420px);
+    }
   }
 
   /* Desktop: horizontal row — Browse, Create (and Restart when in-progress) */
