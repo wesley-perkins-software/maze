@@ -15,7 +15,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     flex-col lets the content area grow to fill remaining space, so the
     next section never awkwardly peeks above the fold.
   -->
-  <div class="hero-mobile-root lg:hidden flex flex-col">
+  <div class="hero-mobile-root xl:hidden flex flex-col">
 
     <!-- Dateline above the poster — mirrors the desktop caption -->
     <p
@@ -96,15 +96,15 @@ import HeroMazePreview from './HeroMazePreview.jsx';
   </div>
 
   <!-- ─── DESKTOP: split editorial layout ───────────────────────────────── -->
-  <div class="hidden lg:block relative">
-    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-4 pb-6 lg:pt-4 lg:pb-8">
-      <div class="grid grid-cols-[1fr_minmax(0,460px)] xl:grid-cols-[1fr_minmax(0,540px)] gap-10 xl:gap-14 items-start">
+  <div class="hidden xl:block relative">
+    <div class="mx-auto max-w-6xl px-8 pt-4 pb-8">
+      <div class="grid grid-cols-[1fr_minmax(0,540px)] 2xl:grid-cols-[1fr_580px] gap-14 items-start">
 
         <!-- Left: headline + daily state + CTA + secondary links -->
         <div class="flex flex-col items-start">
           <h1
             class="font-display uppercase mb-4"
-            style="font-size: clamp(3.5rem, 5vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
+            style="font-size: clamp(3.5rem, 9vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
           >
             Can You<br />Solve<br /><span style="color: var(--color-accent);">Today's</span><br />Maze?
           </h1>
@@ -232,7 +232,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     aspect-ratio: 1;
   }
 
-  /* Tablet portrait (768–1023px): widen the poster to 4:3 so it isn't overwhelming */
+  /* Tablet portrait (768–1023px): 4:3 poster so the square isn't overwhelming */
   @media (min-width: 768px) and (max-width: 1023px) {
     .hero-maze-poster {
       aspect-ratio: 4 / 3;
@@ -242,6 +242,19 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     }
     .hero-mobile-content {
       padding: 1.25rem 2.5rem 2.5rem;
+    }
+  }
+
+  /* Landscape tablet / small desktop (1024–1279px): panoramic 16:9 poster */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .hero-maze-poster {
+      aspect-ratio: 16 / 9;
+    }
+    .hero-date-label-mobile {
+      padding: 1rem 3rem 0.625rem;
+    }
+    .hero-mobile-content {
+      padding: 1.25rem 3rem 2.5rem;
     }
   }
 
