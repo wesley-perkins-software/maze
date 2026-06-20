@@ -97,20 +97,20 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
   <!-- ─── DESKTOP: split editorial layout ───────────────────────────────── -->
   <div class="hidden md:block relative">
-    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-2 pb-6 lg:pt-4 lg:pb-8">
-      <div class="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,540px)] xl:grid-cols-[1fr_580px] gap-10 lg:gap-14 items-start">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-4 pb-6 md:pt-6 md:pb-8 lg:pt-4 lg:pb-8">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,460px)] xl:grid-cols-[1fr_minmax(0,540px)] gap-6 md:gap-8 lg:gap-10 xl:gap-14 items-start">
 
         <!-- Left: headline + daily state + CTA + secondary links -->
         <div class="flex flex-col items-start md:items-center md:text-center lg:items-start lg:text-left">
           <h1
-            class="font-display uppercase mb-4"
-            style="font-size: clamp(3.5rem, 9vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
+            class="hero-headline-desktop font-display uppercase mb-3 lg:mb-4"
+            style="line-height: 0.88; color: var(--color-charcoal);"
           >
             Can You<br />Solve<br /><span style="color: var(--color-accent);">Today's</span><br />Maze?
           </h1>
 
           <!-- Daily state — prominent, between headline and CTA -->
-          <div id="hero-daily-status-desktop" class="hero-status-block mb-4">
+          <div id="hero-daily-status-desktop" class="hero-status-block mb-3 lg:mb-4">
             <p class="hero-status-line1">
               <span style="color: var(--color-accent);">●</span>&thinsp;Ready now
             </p>
@@ -123,7 +123,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
             <a
               id="hero-cta-desktop"
               href="/play/maze-of-the-day/"
-              class="hero-cta-primary btn-primary w-full justify-center text-sm px-8 py-4 mb-3 inline-flex items-center gap-2"
+              class="hero-cta-primary btn-primary w-full justify-center text-sm px-8 py-3 lg:py-4 mb-3 inline-flex items-center gap-2"
             >
               <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M8 5v14l11-7z" />
@@ -143,7 +143,7 @@ import HeroMazePreview from './HeroMazePreview.jsx';
         </div>
 
         <!-- Right: maze preview with corner-bracket frame -->
-        <div class="pt-1 md:mx-auto md:w-full md:max-w-[480px] lg:mx-0 lg:max-w-none lg:w-auto">
+        <div class="pt-1 md:mx-auto md:w-full md:max-w-[360px] lg:mx-0 lg:max-w-none lg:w-auto">
           <p
             id="hero-date-label"
             data-hero-date
@@ -363,14 +363,24 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     padding:         0.75rem 1.25rem;
   }
 
+  /* Responsive headline sizing — inline style handles desktop, CSS overrides tablet. */
+  .hero-headline-desktop {
+    font-size: clamp(3.5rem, 9vw, 8.5rem);
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .hero-headline-desktop {
+      font-size: clamp(2.4rem, 6.5vw, 3.4rem);
+    }
+  }
+
   /* Desktop: size the primary CTA to the width established by the action row. */
-  /* Tablet (md, single-col): allow it to expand to a readable fixed width. */
+  /* Tablet (md, single-col): constrain to match the maze preview width. */
   .hero-actions-desktop {
     width: fit-content;
   }
   @media (min-width: 768px) and (max-width: 1023px) {
     .hero-actions-desktop {
-      width: min(100%, 420px);
+      width: min(100%, 360px);
     }
   }
 
