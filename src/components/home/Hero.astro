@@ -232,57 +232,23 @@ import HeroMazePreview from './HeroMazePreview.jsx';
     aspect-ratio: 1;
   }
 
-  /* Tablet portrait (768–1023px): 4:3 poster so the square isn't overwhelming */
+  /* Tablet portrait (768–1023px): keep square poster, add breathing room */
   @media (min-width: 768px) and (max-width: 1023px) {
-    .hero-maze-poster {
-      aspect-ratio: 4 / 3;
-    }
-    /* Contain the square maze within the 4:3 frame — sizes by height, not width */
-    .hero-maze-poster > .hero-maze-wrap {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .hero-maze-preview-mobile :global(svg) {
-      height: 100%;
-      width: auto;
-      max-width: 100%;
-      display: block;
-    }
     .hero-date-label-mobile {
-      padding: 1rem 2.5rem 0.625rem;
+      padding: 0.75rem 2.5rem 0.5rem;
     }
     .hero-mobile-content {
-      padding: 1.25rem 2.5rem 2.5rem;
+      padding: 1rem 2.5rem 2rem;
     }
   }
 
-  /* Landscape tablet / small desktop (1024–1279px): panoramic 16:9 poster */
+  /* Landscape tablet / small desktop (1024–1279px): square poster with wider margins */
   @media (min-width: 1024px) and (max-width: 1279px) {
-    .hero-maze-poster {
-      aspect-ratio: 16 / 9;
-    }
-    /* Same contain treatment — maze sized by height so full square is visible */
-    .hero-maze-poster > .hero-maze-wrap {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .hero-maze-preview-mobile :global(svg) {
-      height: 100%;
-      width: auto;
-      max-width: 100%;
-      display: block;
-    }
     .hero-date-label-mobile {
-      padding: 1rem 3rem 0.625rem;
+      padding: 0.75rem 3rem 0.5rem;
     }
     .hero-mobile-content {
-      padding: 1.25rem 3rem 2.5rem;
+      padding: 1rem 3rem 2rem;
     }
   }
 
