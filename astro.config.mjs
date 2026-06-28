@@ -5,6 +5,7 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   site: 'https://mazepuzzles.io',
   output: 'static',
+  trailingSlash: 'always',
   integrations: [
     react(),
     tailwind({ applyBaseStyles: false }),

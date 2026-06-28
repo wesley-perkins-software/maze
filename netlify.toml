@@ -198,6 +198,47 @@
   status = 301
   force  = true
 
+# Trailing-slash canonicalization for main pages (fixes Google redirect errors)
+[[redirects]]
+  from   = "/maze-generator"
+  to     = "/maze-generator/"
+  status = 301
+
+[[redirects]]
+  from   = "/maze-library"
+  to     = "/maze-library/"
+  status = 301
+
+[[redirects]]
+  from   = "/printable-mazes"
+  to     = "/printable-mazes/"
+  status = 301
+
+[[redirects]]
+  from   = "/maze-of-the-day"
+  to     = "/maze-of-the-day/"
+  status = 301
+
+[[redirects]]
+  from   = "/maze-guides"
+  to     = "/maze-guides/"
+  status = 301
+
+[[redirects]]
+  from   = "/maze-guides/:slug"
+  to     = "/maze-guides/:slug/"
+  status = 301
+
+[[redirects]]
+  from   = "/about"
+  to     = "/about/"
+  status = 301
+
+[[redirects]]
+  from   = "/faq"
+  to     = "/faq/"
+  status = 301
+
 [[redirects]]
   from   = "/*"
   to     = "/404"
