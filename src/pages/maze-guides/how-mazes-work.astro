@@ -72,14 +72,14 @@ const breadcrumbSchema = JSON.stringify({
 <BaseLayout
   title="How Mazes Work — Paths, Walls, and Generation | MazePuzzles.io"
   description="Learn how maze paths, walls, dead ends, loops, and generation algorithms create the puzzles you solve."
-  canonical={`${siteUrl}/maze-guides/how-mazes-work`}
+  canonical={`${siteUrl}/maze-guides/how-mazes-work/`}
   schemaLD={[articleSchema, breadcrumbSchema]}
 >
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
 
     <Breadcrumb crumbs={[
       { label: 'Home', href: '/' },
-      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'Maze Guides', href: '/maze-guides/' },
       { label: 'How Mazes Work' },
     ]} />
 
@@ -208,7 +208,7 @@ const breadcrumbSchema = JSON.stringify({
       <p class="text-sm" style="color: var(--color-muted-strong);">
         For more on how to apply this — and the other strategies that work across maze types — see the full solving guide.
       </p>
-      <a href="/maze-guides/how-to-solve-a-maze" class="inline-flex items-center gap-1 text-sm font-medium mt-3 text-arch-accent hover:underline">
+      <a href="/maze-guides/how-to-solve-a-maze/" class="inline-flex items-center gap-1 text-sm font-medium mt-3 text-arch-accent hover:underline">
         How to Solve a Maze →
       </a>
     </section>
@@ -244,10 +244,10 @@ const breadcrumbSchema = JSON.stringify({
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[
-          { href: '/maze-library/small-mazes',  label: 'Small Mazes',  desc: '20×20 grid. Short corridors, quick to complete — ideal for spotting the DFS structure clearly.' },
-          { href: '/maze-library/medium-mazes', label: 'Medium Mazes', desc: '40×40 grid. A genuine challenge. Long corridors start to feel genuinely disorienting.' },
-          { href: '/maze-library/large-mazes',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a plan. Scanning before you start becomes essential.' },
-          { href: '/maze-library', label: 'Maze Library', desc: 'Browse all sizes and track your progress across the full collection.' },
+          { href: '/maze-library/small-mazes/',  label: 'Small Mazes',  desc: '20×20 grid. Short corridors, quick to complete — ideal for spotting the DFS structure clearly.' },
+          { href: '/maze-library/medium-mazes/', label: 'Medium Mazes', desc: '40×40 grid. A genuine challenge. Long corridors start to feel genuinely disorienting.' },
+          { href: '/maze-library/large-mazes/',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a plan. Scanning before you start becomes essential.' },
+          { href: '/maze-library/', label: 'Maze Library', desc: 'Browse all sizes and track your progress across the full collection.' },
         ].map(({ href, label, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
             <p class="font-semibold text-sm" style="color: var(--color-charcoal);">{label}</p>
@@ -276,16 +276,16 @@ const breadcrumbSchema = JSON.stringify({
       <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready to see it for yourself?</h2>
       <p class="text-sm text-arch-600 mb-5">Generate a maze and watch the structure in action, or browse the library to compare sizes.</p>
       <div class="flex flex-wrap gap-3">
-        <a href="/maze-generator"           class="btn-secondary">Maze Generator</a>
-        <a href="/maze-library"             class="btn-secondary">Maze Library</a>
-        <a href="/maze-guides/how-to-solve-a-maze" class="btn-secondary">How to Solve a Maze</a>
+        <a href="/maze-generator/"           class="btn-secondary">Maze Generator</a>
+        <a href="/maze-library/"             class="btn-secondary">Maze Library</a>
+        <a href="/maze-guides/how-to-solve-a-maze/" class="btn-secondary">How to Solve a Maze</a>
       </div>
     </section>
 
     <!-- Back link -->
     <div class="mt-10 text-center">
       <a
-        href="/maze-guides"
+        href="/maze-guides/"
         class="text-sm transition-colors"
         style="color: var(--color-muted-strong);"
         onmouseover="this.style.color='var(--color-charcoal)'"

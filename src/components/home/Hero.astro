@@ -88,8 +88,8 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
       <!-- Secondary links — clearly links, clearly secondary, 44px tap targets -->
       <div id="hero-sec-group-mobile" class="hero-sec-group-mobile">
-        <a href="/maze-library" class="hero-sec-link">Browse Maze Library</a>
-        <a href="/maze-generator" class="hero-sec-link">Create a Maze</a>
+        <a href="/maze-library/" class="hero-sec-link">Browse Maze Library</a>
+        <a href="/maze-generator/" class="hero-sec-link">Create a Maze</a>
       </div>
 
     </div>
@@ -136,8 +136,8 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
             <!-- Secondary links — horizontal row on desktop -->
             <div id="hero-sec-group-desktop" class="hero-sec-group-desktop">
-              <a href="/maze-library" class="hero-sec-link">Browse Maze Library</a>
-              <a href="/maze-generator" class="hero-sec-link">Create a Maze</a>
+              <a href="/maze-library/" class="hero-sec-link">Browse Maze Library</a>
+              <a href="/maze-generator/" class="hero-sec-link">Create a Maze</a>
             </div>
           </div>
         </div>
@@ -727,8 +727,8 @@ import HeroMazePreview from './HeroMazePreview.jsx';
       if (desktopSecGroupEl) desktopSecGroupEl.style.display = 'none';
       const solvedLinks =
         `<div class="hero-solved-links">`
-        + `<a href="/maze-generator" class="hero-solved-link">Create a Maze</a>`
-        + `<a href="/maze-library" class="hero-solved-link">Browse Maze Library</a>`
+        + `<a href="/maze-generator/" class="hero-solved-link">Create a Maze</a>`
+        + `<a href="/maze-library/" class="hero-solved-link">Browse Maze Library</a>`
         + `</div>`;
       mobileSecEl.innerHTML  = solvedLinks;
       desktopSecEl.innerHTML = solvedLinks;

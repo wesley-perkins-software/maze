@@ -403,7 +403,7 @@ export function PostSolveOverlay({
         {/* Secondary CTA */}
         {isDailyMode ? (
           <a
-            href="/maze-generator"
+            href="/maze-generator/"
             onClick={() => trackPostSolveActionClicked('create_maze', mazeContext)}
             className="btn-secondary w-full justify-center text-sm py-2.5 rounded-lg"
           >
