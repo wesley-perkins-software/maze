@@ -39,10 +39,10 @@ const articleSchema = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: 'How to Solve a Maze',
-  description: 'Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles.',
+  description: 'Step-by-step maze-solving strategies for paper and online mazes — wall-following, dead-end marking, and more. Free to practice right after reading.',
   url: `${siteUrl}/maze-guides/how-to-solve-a-maze`,
   datePublished: '2024-11-20',
-  dateModified: '2024-11-20',
+  dateModified: '2026-08-28',
   author: {
     '@type': 'Organization',
     name: 'MazePuzzles.io',
@@ -70,8 +70,8 @@ const breadcrumbSchema = JSON.stringify({
 ---
 
 <BaseLayout
-  title="How to Solve a Maze: Strategies for Every Level | MazePuzzles.io"
-  description="Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles."
+  title="How to Solve a Maze: 7 Strategies That Actually Work | MazePuzzles.io"
+  description="Step-by-step maze-solving strategies for paper and online mazes — wall-following, dead-end marking, and more. Free to practice right after reading."
   canonical={`${siteUrl}/maze-guides/how-to-solve-a-maze/`}
   schemaLD={[articleSchema, breadcrumbSchema]}
 >
@@ -89,6 +89,9 @@ const breadcrumbSchema = JSON.stringify({
       <p class="text-arch-600 text-base max-w-xl">
         Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles.
       </p>
+      <p class="text-sm mt-4" style="color: var(--color-muted-strong);">
+        Want to practice as you read? Try the <a href="/maze-library/small-mazes/" style="color: var(--color-accent);">Small Mazes collection</a>, play <a href="/maze-of-the-day/" style="color: var(--color-accent);">today's maze</a>, or <a href="/printable-mazes/" style="color: var(--color-accent);">print a maze worksheet</a> to solve with a pencil.
+      </p>
     </div>
 
     <!-- Section 1: Start with the goal -->
@@ -105,7 +108,31 @@ const breadcrumbSchema = JSON.stringify({
       </p>
     </section>
 
-    <!-- Section 2: Wall-following -->
+    <!-- Section 2: How to Solve a Maze on Paper -->
+    <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
+      <h2 class="text-xl font-bold text-arch-charcoal mb-4">How to Solve a Maze on Paper</h2>
+      <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
+        Solving on paper rewards a slightly different approach than solving on screen, since there's no trail or hint system to lean on. A few habits make a real difference:
+      </p>
+      <ul class="space-y-3">
+        {[
+          'Use a pencil, not a pen, so you can mark and erase paths as you test them.',
+          'Mark dead ends lightly rather than scribbling them out — a light X keeps the maze readable if you need to backtrack.',
+          "If you get stuck, try working backward from the finish. Meeting your two paths partway is often faster than restarting from the entrance.",
+          'Use wall-following only when it fits the maze — it works well on a simple, single-solution maze, but can send you in circles on a maze with loops.',
+          "Don't randomly jump around the maze. Testing paths out of order wastes time and makes it easy to lose track of what you've already ruled out.",
+          'Slow down at intersections. Most mistakes happen from moving too fast through a junction, not from the maze itself being unsolvable.',
+          'Start with an easier maze size to practice a strategy before testing it on something larger.',
+        ].map((tip) => (
+          <li class="flex gap-3 text-sm" style="color: var(--color-muted-strong);">
+            <span class="shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full" style="background-color: var(--color-accent);" aria-hidden="true"></span>
+            <span>{tip}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- Section 3: Wall-following -->
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">Use the wall-following method</h2>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
@@ -122,7 +149,7 @@ const breadcrumbSchema = JSON.stringify({
       </div>
     </section>
 
-    <!-- Section 3: Mark dead ends -->
+    <!-- Section 4: Mark dead ends -->
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">Mark dead ends</h2>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
@@ -139,7 +166,7 @@ const breadcrumbSchema = JSON.stringify({
       </div>
     </section>
 
-    <!-- Section 4: Look for junctions -->
+    <!-- Section 5: Look for junctions -->
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">Look for junctions</h2>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
@@ -153,7 +180,7 @@ const breadcrumbSchema = JSON.stringify({
       </p>
     </section>
 
-    <!-- Section 5: Scan before you start -->
+    <!-- Section 6: Scan before you start -->
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">Scan before you start</h2>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
@@ -176,7 +203,7 @@ const breadcrumbSchema = JSON.stringify({
       </p>
     </section>
 
-    <!-- Section 6: Online minimap and hints -->
+    <!-- Section 7: Online minimap and hints -->
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">Use the minimap and hints when playing online</h2>
       <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
@@ -194,7 +221,7 @@ const breadcrumbSchema = JSON.stringify({
       </div>
     </section>
 
-    <!-- Section 7: Practice by difficulty -->
+    <!-- Section 8: Practice by difficulty -->
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">Practice by difficulty</h2>
       <p class="text-sm mb-6" style="color: var(--color-muted-strong);">
@@ -216,7 +243,7 @@ const breadcrumbSchema = JSON.stringify({
       </div>
     </section>
 
-    <!-- Section 8: Printable practice + Create your own -->
+    <!-- Section 9: Printable practice + Create your own -->
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">Printable practice</h2>
       <p class="text-sm mb-5" style="color: var(--color-muted-strong);">
