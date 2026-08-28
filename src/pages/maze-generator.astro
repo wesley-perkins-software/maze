@@ -90,11 +90,14 @@ const schema = JSON.stringify({
       </nav>
 
       <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">Free Maze Generator</p>
-      <h1 class="text-5xl text-arch-charcoal mb-3">Build Your Own Maze</h1>
+      <div role="heading" aria-level="1" class="text-5xl text-arch-charcoal mb-3">Build Your Own Maze</div>
       <p class="text-arch-600 text-base max-w-xl">
         Choose a size, generate a maze, then play online or print.
       </p>
     </div>
+
+    <!-- The single real H1 for this page — screen-reader/SEO only at every breakpoint. Visible heading text (mobile block above, desktop inside the generator island) uses role="heading" so there is only one literal heading tag on the page. -->
+    <h1 class="sr-only">Build Your Own Maze</h1>
 
     <!-- Generator Island -->
     <MazeGenerator client:only="react">

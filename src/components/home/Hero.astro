@@ -102,12 +102,14 @@ import HeroMazePreview from './HeroMazePreview.jsx';
 
         <!-- Left: headline + daily state + CTA + secondary links -->
         <div class="flex flex-col items-start">
-          <h1
+          <div
+            role="heading"
+            aria-level="1"
             class="font-display uppercase mb-4"
             style="font-size: clamp(3.5rem, 9vw, 8.5rem); line-height: 0.88; color: var(--color-charcoal);"
           >
             Can You<br />Solve<br /><span style="color: var(--color-accent);">Today's</span><br />Maze?
-          </h1>
+          </div>
 
           <!-- Daily state — prominent, between headline and CTA -->
           <div id="hero-daily-status-desktop" class="hero-status-block mb-4">

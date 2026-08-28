@@ -2,6 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { LibraryMazePlayer } from '../../../components/library/LibraryMazePlayer';
 import { getAllLibraryMazes } from '../../../lib/library/catalog.js';
+import { getCategoryByDifficulty } from '../../../types/maze.js';
 import type { LibraryCatalogEntry } from '../../../types/maze.js';
 
 export async function getStaticPaths() {
@@ -21,7 +22,7 @@ const { entry } = Astro.props;
 const num = String(parseInt(entry.id.split('-')[1] ?? '1', 10)).padStart(3, '0');
 const tierLabel = entry.difficulty.charAt(0).toUpperCase() + entry.difficulty.slice(1);
 const label = `${tierLabel} #${num}`;
-const collectionSlug = `${entry.difficulty}-mazes`;
+const category = getCategoryByDifficulty(entry.difficulty);
 ---
 
 <BaseLayout
@@ -33,7 +34,7 @@ const collectionSlug = `${entry.difficulty}-mazes`;
     <div class="mb-6 flex items-center gap-2 text-sm" style="color: var(--color-muted-strong);">
       <a href="/maze-library/" class="transition-colors" onmouseover="this.style.color='var(--color-charcoal)';" onmouseout="this.style.color='var(--color-muted-strong)';">Maze Library</a>
       <span aria-hidden="true">›</span>
-      <a href={`/${collectionSlug}`} class="transition-colors" onmouseover="this.style.color='var(--color-charcoal)';" onmouseout="this.style.color='var(--color-muted-strong)';">{tierLabel} Mazes</a>
+      <a href={`/${category.slug}/`} class="transition-colors" onmouseover="this.style.color='var(--color-charcoal)';" onmouseout="this.style.color='var(--color-muted-strong)';">{category.label}</a>
       <span aria-hidden="true">›</span>
       <span class="font-medium" style="color: var(--color-charcoal);">{label}</span>
     </div>
