@@ -40,7 +40,7 @@ const effectiveDescription = pageDescription ?? category.description;
 
     <Breadcrumb crumbs={[
       { label: 'Home', href: '/' },
-      { label: 'Maze Library', href: '/maze-library' },
+      { label: 'Maze Library', href: '/maze-library/' },
       { label: category.label },
     ]} />
 
@@ -114,21 +114,21 @@ const effectiveDescription = pageDescription ?? category.description;
       <h2 class="text-xl font-bold text-arch-charcoal mb-2">Maze Library, Maze Generator, and Printable Mazes</h2>
       <p class="text-sm text-arch-600 mb-6">Three tools, each built for a different use. Choose the one that fits.</p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <a href="/maze-library" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+        <a href="/maze-library/" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
           <div>
             <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Library</p>
             <p class="text-sm" style="color: var(--color-muted-strong);">Work through Maze Library collections and track your progress.</p>
           </div>
           <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Library →</span>
         </a>
-        <a href="/maze-generator" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+        <a href="/maze-generator/" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
           <div>
             <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Maze Generator</p>
             <p class="text-sm" style="color: var(--color-muted-strong);">Create a custom maze and decide whether to play, print, or download it.</p>
           </div>
           <span class="text-sm font-medium mt-auto" style="color: var(--color-accent);">Maze Generator →</span>
         </a>
-        <a href="/printable-mazes" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
+        <a href="/printable-mazes/" class="card-hover rounded-lg p-5 flex flex-col gap-3 no-underline">
           <div>
             <p class="font-semibold mb-1" style="color: var(--color-charcoal);">Printable Mazes</p>
             <p class="text-sm" style="color: var(--color-muted-strong);">A print-first worksheet tool with optional answer key pages.</p>

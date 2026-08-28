@@ -63,10 +63,10 @@ import { CATEGORIES } from '../../types/maze.js';
         >Tools</h3>
         <ul class="space-y-2.5">
           {[
-            { href: '/maze-of-the-day',  label: 'Maze of the Day' },
-            { href: '/maze-generator',   label: 'Maze Generator' },
-            { href: '/printable-mazes',  label: 'Printable Mazes' },
-            { href: '/maze-library',     label: 'Maze Library' },
+            { href: '/maze-of-the-day/',  label: 'Maze of the Day' },
+            { href: '/maze-generator/',   label: 'Maze Generator' },
+            { href: '/printable-mazes/',  label: 'Printable Mazes' },
+            { href: '/maze-library/',     label: 'Maze Library' },
           ].map(({ href, label }) => (
             <li>
               <a
@@ -89,10 +89,10 @@ import { CATEGORIES } from '../../types/maze.js';
         >Maze Guides</h3>
         <ul class="space-y-2.5">
           {[
-            { href: '/maze-guides',                         label: 'All Guides' },
-            { href: '/maze-guides/how-mazes-work',          label: 'How Mazes Work' },
-            { href: '/maze-guides/how-to-solve-a-maze',     label: 'How to Solve a Maze' },
-            { href: '/faq',                           label: 'FAQ' },
+            { href: '/maze-guides/',                         label: 'All Guides' },
+            { href: '/maze-guides/how-mazes-work/',          label: 'How Mazes Work' },
+            { href: '/maze-guides/how-to-solve-a-maze/',     label: 'How to Solve a Maze' },
+            { href: '/faq/',                           label: 'FAQ' },
           ].map(({ href, label }) => (
             <li>
               <a
@@ -115,9 +115,9 @@ import { CATEGORIES } from '../../types/maze.js';
         >About</h3>
         <ul class="space-y-2.5">
           {[
-            { href: '/about',   label: 'About MazePuzzles.io' },
-            { href: '/privacy', label: 'Privacy Policy' },
-            { href: '/terms',   label: 'Terms of Service' },
+            { href: '/about/',   label: 'About MazePuzzles.io' },
+            { href: '/privacy/', label: 'Privacy Policy' },
+            { href: '/terms/',   label: 'Terms of Service' },
           ].map(({ href, label }) => (
             <li>
               <a
@@ -146,8 +146,8 @@ import { CATEGORIES } from '../../types/maze.js';
       </p>
       <div class="flex gap-5">
         {[
-          { href: '/privacy', label: 'Privacy' },
-          { href: '/terms',   label: 'Terms' },
+          { href: '/privacy/', label: 'Privacy' },
+          { href: '/terms/',   label: 'Terms' },
         ].map(({ href, label }) => (
           <a
             href={href}
