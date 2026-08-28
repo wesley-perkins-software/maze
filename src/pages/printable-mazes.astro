@@ -96,11 +96,14 @@ const schemaLD = JSON.stringify({
         </ol>
       </nav>
       <p class="text-xs tracking-widest uppercase font-semibold text-arch-accent mb-2">Free Maze Printables</p>
-      <h1 class="text-5xl text-arch-charcoal mb-3">Free Maze Printables</h1>
+      <div role="heading" aria-level="1" class="text-5xl text-arch-charcoal mb-3">Free Maze Printables</div>
       <p class="text-arch-600 text-base max-w-xl">
         Choose a size, generate a clean maze, then print an ad-free worksheet or download the SVG.
       </p>
     </div>
+
+    <!-- The single real H1 for this page — screen-reader/SEO only at every breakpoint. Visible heading text (mobile block above, desktop inside the generator island) uses role="heading" so there is only one literal heading tag on the page. -->
+    <h1 class="sr-only">Free Maze Printables</h1>
 
     <!-- Generator island -->
     <PrintableMazeGenerator client:only="react">
