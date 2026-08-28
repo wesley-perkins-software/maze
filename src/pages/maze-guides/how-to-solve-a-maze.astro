@@ -72,14 +72,14 @@ const breadcrumbSchema = JSON.stringify({
 <BaseLayout
   title="How to Solve a Maze: Strategies for Every Level | MazePuzzles.io"
   description="Learn simple maze-solving strategies, when to use them, and how to get better at harder maze puzzles."
-  canonical={`${siteUrl}/maze-guides/how-to-solve-a-maze`}
+  canonical={`${siteUrl}/maze-guides/how-to-solve-a-maze/`}
   schemaLD={[articleSchema, breadcrumbSchema]}
 >
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
 
     <Breadcrumb crumbs={[
       { label: 'Home', href: '/' },
-      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'Maze Guides', href: '/maze-guides/' },
       { label: 'How to Solve a Maze' },
     ]} />
 
@@ -202,10 +202,10 @@ const breadcrumbSchema = JSON.stringify({
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[
-          { href: '/maze-library/small-mazes',  label: 'Small Mazes',  desc: '20×20 grid. Good for beginners and kids building fundamentals.' },
-          { href: '/maze-library/medium-mazes', label: 'Medium Mazes', desc: '40×40 grid. A real challenge without becoming overwhelming.' },
-          { href: '/maze-library/large-mazes',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a systematic approach.' },
-          { href: '/maze-library', label: 'Maze Library', desc: 'Browse all difficulty levels and track your progress.' },
+          { href: '/maze-library/small-mazes/',  label: 'Small Mazes',  desc: '20×20 grid. Good for beginners and kids building fundamentals.' },
+          { href: '/maze-library/medium-mazes/', label: 'Medium Mazes', desc: '40×40 grid. A real challenge without becoming overwhelming.' },
+          { href: '/maze-library/large-mazes/',  label: 'Large Mazes',  desc: '60×60 grid. Requires patience and a systematic approach.' },
+          { href: '/maze-library/', label: 'Maze Library', desc: 'Browse all difficulty levels and track your progress.' },
         ].map(({ href, label, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
             <p class="font-semibold text-sm" style="color: var(--color-charcoal);">{label}</p>
@@ -223,12 +223,12 @@ const breadcrumbSchema = JSON.stringify({
         Paper mazes are ideal for practicing dead-end filling and wall-following because you can mark paths with a pencil. Print as many as you need — free, no account required.
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <a href="/printable-mazes" class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
+        <a href="/printable-mazes/" class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
           <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Printable Mazes</p>
           <p class="text-sm" style="color: var(--color-muted-strong);">Generate clean printable maze worksheets in multiple sizes. Perfect for pencil-and-paper practice.</p>
           <span class="text-sm font-medium mt-2 text-arch-accent">Print a maze →</span>
         </a>
-        <a href="/maze-generator" class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
+        <a href="/maze-generator/" class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
           <p class="font-semibold text-sm" style="color: var(--color-charcoal);">Create your own maze</p>
           <p class="text-sm" style="color: var(--color-muted-strong);">Generate a custom maze to play online, print, or share. Set the size, solve it, then try a harder one.</p>
           <span class="text-sm font-medium mt-2 text-arch-accent">Open generator →</span>
@@ -254,16 +254,16 @@ const breadcrumbSchema = JSON.stringify({
       <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready to practice?</h2>
       <p class="text-sm text-arch-600 mb-5">Start with a Maze Library collection, print a worksheet, or generate a custom maze.</p>
       <div class="flex flex-wrap gap-3">
-        <a href="/maze-library"   class="btn-secondary">Maze Library</a>
-        <a href="/printable-mazes" class="btn-secondary">Printable Mazes</a>
-        <a href="/maze-generator" class="btn-secondary">Maze Generator</a>
+        <a href="/maze-library/"   class="btn-secondary">Maze Library</a>
+        <a href="/printable-mazes/" class="btn-secondary">Printable Mazes</a>
+        <a href="/maze-generator/" class="btn-secondary">Maze Generator</a>
       </div>
     </section>
 
     <!-- Back link -->
     <div class="mt-10 text-center">
       <a
-        href="/maze-guides"
+        href="/maze-guides/"
         class="text-sm transition-colors"
         style="color: var(--color-muted-strong);"
         onmouseover="this.style.color='var(--color-charcoal)'"

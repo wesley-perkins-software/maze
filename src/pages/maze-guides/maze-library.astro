@@ -82,14 +82,14 @@ const breadcrumbSchema = JSON.stringify({
 <BaseLayout
   title="How to Use the Maze Library | MazePuzzles.io"
   description="How Maze Library collections, size tiers, progress tracking, and Play Next work on MazePuzzles.io."
-  canonical={`${siteUrl}/maze-guides/maze-library`}
+  canonical={`${siteUrl}/maze-guides/maze-library/`}
   schemaLD={[articleSchema, faqSchema, breadcrumbSchema]}
 >
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
 
     <Breadcrumb crumbs={[
       { label: 'Home', href: '/' },
-      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'Maze Guides', href: '/maze-guides/' },
       { label: 'Maze Library' },
     ]} />
 
@@ -108,7 +108,7 @@ const breadcrumbSchema = JSON.stringify({
         A maze library is a collection of ready-to-play maze puzzles organized so you can work through them over time. Rather than generating a single maze and playing it once, you browse a set of collections, pick a starting point, and return to continue where you left off.
       </p>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
-        The <a href="/maze-library" class="text-arch-accent underline">MazePuzzles.io Maze Library</a> is organized by grid size — five tiers from Small to Hardcore. Each tier is its own collection. Your progress through each collection is tracked in your browser automatically.
+        The <a href="/maze-library/" class="text-arch-accent underline">MazePuzzles.io Maze Library</a> is organized by grid size — five tiers from Small to Hardcore. Each tier is its own collection. Your progress through each collection is tracked in your browser automatically.
       </p>
       <p class="text-sm" style="color: var(--color-muted-strong);">
         There is no account required and no limit on how long a collection takes to complete.
@@ -123,11 +123,11 @@ const breadcrumbSchema = JSON.stringify({
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[
-          { href: '/maze-library/small-mazes',   label: 'Small',   size: '20×20',   desc: 'A manageable starting point. Good for building confidence with navigation controls and basic strategy.' },
-          { href: '/maze-library/medium-mazes',  label: 'Medium',  size: '40×40',   desc: 'A genuine challenge that takes more planning. The step up from Small is noticeable.' },
-          { href: '/maze-library/large-mazes',   label: 'Large',   size: '60×60',   desc: 'Requires patience and a more deliberate approach to avoid retracing paths.' },
-          { href: '/maze-library/expert-mazes',  label: 'Expert',  size: '80×80',   desc: 'Dense, demanding, and rewarding. Systematic dead-end elimination helps here.' },
-          { href: '/maze-library/hardcore-mazes', label: 'Hardcore', size: '100×100', desc: 'The largest tier. Finishing a Hardcore maze is a real milestone.' },
+          { href: '/maze-library/small-mazes/',   label: 'Small',   size: '20×20',   desc: 'A manageable starting point. Good for building confidence with navigation controls and basic strategy.' },
+          { href: '/maze-library/medium-mazes/',  label: 'Medium',  size: '40×40',   desc: 'A genuine challenge that takes more planning. The step up from Small is noticeable.' },
+          { href: '/maze-library/large-mazes/',   label: 'Large',   size: '60×60',   desc: 'Requires patience and a more deliberate approach to avoid retracing paths.' },
+          { href: '/maze-library/expert-mazes/',  label: 'Expert',  size: '80×80',   desc: 'Dense, demanding, and rewarding. Systematic dead-end elimination helps here.' },
+          { href: '/maze-library/hardcore-mazes/', label: 'Hardcore', size: '100×100', desc: 'The largest tier. Finishing a Hardcore maze is a real milestone.' },
         ].map(({ href, label, size, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
             <div class="flex items-baseline gap-2">
@@ -198,7 +198,7 @@ const breadcrumbSchema = JSON.stringify({
             <li>Play Next to continue a set</li>
             <li>Best for working through a challenge over time</li>
           </ul>
-          <a href="/maze-library" class="text-sm font-medium mt-3 block text-arch-accent">Browse Maze Library →</a>
+          <a href="/maze-library/" class="text-sm font-medium mt-3 block text-arch-accent">Browse Maze Library →</a>
         </div>
         <div class="card rounded-lg p-4">
           <p class="font-semibold text-sm mb-2" style="color: var(--color-charcoal);">Maze Generator</p>
@@ -208,7 +208,7 @@ const breadcrumbSchema = JSON.stringify({
             <li>Play online, print, or share</li>
             <li>Best for one-off mazes or printing</li>
           </ul>
-          <a href="/maze-generator" class="text-sm font-medium mt-3 block text-arch-accent">Open Maze Generator →</a>
+          <a href="/maze-generator/" class="text-sm font-medium mt-3 block text-arch-accent">Open Maze Generator →</a>
         </div>
       </div>
     </section>
@@ -231,15 +231,15 @@ const breadcrumbSchema = JSON.stringify({
       <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready to start a collection?</h2>
       <p class="text-sm text-arch-600 mb-5">Choose a Maze Library collection and work through it at your own pace.</p>
       <div class="flex flex-wrap gap-3">
-        <a href="/maze-library" class="btn-secondary">Browse Maze Library</a>
-        <a href="/maze-library/small-mazes" class="btn-secondary">Start with Small Mazes</a>
+        <a href="/maze-library/" class="btn-secondary">Browse Maze Library</a>
+        <a href="/maze-library/small-mazes/" class="btn-secondary">Start with Small Mazes</a>
       </div>
     </section>
 
     <!-- Back link -->
     <div class="mt-10 text-center">
       <a
-        href="/maze-guides"
+        href="/maze-guides/"
         class="text-sm transition-colors"
         style="color: var(--color-muted-strong);"
         onmouseover="this.style.color='var(--color-charcoal)'"

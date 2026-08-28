@@ -275,7 +275,7 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
                 <nav className="flex items-center justify-center gap-3 mt-2 text-sm" aria-label="Collection navigation">
                   <a href={collectionHref} className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">← Back to {collectionLabel}</a>
                   <span aria-hidden="true" className="text-[var(--color-muted)]">·</span>
-                  <a href="/maze-library" className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">Maze Library</a>
+                  <a href="/maze-library/" className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">Maze Library</a>
                 </nav>
               </div>
             </div>
@@ -324,7 +324,7 @@ export function LibraryMazePlayer({ entry }: LibraryMazePlayerProps) {
             <nav className="flex items-center gap-3 text-sm" aria-label="Collection navigation">
               <a href={collectionHref} className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">← Back to {collectionLabel}</a>
               <span aria-hidden="true" className="text-[var(--color-muted)]">·</span>
-              <a href="/maze-library" className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">Maze Library</a>
+              <a href="/maze-library/" className="font-medium text-[var(--color-muted-strong)] underline-offset-4 hover:text-[var(--color-charcoal)] hover:underline transition-colors">Maze Library</a>
             </nav>
           </div>
         </div>

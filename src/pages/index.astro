@@ -24,11 +24,11 @@ const librarySizes: Array<{
   cta: string;
   desc: string;
 }> = [
-  { difficulty: 'small',   grid: '20×20',   name: 'Small',   href: '/maze-library/small-mazes',   cta: 'Browse Small',   desc: 'Quick mazes for beginners, kids, and short sessions.' },
-  { difficulty: 'medium',  grid: '40×40',   name: 'Medium',  href: '/maze-library/medium-mazes',  cta: 'Browse Medium',  desc: 'A balanced maze size with more room to explore.' },
-  { difficulty: 'large',   grid: '60×60',   name: 'Large',   href: '/maze-library/large-mazes',   cta: 'Browse Large',   desc: 'Bigger challenges for longer solving sessions.' },
-  { difficulty: 'expert',  grid: '80×80',   name: 'Expert',  href: '/maze-library/expert-mazes',  cta: 'Browse Expert',  desc: 'Dense maze puzzles for experienced solvers.' },
-  { difficulty: 'hardcore', grid: '100×100', name: 'Hardcore', href: '/maze-library/hardcore-mazes', cta: 'Browse Hardcore', desc: 'The largest maze collection for serious focus.' },
+  { difficulty: 'small',   grid: '20×20',   name: 'Small',   href: '/maze-library/small-mazes/',   cta: 'Browse Small',   desc: 'Quick mazes for beginners, kids, and short sessions.' },
+  { difficulty: 'medium',  grid: '40×40',   name: 'Medium',  href: '/maze-library/medium-mazes/',  cta: 'Browse Medium',  desc: 'A balanced maze size with more room to explore.' },
+  { difficulty: 'large',   grid: '60×60',   name: 'Large',   href: '/maze-library/large-mazes/',   cta: 'Browse Large',   desc: 'Bigger challenges for longer solving sessions.' },
+  { difficulty: 'expert',  grid: '80×80',   name: 'Expert',  href: '/maze-library/expert-mazes/',  cta: 'Browse Expert',  desc: 'Dense maze puzzles for experienced solvers.' },
+  { difficulty: 'hardcore', grid: '100×100', name: 'Hardcore', href: '/maze-library/hardcore-mazes/', cta: 'Browse Hardcore', desc: 'The largest maze collection for serious focus.' },
 ];
 
 function getMazeThumbnail(difficulty: Difficulty): string {
@@ -115,25 +115,25 @@ const organizationSchema = JSON.stringify({
             title: 'Maze of the Day',
             desc: 'Play one fresh daily maze challenge.',
             cta: 'Play today →',
-            href: '/maze-of-the-day',
+            href: '/maze-of-the-day/',
           },
           {
             title: 'Maze Library',
             desc: 'Browse Maze Library collections and track your progress.',
             cta: 'Browse library →',
-            href: '/maze-library',
+            href: '/maze-library/',
           },
           {
             title: 'Maze Generator',
             desc: 'Create a custom maze to play, print, or download.',
             cta: 'Generate a maze →',
-            href: '/maze-generator',
+            href: '/maze-generator/',
           },
           {
             title: 'Printable Mazes',
             desc: 'Generate clean maze worksheets with optional answer key pages.',
             cta: 'Print mazes →',
-            href: '/printable-mazes',
+            href: '/printable-mazes/',
           },
         ].map(({ title, desc, cta, href }) => (
           <a
@@ -185,7 +185,7 @@ const organizationSchema = JSON.stringify({
           >Start small, move up, and complete each collection at your own pace.</p>
         </div>
         <a
-          href="/maze-library"
+          href="/maze-library/"
           class="hidden sm:inline-flex items-center gap-1 text-sm uppercase tracking-widest no-underline"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal); text-decoration: underline; text-decoration-color: var(--color-border-strong); text-underline-offset: 3px;"
         >View Maze Library →</a>
@@ -255,7 +255,7 @@ const organizationSchema = JSON.stringify({
 
       <div class="mt-6 sm:hidden text-center">
         <a
-          href="/maze-library"
+          href="/maze-library/"
           class="text-sm uppercase tracking-widest"
           style="font-family: 'IBM Plex Mono', monospace; color: var(--color-charcoal); text-decoration: underline; text-underline-offset: 3px;"
         >View Maze Library →</a>
@@ -293,7 +293,7 @@ const organizationSchema = JSON.stringify({
           Choose a size, generate a unique maze, then play online, print, or download the SVG.
         </p>
         <a
-          href="/maze-generator"
+          href="/maze-generator/"
           class="btn-primary text-sm px-8 py-4 inline-flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-start"
         >
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -403,7 +403,7 @@ const organizationSchema = JSON.stringify({
         style="color: var(--color-charcoal);"
       >Read simple guides on maze-solving strategies, difficulty, maze types, and choosing the right puzzle.</p>
       <a
-        href="/maze-guides"
+        href="/maze-guides/"
         class="btn-secondary text-sm px-7 py-3 inline-flex items-center gap-2"
       >
         Read Maze Guides →
@@ -432,7 +432,7 @@ const organizationSchema = JSON.stringify({
       >Start with today's maze, browse the library, or generate your own.</p>
       <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
         <a
-          href="/maze-of-the-day"
+          href="/maze-of-the-day/"
           class="btn-primary text-sm px-7 py-3.5 inline-flex items-center gap-2 w-full sm:w-auto justify-center"
         >
           <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -441,14 +441,14 @@ const organizationSchema = JSON.stringify({
           Play Today's Maze
         </a>
         <a
-          href="/maze-library"
+          href="/maze-library/"
           class="btn-secondary text-sm px-7 py-3.5 w-full sm:w-auto text-center"
           style="color: var(--color-bg); border-color: color-mix(in srgb, var(--color-bg) 35%, transparent);"
         >
           Maze Library
         </a>
         <a
-          href="/maze-generator"
+          href="/maze-generator/"
           class="btn-secondary text-sm px-7 py-3.5 w-full sm:w-auto text-center"
           style="color: var(--color-bg); border-color: color-mix(in srgb, var(--color-bg) 35%, transparent);"
         >
@@ -604,13 +604,13 @@ const organizationSchema = JSON.stringify({
   });
 
   // Bottom section CTAs
-  document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-of-the-day"].btn-primary').forEach((el) => {
+  document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-of-the-day/"].btn-primary').forEach((el) => {
     el.addEventListener('click', () => trackCtaClicked('bottom_cta_daily', '/', '/maze-of-the-day'));
   });
-  document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-library"].btn-secondary').forEach((el) => {
+  document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-library/"].btn-secondary').forEach((el) => {
     el.addEventListener('click', () => trackCtaClicked('bottom_cta_library', '/', '/maze-library'));
   });
-  document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-generator"].btn-secondary').forEach((el) => {
+  document.querySelectorAll<HTMLAnchorElement>('a[href="/maze-generator/"].btn-secondary').forEach((el) => {
     el.addEventListener('click', () => trackCtaClicked('bottom_cta_generator', '/', '/maze-generator'));
   });
 

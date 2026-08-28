@@ -230,6 +230,11 @@
   status = 301
 
 [[redirects]]
+  from   = "/maze-library/:slug"
+  to     = "/maze-library/:slug/"
+  status = 301
+
+[[redirects]]
   from   = "/about"
   to     = "/about/"
   status = 301

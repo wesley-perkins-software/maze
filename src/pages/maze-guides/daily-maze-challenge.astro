@@ -82,14 +82,14 @@ const breadcrumbSchema = JSON.stringify({
 <BaseLayout
   title="Daily Maze Challenge: Build a Maze-Solving Habit | MazePuzzles.io"
   description="How a daily maze challenge works, why a short daily puzzle habit is worth building, and where to play the free Maze of the Day."
-  canonical={`${siteUrl}/maze-guides/daily-maze-challenge`}
+  canonical={`${siteUrl}/maze-guides/daily-maze-challenge/`}
   schemaLD={[articleSchema, faqSchema, breadcrumbSchema]}
 >
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-8 pb-10 sm:pt-10">
 
     <Breadcrumb crumbs={[
       { label: 'Home', href: '/' },
-      { label: 'Maze Guides', href: '/maze-guides' },
+      { label: 'Maze Guides', href: '/maze-guides/' },
       { label: 'Daily Maze Challenge' },
     ]} />
 
@@ -119,7 +119,7 @@ const breadcrumbSchema = JSON.stringify({
     <section class="mt-12 pt-10" style="border-top: 1px solid var(--color-border);">
       <h2 class="text-xl font-bold text-arch-charcoal mb-4">How the Maze of the Day works</h2>
       <p class="text-sm mb-4" style="color: var(--color-muted-strong);">
-        MazePuzzles.io has a free daily maze at <a href="/maze-of-the-day" class="text-arch-accent underline">mazepuzzles.io/maze-of-the-day</a>. A new maze is generated each day — no two days share the same layout. The puzzle is the same for every player on that date.
+        MazePuzzles.io has a free daily maze at <a href="/maze-of-the-day/" class="text-arch-accent underline">mazepuzzles.io/maze-of-the-day</a>. A new maze is generated each day — no two days share the same layout. The puzzle is the same for every player on that date.
       </p>
       <ol class="space-y-3 mb-4">
         {[
@@ -198,9 +198,9 @@ const breadcrumbSchema = JSON.stringify({
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[
-          { href: '/maze-library', label: 'Maze Library', desc: 'Ready-to-play collections across five size tiers. Pick a collection and track your progress through it.' },
-          { href: '/maze-generator', label: 'Maze Generator', desc: 'Generate a custom maze of any size on demand. Play online, print it, or share it.' },
-          { href: '/printable-mazes', label: 'Printable Mazes', desc: 'Generate clean maze worksheets to print, with an optional answer key page.' },
+          { href: '/maze-library/', label: 'Maze Library', desc: 'Ready-to-play collections across five size tiers. Pick a collection and track your progress through it.' },
+          { href: '/maze-generator/', label: 'Maze Generator', desc: 'Generate a custom maze of any size on demand. Play online, print it, or share it.' },
+          { href: '/printable-mazes/', label: 'Printable Mazes', desc: 'Generate clean maze worksheets to print, with an optional answer key page.' },
         ].map(({ href, label, desc }) => (
           <a href={href} class="card-hover rounded-lg p-4 flex flex-col gap-1 no-underline">
             <p class="font-semibold text-sm" style="color: var(--color-charcoal);">{label}</p>
@@ -229,15 +229,15 @@ const breadcrumbSchema = JSON.stringify({
       <h2 class="text-lg font-bold text-arch-charcoal mb-2">Ready for today's challenge?</h2>
       <p class="text-sm text-arch-600 mb-5">Play the Maze of the Day, then come back tomorrow for a fresh puzzle.</p>
       <div class="flex flex-wrap gap-3">
-        <a href="/maze-of-the-day" class="btn-secondary">Play Today's Maze</a>
-        <a href="/maze-library" class="btn-secondary">Browse Maze Library</a>
+        <a href="/maze-of-the-day/" class="btn-secondary">Play Today's Maze</a>
+        <a href="/maze-library/" class="btn-secondary">Browse Maze Library</a>
       </div>
     </section>
 
     <!-- Back link -->
     <div class="mt-10 text-center">
       <a
-        href="/maze-guides"
+        href="/maze-guides/"
         class="text-sm transition-colors"
         style="color: var(--color-muted-strong);"
         onmouseover="this.style.color='var(--color-charcoal)'"

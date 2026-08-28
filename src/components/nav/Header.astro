@@ -33,7 +33,7 @@ const pathname = Astro.url.pathname;
       <!-- Desktop nav -->
       <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
         <a
-          href="/maze-generator"
+          href="/maze-generator/"
           class:list={[
             'btn-ghost text-sm px-3 py-1.5',
             pathname === '/maze-generator' ? 'text-accent font-semibold' : '',
@@ -43,7 +43,7 @@ const pathname = Astro.url.pathname;
           Maze Generator
         </a>
         <a
-          href="/maze-library"
+          href="/maze-library/"
           class:list={[
             'btn-ghost text-sm px-3 py-1.5',
             (pathname === '/maze-library' || pathname.endsWith('-mazes') || pathname.startsWith('/play/library')) ? 'font-semibold' : '',
@@ -53,7 +53,7 @@ const pathname = Astro.url.pathname;
           Maze Library
         </a>
         <a
-          href="/maze-guides"
+          href="/maze-guides/"
           class:list={[
             'btn-ghost text-sm px-3 py-1.5',
             pathname.startsWith('/maze-guides') ? 'font-semibold' : '',
@@ -109,15 +109,15 @@ const pathname = Astro.url.pathname;
     style="border-top: 1px solid var(--color-border); background-color: var(--color-bg);"
   >
     <a href="/play/maze-of-the-day/" class="block btn-ghost w-full text-left font-semibold py-2.5" style="color: var(--color-accent);">Maze of the Day</a>
-    <a href="/maze-generator" class="block btn-ghost w-full text-left py-2.5">Maze Generator</a>
-    <a href="/maze-library" class="block btn-ghost w-full text-left py-2.5">Maze Library</a>
-    <a href="/maze-library/small-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Small Mazes</a>
-    <a href="/maze-library/medium-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Medium Mazes</a>
-    <a href="/maze-library/large-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Large Mazes</a>
-    <a href="/maze-library/expert-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Expert Mazes</a>
-    <a href="/maze-library/hardcore-mazes" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Hardcore Mazes</a>
-    <a href="/maze-guides" class="block btn-ghost w-full text-left py-2.5">Maze Guides</a>
-    <a href="/faq" class="block btn-ghost w-full text-left py-2.5">FAQ</a>
+    <a href="/maze-generator/" class="block btn-ghost w-full text-left py-2.5">Maze Generator</a>
+    <a href="/maze-library/" class="block btn-ghost w-full text-left py-2.5">Maze Library</a>
+    <a href="/maze-library/small-mazes/" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Small Mazes</a>
+    <a href="/maze-library/medium-mazes/" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Medium Mazes</a>
+    <a href="/maze-library/large-mazes/" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Large Mazes</a>
+    <a href="/maze-library/expert-mazes/" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Expert Mazes</a>
+    <a href="/maze-library/hardcore-mazes/" class="block btn-ghost w-full text-left py-2.5 pl-6 text-slate-500">Hardcore Mazes</a>
+    <a href="/maze-guides/" class="block btn-ghost w-full text-left py-2.5">Maze Guides</a>
+    <a href="/faq/" class="block btn-ghost w-full text-left py-2.5">FAQ</a>
   </div>
 </header>
 
