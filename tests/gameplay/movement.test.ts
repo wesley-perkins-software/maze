@@ -92,7 +92,7 @@ describe('applyMove', () => {
 
 
 describe('computeRun', () => {
-  it('starts from the entry marker and stops at the next directional choice', () => {
+  it('starts from the entry marker and stops at the entry cell', () => {
     const maze = {
       id: 'test',
       slug: 'test',
@@ -115,8 +115,31 @@ describe('computeRun', () => {
     expect(getEntryDirection(maze)).toBe('E');
     expect(computeRun(maze, getEntryStartPosition(maze), 'E')).toEqual([
       { x: 0, y: 1 },
-      { x: 1, y: 1 },
-      { x: 2, y: 1 },
+    ]);
+  });
+
+  it('treats the entry cell as a junction so runs from it move one cell', () => {
+    const maze = {
+      id: 'test',
+      slug: 'test',
+      difficulty: 'small' as const,
+      width: 3,
+      height: 4,
+      seed: 1,
+      entry: { x: 0, y: 1 },
+      exit: { x: 2, y: 3 },
+      grid: [
+        15, 15, 15,
+        3, 15, 15,
+        10, 15, 15,
+        11, 15, 15,
+      ],
+      solution: [],
+      generatedAt: '2026-05-09T00:00:00.000Z',
+    };
+
+    expect(computeRun(maze, maze.entry, 'S')).toEqual([
+      { x: 0, y: 2 },
     ]);
   });
 
